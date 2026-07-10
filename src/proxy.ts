@@ -33,7 +33,7 @@ export async function proxy(req: NextRequest) {
     });
 
     if (user && canAccessPanel(user.role)) {
-      return NextResponse.redirect(new URL(paths.dashboard, req.url));
+      return NextResponse.redirect(new URL(paths.painel, req.url));
     }
 
     return NextResponse.next();
@@ -54,8 +54,8 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL(paths.auth.login, req.url));
   }
 
-  if (pathname === paths.root) {
-    return NextResponse.redirect(new URL(paths.dashboard, req.url));
+  if (pathname === paths.root || pathname === "/dashboard") {
+    return NextResponse.redirect(new URL(paths.painel, req.url));
   }
 
   return NextResponse.next();

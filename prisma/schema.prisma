@@ -22,11 +22,30 @@ enum Role {
   CLIENT
 }
 
+enum PatientStatus {
+  ativo
+  alta
+  pausado
+}
+
+enum SessionNoteStatus {
+  compareceu
+  faltou
+  cancelado
+}
+
+enum AppointmentStatus {
+  agendado
+  realizado
+  faltou
+  cancelado
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  emailVerified Boolean   @default(false) @map("email_verified")
   image         String?
   role          Role      @default(MEMBER)
   accounts      Account[]
@@ -41,64 +60,40 @@ model User {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String? //@db.Text
-  access_token      String? //@db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? //@db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id                    String    @id @default(cuid())
+  userId                String    @map("user_id")
   accountId             String
   providerId            String
   accessToken           String?
   refreshToken          String?
-  idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
+  @@unique([providerId, accountId])
   @@map("accounts")
   @@index([userId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id                   String   @id @default(cuid())
+  userId               String   @map("user_id")
+  token                String   @unique
   expiresAt            DateTime
-  token                String
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
   ipAddress            String?
   userAgent            String?
   activeOrganizationId String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
-  @@unique([token])
   @@index([userId])
-}
-
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
 }
 
 model Verification {
@@ -122,9 +117,177 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
+  exercises    Exercise[]
+  patients     Patient[]
+  appointments Appointment[]
+  studyCards   StudyCard[]
 
   @@unique([slug])
   @@map("organization")
+}
+
+model Exercise {
+  id             String            @id @default(cuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  categoryId     String
+  objective      String
+  materials      String
+  instructions   String
+  duration       String
+  level          String
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  planItems      PatientPlanItem[]
+
+  @@index([organizationId])
+  @@index([organizationId, categoryId])
+  @@map("exercises")
+}
+
+model StudyCard {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  categoryId     String
+  content        String
+  isCustom       Boolean      @default(true)
+  seedKey        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([organizationId, seedKey])
+  @@index([organizationId])
+  @@index([organizationId, categoryId])
+  @@map("study_cards")
+}
+
+model Patient {
+  id             String            @id @default(cuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  notes          String            @default("")
+  status         PatientStatus     @default(ativo)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  planItems      PatientPlanItem[]
+  evaluations    Evaluation[]
+  anamnese       Anamnese?
+  sessionNotes   SessionNote[]
+  appointments   Appointment[]
+  roteiroNotes   RoteiroNote[]
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@map("patients")
+}
+
+model PatientPlanItem {
+  id         String   @id @default(cuid())
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([patientId, exerciseId])
+  @@index([patientId])
+  @@index([exerciseId])
+  @@map("patient_plan_items")
+}
+
+model Evaluation {
+  id                String   @id @default(cuid())
+  patientId         String
+  patient           Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tipo              String   @default("inicial")
+  date              String
+  queixa            String   @default("")
+  historia          String   @default("")
+  domains           String
+  objetivos         String   @default("")
+  condutas          String   @default("")
+  diagnostico       String   @default("")
+  encaminhadoPor    String   @default("")
+  contextoFamiliar  String   @default("")
+  nivelPrevio       String   @default("")
+  medicacoes        String   @default("")
+  precaucoes        String   @default("")
+  equipamentos      String   @default("")
+  frequencia        String   @default("")
+  criteriosAlta     String   @default("")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([patientId])
+  @@index([patientId, date])
+  @@map("evaluations")
+}
+
+model Anamnese {
+  id        String   @id @default(cuid())
+  patientId String   @unique
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  data      String   @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("anamneses")
+}
+
+model SessionNote {
+  id          String            @id @default(cuid())
+  patientId   String
+  patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  date        String
+  status      SessionNoteStatus @default(compareceu)
+  atividades  String            @default("")
+  observacoes String            @default("")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([patientId])
+  @@index([patientId, date])
+  @@map("session_notes")
+}
+
+model Appointment {
+  id             String            @id @default(cuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  date           String
+  time           String            @default("")
+  duration       Int               @default(50)
+  notes          String            @default("")
+  status         AppointmentStatus @default(agendado)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, date])
+  @@index([patientId])
+  @@map("appointments")
+}
+
+model RoteiroNote {
+  id           String   @id @default(cuid())
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  roteiroId    String
+  categoryTick String
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([patientId, roteiroId, categoryTick])
+  @@index([patientId])
+  @@index([patientId, roteiroId])
+  @@map("roteiro_notes")
 }
 
 model Member {
