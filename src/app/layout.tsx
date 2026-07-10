@@ -20,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NOME DA EMPRESA AQUI",
-  description: "Aplicativo interno para uso corporativo",
+  title: "Fichário TO",
+  description: "Biblioteca de atividades e prontuário de Terapia Ocupacional",
   icons: {
     icon: "/logo_dark.png",
     apple: "/logo_dark.png",
