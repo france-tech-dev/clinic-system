@@ -1,9 +1,12 @@
 import { paths } from "@/shared/constants/paths";
 import {
-  IconBrandWhatsapp,
-  IconChartBar,
-  IconDashboard,
-  IconUserPlus,
+  IconBooks,
+  IconCalendar,
+  IconLayoutDashboard,
+  IconNotebook,
+  IconSearch,
+  IconSettings,
+  IconUsers,
 } from "@tabler/icons-react";
 
 export type SidebarSection = {
@@ -24,24 +27,39 @@ export type SidebarUser = {
 export const sidebarItems = {
   navMain: [
     {
-      name: "Dashboard",
-      url: paths.root,
-      icon: IconDashboard,
+      name: "Painel",
+      url: paths.painel,
+      icon: IconLayoutDashboard,
     },
     {
-      name: "Cadastro UniAG",
-      url: paths.enrollmentLeads,
-      icon: IconUserPlus,
+      name: "Agenda",
+      url: paths.agenda,
+      icon: IconCalendar,
     },
     {
-      name: "WhatsApp",
-      url: paths.whatsapp,
-      icon: IconBrandWhatsapp,
+      name: "Biblioteca",
+      url: paths.biblioteca,
+      icon: IconBooks,
     },
     {
-      name: "Relatórios",
-      url: paths.reports,
-      icon: IconChartBar,
+      name: "Estudo",
+      url: paths.estudo,
+      icon: IconNotebook,
+    },
+    {
+      name: "Pacientes",
+      url: paths.pacientes,
+      icon: IconUsers,
+    },
+    {
+      name: "Buscar",
+      url: paths.buscar,
+      icon: IconSearch,
+    },
+    {
+      name: "Configurações",
+      url: paths.configuracoes,
+      icon: IconSettings,
     },
   ],
   sections: [] as SidebarSection[],
