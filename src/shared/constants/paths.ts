@@ -1,9 +1,17 @@
 export const paths = Object.freeze({
   root: "/",
-  dashboard: "/dashboard",
-  enrollmentLeads: "/enrollment-leads",
-  whatsapp: "/whatsapp",
-  reports: "/reports",
+  painel: "/painel",
+  agenda: "/agenda",
+  biblioteca: "/biblioteca",
+  estudo: "/estudo",
+  pacientes: "/pacientes",
+  paciente: (id: string) => `/pacientes/${id}`,
+  configuracoes: "/configuracoes",
+  organizacao: "/organizacao",
+  buscar: "/buscar",
+
+  /** @deprecated use paths.painel */
+  dashboard: "/painel",
 
   auth: {
     root: "/auth",
