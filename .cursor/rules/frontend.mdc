@@ -1,0 +1,31 @@
+---
+globs: *.tsx
+alwaysApply: false
+---
+
+# Front-end
+
+## Componentes
+
+- **Server** por padrão (async, fetch/Prisma no servidor).
+- **`'use client'`** só para interatividade, hooks, formulários com estado.
+
+## Dados e mutações
+
+- Leitura: Server Components + Prisma ou `fetch` com `revalidate`/`tags`.
+- Mutação: Server Actions em `src/features/[feature]/actions.ts` (ver `nextjs-server-actions.mdc`).
+- Cliente: `useActionState` em forms; `useTransition` em ações por clique.
+
+## UI
+
+- Shadcn + tokens semânticos (`bg-background`, `text-foreground`, `border-border`) — ver `ux.mdc`.
+- Não hardcodar cores (`bg-white`, `text-gray-900`).
+
+## Estrutura (quando criar feature nova)
+
+```
+src/features/[feature]/
+  actions.ts
+  components/
+  hooks/        # só client
+```

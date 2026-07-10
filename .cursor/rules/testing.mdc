@@ -1,0 +1,24 @@
+---
+description: Validar alterações com dev server e browser.
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: false
+---
+
+# Testes / validação
+
+## Quando
+
+- Depois de mudar Server Actions, UI ou fluxos de auth/agendamento.
+
+## Passos
+
+1. `npm run dev` (porta ~3000) se não estiver a correr.
+2. Browser: navegar ao fluxo, interagir, verificar console/rede se falhar.
+3. `npm test` só se o projeto tiver testes para a área alterada.
+
+## E2E (se usar browser tools)
+
+- `browser_navigate` → `browser_snapshot` → interação → confirmar estado.
+- Sessão fechada: `browser_navigate` para URL simples e repetir.
+
+Não é obrigatório E2E em cada alteração trivial de copy ou estilo.

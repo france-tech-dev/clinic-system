@@ -1,0 +1,81 @@
+---
+description: Regras essenciais do projeto (sempre ativas).
+globs: []
+alwaysApply: true
+---
+
+# Boilerplate — Core
+
+## Stack
+
+Next.js App Router · Server Actions · Prisma · Better Auth · Shadcn UI  
+**Sem Igniter.js**
+
+## Sempre
+
+- Sem `npm run build` sem permissão explícita
+- Diff mínimo; seguir código existente; Zod nas actions
+- Commit/push só quando o utilizador pedir
+- Respostas em **português**
+- **Seguir o padrão de estrutura do projeto** — ver secção abaixo e `.cursor/rules/nextjs-server-actions.mdc`
+
+## Padrão de estrutura (obrigatório)
+
+Antes de criar ficheiros ou abstrações novas, **ler o domínio existente** e replicar o mesmo estilo.
+
+### Camadas (`features/[nome]/`)
+
+| Ficheiro                                        | Responsabilidade                                                 |
+| ----------------------------------------------- | ---------------------------------------------------------------- |
+| `[nome].repository.ts`                          | Queries/mutações Prisma (`db` em `@/src/shared/lib/prisma`)      |
+| `[nome].service.ts`                             | Regras de negócio — sem `'use server'`, sem `revalidatePath`     |
+| `[nome].schema.ts`                              | Schemas Zod                                                      |
+| `[nome].types.ts`                               | Tipos do domínio (planos, sem depender de Prisma no client)      |
+| `[nome].actions.ts` / `[nome].panel.actions.ts` | Server Actions finas: validar → service → revalidar              |
+| `_lib/`                                         | Utilitários puros do domínio (agregações, serialização, helpers) |
+
+### Importação
+
+- **`features/`** não importam entre si — código comum em `shared/`
+- **`app/`** orquestra (páginas importam `features/` e `shared/`)
+- **`components/`** importam `shared/`; evitar import directo de `features/`
+- **`shared/`** e **`server/`** não importam de `app/` nem de `features/`
+
+### Server → Client Components
+
+- Não passar `Decimal`, `Date` nem modelos Prisma completos a Client Components
+- Usar tipos planos em `*.types.ts` ou serializar no boundary (`JSON.parse(JSON.stringify(...))` quando o projeto já usa esse padrão)
+- Lógica de negócio e Prisma ficam no servidor (repository/service/actions)
+
+### Cache e invalidação
+
+- Leituras cacheáveis: `unstable_cache` no **service**, tags em `shared/constants/cache-tags.ts`
+- Após mutações que afectem páginas públicas ou dashboard: `invalidateOrganizationCache()` em `shared/lib/`
+- Actions: `revalidatePath` + `revalidateTag` quando aplicável
+
+### Ao implementar
+
+1. Procurar feature semelhante e copiar a forma (nomes, pastas, exports)
+2. Preferir estender repository/service existente a criar endpoints paralelos
+3. Manter exports estáveis (`booking.actions`, `*.panel.actions`, etc.)
+
+## Validação
+
+Dev server + testar fluxo no browser quando mudar UI ou backend crítico.
+
+## Arquitetura (`src/`)
+
+- **`features/`** — domínios (`booking`, `organization`, `member`, `service`, `schedule`, `subscription`, `public`, `dashboard`, `dev`).
+- **`shared/`** — prisma, auth, stripe, guards, errors, constants, types.
+- **`server/auth/`** — getCurrentUser, signIn, signUp, isAdmin.
+- Features **não importam entre si**; `app/` orquestra; `components/` usa `shared/`.
+
+## Regras opcionais (`.cursor/rules/`)
+
+| Área      | Ficheiro                    |
+| --------- | --------------------------- |
+| UI React  | `frontend.mdc`              |
+| Actions   | `nextjs-server-actions.mdc` |
+| Design    | `ux.mdc`                    |
+| Auth edge | `middleware.mdc`            |
+| E2E       | `testing.mdc`               |

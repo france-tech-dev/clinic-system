@@ -1,0 +1,33 @@
+---
+description: Middleware Next.js — routing e auth na edge.
+globs: src/**/proxy.ts
+alwaysApply: false
+---
+
+# Middleware
+
+## Papel
+
+- Interceptar pedido **antes** da página: redirects, sessão, matcher.
+- **Não** fazer lógica pesada de negócio nem muitas queries — delegar a Server Actions/API.
+
+## Neste projeto
+
+- Lógica em `src/proxy.ts` com `auth.api.getSession()` (Better Auth).
+- `matcher` restrito a `/panel/:path*` — evitar static assets.
+- `/dev` não está no matcher; a página valida `NODE_ENV=development`.
+
+## Padrão
+
+```ts
+export async function proxy(req: NextRequest) {
+  const session = await auth.api.getSession({ headers: req.headers })
+  if (!session) {
+    return NextResponse.redirect(new URL(PATHS.AUTH.LOGIN, req.url))
+  }
+  // validar User.role (OWNER | MANAGER | MEMBER)…
+  return NextResponse.next()
+}
+```
+
+Ajustar roles/rotas conforme `PATHS` e regras do produto.

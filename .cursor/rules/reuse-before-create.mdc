@@ -1,0 +1,35 @@
+---
+description: Verificar reutilização antes de criar novas funções/abstrações (evitar overengineering)
+alwaysApply: true
+---
+
+# Reutilizar antes de criar
+
+Antes de criar uma função, helper, hook ou abstração nova, **procurar primeiro** se já existe algo que resolva o problema. Evita duplicação e overengineering.
+
+## Antes de escrever uma função nova
+
+1. **Procurar por nome/comportamento** no domínio e em `shared/` (ex.: `Grep`/`SemanticSearch` por verbos como `format`, `parse`, `build`, `get`, `is`).
+2. **Ler o utilitário relevante por completo** antes de adicionar (ex.: `shared/lib/*-utils.ts`) — a função pode já lá estar.
+3. **Preferir estender/compor** o que existe a criar um caminho paralelo.
+4. Só criar nova abstração quando houver **≥2 usos reais** ou uma responsabilidade claramente nova.
+
+## Sinais de overengineering (evitar)
+
+- Duas funções que fazem quase o mesmo com nomes diferentes.
+- Wrapper de 1 linha sobre algo que já é claro (inline é melhor).
+- Abstração criada para um único uso hipotético ("talvez precise").
+- Função com retorno `A | B | null` a misturar responsabilidades — provavelmente deviam ser duas.
+
+## Exemplo (deste projeto)
+
+`timezone-utils.ts` já tinha `getZonedDateParts`. Antes de criar um formatador de data, verificar o ficheiro: o par `parseAppZonedDateParam` / `formatAppZonedDateParam` reutiliza `getZonedDateParts` em vez de repetir a lógica de fuso.
+
+```ts
+// ❌ Evitar: reimplementar conversão de fuso já existente inline em cada componente
+const zoned = toZonedTime(date, "America/Sao_Paulo")
+const s = `${zoned.getFullYear()}-...`
+
+// ✅ Reutilizar o utilitário partilhado
+formatAppZonedDateParam(date)
+```

@@ -1,0 +1,25 @@
+---
+description: Design system — tokens CSS e Shadcn.
+globs: src/**/*.tsx, src/**/*.css
+alwaysApply: false
+---
+
+# UX / Design system
+
+## Tokens (globals.css)
+
+Usar classes semânticas, não cores fixas:
+
+- Superfície: `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`
+- Ação: `bg-primary text-primary-foreground`, `bg-secondary`, `variant="outline"|"ghost"|"destructive"`
+- Borda/foco: `border-border`, `ring-ring`
+
+## Shadcn
+
+- Componentes em `@/components/ui`.
+- Formulários: `Form` + `react-hook-form` + `zodResolver` quando o projeto já usa esse padrão.
+- Variantes do `Button`/`Badge` em vez de classes custom ad hoc.
+
+## Acessibilidade
+
+- Labels em inputs; `role="alert"` em erros de formulário.
