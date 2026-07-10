@@ -3,6 +3,7 @@
 import { NavMain } from "@/components/templates/Sidebar/nav-main";
 import { NavSection } from "@/components/templates/Sidebar/nav-section";
 import { NavUser } from "@/components/templates/Sidebar/nav-user";
+import { OrganizationSwitcher } from "@/components/auth/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -22,8 +23,12 @@ const defaultUser: SidebarUser = {
 
 export function AppSidebar({
   user,
+  organizations = [],
   ...props
-}: React.ComponentProps<typeof Sidebar> & { user?: SidebarUser | null }) {
+}: React.ComponentProps<typeof Sidebar> & {
+  user?: SidebarUser | null;
+  organizations?: { id: string; name: string }[];
+}) {
   const sidebarUser = user ?? defaultUser;
 
   return (
@@ -38,6 +43,9 @@ export function AppSidebar({
             />
           </SidebarMenuItem>
         </SidebarMenu>
+        <div className="px-2 pb-2">
+          <OrganizationSwitcher organizations={organizations} />
+        </div>
       </SidebarHeader>
       <SidebarContent className="px-2">
         <NavMain items={sidebarItems.navMain} />
