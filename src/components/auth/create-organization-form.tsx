@@ -1,4 +1,12 @@
-import z from "zod"
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import z from "zod";
 import {
   Form,
   FormControl,
@@ -6,76 +14,114 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form"
-import { Input } from "../ui/input"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Button } from "../ui/button"
-import { authClient } from "@/shared/lib/auth-client"
-import { toast } from "sonner"
-import { useState } from "react"
-import { Loader2 } from "lucide-react"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/shared/lib/auth-client";
+import { paths } from "@/shared/constants/paths";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").trim(),
-  slug: z.string().min(3, "Slug deve ter pelo menos 3 caracteres").trim(),
-  logo: z.string().url("Logo deve ser uma URL válida").optional(),
-  description: z.string().optional(),
-  address: z.string().optional(),
-  phones: z.array(z.string()).optional(),
-  social: z
-    .object({
-      facebook: z.string().optional(),
-      instagram: z.string().optional(),
-    })
-    .optional(),
-})
+  slug: z
+    .string()
+    .min(3, "Identificador deve ter pelo menos 3 caracteres")
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Use apenas letras minúsculas, números e hífens",
+    )
+    .trim(),
+});
 
-export function CreateOrganizationForm() {
-  const [isLoading, setIsLoading] = useState(false)
+function slugFromName(name: string) {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+}
+
+type CreateOrganizationFormProps = {
+  /** Após criar, redireciona para este path (default: painel). */
+  redirectTo?: string;
+};
+
+export function CreateOrganizationForm({
+  redirectTo = paths.painel,
+}: CreateOrganizationFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       slug: "",
-      logo: "",
-      description: "",
-      address: "",
-      phones: [],
-      social: {
-        facebook: "",
-        instagram: "",
-      },
     },
-  })
+  });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     try {
-      await authClient.organization.create({
+      const { data, error } = await authClient.organization.create({
         name: values.name,
         slug: values.slug,
-        logo: values.logo,
-      })
-      toast.success("Organização criada com sucesso")
+      });
+
+      if (error) {
+        toast.error(error.message || "Erro ao criar organização");
+        return;
+      }
+
+      if (data?.id) {
+        const { error: activeError } = await authClient.organization.setActive({
+          organizationId: data.id,
+        });
+        if (activeError) {
+          toast.error(
+            activeError.message ||
+              "Organização criada, mas não foi possível ativá-la",
+          );
+        }
+      }
+
+      toast.success("Clínica criada com sucesso");
+      router.push(redirectTo);
+      router.refresh();
     } catch (error) {
-      console.error(error)
-      toast.error("Erro ao criar organização")
+      console.error(error);
+      toast.error("Erro ao criar organização");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel>Nome da clínica</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Nome da Barbearia" />
+                <Input
+                  {...field}
+                  placeholder="Ex: Clínica Equilíbrio"
+                  autoComplete="organization"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value);
+                    if (!slugTouched) {
+                      form.setValue("slug", slugFromName(value), {
+                        shouldValidate: false,
+                      });
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,22 +132,36 @@ export function CreateOrganizationForm() {
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Slug</FormLabel>
+              <FormLabel>Identificador (URL)</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="nome-da-barbearia" />
+                <Input
+                  {...field}
+                  placeholder="clinica-equilibrio"
+                  onChange={(e) => {
+                    setSlugTouched(true);
+                    field.onChange(e.target.value.toLowerCase());
+                  }}
+                />
               </FormControl>
+              <p className="text-xs text-muted-foreground">
+                Usado internamente para identificar a clínica. Pode editar se
+                quiser.
+              </p>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button disabled={isLoading} type="submit">
+        <Button disabled={isLoading} type="submit" className="w-full sm:w-auto">
           {isLoading ? (
-            <Loader2 className="size-4 animate-spin" />
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              A criar…
+            </>
           ) : (
-            "Criar Organização"
+            "Criar clínica"
           )}
         </Button>
       </form>
     </Form>
-  )
+  );
 }
