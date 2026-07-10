@@ -47,3 +47,6 @@ package-lock.json
 pnpm-lock.yaml
 bun.lock
 yarn.lock
+
+# banco de dados de desenvolvimento
+dev.db
