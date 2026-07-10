@@ -112,12 +112,14 @@ export const auth = betterAuth({
         MEMBER,
         CLIENT,
       },
+      allowUserToCreateOrganization: true,
+      creatorRole: "OWNER",
       async sendInvitationEmail(data) {
         const inviteUrl = invitationAcceptUrl(data.id);
         await resend.emails.send({
           from: emailNoReply,
           to: data.email,
-          subject: `Convite para a agência ${data.organization.name}`,
+          subject: `Convite para a clínica ${data.organization.name}`,
           react: OrganizationInvitationEmail({
             inviteUrl,
             inviterName: data.inviter.user.name,
