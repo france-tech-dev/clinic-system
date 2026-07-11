@@ -1,0 +1,82 @@
+---
+description: Páginas autenticadas devem usar AppPage (header fixo + scroll no conteúdo).
+globs: src/app/(authenticated)/**/page.tsx
+alwaysApply: false
+---
+
+# AppPage — páginas autenticadas
+
+Novas páginas em `src/app/(authenticated)/` **devem** usar `AppPage` em vez de repetir `SiteHeader` + wrapper com padding.
+
+Componente: `src/app/(authenticated)/_components/app-page.tsx`
+
+## O que o AppPage faz
+
+- `SiteHeader` fixo no topo
+- Área de conteúdo com scroll isolado (`overflow-y-auto`)
+- Padding horizontal default: `px-4 lg:px-6` (via `contentClassName`)
+- Espaçamento vertical default: `gap-4 py-4 md:gap-6 md:py-6`
+
+O layout pai (`LayoutContainer`) já limita altura ao viewport — não duplicar `h-svh`/`overflow-hidden` na página.
+
+## Padrão da página (Server Component)
+
+```tsx
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
+import { MeuClient } from "./meu-client";
+
+export default async function MinhaPage() {
+  const data = await carregarDados();
+
+  return (
+    <AppPage title="Título no header">
+      <MeuClient data={data} />
+    </AppPage>
+  );
+}
+```
+
+## Evitar
+
+```tsx
+// ❌ Não repetir header + padding manual
+<>
+  <SiteHeader title="Agenda" />
+  <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
+    <MeuClient />
+  </div>
+</>
+```
+
+```tsx
+// ❌ Não importar SiteHeader diretamente em page.tsx autenticada
+import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+```
+
+## Client components (`*-client.tsx`)
+
+- **Sem** `SiteHeader` nem padding de página (`p-4 lg:p-6`)
+- Focar só no conteúdo interativo; o `AppPage` trata o shell
+
+## `contentClassName` (opcional)
+
+Sobrescreve/estende classes do wrapper de conteúdo. Default: `px-4 lg:px-6`.
+
+```tsx
+// Sem padding vertical (ex.: calendário full-height)
+<AppPage title="Agenda" contentClassName="gap-6 py-0 md:py-0">
+```
+
+Se removeres o padding horizontal no `contentClassName`, adiciona `px-4 lg:px-6` nas secções internas.
+
+## `rightContent` (opcional)
+
+Ações no header (botões, filtros globais):
+
+```tsx
+<AppPage title="Pacientes" rightContent={<Button size="sm">Novo</Button>}>
+```
+
+## Referência
+
+Página migrada: `src/app/(authenticated)/agenda/page.tsx`

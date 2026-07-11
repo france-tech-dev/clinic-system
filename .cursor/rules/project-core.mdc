@@ -72,10 +72,11 @@ Dev server + testar fluxo no browser quando mudar UI ou backend crítico.
 
 ## Regras opcionais (`.cursor/rules/`)
 
-| Área      | Ficheiro                    |
-| --------- | --------------------------- |
-| UI React  | `frontend.mdc`              |
-| Actions   | `nextjs-server-actions.mdc` |
-| Design    | `ux.mdc`                    |
-| Auth edge | `middleware.mdc`            |
-| E2E       | `testing.mdc`               |
+| Área                 | Ficheiro                    |
+| -------------------- | --------------------------- |
+| Páginas autenticadas | `app-page.mdc`              |
+| UI React             | `frontend.mdc`              |
+| Actions              | `nextjs-server-actions.mdc` |
+| Design               | `ux.mdc`                    |
+| Auth edge            | `middleware.mdc`            |
+| E2E                  | `testing.mdc`               |
