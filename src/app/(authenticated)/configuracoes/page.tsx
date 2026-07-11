@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { getProfessionalProfile } from "@/features/settings/settings.service";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { ConfiguracoesClient } from "./configuracoes-client";
@@ -18,13 +18,12 @@ export default async function ConfiguracoesPage() {
   }
 
   return (
-    <>
-      <SiteHeader title="Configurações" />
+    <AppPage title="Configurações">
       {error ? (
-        <div className="p-6 text-sm text-destructive">{error}</div>
+        <p className="text-sm text-destructive">{error}</p>
       ) : (
         <ConfiguracoesClient initial={profile} />
       )}
-    </>
+    </AppPage>
   );
 }
