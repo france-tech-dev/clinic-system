@@ -2,25 +2,9 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Plus, RotateCcw, Search, Trash2 } from "lucide-react";
+import { Plus, RotateCcw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   createExerciseAction,
   deleteExerciseAction,
@@ -30,30 +14,15 @@ import {
 import type { ExerciseDTO } from "@/features/exercise/exercise.types";
 import {
   EXERCISE_CATEGORIES,
-  EXERCISE_LEVELS,
   categoryOf,
 } from "@/shared/constants/exercise-categories";
-import { cn } from "@/shared/lib/utils";
-
-type FormState = {
-  title: string;
-  categoryId: string;
-  objective: string;
-  materials: string;
-  instructions: string;
-  duration: string;
-  level: string;
-};
-
-const emptyForm = (): FormState => ({
-  title: "",
-  categoryId: EXERCISE_CATEGORIES[0].id,
-  objective: "",
-  materials: "",
-  instructions: "",
-  duration: "",
-  level: EXERCISE_LEVELS[0],
-});
+import { CategoryChip } from "./_components/category-chip";
+import { ExerciseDetailDialog } from "./_components/exercise-detail-dialog";
+import { ExerciseFormDialog } from "./_components/exercise-form-dialog";
+import {
+  emptyExerciseForm,
+  type ExerciseFormState,
+} from "./_components/exercise-form-types";
 
 export function BibliotecaClient({
   initialExercises,
@@ -66,7 +35,7 @@ export function BibliotecaClient({
   const [detail, setDetail] = useState<ExerciseDTO | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ExerciseDTO | null>(null);
-  const [form, setForm] = useState<FormState>(emptyForm());
+  const [form, setForm] = useState<ExerciseFormState>(emptyExerciseForm());
   const [pending, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
@@ -83,7 +52,7 @@ export function BibliotecaClient({
 
   function openCreate() {
     setEditing(null);
-    setForm(emptyForm());
+    setForm(emptyExerciseForm());
     setFormOpen(true);
   }
 
@@ -140,11 +109,10 @@ export function BibliotecaClient({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 lg:p-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-serif text-2xl font-semibold">Biblioteca</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {filtered.length} atividades
           </p>
         </div>
@@ -191,14 +159,14 @@ export function BibliotecaClient({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Chip
+        <CategoryChip
           label="Todas"
           active={!categoryId}
           color="#23281F"
           onClick={() => setCategoryId(null)}
         />
         {EXERCISE_CATEGORIES.map((c) => (
-          <Chip
+          <CategoryChip
             key={c.id}
             label={c.label}
             color={c.color}
@@ -237,200 +205,23 @@ export function BibliotecaClient({
         })}
       </div>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-          {detail && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="font-serif text-xl">
-                  {detail.title}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3 text-sm">
-                <Field label="Categoria">
-                  {categoryOf(detail.categoryId).label}
-                </Field>
-                <Field label="Objetivo">{detail.objective}</Field>
-                <Field label="Materiais">{detail.materials || "—"}</Field>
-                <Field label="Instruções">{detail.instructions}</Field>
-                <Field label="Duração">{detail.duration || "—"}</Field>
-                <Field label="Nível">{detail.level}</Field>
-              </div>
-              <DialogFooter className="gap-2 sm:justify-between">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={pending}
-                  onClick={() => remove(detail)}
-                >
-                  <Trash2 className="size-4" />
-                  Remover
-                </Button>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setDetail(null)}>
-                    Fechar
-                  </Button>
-                  <Button onClick={() => openEdit(detail)}>Editar</Button>
-                </div>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ExerciseDetailDialog
+        exercise={detail}
+        pending={pending}
+        onClose={() => setDetail(null)}
+        onEdit={openEdit}
+        onRemove={remove}
+      />
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="font-serif">
-              {editing ? "Editar atividade" : "Nova atividade"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-3">
-            <div className="grid gap-1.5">
-              <Label>Título</Label>
-              <Input
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Categoria</Label>
-              <Select
-                value={form.categoryId}
-                onValueChange={(v) =>
-                  setForm({ ...form, categoryId: v ?? form.categoryId })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {EXERCISE_CATEGORIES.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Objetivo</Label>
-              <Textarea
-                rows={2}
-                value={form.objective}
-                onChange={(e) =>
-                  setForm({ ...form, objective: e.target.value })
-                }
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Materiais</Label>
-              <Textarea
-                rows={2}
-                value={form.materials}
-                onChange={(e) =>
-                  setForm({ ...form, materials: e.target.value })
-                }
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Instruções</Label>
-              <Textarea
-                rows={3}
-                value={form.instructions}
-                onChange={(e) =>
-                  setForm({ ...form, instructions: e.target.value })
-                }
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-1.5">
-                <Label>Duração</Label>
-                <Input
-                  value={form.duration}
-                  onChange={(e) =>
-                    setForm({ ...form, duration: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid gap-1.5">
-                <Label>Nível</Label>
-                <Select
-                  value={form.level}
-                  onValueChange={(v) =>
-                    setForm({ ...form, level: v ?? form.level })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {EXERCISE_LEVELS.map((l) => (
-                      <SelectItem key={l} value={l}>
-                        {l}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>
-              Cancelar
-            </Button>
-            <Button disabled={pending} onClick={save}>
-              Salvar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-
-function Chip({
-  label,
-  color,
-  active,
-  onClick,
-}: {
-  label: string;
-  color: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-        active ? "text-foreground" : "text-muted-foreground",
-      )}
-      style={{
-        borderColor: active ? color : undefined,
-        background: active ? `${color}22` : undefined,
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-0.5 whitespace-pre-line">{children}</p>
+      <ExerciseFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        editing={editing}
+        form={form}
+        onFormChange={setForm}
+        pending={pending}
+        onSave={save}
+      />
     </div>
   );
 }
