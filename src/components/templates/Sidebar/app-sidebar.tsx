@@ -35,7 +35,7 @@ export function AppSidebar({
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="w-full px-15 mb-[-20px]">
+          <SidebarMenuItem className="w-full px-15">
             <ThemeLogo
               width={200}
               height={200}
