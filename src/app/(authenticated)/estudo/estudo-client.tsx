@@ -2,18 +2,9 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Plus, RotateCcw, Search, Trash2 } from "lucide-react";
+import { Plus, RotateCcw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   createStudyCardAction,
   deleteStudyCardAction,
@@ -25,15 +16,14 @@ import {
   STUDY_CATEGORIES,
   studyCategoryOf,
 } from "@/shared/constants/study-categories";
-import { cn } from "@/shared/lib/utils";
+import { StudyCategoryChip } from "./_components/study-category-chip";
+import { StudyDetailDialog } from "./_components/study-detail-dialog";
+import {
+  StudyFormDialog,
+  type StudyFormState,
+} from "./_components/study-form-dialog";
 
-type FormState = {
-  title: string;
-  categoryId: string;
-  content: string;
-};
-
-const emptyForm = (): FormState => ({
+const emptyForm = (): StudyFormState => ({
   title: "",
   categoryId: STUDY_CATEGORIES[0].id,
   content: "",
@@ -50,7 +40,7 @@ export function EstudoClient({
   const [detail, setDetail] = useState<StudyCardDTO | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<StudyCardDTO | null>(null);
-  const [form, setForm] = useState<FormState>(emptyForm());
+  const [form, setForm] = useState<StudyFormState>(emptyForm());
   const [pending, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
@@ -120,11 +110,10 @@ export function EstudoClient({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 lg:p-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-serif text-2xl font-semibold">Estudo</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {filtered.length} notas
           </p>
         </div>
@@ -177,14 +166,14 @@ export function EstudoClient({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Chip
+        <StudyCategoryChip
           label="Todas"
           active={!categoryId}
           color="#23281F"
           onClick={() => setCategoryId(null)}
         />
         {STUDY_CATEGORIES.map((c) => (
-          <Chip
+          <StudyCategoryChip
             key={c.id}
             label={c.label}
             color={c.color}
@@ -252,141 +241,23 @@ export function EstudoClient({
         </div>
       )}
 
-      <Dialog
-        open={!!detail}
-        onOpenChange={(o) => {
-          if (!o) setDetail(null);
-        }}
-      >
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-          {detail && (
-            <>
-              <DialogHeader>
-                <span
-                  className="mb-1 inline-flex w-fit rounded px-2 py-0.5 text-[0.625rem] font-medium text-white"
-                  style={{
-                    background: studyCategoryOf(detail.categoryId).color,
-                  }}
-                >
-                  {studyCategoryOf(detail.categoryId).label}
-                </span>
-                <DialogTitle className="font-serif text-xl">
-                  {detail.title}
-                </DialogTitle>
-                {detail.isCustom && (
-                  <p className="font-mono text-xs tracking-wide text-primary">
-                    NOTA PESSOAL
-                  </p>
-                )}
-              </DialogHeader>
-              <p className="whitespace-pre-line text-sm leading-relaxed">
-                {detail.content}
-              </p>
-              <DialogFooter className="gap-2 sm:justify-between">
-                <Button
-                  variant="destructive"
-                  disabled={pending}
-                  onClick={() => remove(detail)}
-                >
-                  <Trash2 className="size-4" />
-                  Excluir
-                </Button>
-                <Button onClick={() => openEdit(detail)}>Editar</Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <StudyDetailDialog
+        card={detail}
+        pending={pending}
+        onClose={() => setDetail(null)}
+        onEdit={openEdit}
+        onRemove={remove}
+      />
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="font-serif">
-              {editing ? "Editar nota" : "Nova nota de estudo"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-3">
-            <div className="grid gap-1.5">
-              <Label htmlFor="study-title">Título</Label>
-              <Input
-                id="study-title"
-                value={form.title}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, title: e.target.value }))
-                }
-                placeholder="Ex: Protocolo de dessensibilização"
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Área</Label>
-              <div className="flex flex-wrap gap-2">
-                {STUDY_CATEGORIES.map((c) => (
-                  <Chip
-                    key={c.id}
-                    label={c.label}
-                    color={c.color}
-                    active={form.categoryId === c.id}
-                    onClick={() =>
-                      setForm((f) => ({ ...f, categoryId: c.id }))
-                    }
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="study-content">Conteúdo</Label>
-              <Textarea
-                id="study-content"
-                rows={8}
-                value={form.content}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, content: e.target.value }))
-                }
-                placeholder="Anotações, resumo ou referência"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>
-              Cancelar
-            </Button>
-            <Button
-              disabled={pending || !form.title.trim() || !form.content.trim()}
-              onClick={save}
-            >
-              Salvar nota
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <StudyFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        editing={!!editing}
+        form={form}
+        onFormChange={setForm}
+        pending={pending}
+        onSave={save}
+      />
     </div>
-  );
-}
-
-function Chip({
-  label,
-  color,
-  active,
-  onClick,
-}: {
-  label: string;
-  color: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-        active
-          ? "border-transparent text-white"
-          : "border-border text-muted-foreground hover:border-foreground/30",
-      )}
-      style={active ? { background: color } : undefined}
-    >
-      {label}
-    </button>
   );
 }

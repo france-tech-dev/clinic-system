@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { listStudyCards } from "@/features/study/study.service";
 import type { StudyCardDTO } from "@/features/study/study.types";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -18,19 +18,13 @@ export default async function EstudoPage() {
         : "Não foi possível carregar as notas de estudo.";
   }
 
-  if (error) {
-    return (
-      <>
-        <SiteHeader title="Estudo" />
-        <div className="p-6 text-sm text-destructive">{error}</div>
-      </>
-    );
-  }
-
   return (
-    <>
-      <SiteHeader title="Estudo" />
-      <EstudoClient initialCards={cards} />
-    </>
+    <AppPage title="Estudo">
+      {error ? (
+        <p className="text-sm text-destructive">{error}</p>
+      ) : (
+        <EstudoClient initialCards={cards} />
+      )}
+    </AppPage>
   );
 }
