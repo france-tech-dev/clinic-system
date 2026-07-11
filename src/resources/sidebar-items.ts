@@ -37,16 +37,6 @@ export const sidebarItems = {
       icon: IconCalendar,
     },
     {
-      name: "Biblioteca",
-      url: paths.biblioteca,
-      icon: IconBooks,
-    },
-    {
-      name: "Estudo",
-      url: paths.estudo,
-      icon: IconNotebook,
-    },
-    {
       name: "Pacientes",
       url: paths.pacientes,
       icon: IconUsers,
@@ -55,6 +45,16 @@ export const sidebarItems = {
       name: "Buscar",
       url: paths.buscar,
       icon: IconSearch,
+    },
+    {
+      name: "Biblioteca",
+      url: paths.biblioteca,
+      icon: IconBooks,
+    },
+    {
+      name: "Estudo",
+      url: paths.estudo,
+      icon: IconNotebook,
     },
     {
       name: "Configurações",
