@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { CreateOrganizationForm } from "@/components/auth/create-organization-form";
 import { getOrganizations } from "@/server/organizations/organizations";
 import { paths } from "@/shared/constants/paths";
@@ -9,9 +9,8 @@ export default async function OrganizacaoPage() {
   const hasOrgs = organizations.length > 0;
 
   return (
-    <>
-      <SiteHeader title="Nova clínica" />
-      <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
+    <AppPage title="Nova clínica">
+      <div className="flex flex-col gap-6">
         <div className="max-w-lg">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">
             {hasOrgs ? "Criar outra clínica" : "Crie a sua clínica"}
@@ -37,6 +36,6 @@ export default async function OrganizacaoPage() {
           </p>
         )}
       </div>
-    </>
+    </AppPage>
   );
 }
