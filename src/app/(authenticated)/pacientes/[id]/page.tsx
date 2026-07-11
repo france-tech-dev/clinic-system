@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { listExercises } from "@/features/exercise/exercise.service";
 import type { ExerciseDTO } from "@/features/exercise/exercise.types";
 import { getPatientDetail } from "@/features/patient/patient.service";
@@ -43,23 +43,21 @@ export default async function PacienteDetailPage({
 
   if (error) {
     return (
-      <>
-        <SiteHeader title="Paciente" />
-        <div className="p-6 text-sm text-destructive">{error}</div>
-      </>
+      <AppPage title="Paciente">
+        <p className="text-sm text-destructive">{error}</p>
+      </AppPage>
     );
   }
 
   if (!detail) notFound();
 
   return (
-    <>
-      <SiteHeader title={detail.patient.name} />
+    <AppPage title={detail.patient.name}>
       <PacienteDetailClient
         initial={detail}
         exercises={exercises}
         professional={professional}
       />
-    </>
+    </AppPage>
   );
 }

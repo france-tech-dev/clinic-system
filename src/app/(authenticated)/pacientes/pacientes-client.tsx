@@ -6,24 +6,20 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   createPatientAction,
   setPatientStatusAction,
 } from "@/features/patient/patient.actions";
-import type { PatientDTO, PatientStatus } from "@/features/patient/patient.types";
+import type {
+  PatientDTO,
+  PatientStatus,
+} from "@/features/patient/patient.types";
 import { paths } from "@/shared/constants/paths";
+import { formatDateBR } from "@/shared/lib/format-date-br";
 import { cn } from "@/shared/lib/utils";
+import { CreatePatientDialog } from "./_components/create-patient-dialog";
 
 const STATUS_LABEL: Record<PatientStatus, string> = {
   ativo: "Ativo",
@@ -78,18 +74,15 @@ export function PacientesClient({
         toast.error(result.error);
         return;
       }
-      setPatients((prev) =>
-        prev.map((p) => (p.id === id ? result.data : p)),
-      );
+      setPatients((prev) => prev.map((p) => (p.id === id ? result.data : p)));
       toast.success("Status atualizado");
     });
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 lg:p-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-serif text-2xl font-semibold">Pacientes</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {filtered.length} na lista
           </p>
@@ -152,8 +145,8 @@ export function PacientesClient({
               >
                 <p className="font-medium">{p.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {p.evaluationsCount ?? 0} avaliações ·{" "}
-                  {p.sessionsCount ?? 0} evoluções
+                  {p.evaluationsCount ?? 0} avaliações · {p.sessionsCount ?? 0}{" "}
+                  evoluções
                   {p.lastEvaluationDate
                     ? ` · última aval. ${formatDateBR(p.lastEvaluationDate)}`
                     : ""}
@@ -189,46 +182,16 @@ export function PacientesClient({
         </ul>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="font-serif">Novo paciente</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-3">
-            <div className="grid gap-1.5">
-              <Label>Nome</Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nome do paciente"
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Observações (opcional)</Label>
-              <Textarea
-                rows={2}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Contexto clínico relevante"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancelar
-            </Button>
-            <Button disabled={pending || !name.trim()} onClick={create}>
-              Adicionar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CreatePatientDialog
+        open={open}
+        onOpenChange={setOpen}
+        name={name}
+        onNameChange={setName}
+        notes={notes}
+        onNotesChange={setNotes}
+        pending={pending}
+        onSubmit={create}
+      />
     </div>
   );
-}
-
-function formatDateBR(iso: string) {
-  const [y, m, d] = iso.split("-");
-  if (!y || !m || !d) return iso;
-  return `${d}/${m}/${y}`;
 }

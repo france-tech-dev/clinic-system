@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { listPatients } from "@/features/patient/patient.service";
 import type { PatientDTO } from "@/features/patient/patient.types";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -20,15 +20,14 @@ export default async function PacientesPage() {
   }
 
   return (
-    <>
-      <SiteHeader title="Pacientes" />
+    <AppPage title="Pacientes">
       {error ? (
-        <div className="p-6 text-sm text-destructive">{error}</div>
+        <p className="text-sm text-destructive">{error}</p>
       ) : (
-        <Suspense fallback={<div className="p-6 text-sm">A carregar…</div>}>
+        <Suspense fallback={<p className="text-sm">A carregar…</p>}>
           <PacientesClient initialPatients={patients} />
         </Suspense>
       )}
-    </>
+    </AppPage>
   );
 }
