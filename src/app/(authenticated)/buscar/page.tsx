@@ -1,11 +1,10 @@
-import { SiteHeader } from "@/components/templates/SiteHeader/site-header";
+import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { BuscarClient } from "./buscar-client";
 
 export default function BuscarPage() {
   return (
-    <>
-      <SiteHeader title="Buscar" />
+    <AppPage title="Buscar">
       <BuscarClient />
-    </>
+    </AppPage>
   );
 }
