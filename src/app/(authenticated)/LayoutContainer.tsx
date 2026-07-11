@@ -18,7 +18,7 @@ export default async function LayoutContainer({
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh! min-h-0 overflow-hidden">
       <AppSidebar
         user={sidebarUser}
         organizations={organizations.map((o) => ({
@@ -27,8 +27,8 @@ export default async function LayoutContainer({
         }))}
         variant="inset"
       />
-      <SidebarInset>
-        <div className="flex flex-col flex-1">{children}</div>
+      <SidebarInset className="min-h-0 overflow-hidden">
+        <div className="flex h-full min-h-0 flex-col">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
