@@ -24,6 +24,21 @@ export const scheduleRepository = {
     });
   },
 
+  async findByDateRange(
+    organizationId: string,
+    startDate: string,
+    endDate: string,
+  ) {
+    return db.appointment.findMany({
+      where: {
+        organizationId,
+        date: { gte: startDate, lte: endDate },
+      },
+      include: { patient: { select: { id: true, name: true } } },
+      orderBy: [{ date: "asc" }, { time: "asc" }],
+    });
+  },
+
   async findById(organizationId: string, id: string) {
     return db.appointment.findFirst({
       where: { id, organizationId },
@@ -78,6 +93,24 @@ export const scheduleRepository = {
         notes: data.notes ?? "",
         status: data.status as AppointmentStatusId,
       },
+      include: { patient: { select: { id: true, name: true } } },
+    });
+  },
+
+  async reschedule(
+    organizationId: string,
+    id: string,
+    date: string,
+    time: string,
+  ) {
+    const existing = await db.appointment.findFirst({
+      where: { id, organizationId },
+    });
+    if (!existing || existing.status !== "agendado") return null;
+
+    return db.appointment.update({
+      where: { id },
+      data: { date, time: time ?? "" },
       include: { patient: { select: { id: true, name: true } } },
     });
   },

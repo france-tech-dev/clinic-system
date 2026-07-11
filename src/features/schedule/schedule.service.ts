@@ -48,6 +48,19 @@ export async function listUpcomingAppointments(
   return rows.map(toDTO);
 }
 
+export async function listAppointmentsByDateRange(
+  organizationId: string,
+  startDate: string,
+  endDate: string,
+) {
+  const rows = await scheduleRepository.findByDateRange(
+    organizationId,
+    startDate,
+    endDate,
+  );
+  return rows.map(toDTO);
+}
+
 export async function createAppointments(
   organizationId: string,
   data: AppointmentFormInput,
@@ -72,6 +85,25 @@ export async function setAppointmentStatus(
 ) {
   const row = await scheduleRepository.setStatus(organizationId, id, status);
   return row ? toDTO(row) : null;
+}
+
+export async function rescheduleAppointment(
+  organizationId: string,
+  id: string,
+  date: string,
+  time: string,
+): Promise<AppointmentDTO | "not_found" | "invalid_status"> {
+  const existing = await scheduleRepository.findById(organizationId, id);
+  if (!existing) return "not_found";
+  if (existing.status !== "agendado") return "invalid_status";
+
+  const row = await scheduleRepository.reschedule(
+    organizationId,
+    id,
+    date,
+    time,
+  );
+  return row ? toDTO(row) : "not_found";
 }
 
 export async function deleteAppointment(organizationId: string, id: string) {

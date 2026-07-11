@@ -1,7 +1,5 @@
 "use server";
 
-"use server";
-
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import type { AppointmentStatusId } from "@/shared/constants/appointment";
@@ -11,12 +9,14 @@ import {
   appointmentFormSchema,
   appointmentIdSchema,
   appointmentStatusSchema,
+  rescheduleAppointmentSchema,
   updateAppointmentSchema,
 } from "./schedule.schema";
 import {
   createAppointments,
   deleteAppointment,
   getAgendaPageData,
+  rescheduleAppointment,
   setAppointmentStatus,
   updateAppointment,
 } from "./schedule.service";
@@ -81,6 +81,32 @@ export async function updateAppointmentAction(
     if (!data) return fail("Agendamento não encontrado");
     revalidateAgenda();
     return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function rescheduleAppointmentAction(
+  input: unknown,
+): Promise<ActionResult<AppointmentDTO>> {
+  try {
+    const parsed = rescheduleAppointmentSchema.safeParse(input);
+    if (!parsed.success) {
+      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+    }
+    const { organizationId } = await requireOrgId();
+    const result = await rescheduleAppointment(
+      organizationId,
+      parsed.data.id,
+      parsed.data.date,
+      parsed.data.time,
+    );
+    if (result === "not_found") return fail("Agendamento não encontrado");
+    if (result === "invalid_status") {
+      return fail("Só é possível realocar agendamentos com status Agendado");
+    }
+    revalidateAgenda();
+    return ok(result);
   } catch (error) {
     return handleError(error);
   }
