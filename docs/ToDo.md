@@ -88,7 +88,25 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 2. P2 — PDF + branding ✅
 3. P3 — Caixa MVP ✅ → extensões ✅
 4. P4 — Polish + deploy prep
+5. P5 — Relatórios clínicos (expansão)
 ```
+
+---
+
+## P5 — Relatórios clínicos (expansão)
+
+**Status:** página `/relatorio` criada · funcionalidades avançadas pendentes
+
+### Concluído
+
+- [x] Página dedicada `/relatorio` para geração de relatórios PDF (prontuário, anamnese, avaliação e roteiro)
+
+### Pendente
+
+- [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
+- [ ] **Protocolos estruturados** — formulários preenchíveis com gráfico e comparativo (ex.: GMFM-88)
+- [ ] **Anamnese por especialidade** — antes de preencher, escolher área (T.O., Fisio, Psico, Fono…); cada uma com formulário próprio
+- [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos
 
 ---
 
