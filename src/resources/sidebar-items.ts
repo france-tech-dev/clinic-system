@@ -5,6 +5,7 @@ import {
   IconCash,
   IconLayoutDashboard,
   IconNotebook,
+  IconReport,
   IconSearch,
   IconSettings,
   IconUsers,
@@ -46,6 +47,11 @@ export const sidebarItems = {
       name: "Pacientes",
       url: paths.pacientes,
       icon: IconUsers,
+    },
+    {
+      name: "Relatórios",
+      url: paths.relatorio,
+      icon: IconReport,
     },
     {
       name: "Buscar",

@@ -8,6 +8,7 @@ export const paths = Object.freeze({
   paciente: (id: string) => `/pacientes/${id}`,
   configuracoes: "/configuracoes",
   caixa: "/caixa",
+  relatorio: "/relatorio",
   organizacao: "/organizacao",
   buscar: "/buscar",
 
