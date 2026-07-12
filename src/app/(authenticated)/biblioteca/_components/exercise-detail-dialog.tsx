@@ -29,7 +29,7 @@ export function ExerciseDetailDialog({
 }) {
   return (
     <Dialog open={!!exercise} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         {exercise && (
           <>
             <DialogHeader>
