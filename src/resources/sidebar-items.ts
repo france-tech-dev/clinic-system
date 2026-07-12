@@ -2,6 +2,7 @@ import { paths } from "@/shared/constants/paths";
 import {
   IconBooks,
   IconCalendar,
+  IconCash,
   IconLayoutDashboard,
   IconNotebook,
   IconSearch,
@@ -35,6 +36,11 @@ export const sidebarItems = {
       name: "Agenda",
       url: paths.agenda,
       icon: IconCalendar,
+    },
+    {
+      name: "Caixa",
+      url: paths.caixa,
+      icon: IconCash,
     },
     {
       name: "Pacientes",
