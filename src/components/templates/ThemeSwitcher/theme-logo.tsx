@@ -43,6 +43,7 @@ export function ThemeLogo({
       width={width}
       height={height}
       className={className}
+      loading="eager"
     />
   );
 }
