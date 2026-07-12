@@ -8,8 +8,9 @@ export default async function LayoutContainer({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await getCurrentUser();
+  const { user, session } = await getCurrentUser();
   const organizations = await getOrganizations();
+  const activeOrganizationId = session.activeOrganizationId ?? null;
 
   const sidebarUser = {
     name: user.name ?? "Usuário",
@@ -25,6 +26,7 @@ export default async function LayoutContainer({
           id: o.id,
           name: o.name,
         }))}
+        activeOrganizationId={activeOrganizationId}
         variant="inset"
       />
       <SidebarInset className="min-h-0 overflow-hidden">
