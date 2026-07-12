@@ -3,13 +3,19 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { saveProfessionalAction } from "@/features/settings/settings.actions";
-import type { ProfessionalProfile } from "@/features/settings/settings.types";
+import type {
+  PrintBranding,
+  ProfessionalProfile,
+} from "@/features/settings/settings.types";
+import { ClinicBrandingForm } from "./_components/clinic-branding-form";
 import { ProfessionalProfileForm } from "./_components/professional-profile-form";
 
 export function ConfiguracoesClient({
   initial,
+  branding,
 }: {
   initial: ProfessionalProfile;
+  branding: PrintBranding;
 }) {
   const [form, setForm] = useState(initial);
   const [pending, startTransition] = useTransition();
@@ -27,20 +33,21 @@ export function ConfiguracoesClient({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
+      <ClinicBrandingForm initial={branding} />
+
       <div>
-        <p className="text-sm text-muted-foreground">
-          Usados na assinatura dos relatórios impressos (avaliação, anamnese e
+        <p className="mb-4 text-sm text-muted-foreground">
+          Usados na assinatura dos relatórios PDF (avaliação, anamnese e
           prontuário).
         </p>
+        <ProfessionalProfileForm
+          form={form}
+          onFormChange={setForm}
+          pending={pending}
+          onSave={save}
+        />
       </div>
-
-      <ProfessionalProfileForm
-        form={form}
-        onFormChange={setForm}
-        pending={pending}
-        onSave={save}
-      />
     </div>
   );
 }
