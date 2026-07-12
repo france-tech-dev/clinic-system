@@ -19,7 +19,7 @@ import {
 } from "../ui/form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useSyncExternalStore, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/shared/lib/auth-client";
 import { Badge } from "../ui/badge";
@@ -36,7 +36,11 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const lastMethod = authClient.getLastUsedLoginMethod();
+  const lastMethod = useSyncExternalStore(
+    () => () => {},
+    () => authClient.getLastUsedLoginMethod() ?? null,
+    () => null,
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
