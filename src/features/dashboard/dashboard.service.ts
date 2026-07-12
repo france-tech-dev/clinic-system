@@ -1,3 +1,5 @@
+import { getCashflowPageData } from "@/features/finance/finance.service";
+import type { CashflowSummary } from "@/features/finance/finance.types";
 import { db } from "@/shared/lib/prisma";
 
 export type DashboardStats = {
@@ -39,6 +41,8 @@ export type DashboardData = {
   alerts: DashboardAlert[];
   recentActivity: DashboardActivity[];
   todayAppointments: DashboardTodayAppointment[];
+  financeSummary: CashflowSummary;
+  financeMonthLabel: string;
 };
 
 function startOfWeekIso() {
@@ -71,6 +75,7 @@ export async function getDashboardData(
     recentEvals,
     recentSessions,
     todayAppts,
+    cashflow,
   ] = await Promise.all([
     db.patient.count({ where: { organizationId } }),
     db.patient.count({ where: { organizationId, status: "ativo" } }),
@@ -111,6 +116,7 @@ export async function getDashboardData(
       include: { patient: { select: { id: true, name: true } } },
       orderBy: [{ time: "asc" }],
     }),
+    getCashflowPageData(organizationId),
   ]);
 
   const alerts: DashboardAlert[] = [];
@@ -180,5 +186,7 @@ export async function getDashboardData(
       status: a.status,
       notes: a.notes,
     })),
+    financeSummary: cashflow.summary,
+    financeMonthLabel: cashflow.monthLabel,
   };
 }
