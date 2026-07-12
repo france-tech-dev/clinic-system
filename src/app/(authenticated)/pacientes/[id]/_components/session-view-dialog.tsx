@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -44,14 +45,16 @@ export function SessionViewDialog({
           <p className="whitespace-pre-line">{note.observacoes || "—"}</p>
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
-          <Button
-            variant="destructive"
-            size="sm"
+          <DeleteConfirmDialog
+            title="Excluir evolução?"
+            description="Esta ação não pode ser desfeita. A evolução será removida permanentemente."
+            onConfirm={() => onDelete(note.id)}
             disabled={pending}
-            onClick={() => onDelete(note.id)}
           >
-            Excluir
-          </Button>
+            <Button variant="destructive" size="sm" disabled={pending}>
+              Excluir
+            </Button>
+          </DeleteConfirmDialog>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
               Fechar

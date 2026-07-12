@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { DashboardData } from "@/features/dashboard/dashboard.service";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatCentsToBrl } from "@/shared/lib/money-utils";
 import { StatCard } from "./stat-card";
 
 export function PainelContent({
@@ -51,6 +52,34 @@ export function PainelContent({
               label="Evoluções nesta semana"
             />
           </div>
+
+          <section className="rounded-md border border-border bg-card p-4">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                Caixa — {data.financeMonthLabel}
+              </p>
+              <Link
+                href={paths.caixa}
+                className="text-xs font-medium text-primary hover:underline"
+              >
+                Abrir caixa
+              </Link>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <StatCard
+                number={formatCentsToBrl(data.financeSummary.incomeCents)}
+                label="Entradas do mês"
+              />
+              <StatCard
+                number={formatCentsToBrl(data.financeSummary.expenseCents)}
+                label="Saídas do mês"
+              />
+              <StatCard
+                number={formatCentsToBrl(data.financeSummary.balanceCents)}
+                label="Saldo do mês"
+              />
+            </div>
+          </section>
 
           <div className="flex flex-wrap gap-2">
             <Button asChild>

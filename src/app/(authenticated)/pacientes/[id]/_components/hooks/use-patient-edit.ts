@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { updatePatientAction } from "@/features/patient/patient.actions";
-import type { PatientDetailDTO } from "@/features/patient/patient.types";
+import type { PatientDetailDTO, PatientPricingType } from "@/features/patient/patient.types";
+import {
+  formatPatientPriceInput,
+  parsePatientPriceInput,
+} from "../edit-patient-dialog";
 
 export function usePatientEdit({
   detail,
@@ -19,19 +23,35 @@ export function usePatientEdit({
   const [editPatientOpen, setEditPatientOpen] = useState(false);
   const [editName, setEditName] = useState(detail.patient.name);
   const [editNotes, setEditNotes] = useState(detail.patient.notes);
+  const [editPricingType, setEditPricingType] = useState<PatientPricingType>(
+    detail.patient.pricingType,
+  );
+  const [editPriceInput, setEditPriceInput] = useState(
+    formatPatientPriceInput(detail.patient.priceCents),
+  );
 
   function openEditPatient() {
     setEditName(detail.patient.name);
     setEditNotes(detail.patient.notes);
+    setEditPricingType(detail.patient.pricingType);
+    setEditPriceInput(formatPatientPriceInput(detail.patient.priceCents));
     setEditPatientOpen(true);
   }
 
   function savePatientEdit() {
+    const priceCents = parsePatientPriceInput(editPriceInput);
+    if (editPriceInput.trim() && priceCents === null) {
+      toast.error("Informe um valor válido");
+      return;
+    }
+
     startTransition(async () => {
       const result = await updatePatientAction({
         id: detail.patient.id,
         name: editName,
         notes: editNotes,
+        pricingType: editPricingType,
+        priceCents,
       });
       if (!result.success) {
         toast.error(result.error);
@@ -50,6 +70,10 @@ export function usePatientEdit({
     setEditName,
     editNotes,
     setEditNotes,
+    editPricingType,
+    setEditPricingType,
+    editPriceInput,
+    setEditPriceInput,
     openEditPatient,
     savePatientEdit,
     pending,

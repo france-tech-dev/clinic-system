@@ -20,6 +20,10 @@ import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { cn } from "@/shared/lib/utils";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
+import {
+  parsePatientPriceInput,
+} from "./[id]/_components/edit-patient-dialog";
+import type { PatientPricingType } from "@/features/patient/patient.types";
 
 const STATUS_LABEL: Record<PatientStatus, string> = {
   ativo: "Ativo",
@@ -39,6 +43,8 @@ export function PacientesClient({
   const [open, setOpen] = useState(() => searchParams.get("novo") === "1");
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
+  const [pricingType, setPricingType] = useState<PatientPricingType>("sessao");
+  const [priceInput, setPriceInput] = useState("");
   const [pending, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
@@ -51,8 +57,19 @@ export function PacientesClient({
   }, [patients, search, statusFilter]);
 
   function create() {
+    const priceCents = parsePatientPriceInput(priceInput);
+    if (priceInput.trim() && priceCents === null) {
+      toast.error("Valor inválido. Use o formato 0,00");
+      return;
+    }
+
     startTransition(async () => {
-      const result = await createPatientAction({ name, notes });
+      const result = await createPatientAction({
+        name,
+        notes,
+        pricingType,
+        priceCents,
+      });
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -64,6 +81,8 @@ export function PacientesClient({
       setOpen(false);
       setName("");
       setNotes("");
+      setPricingType("sessao");
+      setPriceInput("");
     });
   }
 
@@ -189,6 +208,10 @@ export function PacientesClient({
         onNameChange={setName}
         notes={notes}
         onNotesChange={setNotes}
+        pricingType={pricingType}
+        onPricingTypeChange={setPricingType}
+        priceInput={priceInput}
+        onPriceInputChange={setPriceInput}
         pending={pending}
         onSubmit={create}
       />

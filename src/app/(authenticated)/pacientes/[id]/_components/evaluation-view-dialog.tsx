@@ -2,6 +2,7 @@
 
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -215,14 +216,16 @@ export function EvaluationViewDialog({
           )}
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
-          <Button
-            variant="destructive"
-            size="sm"
+          <DeleteConfirmDialog
+            title="Excluir avaliação?"
+            description="Esta ação não pode ser desfeita. A avaliação será removida permanentemente."
+            onConfirm={() => onDelete(evaluation.id)}
             disabled={pending}
-            onClick={() => onDelete(evaluation.id)}
           >
-            Excluir
-          </Button>
+            <Button variant="destructive" size="sm" disabled={pending}>
+              Excluir
+            </Button>
+          </DeleteConfirmDialog>
           <div className="flex gap-2">
             <Button
               variant="outline"

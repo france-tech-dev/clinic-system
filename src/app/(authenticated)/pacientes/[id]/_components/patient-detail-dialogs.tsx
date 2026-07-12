@@ -90,6 +90,10 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
           onNameChange={patientEdit.setEditName}
           notes={patientEdit.editNotes}
           onNotesChange={patientEdit.setEditNotes}
+          pricingType={patientEdit.editPricingType}
+          onPricingTypeChange={patientEdit.setEditPricingType}
+          priceInput={patientEdit.editPriceInput}
+          onPriceInputChange={patientEdit.setEditPriceInput}
           pending={patientEdit.pending}
           onSave={patientEdit.savePatientEdit}
         />
