@@ -8,6 +8,11 @@ export type ClinicSettings = {
   professional: ProfessionalProfile;
 };
 
+export type PrintBranding = {
+  clinicName: string;
+  logoUrl: string;
+};
+
 export const EMPTY_PROFESSIONAL: ProfessionalProfile = {
   nome: "",
   registro: "",
