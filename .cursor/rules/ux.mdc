@@ -23,3 +23,8 @@ Usar classes semânticas, não cores fixas:
 ## Acessibilidade
 
 - Labels em inputs; `role="alert"` em erros de formulário.
+
+## Ações destrutivas
+
+- Botões que removem dados devem pedir confirmação com `DeleteConfirmDialog` (ver `frontend.mdc`).
+- Botão de confirmação: `variant="destructive"`; cancelar sempre visível.

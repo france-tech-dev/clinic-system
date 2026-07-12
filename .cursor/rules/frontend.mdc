@@ -21,6 +21,23 @@ alwaysApply: false
 - Shadcn + tokens semânticos (`bg-background`, `text-foreground`, `border-border`) — ver `ux.mdc`.
 - Não hardcodar cores (`bg-white`, `text-gray-900`).
 
+## Exclusão (obrigatório)
+
+- **Nunca** usar `window.confirm()` para apagar dados.
+- Usar sempre `DeleteConfirmDialog` de `@/components/ui/delete-confirm-dialog`.
+- Envolver o botão de excluir como `children`; personalizar `title` / `description`; `onConfirm` chama a action.
+
+```tsx
+<DeleteConfirmDialog
+  title="Excluir lançamento?"
+  description="Esta ação não pode ser desfeita."
+  onConfirm={handleDelete}
+  disabled={pending}
+>
+  <Button variant="destructive">Excluir</Button>
+</DeleteConfirmDialog>
+```
+
 ## Estrutura (quando criar feature nova)
 
 ```
