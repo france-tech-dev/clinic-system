@@ -34,13 +34,10 @@ function parseMeta(raw: string | null | undefined): OrgMeta {
 }
 
 function buildPrintBranding(
-  org: { name: string; logo: string | null; metadata: string | null } | null,
+  org: { name: string; logo: string | null } | null,
 ): PrintBranding {
-  const meta = parseMeta(org?.metadata);
-  const clinicFromProfile = meta.fichario?.professional?.clinica?.trim();
-
   return {
-    clinicName: org?.name?.trim() || clinicFromProfile || DEFAULT_APP_NAME,
+    clinicName: org?.name?.trim() || DEFAULT_APP_NAME,
     logoUrl: org?.logo?.trim() || DEFAULT_PRINT_LOGO,
   };
 }
