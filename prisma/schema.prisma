@@ -41,6 +41,19 @@ enum AppointmentStatus {
   cancelado
 }
 
+enum CashTransactionType {
+  entrada
+  saida
+}
+
+enum CashPaymentMethod {
+  dinheiro
+  pix
+  cartao
+  transferencia
+  outro
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -121,6 +134,7 @@ model Organization {
   patients     Patient[]
   appointments Appointment[]
   studyCards   StudyCard[]
+  cashTransactions CashTransaction[]
 
   @@unique([slug])
   @@map("organization")
@@ -179,6 +193,7 @@ model Patient {
   sessionNotes   SessionNote[]
   appointments   Appointment[]
   roteiroNotes   RoteiroNote[]
+  cashTransactions CashTransaction[]
 
   @@index([organizationId])
   @@index([organizationId, status])
@@ -272,6 +287,26 @@ model Appointment {
   @@index([organizationId, date])
   @@index([patientId])
   @@map("appointments")
+}
+
+model CashTransaction {
+  id             String              @id @default(cuid())
+  organizationId String
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  type           CashTransactionType
+  amountCents    Int
+  date           String
+  description    String              @default("")
+  paymentMethod  CashPaymentMethod   @default(dinheiro)
+  patientId      String?
+  patient        Patient?            @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, date])
+  @@index([patientId])
+  @@map("cash_transactions")
 }
 
 model RoteiroNote {
