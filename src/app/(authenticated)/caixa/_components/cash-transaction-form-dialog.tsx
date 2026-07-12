@@ -36,11 +36,21 @@ import {
 } from "@/shared/constants/cash";
 import { centsToBrlInput, parseBrlToCents } from "@/shared/lib/money-utils";
 
+export type CashTransactionDraft = {
+  type?: CashTransactionTypeId;
+  date?: string;
+  description?: string;
+  amountCents?: number | null;
+  paymentMethod?: CashPaymentMethodId;
+  patientId?: string | null;
+};
+
 export function CashTransactionFormDialog({
   open,
   onOpenChange,
   patients,
   initial,
+  draft,
   defaultDate,
   defaultType,
   pending,
@@ -51,6 +61,7 @@ export function CashTransactionFormDialog({
   onOpenChange: (open: boolean) => void;
   patients: PatientDTO[];
   initial: CashTransactionDTO | null;
+  draft?: CashTransactionDraft | null;
   defaultDate: string;
   defaultType?: CashTransactionTypeId;
   pending: boolean;
@@ -58,18 +69,24 @@ export function CashTransactionFormDialog({
   onSaved: () => void;
 }) {
   const [type, setType] = useState<CashTransactionTypeId>(
-    initial?.type ?? defaultType ?? "entrada",
+    initial?.type ?? draft?.type ?? defaultType ?? "entrada",
   );
-  const [date, setDate] = useState(initial?.date ?? defaultDate);
-  const [description, setDescription] = useState(initial?.description ?? "");
+  const [date, setDate] = useState(initial?.date ?? draft?.date ?? defaultDate);
+  const [description, setDescription] = useState(
+    initial?.description ?? draft?.description ?? "",
+  );
   const [amountInput, setAmountInput] = useState(
-    initial ? centsToBrlInput(initial.amountCents) : "",
+    initial
+      ? centsToBrlInput(initial.amountCents)
+      : draft?.amountCents
+        ? centsToBrlInput(draft.amountCents)
+        : "",
   );
   const [paymentMethod, setPaymentMethod] = useState<CashPaymentMethodId>(
-    initial?.paymentMethod ?? "dinheiro",
+    initial?.paymentMethod ?? draft?.paymentMethod ?? "dinheiro",
   );
   const [patientId, setPatientId] = useState<string | null>(
-    initial?.patientId ?? null,
+    initial?.patientId ?? draft?.patientId ?? null,
   );
 
   function submit() {

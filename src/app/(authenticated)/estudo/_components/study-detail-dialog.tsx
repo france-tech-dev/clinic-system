@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -52,14 +53,17 @@ export function StudyDetailDialog({
               {card.content}
             </p>
             <DialogFooter className="gap-2 sm:justify-between">
-              <Button
-                variant="destructive"
+              <DeleteConfirmDialog
+                title="Excluir nota?"
+                description="Esta ação não pode ser desfeita. A nota de estudo será removida permanentemente."
+                onConfirm={() => onRemove(card)}
                 disabled={pending}
-                onClick={() => onRemove(card)}
               >
-                <Trash2 className="size-4" />
-                Excluir
-              </Button>
+                <Button variant="destructive" disabled={pending}>
+                  <Trash2 className="size-4" />
+                  Excluir
+                </Button>
+              </DeleteConfirmDialog>
               <Button onClick={() => onEdit(card)}>Editar</Button>
             </DialogFooter>
           </>

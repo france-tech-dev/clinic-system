@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -53,15 +54,17 @@ export function ExerciseDetailDialog({
               <DetailField label="Nível">{exercise.level}</DetailField>
             </div>
             <DialogFooter className="gap-2 sm:justify-between">
-              <Button
-                variant="destructive"
-                size="sm"
+              <DeleteConfirmDialog
+                title="Remover atividade?"
+                description="Esta ação não pode ser desfeita. A atividade será removida da biblioteca."
+                onConfirm={() => onRemove(exercise)}
                 disabled={pending}
-                onClick={() => onRemove(exercise)}
               >
-                <Trash2 className="size-4" />
-                Remover
-              </Button>
+                <Button variant="destructive" size="sm" disabled={pending}>
+                  <Trash2 className="size-4" />
+                  Remover
+                </Button>
+              </DeleteConfirmDialog>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={onClose}>
                   Fechar

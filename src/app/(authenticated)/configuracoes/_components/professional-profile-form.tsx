@@ -38,14 +38,6 @@ export function ProfessionalProfileForm({
             placeholder="Ex: CREFITO-3 000000-TO"
           />
         </div>
-        <div className="grid gap-1.5">
-          <Label>Clínica (opcional)</Label>
-          <Input
-            value={form.clinica}
-            onChange={(e) => onFormChange({ ...form, clinica: e.target.value })}
-            placeholder="Nome da clínica"
-          />
-        </div>
       </div>
       <Button disabled={pending} onClick={onSave}>
         Salvar
