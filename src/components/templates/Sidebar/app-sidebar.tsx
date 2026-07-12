@@ -24,10 +24,12 @@ const defaultUser: SidebarUser = {
 export function AppSidebar({
   user,
   organizations = [],
+  activeOrganizationId = null,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user?: SidebarUser | null;
   organizations?: { id: string; name: string }[];
+  activeOrganizationId?: string | null;
 }) {
   const sidebarUser = user ?? defaultUser;
 
@@ -44,7 +46,10 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
         <div className="px-2 pb-2">
-          <OrganizationSwitcher organizations={organizations} />
+          <OrganizationSwitcher
+            organizations={organizations}
+            activeOrganizationId={activeOrganizationId}
+          />
         </div>
       </SidebarHeader>
       <SidebarContent className="px-2">

@@ -22,13 +22,15 @@ type OrganizationOption = {
 
 type OrganizationSwitcherProps = {
   organizations: OrganizationOption[];
+  activeOrganizationId: string | null;
 };
 
 export function OrganizationSwitcher({
   organizations,
+  activeOrganizationId,
 }: OrganizationSwitcherProps) {
   const router = useRouter();
-  const { data: activeOrganization } = authClient.useActiveOrganization();
+  const selectedId = activeOrganizationId ?? organizations[0]?.id ?? "";
 
   if (organizations.length === 0) {
     return (
@@ -68,7 +70,7 @@ export function OrganizationSwitcher({
         Clínica
       </p>
       <Select
-        value={activeOrganization?.id}
+        value={selectedId}
         onValueChange={(value) => {
           if (value) void handleChangeOrganization(value);
         }}
