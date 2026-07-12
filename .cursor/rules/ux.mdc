@@ -20,6 +20,25 @@ Usar classes semânticas, não cores fixas:
 - Formulários: `Form` + `react-hook-form` + `zodResolver` quando o projeto já usa esse padrão.
 - Variantes do `Button`/`Badge` em vez de classes custom ad hoc.
 
+## Altura do viewport
+
+- **Não usar `vh`** — em mobile o valor ignora barras do browser e corta conteúdo.
+- **Preferir `dvh`** em modais, drawers, previews e qualquer área com altura proporcional à tela visível.
+- Tailwind: `max-h-[90dvh]`, `h-[92dvh]`, `min-h-[70dvh]` — nunca valores arbitrários com `vh`.
+- Inline styles: `"70dvh"` em vez de `"70vh"`.
+- **`svh`** só em shells fixos com altura estável (sidebar, `LayoutContainer` autenticado).
+- Páginas full-page (auth, etc.): `min-h-dvh`.
+
+```tsx
+// ❌
+<DialogContent className="max-h-[90vh] overflow-y-auto" />
+style={{ height: "70vh" }}
+
+// ✅
+<DialogContent className="max-h-[90dvh] overflow-y-auto" />
+style={{ height: "70dvh" }}
+```
+
 ## Acessibilidade
 
 - Labels em inputs; `role="alert"` em erros de formulário.

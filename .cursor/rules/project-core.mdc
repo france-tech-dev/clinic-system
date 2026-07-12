@@ -38,6 +38,7 @@ Antes de criar ficheiros ou abstrações novas, **ler o domínio existente** e r
 
 - **`features/`** não importam entre si — código comum em `shared/`
 - **`app/`** orquestra (páginas importam `features/` e `shared/`)
+- **`app/.../_components/`** — só da própria rota; partilhado entre rotas → `features/[dominio]/` (ver `route-shared-ui.mdc`)
 - **`components/`** importam `shared/`; evitar import directo de `features/`
 - **`shared/`** e **`server/`** não importam de `app/` nem de `features/`
 

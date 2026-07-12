@@ -15,10 +15,12 @@ alwaysApply: false
 - Leitura: Server Components + Prisma ou `fetch` com `revalidate`/`tags`.
 - Mutação: Server Actions em `src/features/[feature]/actions.ts` (ver `nextjs-server-actions.mdc`).
 - Cliente: `useActionState` em forms; `useTransition` em ações por clique.
+- **`useEffect` e estado inicial:** ver `react-effects-and-data.mdc` — dados no servidor, fetch só em handlers, sem `setState` em efeitos.
 
 ## UI
 
 - Shadcn + tokens semânticos (`bg-background`, `text-foreground`, `border-border`) — ver `ux.mdc`.
+- Altura relativa ao viewport: preferir `dvh`, nunca `vh` — ver `ux.mdc`.
 - Não hardcodar cores (`bg-white`, `text-gray-900`).
 
 ## Exclusão (obrigatório)
@@ -43,6 +45,9 @@ alwaysApply: false
 ```
 src/features/[feature]/
   actions.ts
-  components/
+  components/   # UI client reutilizada entre rotas do domínio
   hooks/        # só client
+  _lib/         # helpers puros
 ```
+
+- **UI partilhada entre rotas:** ver `route-shared-ui.mdc` — nunca importar `_components` de outra rota.
