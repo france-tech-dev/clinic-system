@@ -7,6 +7,8 @@ export const SESSION_STATUSES = ["compareceu", "faltou", "cancelado"] as const;
 export const patientFormSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome do paciente"),
   notes: z.string().trim().default(""),
+  pricingType: z.enum(["sessao", "pacote"]).default("sessao"),
+  priceCents: z.number().int().positive().nullable().optional(),
 });
 
 export const updatePatientSchema = patientFormSchema.extend({

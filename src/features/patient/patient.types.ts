@@ -1,11 +1,14 @@
 export type PatientStatus = "ativo" | "alta" | "pausado";
 export type SessionNoteStatus = "compareceu" | "faltou" | "cancelado";
+export type PatientPricingType = "sessao" | "pacote";
 
 export type PatientDTO = {
   id: string;
   name: string;
   notes: string;
   status: PatientStatus;
+  pricingType: PatientPricingType;
+  priceCents: number | null;
   createdAt: string;
   updatedAt: string;
   evaluationsCount?: number;

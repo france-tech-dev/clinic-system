@@ -10,6 +10,7 @@ import type {
   EvaluationDTO,
   PatientDetailDTO,
   PatientDTO,
+  PatientPricingType,
   PatientStatus,
   PlanItemDTO,
   RoteiroNoteDTO,
@@ -22,6 +23,8 @@ function toPatientDTO(row: {
   name: string;
   notes: string;
   status: PatientStatus;
+  pricingType: PatientPricingType;
+  priceCents: number | null;
   createdAt: Date;
   updatedAt: Date;
   _count?: { evaluations: number; sessionNotes: number };
@@ -32,6 +35,8 @@ function toPatientDTO(row: {
     name: row.name,
     notes: row.notes,
     status: row.status,
+    pricingType: row.pricingType,
+    priceCents: row.priceCents,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
     evaluationsCount: row._count?.evaluations,

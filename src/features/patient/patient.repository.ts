@@ -4,7 +4,7 @@ import type {
   PatientFormInput,
   SessionFormInput,
 } from "./patient.schema";
-import type { PatientStatus } from "./patient.types";
+import type { PatientPricingType, PatientStatus } from "./patient.types";
 
 export const patientRepository = {
   async findMany(
@@ -55,6 +55,8 @@ export const patientRepository = {
         organizationId,
         name: data.name,
         notes: data.notes ?? "",
+        pricingType: data.pricingType ?? "sessao",
+        priceCents: data.priceCents ?? null,
       },
     });
   },
@@ -70,7 +72,12 @@ export const patientRepository = {
     if (!existing) return null;
     return db.patient.update({
       where: { id },
-      data: { name: data.name, notes: data.notes ?? "" },
+      data: {
+        name: data.name,
+        notes: data.notes ?? "",
+        pricingType: data.pricingType ?? "sessao",
+        priceCents: data.priceCents ?? null,
+      },
     });
   },
 
