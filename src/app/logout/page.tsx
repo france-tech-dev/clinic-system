@@ -4,11 +4,18 @@ import { signOut } from "@/shared/lib/auth-client";
 import { paths } from "@/shared/constants/paths";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LogoutPage() {
+  const router = useRouter();
+
   useEffect(() => {
-    signOut({ query: { redirect: paths.auth.login } });
-  }, []);
+    void (async () => {
+      await signOut();
+      router.replace(paths.auth.login);
+    })();
+  }, [router]);
+
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <h1 className="text-2xl font-bold flex items-center gap-2">
