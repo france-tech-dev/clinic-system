@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useState, useTransition, type MouseEvent } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Calendar,
   Views,
   dateFnsLocalizer,
+  type EventProps,
   type View,
 } from "react-big-calendar";
 import withDragAndDrop, {
@@ -34,8 +36,6 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar);
-
 const CALENDAR_MESSAGES = {
   today: "Hoje",
   previous: "Anterior",
@@ -50,6 +50,20 @@ const CALENDAR_MESSAGES = {
   noEventsInRange: "Nenhum agendamento neste período.",
   showMore: (total: number) => `+${total} mais`,
 };
+
+const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar);
+
+function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
+  return (
+    <Link
+      href={paths.paciente(event.patientId)}
+      className="block truncate text-inherit hover:underline"
+      onClick={(e: MouseEvent) => e.stopPropagation()}
+    >
+      {event.title}
+    </Link>
+  );
+}
 
 export function AgendaCalendar({
   events,
@@ -83,7 +97,7 @@ export function AgendaCalendar({
   );
 
   const eventPropGetter = useCallback((event: CalendarEvent) => {
-    const style = calendarEventStyle(event.status);
+    const style = calendarEventStyle(event.status, event.hasSessionNote);
     return { style };
   }, []);
 
@@ -151,6 +165,7 @@ export function AgendaCalendar({
         culture="pt-BR"
         style={{ height: "70dvh", minHeight: "420px" }}
         eventPropGetter={eventPropGetter}
+        components={{ event: CalendarEventLabel }}
         onEventDrop={moveEvent}
         draggableAccessor={(event) =>
           !isPending && (event as CalendarEvent).status === "agendado"

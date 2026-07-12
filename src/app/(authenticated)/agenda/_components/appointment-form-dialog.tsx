@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -207,15 +208,17 @@ export function AppointmentFormDialog({
         </div>
         <DialogFooter className={cn(initial && "sm:justify-between")}>
           {initial && onDelete && (
-            <Button
-              variant="destructive"
-              size="sm"
+            <DeleteConfirmDialog
+              title="Excluir agendamento?"
+              description="Esta ação não pode ser desfeita. O agendamento será removido permanentemente."
+              onConfirm={onDelete}
               disabled={pending}
-              onClick={onDelete}
             >
-              <Trash2 className="size-4" />
-              Excluir
-            </Button>
+              <Button variant="destructive" size="sm" disabled={pending}>
+                <Trash2 className="size-4" />
+                Excluir
+              </Button>
+            </DeleteConfirmDialog>
           )}
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>

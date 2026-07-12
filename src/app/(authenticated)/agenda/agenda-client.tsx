@@ -21,6 +21,10 @@ import {
 } from "@/shared/constants/appointment";
 import { paths } from "@/shared/constants/paths";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  CashTransactionFormDialog,
+  type CashTransactionDraft,
+} from "@/app/(authenticated)/caixa/_components/cash-transaction-form-dialog";
 import { AppointmentFormDialog } from "./_components/appointment-form-dialog";
 import { AppointmentRow } from "./_components/appointment-row";
 import { AgendaCalendar } from "./agenda-calendar";
@@ -51,6 +55,8 @@ export function AgendaClient({
   const [upcoming, setUpcoming] = useState(initialUpcoming);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AppointmentDTO | null>(null);
+  const [cashDialogOpen, setCashDialogOpen] = useState(false);
+  const [cashDraft, setCashDraft] = useState<CashTransactionDraft | null>(null);
   const [pending, startTransition] = useTransition();
 
   const sortedPatients = useMemo(
@@ -116,16 +122,29 @@ export function AgendaClient({
         toast.error(result.error);
         return;
       }
+      const updated = result.data;
       setDayAppointments((prev) =>
-        prev.map((a) => (a.id === id ? result.data : a)),
+        prev.map((a) => (a.id === id ? updated : a)),
       );
-      setUpcoming((prev) => prev.map((a) => (a.id === id ? result.data : a)));
+      setUpcoming((prev) => prev.map((a) => (a.id === id ? updated : a)));
       toast.success("Status atualizado");
+
+      if (status === "realizado") {
+        setCashDraft({
+          type: "entrada",
+          date: updated.date,
+          patientId: updated.patientId,
+          description: `Sessão — ${updated.patientName}`,
+          amountCents: updated.patientPriceCents,
+        });
+        setCashDialogOpen(true);
+      }
+
+      router.refresh();
     });
   }
 
   function remove(id: string) {
-    if (!confirm("Excluir este agendamento?")) return;
     startTransition(async () => {
       const result = await deleteAppointmentAction({ id });
       if (!result.success) {
@@ -328,6 +347,29 @@ export function AgendaClient({
               );
             }
             setFormOpen(false);
+            router.refresh();
+          }}
+        />
+      )}
+
+      {cashDialogOpen && (
+        <CashTransactionFormDialog
+          key={`cash-${cashDraft?.patientId ?? "new"}-${cashDraft?.date ?? ""}`}
+          open
+          onOpenChange={(open) => {
+            setCashDialogOpen(open);
+            if (!open) setCashDraft(null);
+          }}
+          patients={sortedPatients}
+          initial={null}
+          draft={cashDraft}
+          defaultDate={todayIso()}
+          defaultType="entrada"
+          pending={pending}
+          startTransition={startTransition}
+          onSaved={() => {
+            setCashDialogOpen(false);
+            setCashDraft(null);
             router.refresh();
           }}
         />

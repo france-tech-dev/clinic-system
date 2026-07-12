@@ -8,6 +8,7 @@ import {
   formatTime,
   type AppointmentStatusId,
 } from "@/shared/constants/appointment";
+import { appointmentDisplayColor } from "@/features/schedule/_lib/appointment-calendar-utils";
 import { paths } from "@/shared/constants/paths";
 
 export function AppointmentRow({
@@ -22,6 +23,10 @@ export function AppointmentRow({
   onStatus: (id: string, status: AppointmentStatusId) => void;
 }) {
   const st = appointmentStatusInfo(appointment.status);
+  const badgeColor = appointmentDisplayColor(
+    appointment.status,
+    appointment.hasSessionNote,
+  );
   return (
     <li className="flex flex-wrap items-center gap-3 rounded-md border border-border px-3 py-2.5">
       <button
@@ -40,9 +45,9 @@ export function AppointmentRow({
           )}
           <span
             className="rounded-full px-2 py-0.5 text-[0.65rem] font-medium text-white"
-            style={{ background: st.color }}
+            style={{ background: badgeColor }}
           >
-            {st.label}
+            {appointment.hasSessionNote ? "Com evolução" : st.label}
           </span>
         </div>
         <p className="mt-0.5 font-medium">
