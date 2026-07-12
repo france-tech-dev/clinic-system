@@ -271,6 +271,7 @@ export function AgendaClient({
 
       {formOpen && (
         <AppointmentFormDialog
+          key={editing?.id ?? `new-${selectedDate}`}
           open={formOpen}
           onOpenChange={setFormOpen}
           patients={sortedPatients}
