@@ -6,18 +6,30 @@ import type {
 } from "./schedule.schema";
 import type { AppointmentDTO } from "./schedule.types";
 
-function toDTO(row: {
-  id: string;
-  patientId: string;
-  date: string;
-  time: string;
-  duration: number;
-  notes: string;
-  status: AppointmentStatusId;
-  createdAt: Date;
-  updatedAt: Date;
-  patient: { id: string; name: string };
-}): AppointmentDTO {
+function sessionNoteKey(patientId: string, date: string) {
+  return `${patientId}:${date}`;
+}
+
+function toDTO(
+  row: {
+    id: string;
+    patientId: string;
+    date: string;
+    time: string;
+    duration: number;
+    notes: string;
+    status: AppointmentStatusId;
+    createdAt: Date;
+    updatedAt: Date;
+    patient: {
+      id: string;
+      name: string;
+      pricingType: "sessao" | "pacote";
+      priceCents: number | null;
+    };
+  },
+  sessionKeys: Set<string>,
+): AppointmentDTO {
   return {
     id: row.id,
     patientId: row.patientId,
@@ -27,9 +39,26 @@ function toDTO(row: {
     duration: row.duration,
     notes: row.notes,
     status: row.status,
+    hasSessionNote: sessionKeys.has(sessionNoteKey(row.patientId, row.date)),
+    patientPricingType: row.patient.pricingType,
+    patientPriceCents: row.patient.priceCents,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
+}
+
+async function mapWithSessionKeys(
+  organizationId: string,
+  rows: Awaited<ReturnType<typeof scheduleRepository.findByDate>>,
+  startDate: string,
+  endDate: string,
+) {
+  const sessionKeys = await scheduleRepository.findSessionNoteKeysInRange(
+    organizationId,
+    startDate,
+    endDate,
+  );
+  return rows.map((row) => toDTO(row, sessionKeys));
 }
 
 export async function listAppointmentsByDate(
@@ -37,7 +66,7 @@ export async function listAppointmentsByDate(
   date: string,
 ) {
   const rows = await scheduleRepository.findByDate(organizationId, date);
-  return rows.map(toDTO);
+  return mapWithSessionKeys(organizationId, rows, date, date);
 }
 
 export async function listUpcomingAppointments(
@@ -45,7 +74,8 @@ export async function listUpcomingAppointments(
   fromDate: string,
 ) {
   const rows = await scheduleRepository.findUpcoming(organizationId, fromDate);
-  return rows.map(toDTO);
+  const endDate = rows.at(-1)?.date ?? fromDate;
+  return mapWithSessionKeys(organizationId, rows, fromDate, endDate);
 }
 
 export async function listAppointmentsByDateRange(
@@ -58,7 +88,7 @@ export async function listAppointmentsByDateRange(
     startDate,
     endDate,
   );
-  return rows.map(toDTO);
+  return mapWithSessionKeys(organizationId, rows, startDate, endDate);
 }
 
 export async function createAppointments(
@@ -67,7 +97,13 @@ export async function createAppointments(
 ) {
   const rows = await scheduleRepository.createMany(organizationId, data);
   if (!rows) return null;
-  return rows.map(toDTO);
+  const dates = rows.map((r) => r.date).sort();
+  return mapWithSessionKeys(
+    organizationId,
+    rows,
+    dates[0] ?? data.date,
+    dates.at(-1) ?? data.date,
+  );
 }
 
 export async function updateAppointment(
@@ -75,7 +111,14 @@ export async function updateAppointment(
   data: UpdateAppointmentInput,
 ) {
   const row = await scheduleRepository.update(organizationId, data);
-  return row ? toDTO(row) : null;
+  if (!row) return null;
+  const mapped = await mapWithSessionKeys(
+    organizationId,
+    [row],
+    row.date,
+    row.date,
+  );
+  return mapped[0] ?? null;
 }
 
 export async function setAppointmentStatus(
@@ -84,7 +127,14 @@ export async function setAppointmentStatus(
   status: AppointmentStatusId,
 ) {
   const row = await scheduleRepository.setStatus(organizationId, id, status);
-  return row ? toDTO(row) : null;
+  if (!row) return null;
+  const mapped = await mapWithSessionKeys(
+    organizationId,
+    [row],
+    row.date,
+    row.date,
+  );
+  return mapped[0] ?? null;
 }
 
 export async function rescheduleAppointment(
@@ -103,7 +153,14 @@ export async function rescheduleAppointment(
     date,
     time,
   );
-  return row ? toDTO(row) : "not_found";
+  if (!row) return "not_found";
+  const mapped = await mapWithSessionKeys(
+    organizationId,
+    [row],
+    row.date,
+    row.date,
+  );
+  return mapped[0] ?? "not_found";
 }
 
 export async function deleteAppointment(organizationId: string, id: string) {

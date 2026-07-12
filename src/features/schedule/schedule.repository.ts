@@ -6,11 +6,34 @@ import type {
 } from "./schedule.schema";
 import type { AppointmentStatusId } from "@/shared/constants/appointment";
 
+const patientSelect = {
+  id: true,
+  name: true,
+  pricingType: true,
+  priceCents: true,
+} as const;
+
 export const scheduleRepository = {
+  async findSessionNoteKeysInRange(
+    organizationId: string,
+    startDate: string,
+    endDate: string,
+  ) {
+    const notes = await db.sessionNote.findMany({
+      where: {
+        patient: { organizationId },
+        date: { gte: startDate, lte: endDate },
+        status: "compareceu",
+      },
+      select: { patientId: true, date: true },
+    });
+    return new Set(notes.map((n) => `${n.patientId}:${n.date}`));
+  },
+
   async findByDate(organizationId: string, date: string) {
     return db.appointment.findMany({
       where: { organizationId, date },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
       orderBy: [{ time: "asc" }, { createdAt: "asc" }],
     });
   },
@@ -18,7 +41,7 @@ export const scheduleRepository = {
   async findUpcoming(organizationId: string, fromDate: string, take = 20) {
     return db.appointment.findMany({
       where: { organizationId, date: { gte: fromDate } },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
       orderBy: [{ date: "asc" }, { time: "asc" }],
       take,
     });
@@ -34,7 +57,7 @@ export const scheduleRepository = {
         organizationId,
         date: { gte: startDate, lte: endDate },
       },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
       orderBy: [{ date: "asc" }, { time: "asc" }],
     });
   },
@@ -42,7 +65,7 @@ export const scheduleRepository = {
   async findById(organizationId: string, id: string) {
     return db.appointment.findFirst({
       where: { id, organizationId },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
     });
   },
 
@@ -65,7 +88,7 @@ export const scheduleRepository = {
           notes: data.notes ?? "",
           status: "agendado",
         },
-        include: { patient: { select: { id: true, name: true } } },
+        include: { patient: { select: patientSelect } },
       });
       created.push(row);
     }
@@ -93,7 +116,7 @@ export const scheduleRepository = {
         notes: data.notes ?? "",
         status: data.status as AppointmentStatusId,
       },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
     });
   },
 
@@ -111,7 +134,7 @@ export const scheduleRepository = {
     return db.appointment.update({
       where: { id },
       data: { date, time: time ?? "" },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
     });
   },
 
@@ -127,7 +150,7 @@ export const scheduleRepository = {
     return db.appointment.update({
       where: { id },
       data: { status },
-      include: { patient: { select: { id: true, name: true } } },
+      include: { patient: { select: patientSelect } },
     });
   },
 
