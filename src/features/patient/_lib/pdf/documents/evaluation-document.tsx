@@ -33,6 +33,7 @@ export function EvaluationDocument({
         <EvaluationSection
           evaluations={payload.evaluations}
           selectedEvaluation={payload.selectedEvaluation}
+          evaluationReportOptions={payload.evaluationReportOptions}
           single
         />
         <SignatureFooter signature={signature} />

@@ -1,6 +1,7 @@
 import type { EvaluationDTO } from "@/features/patient/patient.types";
 import type { PrintBranding } from "@/features/settings/settings.types";
 import type { RoteiroCategory } from "@/shared/constants/roteiros";
+import type { EvaluationReportOptions } from "./evaluation-report-options";
 
 export type PatientReportMode = "full" | "anamnese" | "evaluation" | "roteiro";
 
@@ -33,4 +34,5 @@ export type PatientReportPayload = {
   planItems: PatientReportPlanItem[];
   sessionNotes: PatientReportSessionNote[];
   roteiro: PatientReportRoteiro | null;
+  evaluationReportOptions: EvaluationReportOptions | null;
 };
