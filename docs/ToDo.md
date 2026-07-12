@@ -39,12 +39,12 @@ Repositório: [ArielVinis/france-barbershop](https://github.com/ArielVinis/franc
 
 ### Subtarefas
 
-- [ ] Instalar `react-big-calendar` (+ tipos, se necessário)
-- [ ] Criar componente de calendário em `/agenda` (tab ou toggle Lista / Calendário)
-- [ ] Action de reagendamento por drag (`updateAppointmentAction` ou action dedicada com `date` + `time`)
-- [ ] Carregar intervalo de appointments por semana/mês (helper tipo `schedule-bookings-range`)
+- [x] Instalar `react-big-calendar` (+ tipos)
+- [x] Criar componente de calendário em `/agenda` (tab Lista / Calendário)
+- [x] Action de reagendamento por drag (`rescheduleAppointmentAction`)
+- [x] Carregar intervalo de appointments por mês (`findByDateRange` + `monthBounds`)
 - [ ] (Opcional) Validação de conflitos de horário no mesmo slot
-- [ ] Testar: arrastar dentro do dia, arrastar para outro dia, editar via dialog existente
+- [ ] Testar no browser: arrastar dentro do dia, arrastar para outro dia, editar via dialog
 
 ---
 
@@ -63,15 +63,15 @@ Repositório: [ArielVinis/france-barbershop](https://github.com/ArielVinis/franc
 
 ### Falta
 
-- [ ] **Logo** no cabeçalho (hoje só texto “Fichário TO”)
-- [ ] Cabeçalho padronizado: logo + nome da organização + título do documento
-- [ ] Usar `Organization.logo` + `Organization.name` (fallback: `professional.clinica`)
-- [ ] UI para upload/gestão da logo da clínica (se ainda não existir)
+- [x] **Logo** no cabeçalho (`Organization.logo` → fallback `/paris.png`)
+- [x] Cabeçalho padronizado: logo + nome da organização + título
+- [x] **`@react-pdf/renderer`** — templates PDF + preview antes do download
+- [ ] UI para upload da logo em `/configuracoes` (hoje só via `Organization.logo` no banco)
 
-### Pendente de definir
+### Decisões
 
-- [ ] Logo vem de `Organization.logo` (upload), se não tiver, usar logo fixa do systema.
-- [ ] Basta melhorar a impressão atual ou gerar **PDF para download** (`@react-pdf/renderer` ou similar)? Ambos. Sobre a biblioteca, podemos verificar qual a mais indicada.
+- [x] `@react-pdf/renderer` em vez de `html2pdf.js` / `window.print()`
+- [x] Fluxo: botão → **pré-visualização** (`PDFViewer`) → **Baixar PDF**
 
 ---
 
