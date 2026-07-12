@@ -53,7 +53,7 @@ export function EvaluationViewDialog({
 
   return (
     <Dialog open={!!evaluation} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-serif">
             Avaliação {evaluation.tipo} — {formatDateBR(evaluation.date)}
@@ -222,14 +222,13 @@ export function EvaluationViewDialog({
             onConfirm={() => onDelete(evaluation.id)}
             disabled={pending}
           >
-            <Button variant="destructive" size="sm" disabled={pending}>
+            <Button variant="destructive" disabled={pending}>
               Excluir
             </Button>
           </DeleteConfirmDialog>
           <div className="flex gap-2">
             <Button
               variant="outline"
-              size="sm"
               onClick={() => onPreviewReport(evaluation)}
             >
               <FileText className="size-4" />

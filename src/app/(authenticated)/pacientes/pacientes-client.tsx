@@ -17,7 +17,7 @@ import type {
   PatientStatus,
 } from "@/features/patient/patient.types";
 import { paths } from "@/shared/constants/paths";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatPatientListMeta } from "@/features/patient/_lib/patient-list-meta";
 import { cn } from "@/shared/lib/utils";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
 import {
@@ -164,11 +164,7 @@ export function PacientesClient({
               >
                 <p className="font-medium">{p.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {p.evaluationsCount ?? 0} avaliações · {p.sessionsCount ?? 0}{" "}
-                  evoluções
-                  {p.lastEvaluationDate
-                    ? ` · última aval. ${formatDateBR(p.lastEvaluationDate)}`
-                    : ""}
+                  {formatPatientListMeta(p)}
                 </p>
               </Link>
               <div className="flex items-center gap-2">

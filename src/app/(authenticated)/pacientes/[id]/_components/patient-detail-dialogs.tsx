@@ -5,7 +5,7 @@ import { EditPatientDialog } from "./edit-patient-dialog";
 import { EvaluationFormDialog } from "./evaluation-form-dialog";
 import { EvaluationViewDialog } from "./evaluation-view-dialog";
 import type { PatientDetailViewModel } from "./hooks/use-patient-detail";
-import { PatientPdfPreviewDialog } from "./patient-pdf-preview-dialog";
+import { PatientPdfPreviewDialog } from "@/features/patient/components/patient-pdf-preview-dialog";
 import { SessionFormDialog } from "./session-form-dialog";
 import { SessionViewDialog } from "./session-view-dialog";
 
