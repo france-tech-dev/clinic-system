@@ -1,5 +1,13 @@
-import type { EvaluationDTO, RoteiroNoteDTO } from "@/features/patient/patient.types";
-import { ROTEIROS, type Roteiro, type RoteiroCategory, type RoteiroId } from "@/shared/constants/roteiros";
+import type {
+  EvaluationDTO,
+  RoteiroNoteDTO,
+} from "@/features/patient/patient.types";
+import {
+  ROTEIROS,
+  type Roteiro,
+  type RoteiroCategory,
+  type RoteiroId,
+} from "@/shared/constants/roteiros";
 import { cn } from "@/shared/lib/utils";
 import { AvaliacaoLista } from "./avaliacao-lista";
 import { RoteiroSection } from "./roteiro-section";
@@ -21,7 +29,7 @@ export function AvaliacaoTab({
   onSelectTick,
   onRoteiroDraftChange,
   onSaveRoteiroNote,
-  onPrintRoteiro,
+  onPreviewRoteiro,
 }: {
   evaluations: EvaluationDTO[];
   avaliacaoView: AvaliacaoView;
@@ -38,7 +46,7 @@ export function AvaliacaoTab({
   onSelectTick: (tick: string) => void;
   onRoteiroDraftChange: (value: string) => void;
   onSaveRoteiroNote: () => void;
-  onPrintRoteiro: () => void;
+  onPreviewRoteiro: () => void;
 }) {
   return (
     <section className="space-y-4">
@@ -90,7 +98,7 @@ export function AvaliacaoTab({
           pending={pending}
           onSelectTick={onSelectTick}
           onSave={onSaveRoteiroNote}
-          onPrint={onPrintRoteiro}
+          onPreviewReport={onPreviewRoteiro}
         />
       )}
     </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Printer } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,7 +22,7 @@ export function EvaluationViewDialog({
   onClose,
   onEdit,
   onDelete,
-  onPrint,
+  onPreviewReport,
   pending,
 }: {
   evaluation: EvaluationDTO | null;
@@ -31,7 +31,7 @@ export function EvaluationViewDialog({
   onClose: () => void;
   onEdit: (ev: EvaluationDTO) => void;
   onDelete: (id: string) => void;
-  onPrint: (ev: EvaluationDTO) => void;
+  onPreviewReport: (ev: EvaluationDTO) => void;
   pending: boolean;
 }) {
   if (!evaluation) return null;
@@ -227,10 +227,10 @@ export function EvaluationViewDialog({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPrint(evaluation)}
+              onClick={() => onPreviewReport(evaluation)}
             >
-              <Printer className="size-4" />
-              Imprimir
+              <FileText className="size-4" />
+              Relatório PDF
             </Button>
             <Button variant="outline" onClick={onClose}>
               Fechar

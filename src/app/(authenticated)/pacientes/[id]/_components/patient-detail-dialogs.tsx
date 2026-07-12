@@ -5,7 +5,7 @@ import { EditPatientDialog } from "./edit-patient-dialog";
 import { EvaluationFormDialog } from "./evaluation-form-dialog";
 import { EvaluationViewDialog } from "./evaluation-view-dialog";
 import type { PatientDetailViewModel } from "./hooks/use-patient-detail";
-import { PatientPrintReport } from "./patient-print-report";
+import { PatientPdfPreviewDialog } from "./patient-pdf-preview-dialog";
 import { SessionFormDialog } from "./session-form-dialog";
 import { SessionViewDialog } from "./session-view-dialog";
 
@@ -13,12 +13,9 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
   const {
     detail,
     exercises,
-    professional,
-    signature,
-    print,
+    pdfReport,
+    previewReport,
     plan,
-    anamnese,
-    roteiro,
     patientEdit,
     evaluations,
     sessions,
@@ -60,7 +57,7 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
         onClose={() => evaluations.setViewEval(null)}
         onEdit={evaluations.openEditEvaluation}
         onDelete={evaluations.deleteEvaluation}
-        onPrint={(ev) => print.runPrint("evaluation", ev)}
+        onPreviewReport={(ev) => previewReport("evaluation", ev)}
         pending={evaluations.pending}
       />
 
@@ -98,17 +95,9 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
         />
       )}
 
-      <PatientPrintReport
-        printMode={print.printMode}
-        detail={detail}
-        professional={professional}
-        signature={signature}
-        printEval={print.printEval}
-        anamneseData={anamnese.anamneseData}
-        currentRoteiro={roteiro.currentRoteiro}
-        currentCategory={roteiro.currentCategory}
-        roteiroDraft={roteiro.roteiroDraft}
-        currentRoteiroNote={roteiro.currentRoteiroNote}
+      <PatientPdfPreviewDialog
+        payload={pdfReport.previewPayload}
+        onClose={pdfReport.closePreview}
       />
     </>
   );

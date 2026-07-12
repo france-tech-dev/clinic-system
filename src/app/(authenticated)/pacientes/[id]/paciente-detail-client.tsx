@@ -2,7 +2,10 @@
 
 import type { ExerciseDTO } from "@/features/exercise/exercise.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
-import type { ProfessionalProfile } from "@/features/settings/settings.types";
+import type {
+  PrintBranding,
+  ProfessionalProfile,
+} from "@/features/settings/settings.types";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";
@@ -16,12 +19,14 @@ export function PacienteDetailClient({
   initial,
   exercises,
   professional,
+  branding,
 }: {
   initial: PatientDetailDTO;
   exercises: ExerciseDTO[];
   professional: ProfessionalProfile;
+  branding: PrintBranding;
 }) {
-  const vm = usePatientDetail({ initial, exercises, professional });
+  const vm = usePatientDetail({ initial, exercises, professional, branding });
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,7 +34,7 @@ export function PacienteDetailClient({
         notes={vm.detail.patient.notes}
         pending={vm.pending}
         onEdit={vm.patientEdit.openEditPatient}
-        onPrintFull={() => vm.print.runPrint("full")}
+        onPreviewReport={() => vm.previewReport("full")}
         onRemove={vm.removePatient}
       />
 
@@ -60,7 +65,7 @@ export function PacienteDetailClient({
           onSelectTick={vm.roteiro.selectTick}
           onRoteiroDraftChange={vm.roteiro.setRoteiroDraft}
           onSaveRoteiroNote={vm.roteiro.saveCurrentRoteiroNote}
-          onPrintRoteiro={() => vm.print.runPrint("roteiro")}
+          onPreviewRoteiro={() => vm.previewReport("roteiro")}
         />
       )}
 
@@ -70,7 +75,7 @@ export function PacienteDetailClient({
           onChange={vm.anamnese.setAnamneseData}
           pending={vm.anamnese.pending}
           onSave={vm.anamnese.saveAnamnese}
-          onPrint={() => vm.print.runPrint("anamnese")}
+          onPreviewReport={() => vm.previewReport("anamnese")}
         />
       )}
 

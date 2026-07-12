@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Pencil, Printer, Trash2 } from "lucide-react";
+import { ArrowLeft, FileText, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { paths } from "@/shared/constants/paths";
 
@@ -7,17 +7,17 @@ export function PatientDetailHeader({
   notes,
   pending,
   onEdit,
-  onPrintFull,
+  onPreviewReport,
   onRemove,
 }: {
   notes?: string;
   pending: boolean;
   onEdit: () => void;
-  onPrintFull: () => void;
+  onPreviewReport: () => void;
   onRemove: () => void;
 }) {
   return (
-    <div className="no-print flex flex-wrap items-start justify-between gap-3">
+    <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
         <Link
           href={paths.pacientes}
@@ -33,9 +33,9 @@ export function PatientDetailHeader({
           <Pencil className="size-4" />
           Editar
         </Button>
-        <Button variant="outline" size="sm" onClick={onPrintFull}>
-          <Printer className="size-4" />
-          Prontuário
+        <Button variant="outline" size="sm" onClick={onPreviewReport}>
+          <FileText className="size-4" />
+          Prontuário PDF
         </Button>
         <Button
           variant="destructive"

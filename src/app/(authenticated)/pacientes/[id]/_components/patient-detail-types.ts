@@ -1,8 +1,4 @@
-export type PatientDetailTab =
-  | "plano"
-  | "avaliacao"
-  | "anamnese"
-  | "evolucoes";
+export type PatientDetailTab = "plano" | "avaliacao" | "anamnese" | "evolucoes";
 
 export type AvaliacaoView = "lista" | "roteiro";
 

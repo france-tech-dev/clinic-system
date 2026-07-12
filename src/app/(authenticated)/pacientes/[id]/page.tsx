@@ -4,8 +4,8 @@ import { listExercises } from "@/features/exercise/exercise.service";
 import type { ExerciseDTO } from "@/features/exercise/exercise.types";
 import { getPatientDetail } from "@/features/patient/patient.service";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
-import { getProfessionalProfile } from "@/features/settings/settings.service";
-import type { ProfessionalProfile } from "@/features/settings/settings.types";
+import { getPrintBranding, getProfessionalProfile } from "@/features/settings/settings.service";
+import type { PrintBranding, ProfessionalProfile } from "@/features/settings/settings.types";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { PacienteDetailClient } from "./paciente-detail-client";
 
@@ -24,16 +24,20 @@ export default async function PacienteDetailPage({
     clinica: "",
   };
 
+  let branding: PrintBranding = { clinicName: "Fichário TO", logoUrl: "/paris.png" };
+
   try {
     const { organizationId } = await requireOrgId();
-    const [d, ex, prof] = await Promise.all([
+    const [d, ex, prof, printBranding] = await Promise.all([
       getPatientDetail(organizationId, id),
       listExercises(organizationId),
       getProfessionalProfile(organizationId),
+      getPrintBranding(organizationId),
     ]);
     detail = d;
     exercises = ex;
     professional = prof;
+    branding = printBranding;
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -57,6 +61,7 @@ export default async function PacienteDetailPage({
         initial={detail}
         exercises={exercises}
         professional={professional}
+        branding={branding}
       />
     </AppPage>
   );

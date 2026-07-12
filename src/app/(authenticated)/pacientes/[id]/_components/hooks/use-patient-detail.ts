@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { deletePatientAction } from "@/features/patient/patient.actions";
-import type { PatientDetailDTO } from "@/features/patient/patient.types";
+import type { EvaluationDTO, PatientDetailDTO } from "@/features/patient/patient.types";
+import type { PatientReportMode, PatientReportPayload } from "@/features/patient/_lib/pdf/types";
 import type { ExerciseDTO } from "@/features/exercise/exercise.types";
-import type { ProfessionalProfile } from "@/features/settings/settings.types";
+import type {
+  PrintBranding,
+  ProfessionalProfile,
+} from "@/features/settings/settings.types";
 import { formatProfessionalSignature } from "@/features/settings/settings.types";
 import { paths } from "@/shared/constants/paths";
 import { useRouter } from "next/navigation";
@@ -13,8 +17,8 @@ import type { PatientDetailTab } from "../patient-detail-types";
 import { useAnamneseForm } from "./use-anamnese-form";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientEvaluations } from "./use-patient-evaluations";
+import { usePatientPdfReport } from "./use-patient-pdf-report";
 import { usePatientPlan } from "./use-patient-plan";
-import { usePatientPrint } from "./use-patient-print";
 import { usePatientSessions } from "./use-patient-sessions";
 import { useRoteiroNotes } from "./use-roteiro-notes";
 
@@ -22,17 +26,19 @@ export function usePatientDetail({
   initial,
   exercises,
   professional,
+  branding,
 }: {
   initial: PatientDetailDTO;
   exercises: ExerciseDTO[];
   professional: ProfessionalProfile;
+  branding: PrintBranding;
 }) {
   const router = useRouter();
   const [detail, setDetail] = useState(initial);
   const [tab, setTab] = useState<PatientDetailTab>("plano");
   const [pending, startTransition] = useTransition();
 
-  const print = usePatientPrint();
+  const pdfReport = usePatientPdfReport();
   const plan = usePatientPlan({
     detail,
     setDetail,
@@ -74,6 +80,56 @@ export function usePatientDetail({
 
   const signature = formatProfessionalSignature(professional);
 
+  const buildReportPayload = useCallback(
+    (mode: PatientReportMode, evaluation?: EvaluationDTO): PatientReportPayload => ({
+      mode,
+      patientName: detail.patient.name,
+      signature,
+      branding,
+      evaluations: detail.evaluations,
+      selectedEvaluation: evaluation ?? null,
+      anamneseData: anamnese.anamneseData,
+      planItems: detail.planItems.map((p) => ({
+        exerciseTitle: p.exerciseTitle,
+        objective: p.objective,
+      })),
+      sessionNotes: detail.sessionNotes.map((s) => ({
+        date: s.date,
+        status: s.status,
+        atividades: s.atividades,
+        observacoes: s.observacoes,
+      })),
+      roteiro:
+        mode === "roteiro"
+          ? {
+              label: roteiro.currentRoteiro.label,
+              category: roteiro.currentCategory,
+              notes:
+                roteiro.roteiroDraft.trim() ||
+                roteiro.currentRoteiroNote?.notes ||
+                "",
+            }
+          : null,
+    }),
+    [
+      anamnese.anamneseData,
+      branding,
+      detail.evaluations,
+      detail.patient.name,
+      detail.planItems,
+      detail.sessionNotes,
+      roteiro.currentCategory,
+      roteiro.currentRoteiro,
+      roteiro.currentRoteiroNote?.notes,
+      roteiro.roteiroDraft,
+      signature,
+    ],
+  );
+
+  function previewReport(mode: PatientReportMode, evaluation?: EvaluationDTO) {
+    pdfReport.openPreview(buildReportPayload(mode, evaluation));
+  }
+
   function removePatient() {
     if (!confirm(`Remover ${detail.patient.name} e todos os dados associados?`))
       return;
@@ -95,8 +151,10 @@ export function usePatientDetail({
     pending,
     exercises,
     professional,
+    branding,
     signature,
-    print,
+    pdfReport,
+    previewReport,
     plan,
     anamnese,
     roteiro,

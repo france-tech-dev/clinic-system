@@ -1,4 +1,4 @@
-import { Printer } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,7 @@ export function RoteiroSection({
   pending,
   onSelectTick,
   onSave,
-  onPrint,
+  onPreviewReport,
 }: {
   currentRoteiro: Roteiro;
   currentCategory: RoteiroCategory;
@@ -25,11 +25,11 @@ export function RoteiroSection({
   pending: boolean;
   onSelectTick: (tick: string) => void;
   onSave: () => void;
-  onPrint: () => void;
+  onPreviewReport: () => void;
 }) {
   return (
     <div className="space-y-4">
-      <div className="no-print flex flex-wrap gap-1.5 overflow-x-auto pb-1">
+      <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1">
         {currentRoteiro.categories.map((cat, idx) => (
           <button
             key={cat.tick}
@@ -103,13 +103,13 @@ export function RoteiroSection({
         )}
       </div>
 
-      <div className="no-print flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button disabled={pending} onClick={onSave}>
           Salvar notas
         </Button>
-        <Button variant="outline" onClick={onPrint}>
-          <Printer className="size-4" />
-          Imprimir esta seção
+        <Button variant="outline" onClick={onPreviewReport}>
+          <FileText className="size-4" />
+          Relatório PDF
         </Button>
       </div>
     </div>

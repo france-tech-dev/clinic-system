@@ -1,4 +1,4 @@
-import { Printer } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ANAMNESE_SCHEMA } from "@/features/patient/_lib/anamnese-schema";
 import { AnamneseField } from "./anamnese-field";
@@ -8,13 +8,13 @@ export function AnamneseTab({
   onChange,
   pending,
   onSave,
-  onPrint,
+  onPreviewReport,
 }: {
   data: Record<string, unknown>;
   onChange: (next: Record<string, unknown>) => void;
   pending: boolean;
   onSave: () => void;
-  onPrint: () => void;
+  onPreviewReport: () => void;
 }) {
   return (
     <section className="space-y-6">
@@ -36,10 +36,10 @@ export function AnamneseTab({
           </div>
         </div>
       ))}
-      <div className="no-print flex flex-wrap justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={onPrint}>
-          <Printer className="size-4" />
-          Imprimir anamnese
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={onPreviewReport}>
+          <FileText className="size-4" />
+          Relatório PDF
         </Button>
         <Button disabled={pending} onClick={onSave}>
           Salvar anamnese
