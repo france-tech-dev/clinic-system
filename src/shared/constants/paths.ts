@@ -9,6 +9,7 @@ export const paths = Object.freeze({
   configuracoes: "/configuracoes",
   caixa: "/caixa",
   relatorio: "/relatorio",
+  protocolosGmfm: "/protocolos/gmfm",
   organizacao: "/organizacao",
   buscar: "/buscar",
 

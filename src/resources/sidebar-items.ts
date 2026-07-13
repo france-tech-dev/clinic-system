@@ -9,6 +9,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconChartBar,
 } from "@tabler/icons-react";
 
 export type SidebarSection = {
@@ -52,6 +53,11 @@ export const sidebarItems = {
       name: "Relatórios",
       url: paths.relatorio,
       icon: IconReport,
+    },
+    {
+      name: "GMFM-88",
+      url: paths.protocolosGmfm,
+      icon: IconChartBar,
     },
     {
       name: "Buscar",

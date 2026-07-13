@@ -140,6 +140,7 @@ model Organization {
   appointments Appointment[]
   studyCards   StudyCard[]
   cashTransactions CashTransaction[]
+  protocolAssessments ProtocolAssessment[]
 
   @@unique([slug])
   @@map("organization")
@@ -201,6 +202,7 @@ model Patient {
   appointments   Appointment[]
   roteiroNotes   RoteiroNote[]
   cashTransactions CashTransaction[]
+  protocolAssessments ProtocolAssessment[]
 
   @@index([organizationId])
   @@index([organizationId, status])
@@ -330,6 +332,26 @@ model RoteiroNote {
   @@index([patientId])
   @@index([patientId, roteiroId])
   @@map("roteiro_notes")
+}
+
+model ProtocolAssessment {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  protocolId     String
+  label          String       @default("Avaliação")
+  date           String
+  scores         String
+  notes          String       @default("")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([patientId])
+  @@index([patientId, protocolId])
+  @@map("protocol_assessments")
 }
 
 model Member {
