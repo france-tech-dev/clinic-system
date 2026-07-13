@@ -124,9 +124,9 @@ features/patient/
 │   └── session-service.ts      # (futuro) create/update/delete session
 ```
 
-- [ ] P1.2 — Extrair mappers para `_lib/mappers.ts`
-- [ ] P1.4 — Hook `use-agenda-cashflow.ts`
-- [ ] P1.5 — Sub-componentes do evaluation form
+- [x] P1.2 — Extrair mappers para `_lib/mappers.ts`
+- [x] P1.4 — Hook `use-agenda-cashflow.ts`
+- [x] P1.5 — Sub-componentes do evaluation form
 
 ---
 
@@ -170,34 +170,36 @@ Verificar antes de criar componente em `app/.../_components/`.
 
 ## P4 — Testes (prioridade por ROI)
 
-**Estado actual:** nenhum ficheiro `*.test.ts` / `*.spec.ts` no projecto.
+**Estado actual:** Vitest configurado — **28 testes** em funções puras e services (`pnpm test`).
 
-### Setup recomendado
+### Setup
 
 ```bash
-pnpm add -D vitest @vitejs/plugin-react
+pnpm add -D vitest   # ✅ instalado
+pnpm test            # vitest run
+pnpm test:watch      # modo watch
 ```
 
-Script em `package.json`:
+Config: `vitest.config.ts` — testes em **`tests/unit/`** (não em `src/`). Ver [`tests/README.md`](../tests/README.md).
 
-```json
-"test": "vitest run",
-"test:watch": "vitest"
+```bash
+pnpm test            # unitários (Vitest)
+pnpm test:unit       # idem
+pnpm test:watch      # modo watch
+pnpm test:e2e        # Playwright — pendente (tests/e2e/)
 ```
-
-Config mínima: `vitest.config.ts` com alias `@/` → `src/`.
 
 ### Onde testar primeiro (funções puras → regras → integração)
 
-| Prioridade | Alvo | Ficheiro | O que testar |
-|------------|------|----------|--------------|
-| **T1** | Resumo financeiro | `finance.service.ts` → extrair `buildSummary` para `_lib/build-summary.ts` | Soma entradas/saídas/saldo |
-| **T2** | Mês caixa | `finance/_lib/month-utils.ts` | `parseMonthParam`, `monthParamToBounds`, `shiftMonthParam` |
-| **T3** | Calendário | `schedule/_lib/appointment-calendar-utils.ts` | `appointmentDateTime`, cores por status/evolução |
-| **T4** | Alertas painel | `dashboard/_lib/build-dashboard-alerts.ts` (criar em P0.2) | 90 dias, sem avaliação |
-| **T5** | Reagendamento | `schedule.service.ts` | `rescheduleAppointment` retorna `invalid_status` se status ≠ agendado |
-| **T6** | Paciente na org | `finance.repository` após P0.4 | `existsPatientInOrg` |
-| **T7** | Money utils | `shared/lib/money-utils.ts` | `parseBrlToCents`, `centsToBrlInput` |
+| Prioridade | Alvo | Ficheiro de teste | O que testar |
+|------------|------|-------------------|--------------|
+| **T1** | Resumo financeiro | `tests/unit/features/finance/build-summary.test.ts` | Soma entradas/saídas/saldo |
+| **T2** | Mês caixa | `tests/unit/features/finance/month-utils.test.ts` | `parseMonthParam`, bounds, shift |
+| **T3** | Calendário | `tests/unit/features/schedule/appointment-calendar-utils.test.ts` | data/hora, cores |
+| **T4** | Alertas painel | `tests/unit/features/dashboard/build-dashboard-alerts.test.ts` | 90 dias, sem avaliação |
+| **T5** | Reagendamento | `tests/unit/features/schedule/schedule.service.test.ts` | `invalid_status`, sucesso |
+| **T6** | Paciente na org | `tests/unit/features/finance/...` (pendente) | `existsPatientInOrg` |
+| **T7** | Money utils | `tests/unit/shared/money-utils.test.ts` | parse/format BRL |
 
 ### O que **não** testar primeiro
 
@@ -206,12 +208,13 @@ Config mínima: `vitest.config.ts` com alias `@/` → `src/`.
 - PDF / `@react-pdf/renderer` (snapshot frágil)
 - Seeds e scripts Prisma
 
-- [ ] Adicionar Vitest ao projecto
-- [ ] T1 — `build-summary.test.ts`
-- [ ] T2 — `month-utils.test.ts`
-- [ ] T3 — `appointment-calendar-utils.test.ts`
-- [ ] T4 — `build-dashboard-alerts.test.ts`
-- [ ] T5 — `schedule.service.test.ts` (mock repository)
+- [x] Adicionar Vitest ao projecto
+- [x] T1 — `build-summary.test.ts`
+- [x] T2 — `month-utils.test.ts`
+- [x] T3 — `appointment-calendar-utils.test.ts`
+- [x] T4 — `build-dashboard-alerts.test.ts`
+- [x] T5 — `schedule.service.test.ts` (mock repository)
+- [x] T7 — `money-utils.test.ts`
 
 ---
 
@@ -233,10 +236,10 @@ Config mínima: `vitest.config.ts` com alias `@/` → `src/`.
 2. P0.2 — Refactor dashboard (repository + orquestração no page)     ✅
 3. P0.3 — search.repository.ts                                       ✅
 4. P0.4 — assertPatientInOrg → finance.repository                    ✅
-5. P4   — Setup Vitest + T1–T4 (aproveita extracções do P0)
-6. P1.2 — Mappers patient → _lib/mappers.ts
-7. P1.4 — Hook use-agenda-cashflow
-8. P1.5 — Split evaluation-form-dialog (quando entrar P5)
+5. P4   — Setup Vitest + T1–T4                                       ✅
+6. P1.2 — Mappers patient → _lib/mappers.ts                          ✅
+7. P1.4 — Hook use-agenda-cashflow                                    ✅
+8. P1.5 — Split evaluation-form-dialog                                ✅
 ```
 
 Estimativa: P0 completo ≈ 1–2 sessões; testes T1–T4 ≈ 1 sessão.

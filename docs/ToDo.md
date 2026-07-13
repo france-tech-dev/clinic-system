@@ -4,7 +4,8 @@ Checklist de melhorias, ordenado por prioridade.
 Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 **Arquitectura e regras do projecto:** [`docs/architecture.md`](./architecture.md)  
-**Auditoria de refactors:** [`docs/architecture-audit.md`](./architecture-audit.md)
+**Auditoria de refactors:** [`docs/architecture-audit.md`](./architecture-audit.md)  
+**Testes (unit + E2E):** [`tests/README.md`](../tests/README.md)
 
 ---
 
@@ -81,7 +82,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] Padrão `key` + montagem condicional em dialogs (evitar `useEffect` para sync de props)
 - [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução, biblioteca, estudo)
 - [ ] Migration Prisma versionada (além de `db push` em dev)
-- [ ] Refactors de arquitetura — ver checklist priorizado em [`docs/architecture-audit.md`](./architecture-audit.md)
+- [x] Refactors de arquitetura — ver checklist priorizado em [`docs/architecture-audit.md`](./architecture-audit.md) (P0 + P1 + P4 concluídos)
 
 ---
 
@@ -108,7 +109,8 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 ### Pendente
 
 - [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
-- [ ] **Protocolos estruturados** — formulários preenchíveis com gráfico e comparativo (ex.: GMFM-88)
+- [x] **Protocolos estruturados** — GMFM-88 em `/protocolos/gmfm` (formulário 88 itens, percentuais, gráfico comparativo avaliação vs. reavaliação)
+- [ ] **GMFM-88 PDF** — exportar comparativo / ficha preenchida em PDF
 - [ ] **Anamnese por especialidade** — antes de preencher, escolher área (T.O., Fisio, Psico, Fono…); cada uma com formulário próprio
 - [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos
 

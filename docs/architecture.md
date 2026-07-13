@@ -36,6 +36,16 @@ clinic-system/
 │   ├── schema.prisma
 │   └── seed.ts
 │
+├── tests/                            # Testes (separados de src/)
+│   ├── unit/                         # Vitest — unitários
+│   │   ├── features/                 # espelha domínios de src/features/
+│   │   ├── shared/
+│   │   └── app/
+│   ├── e2e/                          # Playwright — fluxos browser (futuro)
+│   └── README.md
+│
+├── vitest.config.ts
+│
 └── src/
     ├── app/                          # Rotas (App Router)
     │   ├── (authenticated)/          # Área logada
@@ -289,15 +299,28 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 
 ## 12. Testes
 
-Estado actual: setup Vitest pendente (ver [`architecture-audit.md`](./architecture-audit.md) P4).
+Guia completo: [`tests/README.md`](../tests/README.md)
 
-Prioridade:
+**Comandos:** `pnpm test` · `pnpm test:unit` · `pnpm test:watch` · `pnpm test:e2e` (Playwright, futuro)
 
-1. Funções puras em `_lib/` (`buildDashboardAlerts`, `month-utils`, `buildSummary`)
-2. Regras de negócio em services (ex.: `rescheduleAppointment` → `invalid_status`)
-3. Integração / E2E — só para fluxos críticos
+| Tipo | Pasta | Ferramenta |
+|------|-------|------------|
+| Unitário | `tests/unit/` | Vitest |
+| E2E | `tests/e2e/` | Playwright (pendente) |
 
-**Não** testar primeiro: actions com `revalidatePath`, componentes shadcn, PDF.
+### Convenção unitários
+
+- Código de produção em `src/`; testes em `tests/unit/`
+- Espelhar domínio: `src/features/finance/_lib/build-summary.ts` → `tests/unit/features/finance/build-summary.test.ts`
+- Imports via `@/` (aponta para `src/`)
+
+### Prioridade
+
+1. Funções puras em `_lib/` e `shared/lib/` — ✅ 28 testes
+2. Regras em `*.service.ts` (mock repository)
+3. E2E nos fluxos críticos (login, paciente, agenda, caixa)
+
+**Não** colocar `*.test.ts` dentro de `src/`. **Não** testar primeiro: actions com `revalidatePath`, shadcn, PDF.
 
 ---
 
