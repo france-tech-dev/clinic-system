@@ -3,6 +3,7 @@ import {
   monthParamToBounds,
   parseMonthParam,
 } from "./_lib/month-utils";
+import { buildSummary } from "./_lib/build-summary";
 import { financeRepository } from "./finance.repository";
 import type {
   CashTransactionFormInput,
@@ -11,7 +12,6 @@ import type {
 import type {
   CashTransactionDTO,
   CashflowPageData,
-  CashflowSummary,
 } from "./finance.types";
 
 function toDTO(row: {
@@ -37,22 +37,6 @@ function toDTO(row: {
     patientName: row.patient?.name ?? null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
-function buildSummary(transactions: CashTransactionDTO[]): CashflowSummary {
-  let incomeCents = 0;
-  let expenseCents = 0;
-
-  for (const tx of transactions) {
-    if (tx.type === "entrada") incomeCents += tx.amountCents;
-    else expenseCents += tx.amountCents;
-  }
-
-  return {
-    incomeCents,
-    expenseCents,
-    balanceCents: incomeCents - expenseCents,
   };
 }
 
