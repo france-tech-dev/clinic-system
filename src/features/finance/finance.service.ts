@@ -1,4 +1,3 @@
-import { db } from "@/shared/lib/prisma";
 import {
   formatMonthLabel,
   monthParamToBounds,
@@ -83,11 +82,11 @@ async function assertPatientInOrg(
   patientId: string | null | undefined,
 ) {
   if (!patientId) return;
-  const patient = await db.patient.findFirst({
-    where: { id: patientId, organizationId },
-    select: { id: true },
-  });
-  if (!patient) throw new Error("Paciente não encontrado");
+  const exists = await financeRepository.existsPatientInOrg(
+    organizationId,
+    patientId,
+  );
+  if (!exists) throw new Error("Paciente não encontrado");
 }
 
 export async function createCashTransaction(

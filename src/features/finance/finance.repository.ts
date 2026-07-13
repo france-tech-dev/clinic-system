@@ -81,4 +81,12 @@ export const financeRepository = {
     await db.cashTransaction.delete({ where: { id } });
     return existing;
   },
+
+  async existsPatientInOrg(organizationId: string, patientId: string) {
+    const patient = await db.patient.findFirst({
+      where: { id: patientId, organizationId },
+      select: { id: true },
+    });
+    return patient !== null;
+  },
 };
