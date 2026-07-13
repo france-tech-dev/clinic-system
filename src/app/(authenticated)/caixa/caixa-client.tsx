@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { CashflowSummaryCards } from "./_components/cashflow-summary-cards";
-import { CashTransactionFormDialog } from "./_components/cash-transaction-form-dialog";
+import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
 import type { CashflowPageData, CashTransactionDTO } from "@/features/finance/finance.types";
 import { shiftMonthParam } from "@/features/finance/_lib/month-utils";
 import type { PatientDTO } from "@/features/patient/patient.types";

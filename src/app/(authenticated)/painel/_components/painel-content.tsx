@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { DashboardData } from "@/features/dashboard/dashboard.service";
+import type { DashboardPageData } from "@/features/dashboard/dashboard.types";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { formatCentsToBrl } from "@/shared/lib/money-utils";
@@ -10,7 +10,7 @@ export function PainelContent({
   data,
   error,
 }: {
-  data: DashboardData | null;
+  data: DashboardPageData | null;
   error: string | null;
 }) {
   return (

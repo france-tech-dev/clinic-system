@@ -24,7 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CashTransactionFormDialog,
   type CashTransactionDraft,
-} from "@/app/(authenticated)/caixa/_components/cash-transaction-form-dialog";
+} from "@/features/finance/components/cash-transaction-form-dialog";
 import { AppointmentFormDialog } from "./_components/appointment-form-dialog";
 import { AppointmentRow } from "./_components/appointment-row";
 import { AgendaCalendar } from "./agenda-calendar";
