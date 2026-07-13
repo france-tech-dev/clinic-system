@@ -3,6 +3,9 @@
 Checklist de melhorias, ordenado por prioridade.  
 Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
+**Arquitectura e regras do projecto:** [`docs/architecture.md`](./architecture.md)  
+**Auditoria de refactors:** [`docs/architecture-audit.md`](./architecture-audit.md)
+
 ---
 
 ## P1 — Calendário visual com drag-and-drop
@@ -78,6 +81,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] Padrão `key` + montagem condicional em dialogs (evitar `useEffect` para sync de props)
 - [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução, biblioteca, estudo)
 - [ ] Migration Prisma versionada (além de `db push` em dev)
+- [ ] Refactors de arquitetura — ver checklist priorizado em [`docs/architecture-audit.md`](./architecture-audit.md)
 
 ---
 
