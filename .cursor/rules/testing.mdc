@@ -1,24 +1,47 @@
 ---
-description: Validar alterações com dev server e browser.
-globs: src/**/*.tsx, src/**/*.ts
+description: Validar alterações com dev server, unitários e E2E.
+globs: src/**/*.tsx, src/**/*.ts, tests/**/*
 alwaysApply: false
 ---
 
 # Testes / validação
 
+Guia: [`tests/README.md`](../../tests/README.md)
+
+## Estrutura
+
+| Tipo | Pasta | Comando |
+|------|-------|---------|
+| Unitário | `tests/unit/` | `pnpm test` |
+| E2E | `tests/e2e/` | `pnpm test:e2e` (Playwright — futuro) |
+
+**Não** criar `*.test.ts` dentro de `src/`.
+
 ## Quando
 
 - Depois de mudar Server Actions, UI ou fluxos de auth/agendamento.
+- Sempre que alterar função pura ou regra em `*.service.ts` com teste existente.
 
 ## Passos
 
-1. `npm run dev` (porta ~3000) se não estiver a correr.
-2. Browser: navegar ao fluxo, interagir, verificar console/rede se falhar.
-3. `npm test` só se o projeto tiver testes para a área alterada.
+1. `pnpm test` — unitários Vitest
+2. `pnpm run dev` (porta ~3000) se mudou UI ou fluxo integrado
+3. Browser: navegar ao fluxo, interagir, verificar console/rede se falhar
 
-## E2E (se usar browser tools)
+## Unitários (Vitest)
 
-- `browser_navigate` → `browser_snapshot` → interação → confirmar estado.
-- Sessão fechada: `browser_navigate` para URL simples e repetir.
+- Novo teste: `tests/unit/features/[dominio]/[nome].test.ts`
+- Importar código via `@/` (ex.: `@/features/finance/_lib/build-summary`)
+- Priorizar funções puras; services com mock de repository
+- Evitar testar actions com `revalidatePath` sem necessidade
 
-Não é obrigatório E2E em cada alteração trivial de copy ou estilo.
+## E2E (Playwright — pendente)
+
+- Specs em `tests/e2e/*.spec.ts`
+- Fluxos prioritários: login, paciente, agenda, caixa
+- Ver `tests/e2e/README.md` para setup
+
+## Validação manual (browser tools)
+
+- `browser_navigate` → `browser_snapshot` → interação → confirmar estado
+- Não é obrigatório E2E em cada alteração trivial de copy ou estilo
