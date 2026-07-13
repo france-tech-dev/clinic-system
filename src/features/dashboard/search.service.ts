@@ -1,6 +1,6 @@
-import { db } from "@/shared/lib/prisma";
 import { paths } from "@/shared/constants/paths";
 import { studyCategoryOf } from "@/shared/constants/study-categories";
+import { searchRepository } from "./search.repository";
 
 export type SearchHit = {
   id: string;
@@ -19,56 +19,11 @@ export async function globalSearch(
 
   const [patients, exercises, evaluations, sessions, studyCards] =
     await Promise.all([
-      db.patient.findMany({
-        where: {
-          organizationId,
-          OR: [{ name: { contains: q } }, { notes: { contains: q } }],
-        },
-        take: 8,
-        orderBy: { name: "asc" },
-      }),
-      db.exercise.findMany({
-        where: {
-          organizationId,
-          OR: [{ title: { contains: q } }, { objective: { contains: q } }],
-        },
-        take: 8,
-        orderBy: { title: "asc" },
-      }),
-      db.evaluation.findMany({
-        where: {
-          patient: { organizationId },
-          OR: [
-            { queixa: { contains: q } },
-            { historia: { contains: q } },
-            { objetivos: { contains: q } },
-            { diagnostico: { contains: q } },
-          ],
-        },
-        include: { patient: { select: { id: true, name: true } } },
-        take: 8,
-        orderBy: { date: "desc" },
-      }),
-      db.sessionNote.findMany({
-        where: {
-          patient: { organizationId },
-          OR: [
-            { atividades: { contains: q } },
-            { observacoes: { contains: q } },
-          ],
-        },
-        include: { patient: { select: { id: true, name: true } } },
-        take: 8,
-        orderBy: { date: "desc" },
-      }),
-      db.studyCard.findMany({
-        where: {
-          organizationId,
-          OR: [{ title: { contains: q } }, { content: { contains: q } }],
-        },
-        take: 8,
-        orderBy: { title: "asc" },
-      }),
+      searchRepository.searchPatients(organizationId, q),
+      searchRepository.searchExercises(organizationId, q),
+      searchRepository.searchEvaluations(organizationId, q),
+      searchRepository.searchSessions(organizationId, q),
+      searchRepository.searchStudyCards(organizationId, q),
     ]);
 
   const hits: SearchHit[] = [
