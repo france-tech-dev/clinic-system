@@ -6,162 +6,17 @@ import type {
   SessionFormInput,
 } from "./patient.schema";
 import type {
-  EvaluationDomain,
-  EvaluationDTO,
   PatientDetailDTO,
-  PatientDTO,
-  PatientPricingType,
   PatientStatus,
-  PlanItemDTO,
-  RoteiroNoteDTO,
-  SessionNoteDTO,
-  SessionNoteStatus,
 } from "./patient.types";
-
-function toPatientDTO(row: {
-  id: string;
-  name: string;
-  notes: string;
-  status: PatientStatus;
-  pricingType: PatientPricingType;
-  priceCents: number | null;
-  createdAt: Date;
-  updatedAt: Date;
-  _count?: { evaluations: number; sessionNotes: number };
-  evaluations?: { date: string }[];
-}): PatientDTO {
-  return {
-    id: row.id,
-    name: row.name,
-    notes: row.notes,
-    status: row.status,
-    pricingType: row.pricingType,
-    priceCents: row.priceCents,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-    evaluationsCount: row._count?.evaluations,
-    sessionsCount: row._count?.sessionNotes,
-    lastEvaluationDate: row.evaluations?.[0]?.date ?? null,
-  };
-}
-
-function parseDomains(raw: string): EvaluationDomain[] {
-  try {
-    return JSON.parse(raw) as EvaluationDomain[];
-  } catch {
-    return [];
-  }
-}
-
-function toEvaluationDTO(row: {
-  id: string;
-  patientId: string;
-  tipo: string;
-  date: string;
-  queixa: string;
-  historia: string;
-  domains: string;
-  objetivos: string;
-  condutas: string;
-  diagnostico: string;
-  encaminhadoPor: string;
-  contextoFamiliar: string;
-  nivelPrevio: string;
-  medicacoes: string;
-  precaucoes: string;
-  equipamentos: string;
-  frequencia: string;
-  criteriosAlta: string;
-  createdAt: Date;
-  updatedAt: Date;
-}): EvaluationDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    tipo: row.tipo,
-    date: row.date,
-    queixa: row.queixa,
-    historia: row.historia,
-    domains: parseDomains(row.domains),
-    objetivos: row.objetivos,
-    condutas: row.condutas,
-    diagnostico: row.diagnostico,
-    encaminhadoPor: row.encaminhadoPor,
-    contextoFamiliar: row.contextoFamiliar,
-    nivelPrevio: row.nivelPrevio,
-    medicacoes: row.medicacoes,
-    precaucoes: row.precaucoes,
-    equipamentos: row.equipamentos,
-    frequencia: row.frequencia,
-    criteriosAlta: row.criteriosAlta,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
-function toSessionDTO(row: {
-  id: string;
-  patientId: string;
-  date: string;
-  status: SessionNoteStatus;
-  atividades: string;
-  observacoes: string;
-  createdAt: Date;
-  updatedAt: Date;
-}): SessionNoteDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    date: row.date,
-    status: row.status,
-    atividades: row.atividades,
-    observacoes: row.observacoes,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
-function toPlanItemDTO(row: {
-  id: string;
-  patientId: string;
-  exerciseId: string;
-  createdAt: Date;
-  exercise: {
-    title: string;
-    categoryId: string;
-    level: string;
-    objective: string;
-  };
-}): PlanItemDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    exerciseId: row.exerciseId,
-    exerciseTitle: row.exercise.title,
-    categoryId: row.exercise.categoryId,
-    level: row.exercise.level,
-    objective: row.exercise.objective,
-    createdAt: row.createdAt.toISOString(),
-  };
-}
-
-function toRoteiroNoteDTO(row: {
-  id: string;
-  patientId: string;
-  roteiroId: string;
-  categoryTick: string;
-  notes: string;
-  updatedAt: Date;
-}): RoteiroNoteDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    roteiroId: row.roteiroId,
-    categoryTick: row.categoryTick,
-    notes: row.notes,
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
+import {
+  parseAnamneseData,
+  toEvaluationDTO,
+  toPatientDTO,
+  toPlanItemDTO,
+  toRoteiroNoteDTO,
+  toSessionDTO,
+} from "./_lib/mappers";
 
 export async function listPatients(
   organizationId: string,
@@ -178,20 +33,11 @@ export async function getPatientDetail(
   const row = await patientRepository.findById(organizationId, id);
   if (!row) return null;
 
-  let anamneseData: Record<string, unknown> = {};
-  if (row.anamnese?.data) {
-    try {
-      anamneseData = JSON.parse(row.anamnese.data) as Record<string, unknown>;
-    } catch {
-      anamneseData = {};
-    }
-  }
-
   return {
     patient: toPatientDTO(row),
     planItems: row.planItems.map(toPlanItemDTO),
     evaluations: row.evaluations.map(toEvaluationDTO),
-    anamneseData,
+    anamneseData: parseAnamneseData(row.anamnese?.data),
     sessionNotes: row.sessionNotes.map(toSessionDTO),
     roteiroNotes: row.roteiroNotes.map(toRoteiroNoteDTO),
   };
