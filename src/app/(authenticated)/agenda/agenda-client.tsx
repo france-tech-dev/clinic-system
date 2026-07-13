@@ -23,10 +23,10 @@ import { paths } from "@/shared/constants/paths";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CashTransactionFormDialog,
-  type CashTransactionDraft,
 } from "@/features/finance/components/cash-transaction-form-dialog";
 import { AppointmentFormDialog } from "./_components/appointment-form-dialog";
 import { AppointmentRow } from "./_components/appointment-row";
+import { useAgendaCashflow } from "./_components/hooks/use-agenda-cashflow";
 import { AgendaCalendar } from "./agenda-calendar";
 
 export function AgendaClient({
@@ -55,9 +55,8 @@ export function AgendaClient({
   const [upcoming, setUpcoming] = useState(initialUpcoming);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AppointmentDTO | null>(null);
-  const [cashDialogOpen, setCashDialogOpen] = useState(false);
-  const [cashDraft, setCashDraft] = useState<CashTransactionDraft | null>(null);
   const [pending, startTransition] = useTransition();
+  const cashflow = useAgendaCashflow();
 
   const sortedPatients = useMemo(
     () => [...patients].sort((a, b) => a.name.localeCompare(b.name)),
@@ -128,18 +127,7 @@ export function AgendaClient({
       );
       setUpcoming((prev) => prev.map((a) => (a.id === id ? updated : a)));
       toast.success("Status atualizado");
-
-      if (status === "realizado") {
-        setCashDraft({
-          type: "entrada",
-          date: updated.date,
-          patientId: updated.patientId,
-          description: `Sessão — ${updated.patientName}`,
-          amountCents: updated.patientPriceCents,
-        });
-        setCashDialogOpen(true);
-      }
-
+      cashflow.onAppointmentStatusChanged(updated, status);
       router.refresh();
     });
   }
@@ -352,24 +340,22 @@ export function AgendaClient({
         />
       )}
 
-      {cashDialogOpen && (
+      {cashflow.cashDialogOpen && (
         <CashTransactionFormDialog
-          key={`cash-${cashDraft?.patientId ?? "new"}-${cashDraft?.date ?? ""}`}
+          key={`cash-${cashflow.cashDraft?.patientId ?? "new"}-${cashflow.cashDraft?.date ?? ""}`}
           open
           onOpenChange={(open) => {
-            setCashDialogOpen(open);
-            if (!open) setCashDraft(null);
+            if (!open) cashflow.closeCashDialog();
           }}
           patients={sortedPatients}
           initial={null}
-          draft={cashDraft}
+          draft={cashflow.cashDraft}
           defaultDate={todayIso()}
           defaultType="entrada"
           pending={pending}
           startTransition={startTransition}
           onSaved={() => {
-            setCashDialogOpen(false);
-            setCashDraft(null);
+            cashflow.closeCashDialog();
             router.refresh();
           }}
         />
