@@ -20,16 +20,19 @@ alwaysApply: false
 
 ## Domínios (`features/`)
 
-| Domínio          | Exemplos                                              |
-| ---------------- | ----------------------------------------------------- |
-| `booking/`       | create/delete booking, status, listagens              |
-| `organization/`  | create org, getOrganizations, getActiveOrganization   |
-| `member/`        | CRUD barbeiros, convites, addMember                   |
-| `service/`       | CRUD serviços                                       |
-| `schedule/`      | horários, pausas, bloqueios                           |
-| `subscription/`  | Stripe, hasOwnerSubscriptionAccess                    |
-| `public/`        | listagem e slug público                               |
-| `dashboard/`     | stats e gráficos do painel                            |
+Ver lista completa em [`docs/architecture.md`](../../docs/architecture.md).
+
+| Domínio | Exemplos |
+| ------- | -------- |
+| `patient/` | CRUD paciente, avaliações, evoluções, anamnese, plano, PDF |
+| `schedule/` | Agenda, agendamentos, calendário, repetição semanal |
+| `finance/` | Fluxo de caixa, lançamentos |
+| `exercise/` | Biblioteca de actividades |
+| `study/` | Fichário de estudo |
+| `settings/` | Perfil profissional, branding |
+| `dashboard/` | Painel, stats, alertas, busca global |
+
+Orquestração multi-domínio → `app/` (pages), **nunca** feature → feature.
 
 ## Retorno padrão
 
@@ -45,8 +48,9 @@ export type ActionResult<T = void> =
 2. Após mutação nas actions: `revalidatePath` / `revalidateTag`; `redirect()` se fizer sentido.
 3. Segredos só no servidor (env); DB apenas em **repository** via `@/src/shared/lib/prisma`.
 4. Route Handlers (`src/app/api/...`) só para webhooks/HTTP externo.
-5. **Features não importam entre si** — guards e utils comuns em `src/shared/`.
-6. Manter **nomes exportados** estáveis ao refatorar (app importa `booking.actions`, `service.panel.actions`, etc.).
+5. **Features não importam entre si** — orquestrar em `app/`; utils comuns em `shared/`.
+6. **DB só em repository** — services não acedem a `db` directamente.
+7. Manter **nomes exportados** estáveis ao refatorar.
 
 ## Cliente
 
