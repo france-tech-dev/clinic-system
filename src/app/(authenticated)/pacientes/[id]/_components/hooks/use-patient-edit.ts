@@ -7,7 +7,7 @@ import type { PatientDetailDTO, PatientPricingType } from "@/features/patient/pa
 import {
   formatPatientPriceInput,
   parsePatientPriceInput,
-} from "../edit-patient-dialog";
+} from "@/features/patient/_lib/patient-price-input";
 
 export function usePatientEdit({
   detail,

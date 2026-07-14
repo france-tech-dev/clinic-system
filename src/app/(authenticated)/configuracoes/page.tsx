@@ -1,5 +1,6 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import {
+  getCurrentMemberProfessionalProfile,
   getPrintBranding,
   getProfessionalProfile,
 } from "@/features/settings/settings.service";
@@ -9,12 +10,14 @@ import { ConfiguracoesClient } from "./configuracoes-client";
 export default async function ConfiguracoesPage() {
   let error: string | null = null;
   let profile = { nome: "", registro: "", clinica: "" };
+  let memberProfile = { nome: "", registro: "", clinica: "" };
   let branding = { clinicName: "Fichário TO", logoUrl: "/paris.png" };
 
   try {
-    const { organizationId } = await requireOrgId();
-    [profile, branding] = await Promise.all([
+    const { organizationId, userId } = await requireOrgId();
+    [profile, memberProfile, branding] = await Promise.all([
       getProfessionalProfile(organizationId),
+      getCurrentMemberProfessionalProfile(organizationId, userId),
       getPrintBranding(organizationId),
     ]);
   } catch (e) {
@@ -29,7 +32,11 @@ export default async function ConfiguracoesPage() {
       {error ? (
         <p className="text-sm text-destructive">{error}</p>
       ) : (
-        <ConfiguracoesClient initial={profile} branding={branding} />
+        <ConfiguracoesClient
+          initial={profile}
+          memberInitial={memberProfile}
+          branding={branding}
+        />
       )}
     </AppPage>
   );

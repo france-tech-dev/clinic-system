@@ -23,7 +23,6 @@ import {
   PATIENT_PRICING_TYPES,
   patientPriceFieldLabel,
 } from "@/shared/constants/patient-pricing";
-import { centsToBrlInput, parseBrlToCents } from "@/shared/lib/money-utils";
 
 export function EditPatientDialog({
   open,
@@ -114,15 +113,4 @@ export function EditPatientDialog({
       </DialogContent>
     </Dialog>
   );
-}
-
-export function parsePatientPriceInput(value: string): number | null {
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  return parseBrlToCents(trimmed);
-}
-
-export function formatPatientPriceInput(cents: number | null): string {
-  if (cents === null || cents <= 0) return "";
-  return centsToBrlInput(cents);
 }

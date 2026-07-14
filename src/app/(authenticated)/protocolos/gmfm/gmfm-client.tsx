@@ -262,6 +262,11 @@ export function GmfmProtocolClient({
                     <p className="font-medium">
                       {a.label} — {formatDateBR(a.date)}
                     </p>
+                    {a.professionalName ? (
+                      <p className="text-sm text-muted-foreground">
+                        {a.professionalName}
+                      </p>
+                    ) : null}
                     {a.summary ? (
                       <p className="text-sm text-muted-foreground">
                         Total {a.summary.totalScore}/{a.summary.maxScore} (

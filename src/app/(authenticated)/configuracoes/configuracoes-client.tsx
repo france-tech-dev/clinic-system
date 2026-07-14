@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { saveProfessionalAction } from "@/features/settings/settings.actions";
+import {
+  saveCurrentMemberProfessionalAction,
+  saveProfessionalAction,
+} from "@/features/settings/settings.actions";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -12,23 +15,41 @@ import { ProfessionalProfileForm } from "./_components/professional-profile-form
 
 export function ConfiguracoesClient({
   initial,
+  memberInitial,
   branding,
 }: {
   initial: ProfessionalProfile;
+  memberInitial: ProfessionalProfile;
   branding: PrintBranding;
 }) {
-  const [form, setForm] = useState(initial);
+  const [orgForm, setOrgForm] = useState(initial);
+  const [memberForm, setMemberForm] = useState(memberInitial);
   const [pending, startTransition] = useTransition();
 
-  function save() {
+  function saveOrg() {
     startTransition(async () => {
-      const result = await saveProfessionalAction(form);
+      const result = await saveProfessionalAction(orgForm);
       if (!result.success) {
         toast.error(result.error);
         return;
       }
-      setForm(result.data);
-      toast.success("Dados do profissional salvos");
+      setOrgForm(result.data);
+      toast.success("Perfil da clínica salvo");
+    });
+  }
+
+  function saveMember() {
+    startTransition(async () => {
+      const result = await saveCurrentMemberProfessionalAction({
+        nome: memberForm.nome,
+        registro: memberForm.registro,
+      });
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      setMemberForm({ ...result.data, clinica: "" });
+      toast.success("Seu CREFITO foi salvo");
     });
   }
 
@@ -36,16 +57,23 @@ export function ConfiguracoesClient({
     <div className="flex flex-col gap-8">
       <ClinicBrandingForm initial={branding} />
 
-      <div>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Usados na assinatura dos relatórios PDF (avaliação, anamnese e
-          prontuário).
-        </p>
+      <div className="space-y-4">
         <ProfessionalProfileForm
-          form={form}
-          onFormChange={setForm}
+          form={memberForm}
+          onFormChange={setMemberForm}
           pending={pending}
-          onSave={save}
+          onSave={saveMember}
+          title="Meu CREFITO"
+          description="Usado na assinatura dos PDFs das avaliações que você criar. Cada profissional configura o seu."
+        />
+
+        <ProfessionalProfileForm
+          form={orgForm}
+          onFormChange={setOrgForm}
+          pending={pending}
+          onSave={saveOrg}
+          title="Fallback da clínica"
+          description="Assinatura padrão quando a avaliação não tem autor com CREFITO, ou em relatórios gerais (anamnese, prontuário completo)."
         />
       </div>
     </div>

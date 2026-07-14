@@ -156,6 +156,10 @@ export function useRelatorioForm({
         mode,
         branding,
         professional,
+        authorProfessional:
+          mode === "evaluation"
+            ? (evaluation?.authorProfessional ?? null)
+            : null,
         evaluation,
         evaluationReportOptions:
           mode === "evaluation" ? evaluationReportOptions : null,

@@ -18,11 +18,9 @@ import type {
 } from "@/features/patient/patient.types";
 import { paths } from "@/shared/constants/paths";
 import { formatPatientListMeta } from "@/features/patient/_lib/patient-list-meta";
+import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
 import { cn } from "@/shared/lib/utils";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
-import {
-  parsePatientPriceInput,
-} from "./[id]/_components/edit-patient-dialog";
 import type { PatientPricingType } from "@/features/patient/patient.types";
 
 const STATUS_LABEL: Record<PatientStatus, string> = {

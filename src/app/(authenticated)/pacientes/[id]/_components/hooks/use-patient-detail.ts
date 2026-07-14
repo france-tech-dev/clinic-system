@@ -91,6 +91,10 @@ export function usePatientDetail({
         mode: reportMode,
         branding,
         professional,
+        authorProfessional:
+          reportMode === "evaluation"
+            ? (evaluation?.authorProfessional ?? null)
+            : null,
         evaluation,
         roteiro:
           reportMode === "roteiro"
