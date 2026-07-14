@@ -352,6 +352,8 @@ model ProtocolAssessment {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   patientId      String
   patient        Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  memberId       String?
+  member         Member?      @relation(fields: [memberId], references: [id], onDelete: SetNull)
   protocolId     String
   label          String       @default("Avaliação")
   date           String
@@ -363,21 +365,24 @@ model ProtocolAssessment {
   @@index([organizationId])
   @@index([patientId])
   @@index([patientId, protocolId])
+  @@index([memberId])
   @@map("protocol_assessments")
 }
 
 model Member {
-  id               String            @id
-  organizationId   String
-  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId           String
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role             String            @default("member")
-  createdAt        DateTime
-  appointments     Appointment[]
-  cashTransactions CashTransaction[]
-  evaluations      Evaluation[]
-  sessionNotes     SessionNote[]
+  id                  String                @id
+  organizationId      String
+  organization        Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role                String                @default("member")
+  metadata            String?
+  createdAt           DateTime
+  appointments        Appointment[]
+  cashTransactions    CashTransaction[]
+  evaluations         Evaluation[]
+  sessionNotes        SessionNote[]
+  protocolAssessments ProtocolAssessment[]
 
   @@index([organizationId])
   @@index([userId])
