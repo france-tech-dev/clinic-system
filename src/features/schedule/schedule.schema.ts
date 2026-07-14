@@ -8,6 +8,7 @@ const statusIds = APPOINTMENT_STATUSES.map((s) => s.id) as [
 
 export const appointmentFormSchema = z.object({
   patientId: z.string().min(1, "Selecione um paciente"),
+  memberId: z.string().min(1, "Selecione um profissional"),
   date: z.string().min(1, "Informe a data"),
   time: z.string().trim().default(""),
   duration: z.number().int().min(0).max(480).default(50),
@@ -18,6 +19,7 @@ export const appointmentFormSchema = z.object({
 export const updateAppointmentSchema = z.object({
   id: z.string().min(1),
   patientId: z.string().min(1, "Selecione um paciente"),
+  memberId: z.string().min(1, "Selecione um profissional"),
   date: z.string().min(1, "Informe a data"),
   time: z.string().trim().default(""),
   duration: z.number().int().min(0).max(480).default(50),

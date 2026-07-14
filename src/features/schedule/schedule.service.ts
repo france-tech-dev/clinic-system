@@ -4,36 +4,28 @@ import type {
   AppointmentFormInput,
   UpdateAppointmentInput,
 } from "./schedule.schema";
-import type { AppointmentDTO } from "./schedule.types";
+import type { AppointmentDTO, ScheduleMemberDTO } from "./schedule.types";
 
 function sessionNoteKey(patientId: string, date: string) {
   return `${patientId}:${date}`;
 }
 
-function toDTO(
-  row: {
-    id: string;
-    patientId: string;
-    date: string;
-    time: string;
-    duration: number;
-    notes: string;
-    status: AppointmentStatusId;
-    createdAt: Date;
-    updatedAt: Date;
-    patient: {
-      id: string;
-      name: string;
-      pricingType: "sessao" | "pacote";
-      priceCents: number | null;
-    };
-  },
-  sessionKeys: Set<string>,
-): AppointmentDTO {
+type AppointmentRow = NonNullable<
+  Awaited<ReturnType<typeof scheduleRepository.findById>>
+>;
+
+function professionalNameFrom(row: AppointmentRow): string {
+  const name = row.member.user.name?.trim();
+  return name || "Profissional";
+}
+
+function toDTO(row: AppointmentRow, sessionKeys: Set<string>): AppointmentDTO {
   return {
     id: row.id,
     patientId: row.patientId,
     patientName: row.patient.name,
+    memberId: row.memberId,
+    professionalName: professionalNameFrom(row),
     date: row.date,
     time: row.time,
     duration: row.duration,
@@ -47,9 +39,20 @@ function toDTO(
   };
 }
 
+function toMemberDTO(
+  row: Awaited<ReturnType<typeof scheduleRepository.findOrgMembers>>[number],
+): ScheduleMemberDTO {
+  return {
+    id: row.id,
+    userId: row.userId,
+    name: row.user.name?.trim() || "Sem nome",
+    role: row.role,
+  };
+}
+
 async function mapWithSessionKeys(
   organizationId: string,
-  rows: Awaited<ReturnType<typeof scheduleRepository.findByDate>>,
+  rows: AppointmentRow[],
   startDate: string,
   endDate: string,
 ) {
@@ -59,6 +62,22 @@ async function mapWithSessionKeys(
     endDate,
   );
   return rows.map((row) => toDTO(row, sessionKeys));
+}
+
+export async function listOrganizationMembers(organizationId: string) {
+  const rows = await scheduleRepository.findOrgMembers(organizationId);
+  return rows.map(toMemberDTO);
+}
+
+export async function getCurrentMemberId(
+  organizationId: string,
+  userId: string,
+): Promise<string | null> {
+  const member = await scheduleRepository.findMemberByUserId(
+    organizationId,
+    userId,
+  );
+  return member?.id ?? null;
 }
 
 export async function listAppointmentsByDate(
@@ -94,9 +113,15 @@ export async function listAppointmentsByDateRange(
 export async function createAppointments(
   organizationId: string,
   data: AppointmentFormInput,
-) {
+): Promise<AppointmentDTO[] | "patient_not_found" | "member_not_found"> {
+  const member = await scheduleRepository.findMemberInOrg(
+    organizationId,
+    data.memberId,
+  );
+  if (!member) return "member_not_found";
+
   const rows = await scheduleRepository.createMany(organizationId, data);
-  if (!rows) return null;
+  if (!rows) return "patient_not_found";
   const dates = rows.map((r) => r.date).sort();
   return mapWithSessionKeys(
     organizationId,
@@ -109,16 +134,22 @@ export async function createAppointments(
 export async function updateAppointment(
   organizationId: string,
   data: UpdateAppointmentInput,
-) {
+): Promise<AppointmentDTO | "not_found" | "member_not_found"> {
+  const member = await scheduleRepository.findMemberInOrg(
+    organizationId,
+    data.memberId,
+  );
+  if (!member) return "member_not_found";
+
   const row = await scheduleRepository.update(organizationId, data);
-  if (!row) return null;
+  if (!row) return "not_found";
   const mapped = await mapWithSessionKeys(
     organizationId,
     [row],
     row.date,
     row.date,
   );
-  return mapped[0] ?? null;
+  return mapped[0] ?? "not_found";
 }
 
 export async function setAppointmentStatus(

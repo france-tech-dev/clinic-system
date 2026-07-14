@@ -8,10 +8,12 @@ import type { AppointmentDTO } from "../schedule.types";
 export type CalendarEvent = {
   id: string;
   patientId: string;
+  memberId: string;
   title: string;
   start: Date;
   end: Date;
   patientName: string;
+  professionalName: string;
   status: string;
   hasSessionNote: boolean;
 };
@@ -37,10 +39,12 @@ export function appointmentsToCalendarEvents(
     return {
       id: a.id,
       patientId: a.patientId,
+      memberId: a.memberId,
       title: a.patientName,
       start,
       end,
       patientName: a.patientName,
+      professionalName: a.professionalName,
       status: a.status,
       hasSessionNote: a.hasSessionNote,
     };

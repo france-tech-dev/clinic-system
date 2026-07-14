@@ -13,6 +13,15 @@ const patientSelect = {
   priceCents: true,
 } as const;
 
+const appointmentInclude = {
+  patient: { select: patientSelect },
+  member: {
+    include: {
+      user: { select: { name: true } },
+    },
+  },
+} as const;
+
 export const scheduleRepository = {
   async findSessionNoteKeysInRange(
     organizationId: string,
@@ -30,10 +39,32 @@ export const scheduleRepository = {
     return new Set(notes.map((n) => `${n.patientId}:${n.date}`));
   },
 
+  async findOrgMembers(organizationId: string) {
+    return db.member.findMany({
+      where: { organizationId },
+      include: { user: { select: { id: true, name: true } } },
+      orderBy: { createdAt: "asc" },
+    });
+  },
+
+  async findMemberByUserId(organizationId: string, userId: string) {
+    return db.member.findFirst({
+      where: { organizationId, userId },
+      include: { user: { select: { id: true, name: true } } },
+    });
+  },
+
+  async findMemberInOrg(organizationId: string, memberId: string) {
+    return db.member.findFirst({
+      where: { id: memberId, organizationId },
+      select: { id: true },
+    });
+  },
+
   async findByDate(organizationId: string, date: string) {
     return db.appointment.findMany({
       where: { organizationId, date },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
       orderBy: [{ time: "asc" }, { createdAt: "asc" }],
     });
   },
@@ -41,7 +72,7 @@ export const scheduleRepository = {
   async findUpcoming(organizationId: string, fromDate: string, take = 20) {
     return db.appointment.findMany({
       where: { organizationId, date: { gte: fromDate } },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
       orderBy: [{ date: "asc" }, { time: "asc" }],
       take,
     });
@@ -57,7 +88,7 @@ export const scheduleRepository = {
         organizationId,
         date: { gte: startDate, lte: endDate },
       },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
       orderBy: [{ date: "asc" }, { time: "asc" }],
     });
   },
@@ -65,7 +96,7 @@ export const scheduleRepository = {
   async findById(organizationId: string, id: string) {
     return db.appointment.findFirst({
       where: { id, organizationId },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
     });
   },
 
@@ -75,6 +106,9 @@ export const scheduleRepository = {
     });
     if (!patient) return null;
 
+    const member = await this.findMemberInOrg(organizationId, data.memberId);
+    if (!member) return null;
+
     const weeks = data.repeatWeeks ?? 1;
     const created = [];
     for (let i = 0; i < weeks; i++) {
@@ -82,13 +116,14 @@ export const scheduleRepository = {
         data: {
           organizationId,
           patientId: data.patientId,
+          memberId: data.memberId,
           date: addDaysIso(data.date, i * 7),
           time: data.time ?? "",
           duration: data.duration ?? 50,
           notes: data.notes ?? "",
           status: "agendado",
         },
-        include: { patient: { select: patientSelect } },
+        include: appointmentInclude,
       });
       created.push(row);
     }
@@ -106,17 +141,21 @@ export const scheduleRepository = {
     });
     if (!patient) return null;
 
+    const member = await this.findMemberInOrg(organizationId, data.memberId);
+    if (!member) return null;
+
     return db.appointment.update({
       where: { id: data.id },
       data: {
         patientId: data.patientId,
+        memberId: data.memberId,
         date: data.date,
         time: data.time ?? "",
         duration: data.duration ?? 50,
         notes: data.notes ?? "",
         status: data.status as AppointmentStatusId,
       },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
     });
   },
 
@@ -134,7 +173,7 @@ export const scheduleRepository = {
     return db.appointment.update({
       where: { id },
       data: { date, time: time ?? "" },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
     });
   },
 
@@ -150,7 +189,7 @@ export const scheduleRepository = {
     return db.appointment.update({
       where: { id },
       data: { status },
-      include: { patient: { select: patientSelect } },
+      include: appointmentInclude,
     });
   },
 

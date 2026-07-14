@@ -16,6 +16,7 @@ import {
   createAppointments,
   deleteAppointment,
   getAgendaPageData,
+  getCurrentMemberId,
   rescheduleAppointment,
   setAppointmentStatus,
   updateAppointment,
@@ -55,9 +56,21 @@ export async function createAppointmentAction(
     if (!parsed.success) {
       return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
     }
-    const { organizationId } = await requireOrgId();
-    const data = await createAppointments(organizationId, parsed.data);
-    if (!data) return fail("Paciente não encontrado");
+    const { organizationId, userId } = await requireOrgId();
+    const memberId =
+      parsed.data.memberId ||
+      (await getCurrentMemberId(organizationId, userId));
+    if (!memberId) {
+      return fail("Profissional não encontrado na organização");
+    }
+    const data = await createAppointments(organizationId, {
+      ...parsed.data,
+      memberId,
+    });
+    if (data === "patient_not_found") return fail("Paciente não encontrado");
+    if (data === "member_not_found") {
+      return fail("Profissional inválido para esta organização");
+    }
     revalidateAgenda();
     return ok(data);
   } catch (error) {
@@ -78,7 +91,12 @@ export async function updateAppointmentAction(
       ...parsed.data,
       status: parsed.data.status as AppointmentStatusId,
     });
-    if (!data) return fail("Agendamento não encontrado");
+    if (data === "member_not_found") {
+      return fail("Profissional inválido para esta organização");
+    }
+    if (data === "not_found" || !data) {
+      return fail("Agendamento não encontrado");
+    }
     revalidateAgenda();
     return ok(data);
   } catch (error) {
