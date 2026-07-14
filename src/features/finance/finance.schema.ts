@@ -36,7 +36,8 @@ export const cashTransactionFormSchema = z.object({
     .int()
     .positive("Valor deve ser maior que zero"),
   paymentMethod: paymentMethod,
-  patientId: z.string().cuid().nullable().optional(),
+  patientId: z.string().min(1).nullable().optional(),
+  memberId: z.string().min(1).nullable().optional(),
 });
 
 export const updateCashTransactionSchema = cashTransactionFormSchema.extend({

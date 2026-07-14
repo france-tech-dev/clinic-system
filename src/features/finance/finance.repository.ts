@@ -8,8 +8,13 @@ import type {
   UpdateCashTransactionInput,
 } from "./finance.schema";
 
-const includePatient = {
+const includeRelations = {
   patient: { select: { id: true, name: true } },
+  member: {
+    include: {
+      user: { select: { name: true } },
+    },
+  },
 } as const;
 
 export const financeRepository = {
@@ -17,13 +22,15 @@ export const financeRepository = {
     organizationId: string,
     startDate: string,
     endDate: string,
+    memberId?: string | null,
   ) {
     return db.cashTransaction.findMany({
       where: {
         organizationId,
         date: { gte: startDate, lte: endDate },
+        ...(memberId ? { memberId } : {}),
       },
-      include: includePatient,
+      include: includeRelations,
       orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     });
   },
@@ -31,7 +38,14 @@ export const financeRepository = {
   async findById(organizationId: string, id: string) {
     return db.cashTransaction.findFirst({
       where: { id, organizationId },
-      include: includePatient,
+      include: includeRelations,
+    });
+  },
+
+  async findMemberInOrg(organizationId: string, memberId: string) {
+    return db.member.findFirst({
+      where: { id: memberId, organizationId },
+      select: { id: true },
     });
   },
 
@@ -45,8 +59,9 @@ export const financeRepository = {
         description: data.description,
         paymentMethod: data.paymentMethod as CashPaymentMethodId,
         patientId: data.patientId ?? null,
+        memberId: data.memberId ?? null,
       },
-      include: includePatient,
+      include: includeRelations,
     });
   },
 
@@ -66,15 +81,16 @@ export const financeRepository = {
         description: data.description,
         paymentMethod: data.paymentMethod as CashPaymentMethodId,
         patientId: data.patientId ?? null,
+        memberId: data.memberId ?? null,
       },
-      include: includePatient,
+      include: includeRelations,
     });
   },
 
   async delete(organizationId: string, id: string) {
     const existing = await db.cashTransaction.findFirst({
       where: { id, organizationId },
-      include: includePatient,
+      include: includeRelations,
     });
     if (!existing) return null;
 

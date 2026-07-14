@@ -19,6 +19,13 @@ import type { CashTransactionDTO, CashflowPageData } from "./finance.types";
 
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
+  if (error instanceof Error && error.message) {
+    const known = [
+      "Paciente não encontrado",
+      "Profissional não encontrado",
+    ];
+    if (known.includes(error.message)) return fail(error.message);
+  }
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
 }

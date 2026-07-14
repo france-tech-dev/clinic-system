@@ -43,16 +43,19 @@ export type CashTransactionDraft = {
   amountCents?: number | null;
   paymentMethod?: CashPaymentMethodId;
   patientId?: string | null;
+  memberId?: string | null;
 };
 
 export function CashTransactionFormDialog({
   open,
   onOpenChange,
   patients,
+  members,
   initial,
   draft,
   defaultDate,
   defaultType,
+  defaultMemberId,
   pending,
   startTransition,
   onSaved,
@@ -60,10 +63,12 @@ export function CashTransactionFormDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   patients: PatientDTO[];
+  members: { id: string; name: string }[];
   initial: CashTransactionDTO | null;
   draft?: CashTransactionDraft | null;
   defaultDate: string;
   defaultType?: CashTransactionTypeId;
+  defaultMemberId?: string;
   pending: boolean;
   startTransition: (fn: () => void) => void;
   onSaved: () => void;
@@ -88,6 +93,12 @@ export function CashTransactionFormDialog({
   const [patientId, setPatientId] = useState<string | null>(
     initial?.patientId ?? draft?.patientId ?? null,
   );
+  const [memberId, setMemberId] = useState<string | null>(
+    initial?.memberId ??
+      draft?.memberId ??
+      defaultMemberId ??
+      null,
+  );
 
   function submit() {
     const amountCents = parseBrlToCents(amountInput);
@@ -104,6 +115,7 @@ export function CashTransactionFormDialog({
         amountCents,
         paymentMethod,
         patientId,
+        memberId,
       };
 
       const result = initial
@@ -239,6 +251,28 @@ export function CashTransactionFormDialog({
               </Select>
             </div>
           </div>
+
+          {members.length > 0 ? (
+            <div className="grid gap-1.5">
+              <Label>Profissional (opcional)</Label>
+              <Select
+                value={memberId ?? "none"}
+                onValueChange={(v) => setMemberId(v === "none" ? null : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Nenhum" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {members.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
