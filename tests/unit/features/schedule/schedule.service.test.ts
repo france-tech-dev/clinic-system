@@ -17,6 +17,7 @@ const baseRow = {
   id: appointmentId,
   organizationId: orgId,
   patientId: "patient-1",
+  memberId: "member-1",
   date: "2026-07-13",
   time: "10:00",
   duration: 50,
@@ -29,6 +30,14 @@ const baseRow = {
     name: "Ana",
     pricingType: "sessao" as const,
     priceCents: 15000,
+  },
+  member: {
+    id: "member-1",
+    organizationId: orgId,
+    userId: "user-1",
+    role: "owner",
+    createdAt: new Date("2026-07-01T12:00:00"),
+    user: { name: "Dra. Silva" },
   },
 };
 
@@ -80,6 +89,8 @@ describe("rescheduleAppointment", () => {
       date: "2026-07-14",
       time: "11:00",
       patientName: "Ana",
+      memberId: "member-1",
+      professionalName: "Dra. Silva",
       hasSessionNote: false,
     });
   });

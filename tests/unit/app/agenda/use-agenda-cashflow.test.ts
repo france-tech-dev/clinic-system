@@ -6,6 +6,8 @@ const appointment: AppointmentDTO = {
   id: "a1",
   patientId: "p1",
   patientName: "Ana Silva",
+  memberId: "m1",
+  professionalName: "Dra. Silva",
   date: "2026-07-13",
   time: "10:00",
   duration: 50,
@@ -24,6 +26,7 @@ describe("buildCashDraftFromAppointment", () => {
       type: "entrada",
       date: "2026-07-13",
       patientId: "p1",
+      memberId: "m1",
       description: "Sessão — Ana Silva",
       amountCents: 18000,
     });
