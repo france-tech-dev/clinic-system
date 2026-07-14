@@ -42,6 +42,11 @@ export function AvaliacaoLista({
                     {formatDateBR(ev.date)}
                   </span>
                 </div>
+                {ev.professionalName ? (
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {ev.professionalName}
+                  </p>
+                ) : null}
                 {ev.queixa && (
                   <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
                     {ev.queixa}

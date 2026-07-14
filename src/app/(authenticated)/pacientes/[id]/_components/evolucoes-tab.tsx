@@ -39,6 +39,11 @@ export function EvolucoesTab({
                     {formatDateBR(s.date)}
                   </span>
                 </div>
+                {s.professionalName ? (
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {s.professionalName}
+                  </p>
+                ) : null}
                 {s.atividades && (
                   <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                     {s.atividades}
