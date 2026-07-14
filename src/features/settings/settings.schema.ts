@@ -10,6 +10,14 @@ export type ProfessionalProfileInput = z.infer<
   typeof professionalProfileSchema
 >;
 
+/** CREFITO do membro autenticado (Member.metadata). */
+export const memberProfessionalSchema = z.object({
+  nome: z.string().trim().default(""),
+  registro: z.string().trim().default(""),
+});
+
+export type MemberProfessionalInput = z.infer<typeof memberProfessionalSchema>;
+
 export const organizationBrandingSchema = z.object({
   clinicName: z
     .string()

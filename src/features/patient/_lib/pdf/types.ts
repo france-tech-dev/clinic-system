@@ -1,5 +1,5 @@
 import type { EvaluationDTO } from "@/features/patient/patient.types";
-import type { PrintBranding } from "@/features/settings/settings.types";
+import type { PrintBranding } from "@/shared/types/professional";
 import type { RoteiroCategory } from "@/shared/constants/roteiros";
 import type { EvaluationReportOptions } from "./evaluation-report-options";
 

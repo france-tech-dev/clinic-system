@@ -2,6 +2,9 @@ import type {
   CashPaymentMethodId,
   CashTransactionTypeId,
 } from "@/shared/constants/cash";
+import type { CashflowSummary } from "@/shared/types/cashflow";
+
+export type { CashflowSummary } from "@/shared/types/cashflow";
 
 /** Opção de membro para selects do caixa (shape compatível com ScheduleMemberDTO). */
 export type CashMemberOption = {
@@ -22,12 +25,6 @@ export type CashTransactionDTO = {
   professionalName: string | null;
   createdAt: string;
   updatedAt: string;
-};
-
-export type CashflowSummary = {
-  incomeCents: number;
-  expenseCents: number;
-  balanceCents: number;
 };
 
 export type CashflowPageData = {

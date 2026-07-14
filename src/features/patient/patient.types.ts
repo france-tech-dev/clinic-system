@@ -27,6 +27,12 @@ export type EvaluationDTO = {
   patientId: string;
   memberId: string | null;
   professionalName: string | null;
+  /** Perfil CREFITO do autor (Member.metadata), para PDF. */
+  authorProfessional: {
+    nome: string;
+    registro: string;
+    clinica: string;
+  } | null;
   tipo: string;
   date: string;
   queixa: string;

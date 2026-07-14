@@ -1,28 +1,19 @@
-export type ProfessionalProfile = {
-  nome: string;
-  registro: string;
-  clinica: string;
-};
+import type { ProfessionalProfile } from "@/shared/types/professional";
+
+export type {
+  ProfessionalProfile,
+  PrintBranding,
+  MemberProfessionalStored,
+} from "@/shared/types/professional";
+export {
+  EMPTY_PROFESSIONAL,
+  formatProfessionalSignature,
+  memberToProfessionalProfile,
+  parseMemberProfessionalMetadata,
+  resolveReportProfessional,
+  serializeMemberProfessionalMetadata,
+} from "@/shared/types/professional";
 
 export type ClinicSettings = {
   professional: ProfessionalProfile;
 };
-
-export type PrintBranding = {
-  clinicName: string;
-  logoUrl: string;
-};
-
-export const EMPTY_PROFESSIONAL: ProfessionalProfile = {
-  nome: "",
-  registro: "",
-  clinica: "",
-};
-
-export function formatProfessionalSignature(p: ProfessionalProfile): string {
-  if (!p.nome.trim()) {
-    return "Assinatura e carimbo — Terapeuta Ocupacional";
-  }
-  const reg = p.registro.trim() ? ` · ${p.registro.trim()}` : "";
-  return `${p.nome.trim()}${reg} — Terapeuta Ocupacional`;
-}

@@ -1,4 +1,4 @@
-import type { CashflowSummary } from "@/features/finance/finance.types";
+import type { CashflowSummary } from "@/shared/types/cashflow";
 
 export type DashboardStats = {
   activePatients: number;

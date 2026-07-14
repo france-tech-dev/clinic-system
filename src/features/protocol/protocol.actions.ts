@@ -17,6 +17,7 @@ import {
   deleteProtocolAssessment,
   getProtocolAssessment,
   listProtocolAssessments,
+  resolveProtocolAuthorMemberId,
   updateProtocolAssessment,
 } from "./protocol.service";
 import type {
@@ -77,8 +78,16 @@ export async function createProtocolAssessmentAction(
     const parsed = protocolAssessmentFormSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
-    const { organizationId } = await requireOrgId();
-    const data = await createProtocolAssessment(organizationId, parsed.data);
+    const { organizationId, userId } = await requireOrgId();
+    const memberId = await resolveProtocolAuthorMemberId(
+      organizationId,
+      userId,
+    );
+    const data = await createProtocolAssessment(
+      organizationId,
+      parsed.data,
+      memberId,
+    );
     if (!data) return fail("Paciente não encontrado");
 
     revalidateProtocol(parsed.data.patientId);

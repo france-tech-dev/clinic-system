@@ -8,7 +8,9 @@ import type { PatientPricingType, PatientStatus } from "./patient.types";
 
 const memberAuthorInclude = {
   member: {
-    include: {
+    select: {
+      id: true,
+      metadata: true,
       user: { select: { name: true } },
     },
   },

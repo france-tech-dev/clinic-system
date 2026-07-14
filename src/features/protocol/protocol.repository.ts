@@ -4,7 +4,23 @@ import type {
   UpdateProtocolAssessmentInput,
 } from "./protocol.schema";
 
+const assessmentInclude = {
+  patient: { select: { id: true, name: true } },
+  member: {
+    include: {
+      user: { select: { name: true } },
+    },
+  },
+} as const;
+
 export const protocolRepository = {
+  async findMemberByUserId(organizationId: string, userId: string) {
+    return db.member.findFirst({
+      where: { organizationId, userId },
+      select: { id: true },
+    });
+  },
+
   async findByPatient(
     organizationId: string,
     patientId: string,
@@ -16,9 +32,7 @@ export const protocolRepository = {
         patientId,
         ...(protocolId ? { protocolId } : {}),
       },
-      include: {
-        patient: { select: { id: true, name: true } },
-      },
+      include: assessmentInclude,
       orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     });
   },
@@ -26,13 +40,15 @@ export const protocolRepository = {
   async findById(organizationId: string, id: string) {
     return db.protocolAssessment.findFirst({
       where: { id, organizationId },
-      include: {
-        patient: { select: { id: true, name: true } },
-      },
+      include: assessmentInclude,
     });
   },
 
-  async create(organizationId: string, data: ProtocolAssessmentFormInput) {
+  async create(
+    organizationId: string,
+    data: ProtocolAssessmentFormInput,
+    memberId: string | null,
+  ) {
     const patient = await db.patient.findFirst({
       where: { id: data.patientId, organizationId },
       select: { id: true },
@@ -43,15 +59,14 @@ export const protocolRepository = {
       data: {
         organizationId,
         patientId: data.patientId,
+        memberId,
         protocolId: data.protocolId,
         label: data.label,
         date: data.date,
         scores: JSON.stringify(data.scores),
         notes: data.notes ?? "",
       },
-      include: {
-        patient: { select: { id: true, name: true } },
-      },
+      include: assessmentInclude,
     });
   },
 
@@ -70,18 +85,14 @@ export const protocolRepository = {
         scores: JSON.stringify(data.scores),
         notes: data.notes ?? "",
       },
-      include: {
-        patient: { select: { id: true, name: true } },
-      },
+      include: assessmentInclude,
     });
   },
 
   async delete(organizationId: string, id: string) {
     const existing = await db.protocolAssessment.findFirst({
       where: { id, organizationId },
-      include: {
-        patient: { select: { id: true, name: true } },
-      },
+      include: assessmentInclude,
     });
     if (!existing) return null;
 

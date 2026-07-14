@@ -13,6 +13,8 @@ import {
 } from "@/shared/lib/organization-logo";
 import {
   EMPTY_PROFESSIONAL,
+  memberToProfessionalProfile,
+  serializeMemberProfessionalMetadata,
   type ClinicSettings,
   type PrintBranding,
   type ProfessionalProfile,
@@ -69,6 +71,87 @@ export async function saveProfessionalProfile(
   );
 
   return professional;
+}
+
+export async function getMemberProfessionalProfile(
+  organizationId: string,
+  memberId: string,
+): Promise<ProfessionalProfile | null> {
+  const member = await settingsRepository.findMemberInOrg(
+    organizationId,
+    memberId,
+  );
+  if (!member) return null;
+  return memberToProfessionalProfile(member.metadata, member.user.name);
+}
+
+export async function getMemberProfessionalProfilesByIds(
+  organizationId: string,
+  memberIds: string[],
+): Promise<Record<string, ProfessionalProfile>> {
+  const unique = [...new Set(memberIds.filter(Boolean))];
+  const members = await settingsRepository.findMembersByIds(
+    organizationId,
+    unique,
+  );
+  const map: Record<string, ProfessionalProfile> = {};
+  for (const member of members) {
+    const profile = memberToProfessionalProfile(
+      member.metadata,
+      member.user.name,
+    );
+    if (profile) map[member.id] = profile;
+  }
+  return map;
+}
+
+export async function getCurrentMemberProfessionalProfile(
+  organizationId: string,
+  userId: string,
+): Promise<ProfessionalProfile> {
+  const member = await settingsRepository.findMemberByUserId(
+    organizationId,
+    userId,
+  );
+  if (!member) return { ...EMPTY_PROFESSIONAL };
+  return (
+    memberToProfessionalProfile(member.metadata, member.user.name) ?? {
+      nome: member.user.name?.trim() || "",
+      registro: "",
+      clinica: "",
+    }
+  );
+}
+
+export async function saveCurrentMemberProfessionalProfile(
+  organizationId: string,
+  userId: string,
+  professional: Pick<ProfessionalProfile, "nome" | "registro">,
+): Promise<ProfessionalProfile> {
+  const member = await settingsRepository.findMemberByUserId(
+    organizationId,
+    userId,
+  );
+  if (!member) throw new Error("Membro não encontrado na organização");
+
+  const metadata = serializeMemberProfessionalMetadata(
+    { nome: professional.nome, registro: professional.registro },
+    member.metadata,
+  );
+  const updated = await settingsRepository.updateMemberMetadata(
+    organizationId,
+    member.id,
+    metadata,
+  );
+  if (!updated) throw new Error("Não foi possível salvar o perfil");
+
+  return (
+    memberToProfessionalProfile(updated.metadata, updated.user.name) ?? {
+      nome: professional.nome,
+      registro: professional.registro,
+      clinica: "",
+    }
+  );
 }
 
 export async function getPrintBranding(

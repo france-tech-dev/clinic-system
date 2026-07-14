@@ -21,18 +21,11 @@ function parseScores(raw: string): Record<string, number | null> {
   }
 }
 
-function toDTO(row: {
-  id: string;
-  patientId: string;
-  protocolId: string;
-  label: string;
-  date: string;
-  scores: string;
-  notes: string;
-  createdAt: Date;
-  updatedAt: Date;
-  patient: { id: string; name: string };
-}): ProtocolAssessmentDTO {
+type AssessmentRow = NonNullable<
+  Awaited<ReturnType<typeof protocolRepository.findById>>
+>;
+
+function toDTO(row: AssessmentRow): ProtocolAssessmentDTO {
   const scores = parseScores(row.scores);
   const summary =
     row.protocolId === GMFM88_PROTOCOL_ID
@@ -43,6 +36,8 @@ function toDTO(row: {
     id: row.id,
     patientId: row.patientId,
     patientName: row.patient.name,
+    memberId: row.memberId,
+    professionalName: row.member?.user.name?.trim() || null,
     protocolId: row.protocolId,
     label: row.label,
     date: row.date,
@@ -52,6 +47,17 @@ function toDTO(row: {
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
+}
+
+export async function resolveProtocolAuthorMemberId(
+  organizationId: string,
+  userId: string,
+): Promise<string | null> {
+  const member = await protocolRepository.findMemberByUserId(
+    organizationId,
+    userId,
+  );
+  return member?.id ?? null;
 }
 
 export async function listProtocolAssessments(
@@ -78,8 +84,9 @@ export async function getProtocolAssessment(
 export async function createProtocolAssessment(
   organizationId: string,
   data: ProtocolAssessmentFormInput,
+  memberId: string | null,
 ) {
-  const row = await protocolRepository.create(organizationId, data);
+  const row = await protocolRepository.create(organizationId, data, memberId);
   return row ? toDTO(row) : null;
 }
 

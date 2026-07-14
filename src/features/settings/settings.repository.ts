@@ -37,4 +37,43 @@ export const settingsRepository = {
       select: brandingSelect,
     });
   },
+
+  async findMemberInOrg(organizationId: string, memberId: string) {
+    return db.member.findFirst({
+      where: { id: memberId, organizationId },
+      include: { user: { select: { name: true } } },
+    });
+  },
+
+  async findMemberByUserId(organizationId: string, userId: string) {
+    return db.member.findFirst({
+      where: { organizationId, userId },
+      include: { user: { select: { name: true } } },
+    });
+  },
+
+  async findMembersByIds(organizationId: string, memberIds: string[]) {
+    if (memberIds.length === 0) return [];
+    return db.member.findMany({
+      where: { organizationId, id: { in: memberIds } },
+      include: { user: { select: { name: true } } },
+    });
+  },
+
+  async updateMemberMetadata(
+    organizationId: string,
+    memberId: string,
+    metadata: string,
+  ) {
+    const existing = await db.member.findFirst({
+      where: { id: memberId, organizationId },
+      select: { id: true },
+    });
+    if (!existing) return null;
+    return db.member.update({
+      where: { id: memberId },
+      data: { metadata },
+      include: { user: { select: { name: true } } },
+    });
+  },
 };

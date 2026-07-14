@@ -1,6 +1,12 @@
 import type { EvaluationDTO, PatientDetailDTO } from "@/features/patient/patient.types";
-import type { PrintBranding, ProfessionalProfile } from "@/features/settings/settings.types";
-import { formatProfessionalSignature } from "@/features/settings/settings.types";
+import type {
+  PrintBranding,
+  ProfessionalProfile,
+} from "@/shared/types/professional";
+import {
+  formatProfessionalSignature,
+  resolveReportProfessional,
+} from "@/shared/types/professional";
 import {
   roteiroById,
   roteiroCategoryByTick,
@@ -13,7 +19,10 @@ export type BuildPatientReportPayloadInput = {
   detail: PatientDetailDTO;
   mode: PatientReportMode;
   branding: PrintBranding;
+  /** Fallback da organização (Configurações). */
   professional: ProfessionalProfile;
+  /** Assinatura do autor da avaliação (Member), se houver. */
+  authorProfessional?: ProfessionalProfile | null;
   evaluation?: EvaluationDTO | null;
   roteiro?: {
     roteiroId: RoteiroId;
@@ -27,11 +36,16 @@ export function buildPatientReportPayload({
   mode,
   branding,
   professional,
+  authorProfessional = null,
   evaluation = null,
   roteiro = null,
   evaluationReportOptions = null,
 }: BuildPatientReportPayloadInput): PatientReportPayload {
-  const signature = formatProfessionalSignature(professional);
+  const resolved = resolveReportProfessional(
+    authorProfessional,
+    professional,
+  );
+  const signature = formatProfessionalSignature(resolved);
 
   let roteiroPayload = null;
   if (mode === "roteiro" && roteiro) {

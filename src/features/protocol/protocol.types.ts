@@ -4,6 +4,8 @@ export type ProtocolAssessmentDTO = {
   id: string;
   patientId: string;
   patientName: string;
+  memberId: string | null;
+  professionalName: string | null;
   protocolId: string;
   label: string;
   date: string;

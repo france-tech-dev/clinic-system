@@ -1,3 +1,4 @@
+import { memberToProfessionalProfile } from "@/shared/types/professional";
 import type {
   EvaluationDomain,
   EvaluationDTO,
@@ -67,13 +68,19 @@ export function toEvaluationDTO(row: {
   criteriosAlta: string;
   createdAt: Date;
   updatedAt: Date;
-  member?: { user: { name: string | null } } | null;
+  member?: {
+    metadata?: string | null;
+    user: { name: string | null };
+  } | null;
 }): EvaluationDTO {
   return {
     id: row.id,
     patientId: row.patientId,
     memberId: row.memberId ?? null,
     professionalName: row.member?.user.name?.trim() || null,
+    authorProfessional: row.member
+      ? memberToProfessionalProfile(row.member.metadata, row.member.user.name)
+      : null,
     tipo: row.tipo,
     date: row.date,
     queixa: row.queixa,

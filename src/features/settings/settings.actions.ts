@@ -5,13 +5,16 @@ import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
+  memberProfessionalSchema,
   organizationBrandingSchema,
   professionalProfileSchema,
 } from "./settings.schema";
 import {
+  getCurrentMemberProfessionalProfile,
   getProfessionalProfile,
   getPrintBranding,
   removeOrganizationLogo,
+  saveCurrentMemberProfessionalProfile,
   saveOrganizationBranding,
   saveOrganizationLogo,
   saveProfessionalProfile,
@@ -64,6 +67,42 @@ export async function saveProfessionalAction(
     const data = await saveProfessionalProfile(organizationId, parsed.data);
     revalidatePath(paths.painel);
     revalidatePath(paths.configuracoes);
+    return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function getCurrentMemberProfessionalAction(): Promise<
+  ActionResult<ProfessionalProfile>
+> {
+  try {
+    const { organizationId, userId } = await requireOrgId();
+    return ok(
+      await getCurrentMemberProfessionalProfile(organizationId, userId),
+    );
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function saveCurrentMemberProfessionalAction(
+  input: unknown,
+): Promise<ActionResult<ProfessionalProfile>> {
+  try {
+    const parsed = memberProfessionalSchema.safeParse(input);
+    if (!parsed.success) {
+      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+    }
+    const { organizationId, userId } = await requireOrgId();
+    const data = await saveCurrentMemberProfessionalProfile(
+      organizationId,
+      userId,
+      parsed.data,
+    );
+    revalidatePath(paths.configuracoes);
+    revalidatePath(paths.pacientes, "layout");
+    revalidatePath(paths.relatorio);
     return ok(data);
   } catch (error) {
     return handleError(error);
