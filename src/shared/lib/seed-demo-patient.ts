@@ -56,6 +56,16 @@ export async function ensureDemoPatient(
   });
 
   const patient = await db.$transaction(async (tx) => {
+    const member = await tx.member.findFirst({
+      where: { organizationId },
+      orderBy: { createdAt: "asc" },
+    });
+    if (!member) {
+      throw new Error(
+        "Organização sem membros. Não é possível criar agendamentos de demonstração.",
+      );
+    }
+
     const createdPatient = await tx.patient.create({
       data: {
         organizationId,
@@ -70,6 +80,7 @@ export async function ensureDemoPatient(
     await tx.evaluation.create({
       data: {
         patientId: createdPatient.id,
+        memberId: member.id,
         tipo: evaluation.tipo,
         date: evaluation.date,
         queixa: evaluation.queixa,
@@ -100,6 +111,7 @@ export async function ensureDemoPatient(
       await tx.sessionNote.create({
         data: {
           patientId: createdPatient.id,
+          memberId: member.id,
           date: note.date,
           status: note.status,
           atividades: note.atividades,
@@ -113,6 +125,7 @@ export async function ensureDemoPatient(
         data: {
           organizationId,
           patientId: createdPatient.id,
+          memberId: member.id,
           date: appointment.date,
           time: appointment.time,
           duration: appointment.duration,
@@ -135,6 +148,7 @@ export async function ensureDemoPatient(
       data: {
         organizationId,
         patientId: createdPatient.id,
+        memberId: member.id,
         type: cashTransaction.type,
         amountCents: cashTransaction.amountCents,
         date: cashTransaction.date,
