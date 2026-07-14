@@ -227,6 +227,8 @@ model Evaluation {
   id                String   @id @default(cuid())
   patientId         String
   patient           Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  memberId          String?
+  member            Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
   tipo              String   @default("inicial")
   date              String
   queixa            String   @default("")
@@ -248,6 +250,7 @@ model Evaluation {
 
   @@index([patientId])
   @@index([patientId, date])
+  @@index([memberId])
   @@map("evaluations")
 }
 
@@ -266,6 +269,8 @@ model SessionNote {
   id          String            @id @default(cuid())
   patientId   String
   patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  memberId    String?
+  member      Member?           @relation(fields: [memberId], references: [id], onDelete: SetNull)
   date        String
   status      SessionNoteStatus @default(compareceu)
   atividades  String            @default("")
@@ -275,6 +280,7 @@ model SessionNote {
 
   @@index([patientId])
   @@index([patientId, date])
+  @@index([memberId])
   @@map("session_notes")
 }
 
@@ -284,9 +290,11 @@ model Appointment {
   organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   patientId      String
   patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  memberId       String
+  member         Member            @relation(fields: [memberId], references: [id], onDelete: Restrict)
   date           String
   time           String            @default("")
-  duration       Int               @default(50)
+  duration       Int               @default(45)
   notes          String            @default("")
   status         AppointmentStatus @default(agendado)
   createdAt      DateTime          @default(now())
@@ -295,6 +303,7 @@ model Appointment {
   @@index([organizationId])
   @@index([organizationId, date])
   @@index([patientId])
+  @@index([memberId])
   @@map("appointments")
 }
 
@@ -309,12 +318,15 @@ model CashTransaction {
   paymentMethod  CashPaymentMethod   @default(dinheiro)
   patientId      String?
   patient        Patient?            @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  memberId       String?
+  member         Member?             @relation(fields: [memberId], references: [id], onDelete: SetNull)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
   @@index([organizationId])
   @@index([organizationId, date])
   @@index([patientId])
+  @@index([memberId])
   @@map("cash_transactions")
 }
 
@@ -355,13 +367,17 @@ model ProtocolAssessment {
 }
 
 model Member {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       @default("member")
-  createdAt      DateTime
+  id               String            @id
+  organizationId   String
+  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role             String            @default("member")
+  createdAt        DateTime
+  appointments     Appointment[]
+  cashTransactions CashTransaction[]
+  evaluations      Evaluation[]
+  sessionNotes     SessionNote[]
 
   @@index([organizationId])
   @@index([userId])
