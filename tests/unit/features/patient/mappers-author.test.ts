@@ -28,11 +28,21 @@ describe("patient mappers — autoria", () => {
       criteriosAlta: "",
       createdAt: new Date("2026-07-01T12:00:00Z"),
       updatedAt: new Date("2026-07-01T12:00:00Z"),
-      member: { user: { name: "Dra. Silva" } },
+      member: {
+        metadata: JSON.stringify({
+          professional: { nome: "", registro: "CREFITO-3 99" },
+        }),
+        user: { name: "Dra. Silva" },
+      },
     });
 
     expect(dto.memberId).toBe("m1");
     expect(dto.professionalName).toBe("Dra. Silva");
+    expect(dto.authorProfessional).toEqual({
+      nome: "Dra. Silva",
+      registro: "CREFITO-3 99",
+      clinica: "",
+    });
   });
 
   it("toSessionDTO tolera ausência de member", () => {
