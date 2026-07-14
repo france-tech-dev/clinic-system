@@ -48,6 +48,7 @@ export function toPatientDTO(row: {
 export function toEvaluationDTO(row: {
   id: string;
   patientId: string;
+  memberId?: string | null;
   tipo: string;
   date: string;
   queixa: string;
@@ -66,10 +67,13 @@ export function toEvaluationDTO(row: {
   criteriosAlta: string;
   createdAt: Date;
   updatedAt: Date;
+  member?: { user: { name: string | null } } | null;
 }): EvaluationDTO {
   return {
     id: row.id,
     patientId: row.patientId,
+    memberId: row.memberId ?? null,
+    professionalName: row.member?.user.name?.trim() || null,
     tipo: row.tipo,
     date: row.date,
     queixa: row.queixa,
@@ -94,16 +98,20 @@ export function toEvaluationDTO(row: {
 export function toSessionDTO(row: {
   id: string;
   patientId: string;
+  memberId?: string | null;
   date: string;
   status: SessionNoteStatus;
   atividades: string;
   observacoes: string;
   createdAt: Date;
   updatedAt: Date;
+  member?: { user: { name: string | null } } | null;
 }): SessionNoteDTO {
   return {
     id: row.id,
     patientId: row.patientId,
+    memberId: row.memberId ?? null,
+    professionalName: row.member?.user.name?.trim() || null,
     date: row.date,
     status: row.status,
     atividades: row.atividades,

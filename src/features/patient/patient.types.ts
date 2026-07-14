@@ -25,6 +25,8 @@ export type EvaluationDomain = {
 export type EvaluationDTO = {
   id: string;
   patientId: string;
+  memberId: string | null;
+  professionalName: string | null;
   tipo: string;
   date: string;
   queixa: string;
@@ -48,6 +50,8 @@ export type EvaluationDTO = {
 export type SessionNoteDTO = {
   id: string;
   patientId: string;
+  memberId: string | null;
+  professionalName: string | null;
   date: string;
   status: SessionNoteStatus;
   atividades: string;

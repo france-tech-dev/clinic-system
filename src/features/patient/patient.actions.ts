@@ -28,6 +28,7 @@ import {
   deleteEvaluation,
   deletePatient,
   deleteSessionNote,
+  resolveAuthorMemberId,
   getPatientDetail,
   listPatients,
   removePlanItem,
@@ -200,8 +201,13 @@ export async function createEvaluationAction(
     if (!parsed.success) {
       return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
     }
-    const { organizationId } = await requireOrgId();
-    const data = await createEvaluation(organizationId, parsed.data);
+    const { organizationId, userId } = await requireOrgId();
+    const memberId = await resolveAuthorMemberId(organizationId, userId);
+    const data = await createEvaluation(
+      organizationId,
+      parsed.data,
+      memberId,
+    );
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
     return ok(data);
@@ -273,8 +279,13 @@ export async function createSessionAction(
     if (!parsed.success) {
       return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
     }
-    const { organizationId } = await requireOrgId();
-    const data = await createSessionNote(organizationId, parsed.data);
+    const { organizationId, userId } = await requireOrgId();
+    const memberId = await resolveAuthorMemberId(organizationId, userId);
+    const data = await createSessionNote(
+      organizationId,
+      parsed.data,
+      memberId,
+    );
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
     return ok(data);

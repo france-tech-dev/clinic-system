@@ -94,11 +94,27 @@ export async function removePlanItem(
   return patientRepository.removePlanItem(organizationId, planItemId);
 }
 
+export async function resolveAuthorMemberId(
+  organizationId: string,
+  userId: string,
+): Promise<string | null> {
+  const member = await patientRepository.findMemberByUserId(
+    organizationId,
+    userId,
+  );
+  return member?.id ?? null;
+}
+
 export async function createEvaluation(
   organizationId: string,
   data: EvaluationFormInput,
+  memberId: string | null,
 ) {
-  const row = await patientRepository.createEvaluation(organizationId, data);
+  const row = await patientRepository.createEvaluation(
+    organizationId,
+    data,
+    memberId,
+  );
   return row ? toEvaluationDTO(row) : null;
 }
 
@@ -130,8 +146,13 @@ export async function saveAnamnese(
 export async function createSessionNote(
   organizationId: string,
   data: SessionFormInput,
+  memberId: string | null,
 ) {
-  const row = await patientRepository.createSession(organizationId, data);
+  const row = await patientRepository.createSession(
+    organizationId,
+    data,
+    memberId,
+  );
   return row ? toSessionDTO(row) : null;
 }
 

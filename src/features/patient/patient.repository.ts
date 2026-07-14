@@ -6,6 +6,14 @@ import type {
 } from "./patient.schema";
 import type { PatientPricingType, PatientStatus } from "./patient.types";
 
+const memberAuthorInclude = {
+  member: {
+    include: {
+      user: { select: { name: true } },
+    },
+  },
+} as const;
+
 export const patientRepository = {
   async findMany(
     organizationId: string,
@@ -41,9 +49,15 @@ export const patientRepository = {
           include: { exercise: true },
           orderBy: { createdAt: "desc" },
         },
-        evaluations: { orderBy: { date: "desc" } },
+        evaluations: {
+          include: memberAuthorInclude,
+          orderBy: { date: "desc" },
+        },
         anamnese: true,
-        sessionNotes: { orderBy: { date: "desc" } },
+        sessionNotes: {
+          include: memberAuthorInclude,
+          orderBy: { date: "desc" },
+        },
         roteiroNotes: true,
       },
     });
@@ -134,9 +148,17 @@ export const patientRepository = {
     return item;
   },
 
+  async findMemberByUserId(organizationId: string, userId: string) {
+    return db.member.findFirst({
+      where: { organizationId, userId },
+      select: { id: true },
+    });
+  },
+
   async createEvaluation(
     organizationId: string,
     data: EvaluationFormInput,
+    memberId: string | null,
   ) {
     const patient = await db.patient.findFirst({
       where: { id: data.patientId, organizationId },
@@ -146,9 +168,11 @@ export const patientRepository = {
     return db.evaluation.create({
       data: {
         patientId,
+        memberId,
         ...rest,
         domains: JSON.stringify(domains),
       },
+      include: memberAuthorInclude,
     });
   },
 
@@ -169,6 +193,7 @@ export const patientRepository = {
         ...rest,
         domains: JSON.stringify(domains),
       },
+      include: memberAuthorInclude,
     });
   },
 
@@ -197,7 +222,11 @@ export const patientRepository = {
     });
   },
 
-  async createSession(organizationId: string, data: SessionFormInput) {
+  async createSession(
+    organizationId: string,
+    data: SessionFormInput,
+    memberId: string | null,
+  ) {
     const patient = await db.patient.findFirst({
       where: { id: data.patientId, organizationId },
     });
@@ -205,11 +234,13 @@ export const patientRepository = {
     return db.sessionNote.create({
       data: {
         patientId: data.patientId,
+        memberId,
         date: data.date,
         status: data.status,
         atividades: data.atividades ?? "",
         observacoes: data.observacoes ?? "",
       },
+      include: memberAuthorInclude,
     });
   },
 
@@ -230,6 +261,7 @@ export const patientRepository = {
         atividades: data.atividades ?? "",
         observacoes: data.observacoes ?? "",
       },
+      include: memberAuthorInclude,
     });
   },
 
