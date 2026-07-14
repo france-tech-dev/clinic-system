@@ -32,7 +32,13 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 - [x] Link para cadastro do paciente a partir da agenda (lista + calendário)
 - [x] Cor distinta no agendamento quando há evolução registrada (`SessionNote` compareceu na data)
-- [ ] (Futuro) Filtro por profissional, se houver multi-profissional
+- [x] Auditoria domínio multi-profissional — ver [`architecture-audit.md`](./architecture-audit.md) **P6**
+- [x] **P6.1** — `Appointment.memberId` (Member) + nome por evento no calendário + select no form
+- [x] **P6.2** — Filtro por profissional na agenda (`?member=`)
+- [x] **P6.3** — Caixa por profissional (`CashTransaction.memberId` + filtro `/caixa`)
+- [x] **P6.4** — Autoria em Evaluation/SessionNote (autor = membro da sessão)
+- [x] **P6.5** — Limpezas (`patient-price-input`, shared types, migration baseline)
+- [x] ProtocolAssessment autor + PDF multi-CREFITO (Member.metadata + fallback org)
 
 ---
 
@@ -71,7 +77,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Futuro
 
-- [ ] Relatório por profissional
+- [x] Relatório por profissional — audit **P6.3** ✅ (filtro `/caixa` + `memberId` no lançamento)
 - [ ] Controle de sessões restantes em pacote
 - [ ] Export CSV do caixa
 
@@ -81,8 +87,8 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 - [x] Padrão `key` + montagem condicional em dialogs (evitar `useEffect` para sync de props)
 - [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução, biblioteca, estudo)
-- [ ] Migration Prisma versionada (além de `db push` em dev)
-- [x] Refactors de arquitetura — ver checklist priorizado em [`docs/architecture-audit.md`](./architecture-audit.md) (P0 + P1 + P4 concluídos)
+- [x] Migration Prisma versionada (além de `db push` em dev) — baseline `20260714180000_init`
+- [x] Refactors de arquitetura — ver checklist priorizado em [`docs/architecture-audit.md`](./architecture-audit.md) (P0 + P1 + P4 concluídos; **P6.0** auditoria domínio ✅; **P6.1+** pendente)
 
 ---
 
@@ -93,7 +99,8 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 2. P2 — PDF + branding ✅
 3. P3 — Caixa MVP ✅ → extensões ✅
 4. P4 — Polish + deploy prep
-5. P5 — Relatórios clínicos (expansão)
+5. P6 — Multi-profissional (P6.0–P6.5 ✅)
+6. P5 — Relatórios clínicos (expansão)
 ```
 
 ---
