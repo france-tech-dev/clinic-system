@@ -8,17 +8,37 @@ import { listPatients } from "@/features/patient/patient.service";
 import type { PatientDTO } from "@/features/patient/patient.types";
 import {
   getAgendaPageData,
+  getCurrentMemberId,
   listAppointmentsByDateRange,
+  listOrganizationMembers,
 } from "@/features/schedule/schedule.service";
-import type { AppointmentDTO } from "@/features/schedule/schedule.types";
+import type {
+  AppointmentDTO,
+  ScheduleMemberDTO,
+} from "@/features/schedule/schedule.types";
 import { todayIso } from "@/shared/constants/appointment";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { AgendaClient } from "./agenda-client";
 
+const MEMBER_FILTER_ALL = "all";
+
+function parseMemberFilter(
+  raw: string | undefined,
+  members: ScheduleMemberDTO[],
+): string {
+  if (!raw || raw === MEMBER_FILTER_ALL) return MEMBER_FILTER_ALL;
+  return members.some((m) => m.id === raw) ? raw : MEMBER_FILTER_ALL;
+}
+
 export default async function AgendaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; view?: string; viewDate?: string }>;
+  searchParams: Promise<{
+    date?: string;
+    view?: string;
+    viewDate?: string;
+    member?: string;
+  }>;
 }) {
   const params = await searchParams;
   const selectedDate = params.date || todayIso();
@@ -33,19 +53,28 @@ export default async function AgendaPage({
   let upcoming: AppointmentDTO[] = [];
   let calendarAppointments: AppointmentDTO[] = [];
   let patients: PatientDTO[] = [];
+  let members: ScheduleMemberDTO[] = [];
+  let defaultMemberId = "";
+  let initialMemberFilter = MEMBER_FILTER_ALL;
 
   try {
-    const { organizationId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgId();
     const { start, end } = monthBounds(viewDate);
-    const [agenda, patientList, rangeAppointments] = await Promise.all([
-      getAgendaPageData(organizationId, selectedDate, today),
-      listPatients(organizationId),
-      listAppointmentsByDateRange(organizationId, start, end),
-    ]);
+    const [agenda, patientList, rangeAppointments, orgMembers, currentMemberId] =
+      await Promise.all([
+        getAgendaPageData(organizationId, selectedDate, today),
+        listPatients(organizationId),
+        listAppointmentsByDateRange(organizationId, start, end),
+        listOrganizationMembers(organizationId),
+        getCurrentMemberId(organizationId, userId),
+      ]);
     dayAppointments = agenda.dayAppointments;
     upcoming = agenda.upcoming;
     patients = patientList;
     calendarAppointments = rangeAppointments;
+    members = orgMembers;
+    defaultMemberId = currentMemberId ?? orgMembers[0]?.id ?? "";
+    initialMemberFilter = parseMemberFilter(params.member, orgMembers);
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -61,7 +90,7 @@ export default async function AgendaPage({
         <p className="text-sm text-destructive">{error}</p>
       ) : (
         <AgendaClient
-          key={`${selectedDate}-${view}-${viewDateIso}`}
+          key={`${selectedDate}-${view}-${viewDateIso}-${initialMemberFilter}`}
           initialView={view}
           initialDate={selectedDate}
           viewDateIso={viewDateIso}
@@ -70,6 +99,9 @@ export default async function AgendaPage({
           calendarEvents={calendarEvents}
           calendarAppointments={calendarAppointments}
           patients={patients}
+          members={members}
+          defaultMemberId={defaultMemberId}
+          initialMemberFilter={initialMemberFilter}
         />
       )}
     </AppPage>

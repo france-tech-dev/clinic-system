@@ -25,7 +25,7 @@ import {
   createAppointmentAction,
   updateAppointmentAction,
 } from "@/features/schedule/schedule.actions";
-import type { AppointmentDTO } from "@/features/schedule/schedule.types";
+import type { AppointmentDTO, ScheduleMemberDTO } from "@/features/schedule/schedule.types";
 import type { PatientDTO } from "@/features/patient/patient.types";
 import {
   APPOINTMENT_STATUSES,
@@ -37,6 +37,8 @@ export function AppointmentFormDialog({
   open,
   onOpenChange,
   patients,
+  members,
+  defaultMemberId,
   initial,
   defaultDate,
   pending,
@@ -47,6 +49,8 @@ export function AppointmentFormDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
   patients: PatientDTO[];
+  members: ScheduleMemberDTO[];
+  defaultMemberId: string;
   initial: AppointmentDTO | null;
   defaultDate: string;
   pending: boolean;
@@ -61,6 +65,9 @@ export function AppointmentFormDialog({
   const [patientId, setPatientId] = useState(
     initial?.patientId ?? patients[0]?.id ?? "",
   );
+  const [memberId, setMemberId] = useState(
+    initial?.memberId ?? defaultMemberId ?? members[0]?.id ?? "",
+  );
   const [date, setDate] = useState(initial?.date ?? defaultDate);
   const [time, setTime] = useState(initial?.time ?? "");
   const [duration, setDuration] = useState(initial?.duration ?? 45);
@@ -74,6 +81,7 @@ export function AppointmentFormDialog({
         const result = await updateAppointmentAction({
           id: initial.id,
           patientId,
+          memberId,
           date,
           time,
           duration,
@@ -90,6 +98,7 @@ export function AppointmentFormDialog({
       }
       const result = await createAppointmentAction({
         patientId,
+        memberId,
         date,
         time,
         duration,
@@ -126,6 +135,24 @@ export function AppointmentFormDialog({
                 {patients.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Profissional</Label>
+            <Select
+              value={memberId}
+              onValueChange={(v) => setMemberId(v ?? memberId)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione…" />
+              </SelectTrigger>
+              <SelectContent>
+                {members.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -224,7 +251,10 @@ export function AppointmentFormDialog({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button disabled={pending || !patientId || !date} onClick={submit}>
+            <Button
+              disabled={pending || !patientId || !memberId || !date}
+              onClick={submit}
+            >
               Salvar
             </Button>
           </div>
@@ -233,3 +263,4 @@ export function AppointmentFormDialog({
     </Dialog>
   );
 }
+

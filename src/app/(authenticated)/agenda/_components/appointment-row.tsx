@@ -51,6 +51,10 @@ export function AppointmentRow({
           </span>
         </div>
         <p className="mt-0.5 font-medium">
+          <span className="text-muted-foreground font-normal">
+            {appointment.professionalName}
+            {" · "}
+          </span>
           <Link
             href={paths.paciente(appointment.patientId)}
             className="hover:underline"

@@ -3,6 +3,7 @@
 import { useCallback, useState, useTransition, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GripVertical } from "lucide-react";
 import {
   Calendar,
   Views,
@@ -54,14 +55,34 @@ const CALENDAR_MESSAGES = {
 const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar);
 
 function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
+  const canDrag = event.status === "agendado";
+
   return (
-    <Link
-      href={paths.paciente(event.patientId)}
-      className="block truncate text-inherit hover:underline"
-      onClick={(e: MouseEvent) => e.stopPropagation()}
-    >
-      {event.title}
-    </Link>
+    <div className="agenda-event-content">
+      <div className="agenda-event-text min-w-0 flex-1 truncate">
+        {event.professionalName ? (
+          <span className="agenda-event-professional">
+            {event.professionalName}
+          </span>
+        ) : null}
+        <Link
+          href={paths.paciente(event.patientId)}
+          className="agenda-event-patient truncate text-inherit hover:underline"
+          onClick={(e: MouseEvent) => e.stopPropagation()}
+        >
+          {event.patientName}
+        </Link>
+      </div>
+      {canDrag ? (
+        <span
+          className="agenda-event-drag-handle"
+          title="Arrastar para remarcar"
+          aria-hidden
+        >
+          <GripVertical className="size-4 shrink-0" />
+        </span>
+      ) : null}
+    </div>
   );
 }
 
@@ -143,7 +164,7 @@ export function AgendaCalendar({
   return (
     <div className="agenda-calendar rounded-md border border-border bg-card p-3 lg:p-4">
       <p className="mb-3 text-sm text-muted-foreground">
-        Arraste um agendamento para alterar horário ou dia. Clique para editar.
+        Use o ícone à direita do agendamento para arrastar. Clique para editar.
       </p>
       <DnDCalendar
         localizer={localizer}

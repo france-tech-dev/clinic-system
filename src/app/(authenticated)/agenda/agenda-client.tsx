@@ -7,11 +7,22 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   deleteAppointmentAction,
   setAppointmentStatusAction,
 } from "@/features/schedule/schedule.actions";
+import { filterAppointmentsByMemberId } from "@/features/schedule/_lib/filter-appointments-by-member";
 import type { CalendarEvent } from "@/features/schedule/_lib/appointment-calendar-utils";
-import type { AppointmentDTO } from "@/features/schedule/schedule.types";
+import type {
+  AppointmentDTO,
+  ScheduleMemberDTO,
+} from "@/features/schedule/schedule.types";
 import type { PatientDTO } from "@/features/patient/patient.types";
 import {
   addDaysIso,
@@ -29,6 +40,8 @@ import { AppointmentRow } from "./_components/appointment-row";
 import { useAgendaCashflow } from "./_components/hooks/use-agenda-cashflow";
 import { AgendaCalendar } from "./agenda-calendar";
 
+const MEMBER_FILTER_ALL = "all";
+
 export function AgendaClient({
   initialView,
   initialDate,
@@ -38,6 +51,9 @@ export function AgendaClient({
   calendarEvents,
   calendarAppointments,
   patients,
+  members,
+  defaultMemberId,
+  initialMemberFilter,
 }: {
   initialView: "lista" | "calendario";
   initialDate: string;
@@ -47,12 +63,16 @@ export function AgendaClient({
   calendarEvents: CalendarEvent[];
   calendarAppointments: AppointmentDTO[];
   patients: PatientDTO[];
+  members: ScheduleMemberDTO[];
+  defaultMemberId: string;
+  initialMemberFilter: string;
 }) {
   const router = useRouter();
   const [activeView, setActiveView] = useState(initialView);
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [dayAppointments, setDayAppointments] = useState(initialDay);
   const [upcoming, setUpcoming] = useState(initialUpcoming);
+  const [memberFilter, setMemberFilter] = useState(initialMemberFilter);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AppointmentDTO | null>(null);
   const [pending, startTransition] = useTransition();
@@ -61,6 +81,21 @@ export function AgendaClient({
   const sortedPatients = useMemo(
     () => [...patients].sort((a, b) => a.name.localeCompare(b.name)),
     [patients],
+  );
+
+  const filteredDayAppointments = useMemo(
+    () => filterAppointmentsByMemberId(dayAppointments, memberFilter),
+    [dayAppointments, memberFilter],
+  );
+
+  const filteredUpcoming = useMemo(
+    () => filterAppointmentsByMemberId(upcoming, memberFilter),
+    [upcoming, memberFilter],
+  );
+
+  const filteredCalendarEvents = useMemo(
+    () => filterAppointmentsByMemberId(calendarEvents, memberFilter),
+    [calendarEvents, memberFilter],
   );
 
   const appointmentsById = useMemo(() => {
@@ -79,12 +114,17 @@ export function AgendaClient({
     view: "lista" | "calendario",
     date: string,
     viewDate?: string,
+    member?: string,
   ) {
     const params = new URLSearchParams();
     params.set("view", view);
     params.set("date", date);
     if (view === "calendario") {
       params.set("viewDate", viewDate ?? date);
+    }
+    const memberValue = member ?? memberFilter;
+    if (memberValue && memberValue !== MEMBER_FILTER_ALL) {
+      params.set("member", memberValue);
     }
     return `${paths.agenda}?${params.toString()}`;
   }
@@ -97,6 +137,12 @@ export function AgendaClient({
   function switchView(view: "lista" | "calendario") {
     setActiveView(view);
     router.push(buildUrl(view, selectedDate, viewDateIso));
+  }
+
+  function changeMemberFilter(next: string) {
+    const value = next || MEMBER_FILTER_ALL;
+    setMemberFilter(value);
+    router.push(buildUrl(activeView, selectedDate, viewDateIso, value));
   }
 
   function openCreate() {
@@ -149,7 +195,7 @@ export function AgendaClient({
   const upcomingGroups = useMemo(() => {
     const groups: { date: string; items: AppointmentDTO[] }[] = [];
     let last: string | null = null;
-    for (const a of upcoming) {
+    for (const a of filteredUpcoming) {
       if (a.date !== last) {
         groups.push({ date: a.date, items: [] });
         last = a.date;
@@ -157,7 +203,7 @@ export function AgendaClient({
       groups[groups.length - 1].items.push(a);
     }
     return groups;
-  }, [upcoming]);
+  }, [filteredUpcoming]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -167,10 +213,34 @@ export function AgendaClient({
             Sessões agendadas da clínica
           </p>
         </div>
-        <Button size="sm" onClick={openCreate}>
-          <Plus className="size-4" />
-          Novo agendamento
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {members.length > 0 ? (
+            <Select
+              value={memberFilter}
+              onValueChange={(v) =>
+                changeMemberFilter(v ?? MEMBER_FILTER_ALL)
+              }
+            >
+              <SelectTrigger className="w-[200px]" size="sm">
+                <SelectValue placeholder="Profissional" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={MEMBER_FILTER_ALL}>
+                  Todos os profissionais
+                </SelectItem>
+                {members.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
+          <Button size="sm" onClick={openCreate}>
+            <Plus className="size-4" />
+            Novo agendamento
+          </Button>
+        </div>
       </div>
 
       <Tabs
@@ -217,13 +287,17 @@ export function AgendaClient({
             <p className="mb-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">
               {relativeDayLabel(selectedDate)}
             </p>
-            {dayAppointments.length === 0 ? (
+            {filteredDayAppointments.length === 0 ? (
               <p className="py-4 text-sm text-muted-foreground">
-                Nenhum agendamento para este dia.
+                Nenhum agendamento para este dia
+                {memberFilter !== MEMBER_FILTER_ALL
+                  ? " com este profissional"
+                  : ""}
+                .
               </p>
             ) : (
               <ul className="space-y-2">
-                {dayAppointments.map((a) => (
+                {filteredDayAppointments.map((a) => (
                   <AppointmentRow
                     key={a.id}
                     appointment={a}
@@ -242,7 +316,11 @@ export function AgendaClient({
             </p>
             {upcomingGroups.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nenhum agendamento futuro registrado.
+                Nenhum agendamento futuro
+                {memberFilter !== MEMBER_FILTER_ALL
+                  ? " com este profissional"
+                  : " registrado"}
+                .
               </p>
             ) : (
               upcomingGroups.map((g) => (
@@ -269,7 +347,7 @@ export function AgendaClient({
 
         <TabsContent value="calendario" className="mt-4">
           <AgendaCalendar
-            events={calendarEvents}
+            events={filteredCalendarEvents}
             viewDate={new Date(`${viewDateIso}T12:00:00`)}
             onSelectEvent={openEditById}
           />
@@ -282,6 +360,8 @@ export function AgendaClient({
           open={formOpen}
           onOpenChange={setFormOpen}
           patients={sortedPatients}
+          members={members}
+          defaultMemberId={defaultMemberId}
           initial={editing}
           defaultDate={selectedDate}
           pending={pending}
@@ -348,10 +428,12 @@ export function AgendaClient({
             if (!open) cashflow.closeCashDialog();
           }}
           patients={sortedPatients}
+          members={members}
           initial={null}
           draft={cashflow.cashDraft}
           defaultDate={todayIso()}
           defaultType="entrada"
+          defaultMemberId={defaultMemberId}
           pending={pending}
           startTransition={startTransition}
           onSaved={() => {

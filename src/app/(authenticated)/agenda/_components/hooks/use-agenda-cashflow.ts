@@ -12,6 +12,7 @@ export function buildCashDraftFromAppointment(
     type: "entrada",
     date: appointment.date,
     patientId: appointment.patientId,
+    memberId: appointment.memberId,
     description: `Sessão — ${appointment.patientName}`,
     amountCents: appointment.patientPriceCents,
   };
