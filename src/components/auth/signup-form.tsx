@@ -61,7 +61,7 @@ export function SignupForm({
       );
       if (success) {
         toast.success(`${message}. Verifique seu email para ativar sua conta.`);
-        router.push(paths.dashboard);
+        router.push(paths.agenda);
       } else {
         toast.error(message);
       }
@@ -71,7 +71,7 @@ export function SignupForm({
   const signUpWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: paths.dashboard,
+      callbackURL: paths.agenda,
     });
   };
 

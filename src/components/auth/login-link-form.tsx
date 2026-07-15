@@ -26,7 +26,7 @@ export function LoginLinkForm({
   const handleSubmit = form.handleSubmit(async (data) => {
     const { error } = await signIn.magicLink({
       email: data.email,
-      callbackURL: paths.dashboard,
+      callbackURL: paths.agenda,
     });
 
     if (error) {

@@ -55,7 +55,7 @@ export function LoginForm({
       const { success, message } = await signIn(data.email, data.password);
       if (success) {
         toast.success(message);
-        router.push(paths.dashboard);
+        router.push(paths.agenda);
       } else {
         toast.error(message);
       }
@@ -65,7 +65,7 @@ export function LoginForm({
   const signInWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: paths.dashboard,
+      callbackURL: paths.agenda,
     });
   };
 
