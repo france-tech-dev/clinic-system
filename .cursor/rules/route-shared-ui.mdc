@@ -17,12 +17,12 @@ import { PatientPdfPreviewDialog } from "@/app/(authenticated)/pacientes/[id]/_c
 
 ## Onde colocar código reutilizado
 
-| Situação | Destino |
-| -------- | ------- |
+| Situação                               | Destino                                                         |
+| -------------------------------------- | --------------------------------------------------------------- |
 | Usado em ≥2 rotas do **mesmo domínio** | `features/[dominio]/components/` ou `features/[dominio]/hooks/` |
-| Helper puro do domínio (sem UI) | `features/[dominio]/_lib/` |
-| UI genérica (sem regra de negócio) | `src/components/` |
-| Específico de **uma** rota | `app/.../_components/` (local) |
+| Helper puro do domínio (sem UI)        | `features/[dominio]/_lib/`                                      |
+| UI genérica (sem regra de negócio)     | `src/components/`                                               |
+| Específico de **uma** rota             | `app/.../_components/` (local)                                  |
 
 ## Exemplos deste projeto
 

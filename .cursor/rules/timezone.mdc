@@ -16,21 +16,21 @@ A app opera no fuso `APP_TIMEZONE` (`America/Sao_Paulo`). Datas mal convertidas 
 
 ## Helpers disponíveis
 
-| Necessidade | Usar |
-| --- | --- |
-| `yyyy-MM-dd` (URL) → `Date` | `parseAppZonedDateParam` |
-| `Date` → `yyyy-MM-dd` (URL) | `formatAppZonedDateParam` |
-| Partes (ano/mês/dia/hora) no fuso | `getZonedDateParts` |
-| Dia + `"HH:mm"` → instante UTC | `buildAppZonedDateTime` |
-| Início/fim do dia p/ query BD | `getZonedDayBounds` |
-| Mesmo dia civil? | `isSameAppZonedDay` |
+| Necessidade                       | Usar                      |
+| --------------------------------- | ------------------------- |
+| `yyyy-MM-dd` (URL) → `Date`       | `parseAppZonedDateParam`  |
+| `Date` → `yyyy-MM-dd` (URL)       | `formatAppZonedDateParam` |
+| Partes (ano/mês/dia/hora) no fuso | `getZonedDateParts`       |
+| Dia + `"HH:mm"` → instante UTC    | `buildAppZonedDateTime`   |
+| Início/fim do dia p/ query BD     | `getZonedDayBounds`       |
+| Mesmo dia civil?                  | `isSameAppZonedDay`       |
 
 ## Exemplo
 
 ```ts
 // ❌ Evitar: parse ISO em UTC → pode cair no dia anterior
-const d = new Date(searchParams.viewDate) // "2026-07-02" → 01/07 21:00 (UTC-3)
+const d = new Date(searchParams.viewDate); // "2026-07-02" → 01/07 21:00 (UTC-3)
 
 // ✅ Usar o helper do fuso da app
-const d = parseAppZonedDateParam(searchParams.viewDate) ?? new Date()
+const d = parseAppZonedDateParam(searchParams.viewDate) ?? new Date();
 ```

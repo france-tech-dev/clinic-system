@@ -10,10 +10,10 @@ Guia: [`tests/README.md`](../../tests/README.md)
 
 ## Estrutura
 
-| Tipo | Pasta | Comando |
-|------|-------|---------|
-| Unitário | `tests/unit/` | `pnpm test` |
-| E2E | `tests/e2e/` | `pnpm test:e2e` (Playwright — futuro) |
+| Tipo     | Pasta         | Comando                               |
+| -------- | ------------- | ------------------------------------- |
+| Unitário | `tests/unit/` | `pnpm test`                           |
+| E2E      | `tests/e2e/`  | `pnpm test:e2e` (Playwright — futuro) |
 
 **Não** criar `*.test.ts` dentro de `src/`.
 

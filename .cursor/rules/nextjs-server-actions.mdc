@@ -8,29 +8,27 @@ alwaysApply: false
 
 ## Estrutura por domínio (`features/[nome]/`)
 
-| Ficheiro | Responsabilidade |
-| -------- | ---------------- |
-| `[nome].repository.ts` | Queries/mutações Prisma (`db` em `@/src/shared/lib/prisma`) |
-| `[nome].service.ts` | Regras de negócio — **sem** `'use server'`, **sem** `revalidatePath` |
-| `[nome].schema.ts` | Schemas Zod |
-| `[nome].types.ts` | Tipos do domínio |
-| `[nome].actions.ts` | Actions públicas/cliente — finas: validar → service → revalidar |
-| `[nome].panel.actions.ts` | Actions do painel (quando aplicável) |
-| `_lib/` | Utilitários puros do domínio |
+| Ficheiro                  | Responsabilidade                                                     |
+| ------------------------- | -------------------------------------------------------------------- |
+| `[nome].repository.ts`    | Queries/mutações Prisma (`db` em `@/src/shared/lib/prisma`)          |
+| `[nome].service.ts`       | Regras de negócio — **sem** `'use server'`, **sem** `revalidatePath` |
+| `[nome].schema.ts`        | Schemas Zod                                                          |
+| `[nome].types.ts`         | Tipos do domínio                                                     |
+| `[nome].actions.ts`       | Actions públicas/cliente — finas: validar → service → revalidar      |
+| `[nome].panel.actions.ts` | Actions do painel (quando aplicável)                                 |
+| `_lib/`                   | Utilitários puros do domínio                                         |
 
 ## Domínios (`features/`)
 
 Ver lista completa em [`docs/architecture.md`](../../docs/architecture.md).
 
-| Domínio | Exemplos |
-| ------- | -------- |
-| `patient/` | CRUD paciente, avaliações, evoluções, anamnese, plano, PDF |
-| `schedule/` | Agenda, agendamentos, calendário, repetição semanal |
-| `finance/` | Fluxo de caixa, lançamentos |
-| `exercise/` | Biblioteca de actividades |
-| `study/` | Fichário de estudo |
-| `settings/` | Perfil profissional, branding |
-| `dashboard/` | Painel, stats, alertas, busca global |
+| Domínio      | Exemplos                                            |
+| ------------ | --------------------------------------------------- |
+| `patient/`   | CRUD paciente, avaliações, evoluções, anamnese, PDF |
+| `schedule/`  | Agenda, agendamentos, calendário, repetição semanal |
+| `finance/`   | Fluxo de caixa, lançamentos                         |
+| `settings/`  | Perfil profissional, branding                       |
+| `dashboard/` | Painel, stats, alertas, busca global                |
 
 Orquestração multi-domínio → `app/` (pages), **nunca** feature → feature.
 
@@ -38,8 +36,7 @@ Orquestração multi-domínio → `app/` (pages), **nunca** feature → feature.
 
 ```ts
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+  { success: true; data: T } | { success: false; error: string };
 ```
 
 ## Regras

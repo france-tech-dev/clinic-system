@@ -27,9 +27,9 @@ Antes de criar uma função, helper, hook ou abstração nova, **procurar primei
 
 ```ts
 // ❌ Evitar: reimplementar conversão de fuso já existente inline em cada componente
-const zoned = toZonedTime(date, "America/Sao_Paulo")
-const s = `${zoned.getFullYear()}-...`
+const zoned = toZonedTime(date, "America/Sao_Paulo");
+const s = `${zoned.getFullYear()}-...`;
 
 // ✅ Reutilizar o utilitário partilhado
-formatAppZonedDateParam(date)
+formatAppZonedDateParam(date);
 ```

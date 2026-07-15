@@ -20,12 +20,14 @@ useEffect(() => {
 
 // ✅ Servidor carrega; client inicializa estado
 const detail = await getPatientDetail(orgId, params.paciente);
-<RelatorioClient initialEvaluations={detail.evaluations} />
+<RelatorioClient initialEvaluations={detail.evaluations} />;
 
 // ✅ Troca manual pelo utilizador (handler, não effect)
 function handlePatientChange(id: string) {
   setPatientId(id);
-  startTransition(async () => { /* action */ });
+  startTransition(async () => {
+    /* action */
+  });
 }
 ```
 

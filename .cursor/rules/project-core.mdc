@@ -68,7 +68,7 @@ Dev server + testar fluxo no browser quando mudar UI ou backend crítico.
 
 Documento completo: [`docs/architecture.md`](../../docs/architecture.md)
 
-- **`features/`** — domínios clínicos: `patient`, `schedule`, `finance`, `exercise`, `study`, `settings`, `dashboard`
+- **`features/`** — domínios clínicos: `patient`, `schedule`, `finance`, `settings`, `dashboard`
 - **`shared/`** — prisma, auth, guards, constants, types
 - **`server/`** — Better Auth (sessão, org, convites) — **não** é domínio clínico
 - **`app/`** orquestra; **`components/`** usa `shared/`; **features não importam entre si**
