@@ -3,7 +3,6 @@ import { getDashboardData } from "@/features/dashboard/dashboard.service";
 import type { DashboardPageData } from "@/features/dashboard/dashboard.types";
 import { getCashflowPageData } from "@/features/finance/finance.service";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { ensureDefaultExercises } from "@/shared/lib/seed-exercises";
 import { PainelContent } from "./_components/painel-content";
 
 export default async function PainelPage() {
@@ -12,7 +11,6 @@ export default async function PainelPage() {
 
   try {
     const { organizationId } = await requireOrgId();
-    await ensureDefaultExercises(organizationId);
     const [dashboard, cashflow] = await Promise.all([
       getDashboardData(organizationId),
       getCashflowPageData(organizationId),

@@ -15,7 +15,7 @@ import {
   updateEvaluationAction,
 } from "@/features/patient/patient.actions";
 import type { EvaluationDTO } from "@/features/patient/patient.types";
-import { EXERCISE_CATEGORIES } from "@/shared/constants/exercise-categories";
+import { EVALUATION_DOMAINS } from "@/shared/constants/evaluation-domains";
 import { EvaluationFormClinicalFields } from "./evaluation-form/evaluation-form-clinical-fields";
 import { EvaluationFormDomainsSection } from "./evaluation-form/evaluation-form-domains-section";
 import { EvaluationFormMetaFields } from "./evaluation-form/evaluation-form-meta-fields";
@@ -62,7 +62,7 @@ export function EvaluationFormDialog({
   );
   const [domains, setDomains] = useState(
     initial?.domains ??
-      EXERCISE_CATEGORIES.map((c) => ({
+      EVALUATION_DOMAINS.map((c) => ({
         categoryId: c.id,
         score: 2,
         note: "",
@@ -135,7 +135,10 @@ export function EvaluationFormDialog({
             precaucoes={precaucoes}
             onPrecaucoesChange={setPrecaucoes}
           />
-          <EvaluationFormDomainsSection domains={domains} onDomainsChange={setDomains} />
+          <EvaluationFormDomainsSection
+            domains={domains}
+            onDomainsChange={setDomains}
+          />
           <EvaluationFormPlanFields
             equipamentos={equipamentos}
             onEquipamentosChange={setEquipamentos}

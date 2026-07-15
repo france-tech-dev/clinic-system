@@ -3,10 +3,12 @@
 import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { deletePatientAction } from "@/features/patient/patient.actions";
-import type { EvaluationDTO, PatientDetailDTO } from "@/features/patient/patient.types";
+import type {
+  EvaluationDTO,
+  PatientDetailDTO,
+} from "@/features/patient/patient.types";
 import { buildPatientReportPayload } from "@/features/patient/_lib/pdf/build-patient-report-payload";
 import type { PatientReportMode } from "@/features/patient/_lib/pdf/types";
-import type { ExerciseDTO } from "@/features/exercise/exercise.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -19,34 +21,24 @@ import { useAnamneseForm } from "./use-anamnese-form";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientEvaluations } from "./use-patient-evaluations";
 import { usePatientPdfReport } from "@/features/patient/hooks/use-patient-pdf-report";
-import { usePatientPlan } from "./use-patient-plan";
 import { usePatientSessions } from "./use-patient-sessions";
 import { useRoteiroNotes } from "./use-roteiro-notes";
 
 export function usePatientDetail({
   initial,
-  exercises,
   professional,
   branding,
 }: {
   initial: PatientDetailDTO;
-  exercises: ExerciseDTO[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
 }) {
   const router = useRouter();
   const [detail, setDetail] = useState(initial);
-  const [tab, setTab] = useState<PatientDetailTab>("plano");
+  const [tab, setTab] = useState<PatientDetailTab>("avaliacao");
   const [pending, startTransition] = useTransition();
 
   const pdfReport = usePatientPdfReport();
-  const plan = usePatientPlan({
-    detail,
-    setDetail,
-    exercises,
-    pending,
-    startTransition,
-  });
   const anamnese = useAnamneseForm({
     patientId: detail.patient.id,
     initialData: initial.anamneseData,
@@ -151,13 +143,11 @@ export function usePatientDetail({
     tab,
     setTab,
     pending,
-    exercises,
     professional,
     branding,
     signature,
     pdfReport,
     previewReport,
-    plan,
     anamnese,
     roteiro,
     patientEdit,

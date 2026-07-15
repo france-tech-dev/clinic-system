@@ -17,7 +17,7 @@ export default async function OrganizacaoPage() {
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {hasOrgs
-              ? "Cada clínica tem pacientes, agenda e biblioteca próprios."
+              ? "Cada clínica tem pacientes e agenda próprios."
               : "Para usar o Fichário, precisa de uma clínica (organização). Os dados ficam isolados por clínica."}
           </p>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import type { ExerciseDTO } from "@/features/exercise/exercise.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
 import type {
   PrintBranding,
@@ -13,20 +12,17 @@ import { usePatientDetail } from "./_components/hooks/use-patient-detail";
 import { PatientDetailDialogs } from "./_components/patient-detail-dialogs";
 import { PatientDetailHeader } from "./_components/patient-detail-header";
 import { PatientDetailTabs } from "./_components/patient-detail-tabs";
-import { PlanoTab } from "./_components/plano-tab";
 
 export function PacienteDetailClient({
   initial,
-  exercises,
   professional,
   branding,
 }: {
   initial: PatientDetailDTO;
-  exercises: ExerciseDTO[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
 }) {
-  const vm = usePatientDetail({ initial, exercises, professional, branding });
+  const vm = usePatientDetail({ initial, professional, branding });
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,14 +35,6 @@ export function PacienteDetailClient({
       />
 
       <PatientDetailTabs tab={vm.tab} onTabChange={vm.setTab} />
-
-      {vm.tab === "plano" && (
-        <PlanoTab
-          planItems={vm.detail.planItems}
-          onAssignOpen={() => vm.plan.setAssignOpen(true)}
-          onRemovePlan={vm.plan.removePlan}
-        />
-      )}
 
       {vm.tab === "avaliacao" && (
         <AvaliacaoTab

@@ -1,6 +1,5 @@
 "use client";
 
-import { AssignExerciseDialog } from "./assign-exercise-dialog";
 import { EditPatientDialog } from "./edit-patient-dialog";
 import { EvaluationFormDialog } from "./evaluation-form-dialog";
 import { EvaluationViewDialog } from "./evaluation-view-dialog";
@@ -12,10 +11,8 @@ import { SessionViewDialog } from "./session-view-dialog";
 export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
   const {
     detail,
-    exercises,
     pdfReport,
     previewReport,
-    plan,
     patientEdit,
     evaluations,
     sessions,
@@ -23,20 +20,6 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
 
   return (
     <>
-      <AssignExerciseDialog
-        open={plan.assignOpen}
-        onOpenChange={plan.setAssignOpen}
-        patientName={detail.patient.name}
-        assignSearch={plan.assignSearch}
-        onAssignSearchChange={plan.setAssignSearch}
-        assignCat={plan.assignCat}
-        onAssignCatChange={plan.setAssignCat}
-        assignList={plan.assignList}
-        assignedIds={plan.assignedIds}
-        pending={plan.pending}
-        onAssign={plan.assign}
-      />
-
       {evaluations.evalOpen && (
         <EvaluationFormDialog
           key={evaluations.editingEval?.id ?? "new-eval"}
@@ -53,7 +36,6 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
       <EvaluationViewDialog
         evaluation={evaluations.viewEval}
         allEvaluations={detail.evaluations}
-        exercises={exercises}
         onClose={() => evaluations.setViewEval(null)}
         onEdit={evaluations.openEditEvaluation}
         onDelete={evaluations.deleteEvaluation}

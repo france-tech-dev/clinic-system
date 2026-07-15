@@ -34,14 +34,10 @@ export function PainelContent({
 
       {data && (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
               number={String(data.stats.activePatients)}
               label={`Pacientes ativos (de ${data.stats.totalPatients})`}
-            />
-            <StatCard
-              number={String(data.stats.totalExercises)}
-              label="Atividades na biblioteca"
             />
             <StatCard
               number={String(data.stats.totalEvaluations)}
@@ -89,9 +85,6 @@ export function PainelContent({
               <Link href={paths.agenda}>Ver agenda</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href={paths.biblioteca}>Biblioteca</Link>
-            </Button>
-            <Button asChild variant="outline">
               <Link href={paths.pacientes}>Pacientes</Link>
             </Button>
             <Button asChild variant="outline">
@@ -130,7 +123,9 @@ export function PainelContent({
                         <span className="font-mono text-xs font-medium">
                           {a.time || "—"}
                         </span>
-                        <span className="ml-2 font-medium">{a.patientName}</span>
+                        <span className="ml-2 font-medium">
+                          {a.patientName}
+                        </span>
                         <span className="ml-2 text-muted-foreground capitalize">
                           · {a.status}
                         </span>

@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import type { EvaluationDomain } from "@/features/patient/patient.types";
-import { categoryOf } from "@/shared/constants/exercise-categories";
+import { categoryOf } from "@/shared/constants/evaluation-domains";
 import { cn } from "@/shared/lib/utils";
 
 export function EvaluationFormDomainsSection({
@@ -19,7 +19,10 @@ export function EvaluationFormDomainsSection({
         {domains.map((domain, index) => {
           const cat = categoryOf(domain.categoryId);
           return (
-            <div key={domain.categoryId} className="rounded-md border border-border p-2">
+            <div
+              key={domain.categoryId}
+              className="rounded-md border border-border p-2"
+            >
               <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5 text-sm font-medium">
                   <span

@@ -11,15 +11,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { EvaluationDTO } from "@/features/patient/patient.types";
-import type { ExerciseDTO } from "@/features/exercise/exercise.types";
-import { categoryOf } from "@/shared/constants/exercise-categories";
+import { categoryOf } from "@/shared/constants/evaluation-domains";
 import { cn } from "@/shared/lib/utils";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 
 export function EvaluationViewDialog({
   evaluation,
   allEvaluations,
-  exercises,
   onClose,
   onEdit,
   onDelete,
@@ -28,7 +26,6 @@ export function EvaluationViewDialog({
 }: {
   evaluation: EvaluationDTO | null;
   allEvaluations: EvaluationDTO[];
-  exercises: ExerciseDTO[];
   onClose: () => void;
   onEdit: (ev: EvaluationDTO) => void;
   onDelete: (id: string) => void;
@@ -43,13 +40,6 @@ export function EvaluationViewDialog({
   const firstEval = sorted[0];
   const showComparison =
     sorted.length > 1 && firstEval && firstEval.id !== evaluation.id;
-
-  const weakDomains = evaluation.domains
-    .filter((d) => d.score <= 2)
-    .map((d) => d.categoryId);
-  const suggestions = exercises
-    .filter((e) => weakDomains.includes(e.categoryId))
-    .slice(0, 5);
 
   return (
     <Dialog open={!!evaluation} onOpenChange={(o) => !o && onClose()}>
@@ -196,23 +186,6 @@ export function EvaluationViewDialog({
                 </>
               )}
             </p>
-          )}
-          {suggestions.length > 0 && (
-            <div>
-              <p className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                Atividades sugeridas (domínios baixos)
-              </p>
-              <ul className="list-disc space-y-0.5 pl-4 text-xs">
-                {suggestions.map((s) => (
-                  <li key={s.id}>
-                    {s.title}{" "}
-                    <span className="text-muted-foreground">
-                      ({categoryOf(s.categoryId).label})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           )}
         </div>
         <DialogFooter className="gap-2 sm:justify-between">

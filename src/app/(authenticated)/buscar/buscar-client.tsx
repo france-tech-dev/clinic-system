@@ -38,7 +38,7 @@ export function BuscarClient() {
     <div className="flex flex-col gap-4">
       <div>
         <p className="text-sm text-muted-foreground">
-          Pacientes, atividades, avaliações, evoluções e notas de estudo
+          Pacientes, avaliações e evoluções
         </p>
       </div>
 
