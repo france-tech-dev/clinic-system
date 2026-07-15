@@ -135,53 +135,13 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
-  exercises    Exercise[]
   patients     Patient[]
   appointments Appointment[]
-  studyCards   StudyCard[]
   cashTransactions CashTransaction[]
   protocolAssessments ProtocolAssessment[]
 
   @@unique([slug])
   @@map("organization")
-}
-
-model Exercise {
-  id             String            @id @default(cuid())
-  organizationId String
-  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  title          String
-  categoryId     String
-  objective      String
-  materials      String
-  instructions   String
-  duration       String
-  level          String
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  planItems      PatientPlanItem[]
-
-  @@index([organizationId])
-  @@index([organizationId, categoryId])
-  @@map("exercises")
-}
-
-model StudyCard {
-  id             String       @id @default(cuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  title          String
-  categoryId     String
-  content        String
-  isCustom       Boolean      @default(true)
-  seedKey        String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
-  @@unique([organizationId, seedKey])
-  @@index([organizationId])
-  @@index([organizationId, categoryId])
-  @@map("study_cards")
 }
 
 model Patient {
@@ -195,7 +155,6 @@ model Patient {
   priceCents     Int?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
-  planItems      PatientPlanItem[]
   evaluations    Evaluation[]
   anamnese       Anamnese?
   sessionNotes   SessionNote[]
@@ -207,20 +166,6 @@ model Patient {
   @@index([organizationId])
   @@index([organizationId, status])
   @@map("patients")
-}
-
-model PatientPlanItem {
-  id         String   @id @default(cuid())
-  patientId  String
-  patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  exerciseId String
-  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-
-  @@unique([patientId, exerciseId])
-  @@index([patientId])
-  @@index([exerciseId])
-  @@map("patient_plan_items")
 }
 
 model Evaluation {
