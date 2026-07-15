@@ -1,6 +1,6 @@
-# Fichário TO
+# Neuro France
 
-Sistema clínico para **Terapia Ocupacional**: biblioteca de atividades terapêuticas, prontuário de pacientes, agenda, notas de estudo e painel da clínica — com isolamento por organização (multi-tenant).
+Sistema clínico para **clinicas de saúde**: prontuário de pacientes, agenda e painel da clínica — com isolamento por organização (multi-tenant).
 
 ## Stack
 
@@ -20,9 +20,7 @@ Sistema clínico para **Terapia Ocupacional**: biblioteca de atividades terapêu
 
 - **Painel** (`/painel`) — estatísticas, alertas clínicos e atividade recente
 - **Agenda** (`/agenda`) — agendamentos por dia (status, duração, notas)
-- **Biblioteca** (`/biblioteca`) — catálogo de atividades terapêuticas por domínio (CRUD)
-- **Estudo** (`/estudo`) — cartões de estudo / referência clínica
-- **Pacientes** (`/pacientes`) — cadastro, status, plano de atividades, avaliação por domínios, anamnese pediátrica, evoluções de sessão e roteiros
+- **Pacientes** (`/pacientes`) — cadastro, status, avaliação por domínios, anamnese pediátrica, evoluções de sessão e roteiros
 - **Busca** (`/buscar`) — pesquisa rápida na clínica
 - **Configurações** (`/configuracoes`) — perfil profissional
 - **Organização** (`/organizacao`) — gestão da clínica e membros
@@ -68,15 +66,13 @@ Acesse [http://localhost:3000](http://localhost:3000) — login em `/auth/login`
 ```
 src/
 ├── app/
-│   ├── (authenticated)/   # painel, agenda, biblioteca, estudo, pacientes, …
+│   ├── (authenticated)/   # painel, agenda, pacientes, …
 │   ├── (not-authenticated)/auth/
 │   └── api/
 ├── features/
 │   ├── dashboard/         # painel e busca
-│   ├── exercise/          # biblioteca de atividades
 │   ├── patient/           # prontuário
 │   ├── schedule/          # agenda
-│   ├── study/             # cartões de estudo
 │   └── settings/          # configurações
 ├── components/            # UI e templates
 ├── shared/                # auth, prisma, constants, guards, permissions
@@ -87,12 +83,12 @@ Cada feature segue o padrão `repository` → `service` → `actions` (Zod + rev
 
 ## Scripts
 
-| Comando     | Descrição                          |
-| ----------- | ---------------------------------- |
-| `pnpm dev`  | Servidor de desenvolvimento        |
-| `pnpm build`| `prisma generate` + build Next.js  |
-| `pnpm start`| Servidor de produção               |
-| `pnpm lint` | ESLint                             |
+| Comando      | Descrição                         |
+| ------------ | --------------------------------- |
+| `pnpm dev`   | Servidor de desenvolvimento       |
+| `pnpm build` | `prisma generate` + build Next.js |
+| `pnpm start` | Servidor de produção              |
+| `pnpm lint`  | ESLint                            |
 
 ## Licença
 
