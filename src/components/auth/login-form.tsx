@@ -32,8 +32,11 @@ const formSchema = z.object({
 
 export function LoginForm({
   className,
+  accessNotice = null,
   ...props
-}: React.ComponentPropsWithoutRef<"form">) {
+}: React.ComponentPropsWithoutRef<"form"> & {
+  accessNotice?: string | null;
+}) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const lastMethod = useSyncExternalStore(
@@ -78,6 +81,11 @@ export function LoginForm({
       >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Acesse sua conta</h1>
+          {accessNotice ? (
+            <p className="text-sm text-destructive" role="alert">
+              {accessNotice}
+            </p>
+          ) : null}
         </div>
         <div className="grid gap-6">
           <div className="grid gap-2">

@@ -10,11 +10,13 @@ import { isAdmin } from "@/server/auth/permissions";
 import {
   changeForcedPasswordSchema,
   createProfessionalSchema,
+  updateProfessionalSchema,
 } from "./team.schema";
 import {
   changeForcedPassword,
   createProfessional,
   listTeamMembers,
+  updateProfessional,
 } from "./team.service";
 import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
 
@@ -55,6 +57,30 @@ export async function createProfessionalAction(
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
     return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function updateProfessionalAction(
+  input: unknown,
+): Promise<ActionResult<void>> {
+  try {
+    const admin = await isAdmin();
+    if (admin !== true) {
+      return fail("Sem permissão para editar profissionais");
+    }
+
+    const parsed = updateProfessionalSchema.safeParse(input);
+    if (!parsed.success) {
+      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+    }
+
+    const { organizationId, userId } = await requireOrgId();
+    await updateProfessional(organizationId, userId, parsed.data);
+    revalidatePath(paths.profissionais);
+    revalidatePath(paths.agenda);
+    return ok(undefined);
   } catch (error) {
     return handleError(error);
   }

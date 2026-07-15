@@ -28,6 +28,11 @@ enum PatientStatus {
   pausado
 }
 
+enum MemberStatus {
+  ativo
+  inativo
+}
+
 enum SessionNoteStatus {
   compareceu
   faltou
@@ -323,6 +328,7 @@ model Member {
   userId              String
   user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   role                Role                  @default(MEMBER)
+  status              MemberStatus          @default(ativo)
   profession          String?
   registro            String?
   metadata            String?
@@ -334,6 +340,7 @@ model Member {
   protocolAssessments ProtocolAssessment[]
 
   @@index([organizationId])
+  @@index([organizationId, status])
   @@index([userId])
   @@map("member")
 }

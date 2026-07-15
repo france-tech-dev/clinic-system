@@ -1,6 +1,8 @@
 import { hashPassword } from "better-auth/crypto";
 import { db } from "@/shared/lib/prisma";
+import type { Role } from "../../../prisma/generated/prisma/enums";
 import type { CreateProfessionalInput } from "./team.schema";
+import type { TeamMemberStatus } from "./team.types";
 
 function parseBirthDate(value: string): Date {
   const [year, month, day] = value.split("-").map(Number);
@@ -37,6 +39,25 @@ export const teamRepository = {
     return db.member.findFirst({
       where: { organizationId, userId },
       select: { id: true },
+    });
+  },
+
+  async findMemberForUpdate(organizationId: string, memberId: string) {
+    return db.member.findFirst({
+      where: { id: memberId, organizationId },
+      select: {
+        id: true,
+        userId: true,
+        role: true,
+        status: true,
+        metadata: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
+      },
     });
   },
 
@@ -79,6 +100,8 @@ export const teamRepository = {
       profession: string;
       registro: string;
       metadata: string;
+      status?: TeamMemberStatus;
+      role?: Role;
     },
   ) {
     return db.member.update({
@@ -87,6 +110,28 @@ export const teamRepository = {
         profession: data.profession,
         registro: data.registro,
         metadata: data.metadata,
+        ...(data.status !== undefined ? { status: data.status } : {}),
+        ...(data.role !== undefined ? { role: data.role } : {}),
+      },
+    });
+  },
+
+  async updateUserProfile(
+    userId: string,
+    data: {
+      name: string;
+      email: string;
+      phone: string;
+      birthDate: string;
+    },
+  ) {
+    return db.user.update({
+      where: { id: userId },
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        birthDate: parseBirthDate(data.birthDate),
       },
     });
   },

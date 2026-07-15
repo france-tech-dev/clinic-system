@@ -11,6 +11,7 @@ export async function getOrganizations() {
       members: {
         some: {
           userId: user.id,
+          status: "ativo",
         },
       },
     },
@@ -22,6 +23,7 @@ export async function getActiveOrganization(userId: string) {
   const memberUser = await db.member.findFirst({
     where: {
       userId,
+      status: "ativo",
     },
   });
 

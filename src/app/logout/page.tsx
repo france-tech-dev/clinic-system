@@ -12,7 +12,11 @@ export default function LogoutPage() {
   useEffect(() => {
     void (async () => {
       await signOut();
-      router.replace(paths.auth.login);
+      const aviso = new URLSearchParams(window.location.search).get("aviso");
+      const loginUrl = aviso
+        ? `${paths.auth.login}?aviso=${encodeURIComponent(aviso)}`
+        : paths.auth.login;
+      router.replace(loginUrl);
     })();
   }, [router]);
 

@@ -3,8 +3,15 @@ import { serializeMemberProfessionalMetadata } from "@/shared/types/professional
 import { getHealthProfession } from "@/shared/constants/professions";
 import { Role } from "../../../prisma/generated/prisma/enums";
 import { teamRepository } from "./team.repository";
-import type { CreateProfessionalInput } from "./team.schema";
-import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
+import type {
+  CreateProfessionalInput,
+  UpdateProfessionalInput,
+} from "./team.schema";
+import type {
+  CreatedProfessionalDTO,
+  TeamMemberDTO,
+  TeamMemberStatus,
+} from "./team.types";
 
 function toMemberRole(role: CreateProfessionalInput["role"]): Role {
   switch (role) {
@@ -25,6 +32,10 @@ function formatBirthDate(value: Date | null | undefined): string | null {
   return `${year}-${month}-${day}`;
 }
 
+function toTeamMemberStatus(status: string): TeamMemberStatus {
+  return status === "inativo" ? "inativo" : "ativo";
+}
+
 export async function listTeamMembers(
   organizationId: string,
 ): Promise<TeamMemberDTO[]> {
@@ -33,6 +44,7 @@ export async function listTeamMembers(
     id: row.id,
     userId: row.userId,
     role: row.role,
+    status: toTeamMemberStatus(row.status),
     profession: row.profession,
     registro: row.registro,
     name: row.user.name?.trim() || "Sem nome",
@@ -98,6 +110,83 @@ export async function createProfessional(
     email,
     mustChangePassword: true,
   };
+}
+
+export async function updateProfessional(
+  organizationId: string,
+  actorUserId: string,
+  input: UpdateProfessionalInput,
+): Promise<void> {
+  const member = await teamRepository.findMemberForUpdate(
+    organizationId,
+    input.memberId,
+  );
+  if (!member) {
+    throw new Error("Profissional não encontrado nesta clínica");
+  }
+
+  const profession = getHealthProfession(input.profession);
+  if (!profession) {
+    throw new Error("Profissão inválida");
+  }
+
+  const isOwner = member.role === Role.OWNER;
+  const isSelf = member.userId === actorUserId;
+
+  if (isSelf && input.status === "inativo") {
+    throw new Error("Não pode desativar o seu próprio acesso");
+  }
+
+  if (isOwner && input.status === "inativo") {
+    throw new Error("Não é possível desativar o proprietário da clínica");
+  }
+
+  if (!isOwner && input.role === "OWNER") {
+    throw new Error("Papel inválido");
+  }
+
+  if (!isOwner && isSelf && input.role !== member.role) {
+    throw new Error("Não pode alterar o seu próprio papel");
+  }
+
+  if (isOwner && input.role !== "OWNER") {
+    throw new Error("Não é possível alterar o papel do proprietário");
+  }
+
+  const email = input.email.trim().toLowerCase();
+  if (email !== (member.user.email?.trim().toLowerCase() ?? "")) {
+    const existing = await teamRepository.findUserByEmail(email);
+    if (existing && existing.id !== member.userId) {
+      throw new Error("Já existe um utilizador com este e-mail");
+    }
+  }
+
+  const name = input.name.trim();
+  const registro = input.registro.trim();
+
+  await teamRepository.updateUserProfile(member.userId, {
+    name,
+    email,
+    phone: input.phone.trim(),
+    birthDate: input.birthDate,
+  });
+
+  const nextRole =
+    isOwner || input.role === "OWNER" ? undefined : toMemberRole(input.role);
+
+  await teamRepository.updateMemberProfile(member.id, {
+    profession: input.profession,
+    registro,
+    metadata: serializeMemberProfessionalMetadata(
+      {
+        nome: name,
+        registro,
+      },
+      member.metadata,
+    ),
+    status: input.status,
+    ...(nextRole !== undefined ? { role: nextRole } : {}),
+  });
 }
 
 export async function changeForcedPassword(

@@ -30,56 +30,96 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  createProfessionalAction,
   listTeamMembersAction,
+  updateProfessionalAction,
 } from "@/features/team/team.actions";
 import {
-  createProfessionalSchema,
   TEAM_MEMBER_ROLES,
-  type CreateProfessionalInput,
+  TEAM_MEMBER_STATUSES,
+  updateProfessionalSchema,
+  type UpdateProfessionalInput,
 } from "@/features/team/team.schema";
 import type { TeamMemberDTO } from "@/features/team/team.types";
-import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
 import {
   getHealthProfession,
+  HEALTH_PROFESSION_IDS,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
 
 const ROLE_OPTIONS: {
-  value: (typeof TEAM_MEMBER_ROLES)[number];
+  value: (typeof TEAM_MEMBER_ROLES)[number] | "OWNER";
   label: string;
 }[] = [
   { value: "MEMBER", label: "Membro" },
   { value: "MANAGER", label: "Gestor" },
   { value: "ADMIN", label: "Administrador" },
+  { value: "OWNER", label: "Proprietário" },
 ];
 
-const DEFAULT_VALUES: CreateProfessionalInput = {
-  name: "",
-  email: "",
-  profession: "terapeuta_ocupacional",
-  registro: "",
-  phone: "",
-  birthDate: "",
-  role: "MEMBER",
-  password: DEFAULT_MEMBER_PASSWORD,
-  confirmPassword: DEFAULT_MEMBER_PASSWORD,
-};
+const STATUS_OPTIONS: {
+  value: (typeof TEAM_MEMBER_STATUSES)[number];
+  label: string;
+}[] = [
+  { value: "ativo", label: "Ativo" },
+  { value: "inativo", label: "Inativo" },
+];
 
-export function CreateProfessionalDialog({
+function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
+  const role =
+    member.role === "OWNER" ||
+    member.role === "ADMIN" ||
+    member.role === "MANAGER" ||
+    member.role === "MEMBER"
+      ? member.role
+      : "MEMBER";
+
+  const profession = HEALTH_PROFESSION_IDS.includes(
+    member.profession as (typeof HEALTH_PROFESSION_IDS)[number],
+  )
+    ? (member.profession as UpdateProfessionalInput["profession"])
+    : "terapeuta_ocupacional";
+
+  return {
+    memberId: member.id,
+    name: member.name,
+    email: member.email,
+    profession,
+    registro: member.registro ?? "",
+    phone: member.phone ?? "",
+    birthDate: member.birthDate ?? "",
+    role,
+    status: member.status,
+  };
+}
+
+export function EditProfessionalDialog({
+  member,
   open,
   onOpenChange,
-  onCreated,
+  onUpdated,
 }: {
+  member: TeamMemberDTO | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: (members: TeamMemberDTO[]) => void;
+  onUpdated: (members: TeamMemberDTO[]) => void;
 }) {
   const [pending, startTransition] = useTransition();
+  const isOwner = member?.role === "OWNER" || member?.role === "owner";
 
-  const form = useForm<CreateProfessionalInput>({
-    resolver: zodResolver(createProfessionalSchema),
-    defaultValues: DEFAULT_VALUES,
+  const form = useForm<UpdateProfessionalInput>({
+    resolver: zodResolver(updateProfessionalSchema),
+    values: member ? toFormValues(member) : undefined,
+    defaultValues: {
+      memberId: "",
+      name: "",
+      email: "",
+      profession: "terapeuta_ocupacional",
+      registro: "",
+      phone: "",
+      birthDate: "",
+      role: "MEMBER",
+      status: "ativo",
+    },
   });
 
   const professionId = useWatch({
@@ -89,15 +129,15 @@ export function CreateProfessionalDialog({
   const council = getHealthProfession(professionId)?.council ?? "Conselho";
 
   function handleOpenChange(next: boolean) {
-    if (!next) {
-      form.reset(DEFAULT_VALUES);
+    if (!next && member) {
+      form.reset(toFormValues(member));
     }
     onOpenChange(next);
   }
 
-  function onSubmit(data: CreateProfessionalInput) {
+  function onSubmit(data: UpdateProfessionalInput) {
     startTransition(async () => {
-      const result = await createProfessionalAction(data);
+      const result = await updateProfessionalAction(data);
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -105,13 +145,10 @@ export function CreateProfessionalDialog({
 
       const list = await listTeamMembersAction();
       if (list.success) {
-        onCreated(list.data);
+        onUpdated(list.data);
       }
 
-      toast.success(
-        "Profissional cadastrado. No primeiro login terá de alterar a senha.",
-      );
-      form.reset(DEFAULT_VALUES);
+      toast.success("Profissional atualizado.");
       onOpenChange(false);
     });
   }
@@ -120,12 +157,12 @@ export function CreateProfessionalDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Novo profissional</DialogTitle>
+          <DialogTitle>Editar profissional</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            id="create-professional-form"
+            id="edit-professional-form"
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid gap-3"
           >
@@ -240,46 +277,36 @@ export function CreateProfessionalDialog({
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Papel na clínica</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => {
-                      if (v) field.onChange(v);
-                    }}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {ROLE_OPTIONS.map((r) => (
-                        <SelectItem key={r.value} value={r.value}>
-                          {r.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="grid gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
-                name="password"
+                name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha temporária</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
+                    <FormLabel>Papel na clínica</FormLabel>
+                    <Select
+                      value={field.value}
+                      disabled={isOwner}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {(isOwner
+                          ? ROLE_OPTIONS
+                          : ROLE_OPTIONS.filter((r) => r.value !== "OWNER")
+                        ).map((r) => (
+                          <SelectItem key={r.value} value={r.value}>
+                            {r.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -287,26 +314,41 @@ export function CreateProfessionalDialog({
 
               <FormField
                 control={form.control}
-                name="confirmPassword"
+                name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirmar senha</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
+                    <FormLabel>Status na clínica</FormLabel>
+                    <Select
+                      value={field.value}
+                      disabled={isOwner}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {STATUS_OPTIONS.map((s) => (
+                          <SelectItem key={s.value} value={s.value}>
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              Senha temporária: {DEFAULT_MEMBER_PASSWORD}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              No primeiro login o profissional será obrigado a definir uma nova
-              senha.
-            </p>
+            {isOwner ? (
+              <p className="text-xs text-muted-foreground">
+                O proprietário mantém o papel e permanece ativo.
+              </p>
+            ) : null}
           </form>
         </Form>
 
@@ -321,13 +363,13 @@ export function CreateProfessionalDialog({
           </Button>
           <Button
             type="submit"
-            form="create-professional-form"
-            disabled={pending}
+            form="edit-professional-form"
+            disabled={pending || !member}
           >
             {pending ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
-              "Cadastrar"
+              "Salvar"
             )}
           </Button>
         </DialogFooter>

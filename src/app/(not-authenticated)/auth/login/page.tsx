@@ -3,7 +3,17 @@ import Link from "next/link";
 import { paths } from "@/shared/constants/paths";
 import Image from "next/image";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ aviso?: string }>;
+}) {
+  const { aviso } = await searchParams;
+  const inactiveNotice =
+    aviso === "inativo"
+      ? "O seu acesso a esta clínica está inativo. Contacte um administrador."
+      : null;
+
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -26,7 +36,7 @@ export default function LoginPage() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm />
+            <LoginForm accessNotice={inactiveNotice} />
           </div>
         </div>
       </div>

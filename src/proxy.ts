@@ -37,7 +37,7 @@ export async function proxy(req: NextRequest) {
     select: {
       mustChangePassword: true,
       members: {
-        select: { role: true, organizationId: true },
+        select: { role: true, organizationId: true, status: true },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -56,6 +56,13 @@ export async function proxy(req: NextRequest) {
     user?.members.find((m) => m.organizationId === activeOrgId) ??
     user?.members[0] ??
     null;
+
+  if (member?.status === "inativo") {
+    const logoutUrl = new URL(paths.auth.logout, req.url);
+    logoutUrl.searchParams.set("aviso", "inativo");
+    return NextResponse.redirect(logoutUrl);
+  }
+
   const hasPanel = canAccessClinicPanel(member?.role);
 
   // Logado nas páginas de auth → manda para o sítio certo

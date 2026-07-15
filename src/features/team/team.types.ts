@@ -1,7 +1,10 @@
+export type TeamMemberStatus = "ativo" | "inativo";
+
 export type TeamMemberDTO = {
   id: string;
   userId: string;
   role: string;
+  status: TeamMemberStatus;
   profession: string | null;
   registro: string | null;
   name: string;

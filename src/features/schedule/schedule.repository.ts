@@ -41,7 +41,7 @@ export const scheduleRepository = {
 
   async findOrgMembers(organizationId: string) {
     return db.member.findMany({
-      where: { organizationId },
+      where: { organizationId, status: "ativo" },
       include: { user: { select: { id: true, name: true } } },
       orderBy: { createdAt: "asc" },
     });

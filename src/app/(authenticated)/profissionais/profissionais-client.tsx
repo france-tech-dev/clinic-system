@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getHealthProfession } from "@/shared/constants/professions";
 import type { TeamMemberDTO } from "@/features/team/team.types";
 import { CreateProfessionalDialog } from "./_components/create-professional-dialog";
+import { EditProfessionalDialog } from "./_components/edit-professional-dialog";
 
 const ROLE_LABEL: Record<string, string> = {
   OWNER: "Proprietário",
@@ -26,7 +28,10 @@ export function ProfissionaisClient({
 }) {
   const searchParams = useSearchParams();
   const [members, setMembers] = useState(initialMembers);
-  const [open, setOpen] = useState(() => searchParams.get("novo") === "1");
+  const [createOpen, setCreateOpen] = useState(
+    () => searchParams.get("novo") === "1",
+  );
+  const [editing, setEditing] = useState<TeamMemberDTO | null>(null);
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,7 +39,7 @@ export function ProfissionaisClient({
         <p className="text-sm text-muted-foreground">
           {members.length} na lista
         </p>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => setCreateOpen(true)}>
           <Plus className="size-4" />
           Novo profissional
         </Button>
@@ -54,14 +59,22 @@ export function ProfissionaisClient({
                 <th className="px-3 py-2 font-medium">Profissão</th>
                 <th className="px-3 py-2 font-medium">Registro</th>
                 <th className="px-3 py-2 font-medium">Papel</th>
+                <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium">Contato</th>
+                <th className="px-3 py-2 font-medium">
+                  <span className="sr-only">Ações</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {members.map((m) => {
                 const profession = getHealthProfession(m.profession);
+                const inactive = m.status === "inativo";
                 return (
-                  <tr key={m.id} className="border-t border-border">
+                  <tr
+                    key={m.id}
+                    className="border-t border-border"
+                  >
                     <td className="px-3 py-2">{m.name}</td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {m.email}
@@ -75,8 +88,24 @@ export function ProfissionaisClient({
                     <td className="px-3 py-2">
                       {ROLE_LABEL[m.role] ?? m.role}
                     </td>
+                    <td className="px-3 py-2">
+                      <Badge variant={inactive ? "secondary" : "outline"}>
+                        {inactive ? "Inativo" : "Ativo"}
+                      </Badge>
+                    </td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {m.phone ?? "—"}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Editar ${m.name}`}
+                        onClick={() => setEditing(m)}
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
                     </td>
                   </tr>
                 );
@@ -87,9 +116,18 @@ export function ProfissionaisClient({
       )}
 
       <CreateProfessionalDialog
-        open={open}
-        onOpenChange={setOpen}
+        open={createOpen}
+        onOpenChange={setCreateOpen}
         onCreated={setMembers}
+      />
+
+      <EditProfessionalDialog
+        member={editing}
+        open={editing != null}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null);
+        }}
+        onUpdated={setMembers}
       />
     </div>
   );
