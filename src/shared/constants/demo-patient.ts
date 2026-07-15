@@ -1,4 +1,4 @@
-import { EXERCISE_CATEGORIES } from "@/shared/constants/exercise-categories";
+import { EVALUATION_DOMAINS } from "@/shared/constants/evaluation-domains";
 
 type DemoEvaluationDomain = {
   categoryId: string;
@@ -13,12 +13,6 @@ export const DEMO_PATIENT_NAME = "Miguel Oliveira";
 
 export const DEMO_PATIENT_NOTES =
   "Caso fictício para demonstração do Fichário TO. Criança de 7 anos, encaminhada para trabalhar coordenação fina, autorregulação e AVDs.";
-
-export const DEMO_PLAN_EXERCISE_TITLES = [
-  "Pinça de grãos",
-  "Treino de abotoamento",
-  "Caixa sensorial tátil",
-] as const;
 
 const DOMAIN_SCORES: Record<string, { score: number; note: string }> = {
   fina: {
@@ -56,7 +50,7 @@ const DOMAIN_SCORES: Record<string, { score: number; note: string }> = {
 };
 
 export function buildDemoEvaluationDomains(): DemoEvaluationDomain[] {
-  return EXERCISE_CATEGORIES.map((category) => {
+  return EVALUATION_DOMAINS.map((category) => {
     const entry = DOMAIN_SCORES[category.id];
     return {
       categoryId: category.id,
@@ -175,7 +169,7 @@ export function buildDemoAppointments(baseDate: Date) {
       time: "09:00",
       duration: 50,
       status: "agendado" as const,
-      notes: "Continuidade do plano: pinça + AVD vestir.",
+      notes: "Continuidade: pinça + AVD vestir.",
     },
     {
       date: formatIsoDate(offsetDate(baseDate, 7)),

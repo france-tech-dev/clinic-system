@@ -7,10 +7,8 @@ import {
   DEMO_PATIENT_NAME,
   DEMO_PATIENT_NOTES,
   DEMO_PATIENT_SEED_MARKER,
-  DEMO_PLAN_EXERCISE_TITLES,
 } from "@/shared/constants/demo-patient";
 import { db } from "@/shared/lib/prisma";
-import { ensureDefaultExercises } from "@/shared/lib/seed-exercises";
 
 export type DemoPatientSeedResult = {
   created: boolean;
@@ -22,8 +20,6 @@ export type DemoPatientSeedResult = {
 export async function ensureDemoPatient(
   organizationId: string,
 ): Promise<DemoPatientSeedResult> {
-  await ensureDefaultExercises(organizationId);
-
   const existing = await db.patient.findFirst({
     where: {
       organizationId,
@@ -47,14 +43,6 @@ export async function ensureDemoPatient(
   const cashTransaction = buildDemoCashTransaction(baseDate);
   const anamneseData = buildDemoAnamneseData();
 
-  const exercises = await db.exercise.findMany({
-    where: {
-      organizationId,
-      title: { in: [...DEMO_PLAN_EXERCISE_TITLES] },
-    },
-    select: { id: true, title: true },
-  });
-
   const patient = await db.$transaction(async (tx) => {
     const member = await tx.member.findFirst({
       where: { organizationId },
@@ -70,7 +58,7 @@ export async function ensureDemoPatient(
       data: {
         organizationId,
         name: DEMO_PATIENT_NAME,
-        notes: `${DEMO_PATIENT_NOTES}\n`,
+        notes: `${DEMO_PATIENT_NOTES}\n${DEMO_PATIENT_SEED_MARKER}`,
         status: "ativo",
         pricingType: "sessao",
         priceCents: 15000,
@@ -131,15 +119,6 @@ export async function ensureDemoPatient(
           duration: appointment.duration,
           status: appointment.status,
           notes: appointment.notes,
-        },
-      });
-    }
-
-    for (const exercise of exercises) {
-      await tx.patientPlanItem.create({
-        data: {
-          patientId: createdPatient.id,
-          exerciseId: exercise.id,
         },
       });
     }
