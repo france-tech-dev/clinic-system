@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -44,7 +45,7 @@ export function EvaluationFormMetaFields({
         </div>
         <div className="grid gap-1.5">
           <Label>Data</Label>
-          <Input type="date" value={date} onChange={(e) => onDateChange(e.target.value)} />
+          <DatePicker value={date} onChange={onDateChange} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">

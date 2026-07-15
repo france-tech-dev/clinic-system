@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -269,7 +270,11 @@ export function EditProfessionalDialog({
                   <FormItem>
                     <FormLabel>Aniversário</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <DatePicker
+                        longRange
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -366,11 +371,7 @@ export function EditProfessionalDialog({
             form="edit-professional-form"
             disabled={pending || !member}
           >
-            {pending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              "Salvar"
-            )}
+            {pending ? <Loader2 className="size-4 animate-spin" /> : "Salvar"}
           </Button>
         </DialogFooter>
       </DialogContent>

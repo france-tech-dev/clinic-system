@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -66,11 +67,10 @@ export function GmfmAssessmentForm({
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="gmfm-date">Data</Label>
-          <Input
+          <DatePicker
             id="gmfm-date"
-            type="date"
             value={date}
-            onChange={(e) => onDateChange(e.target.value)}
+            onChange={onDateChange}
           />
         </div>
       </div>

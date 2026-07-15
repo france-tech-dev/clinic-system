@@ -6,16 +6,11 @@ export const TEAM_MEMBER_STATUSES = ["ativo", "inativo"] as const;
 
 const professionalBaseSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome"),
-  email: z.string().trim().email("E-mail inválido"),
-  profession: z.enum(HEALTH_PROFESSION_IDS, {
-    message: "Selecione a profissão",
-  }),
-  registro: z.string().trim().min(1, "Informe o número de registro"),
-  phone: z.string().trim().min(8, "Informe o contato"),
-  birthDate: z
-    .string()
-    .trim()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data de aniversário inválida"),
+  email: z.email("E-mail inválido"),
+  profession: z.enum(HEALTH_PROFESSION_IDS).optional(),
+  registro: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  birthDate: z.string().trim().optional(),
   role: z.enum(TEAM_MEMBER_ROLES),
 });
 

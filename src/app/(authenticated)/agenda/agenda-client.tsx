@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -279,11 +279,10 @@ export function AgendaClient({
             >
               <ChevronRight className="size-4" />
             </Button>
-            <Input
-              type="date"
+            <DatePicker
               className="max-w-44"
               value={selectedDate}
-              onChange={(e) => navigate(e.target.value)}
+              onChange={navigate}
             />
           </div>
 
