@@ -89,15 +89,17 @@ function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
 export function AgendaCalendar({
   events,
   viewDate,
+  initialCalView,
   onSelectEvent,
 }: {
   events: CalendarEvent[];
   viewDate: Date;
+  initialCalView: "day" | "week" | "month";
   onSelectEvent?: (id: string) => void;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [view, setView] = useState<View>(Views.WEEK);
+  const [view, setView] = useState<View>(initialCalView);
   const [isPending, startTransition] = useTransition();
   const [localEvents, setLocalEvents] = useState(events);
   const [prevEvents, setPrevEvents] = useState(events);
@@ -112,6 +114,18 @@ export function AgendaCalendar({
       const next = new URLSearchParams(searchParams.toString());
       next.set("view", "calendario");
       next.set("viewDate", formatAppointmentDate(newDate));
+      next.set("calView", view);
+      router.push(`${paths.agenda}?${next.toString()}`);
+    },
+    [router, searchParams, view],
+  );
+
+  const onView = useCallback(
+    (nextView: View) => {
+      setView(nextView);
+      const next = new URLSearchParams(searchParams.toString());
+      next.set("view", "calendario");
+      next.set("calView", nextView);
       router.push(`${paths.agenda}?${next.toString()}`);
     },
     [router, searchParams],
@@ -175,7 +189,7 @@ export function AgendaCalendar({
         date={viewDate}
         onNavigate={onNavigate}
         view={view}
-        onView={(v) => setView(v)}
+        onView={onView}
         views={[Views.DAY, Views.WEEK, Views.MONTH]}
         step={30}
         timeslots={2}

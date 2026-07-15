@@ -30,20 +30,28 @@ function parseMemberFilter(
   return members.some((m) => m.id === raw) ? raw : MEMBER_FILTER_ALL;
 }
 
-export default async function AgendaPage({
-  searchParams,
-}: {
+const CAL_VIEWS = new Set(["day", "week", "month"]);
+
+function parseCalView(raw: string | undefined): "day" | "week" | "month" {
+  return raw && CAL_VIEWS.has(raw) ? (raw as "day" | "week" | "month") : "week";
+}
+
+type AgendaPageProps = {
   searchParams: Promise<{
     date?: string;
     view?: string;
     viewDate?: string;
+    calView?: string;
     member?: string;
   }>;
-}) {
+};
+
+export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const params = await searchParams;
   const selectedDate = params.date || todayIso();
   const today = todayIso();
   const view = params.view === "calendario" ? "calendario" : "lista";
+  const calView = parseCalView(params.calView);
   const viewDateIso = params.viewDate || selectedDate;
   const viewDate =
     parseIsoDateParam(viewDateIso) ?? new Date(`${selectedDate}T12:00:00`);
@@ -60,14 +68,19 @@ export default async function AgendaPage({
   try {
     const { organizationId, userId } = await requireOrgId();
     const { start, end } = monthBounds(viewDate);
-    const [agenda, patientList, rangeAppointments, orgMembers, currentMemberId] =
-      await Promise.all([
-        getAgendaPageData(organizationId, selectedDate, today),
-        listPatients(organizationId),
-        listAppointmentsByDateRange(organizationId, start, end),
-        listOrganizationMembers(organizationId),
-        getCurrentMemberId(organizationId, userId),
-      ]);
+    const [
+      agenda,
+      patientList,
+      rangeAppointments,
+      orgMembers,
+      currentMemberId,
+    ] = await Promise.all([
+      getAgendaPageData(organizationId, selectedDate, today),
+      listPatients(organizationId),
+      listAppointmentsByDateRange(organizationId, start, end),
+      listOrganizationMembers(organizationId),
+      getCurrentMemberId(organizationId, userId),
+    ]);
     dayAppointments = agenda.dayAppointments;
     upcoming = agenda.upcoming;
     patients = patientList;
@@ -90,10 +103,11 @@ export default async function AgendaPage({
         <p className="text-sm text-destructive">{error}</p>
       ) : (
         <AgendaClient
-          key={`${selectedDate}-${view}-${viewDateIso}-${initialMemberFilter}`}
+          key={`${selectedDate}-${view}-${viewDateIso}-${calView}-${initialMemberFilter}`}
           initialView={view}
           initialDate={selectedDate}
           viewDateIso={viewDateIso}
+          initialCalView={calView}
           initialDay={dayAppointments}
           initialUpcoming={upcoming}
           calendarEvents={calendarEvents}

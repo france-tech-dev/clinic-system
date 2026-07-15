@@ -46,6 +46,7 @@ export function AgendaClient({
   initialView,
   initialDate,
   viewDateIso,
+  initialCalView,
   initialDay,
   initialUpcoming,
   calendarEvents,
@@ -58,6 +59,7 @@ export function AgendaClient({
   initialView: "lista" | "calendario";
   initialDate: string;
   viewDateIso: string;
+  initialCalView: "day" | "week" | "month";
   initialDay: AppointmentDTO[];
   initialUpcoming: AppointmentDTO[];
   calendarEvents: CalendarEvent[];
@@ -115,12 +117,14 @@ export function AgendaClient({
     date: string,
     viewDate?: string,
     member?: string,
+    calView?: "day" | "week" | "month",
   ) {
     const params = new URLSearchParams();
     params.set("view", view);
     params.set("date", date);
     if (view === "calendario") {
       params.set("viewDate", viewDate ?? date);
+      params.set("calView", calView ?? initialCalView);
     }
     const memberValue = member ?? memberFilter;
     if (memberValue && memberValue !== MEMBER_FILTER_ALL) {
@@ -349,6 +353,7 @@ export function AgendaClient({
           <AgendaCalendar
             events={filteredCalendarEvents}
             viewDate={new Date(`${viewDateIso}T12:00:00`)}
+            initialCalView={initialCalView}
             onSelectEvent={openEditById}
           />
         </TabsContent>
