@@ -25,7 +25,7 @@ export async function proxy(req: NextRequest) {
   if (!session) {
     return NextResponse.redirect(new URL(PATHS.AUTH.LOGIN, req.url));
   }
-  // validar User.role (OWNER | MANAGER | MEMBER)…
+  // acesso via Member.role da org activa (OWNER | ADMIN | MANAGER | MEMBER)
   return NextResponse.next();
 }
 ```
