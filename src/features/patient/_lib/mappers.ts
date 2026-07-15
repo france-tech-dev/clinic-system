@@ -69,6 +69,7 @@ export function toEvaluationDTO(row: {
   updatedAt: Date;
   member?: {
     metadata?: string | null;
+    registro?: string | null;
     user: { name: string | null };
   } | null;
 }): EvaluationDTO {
@@ -78,7 +79,11 @@ export function toEvaluationDTO(row: {
     memberId: row.memberId ?? null,
     professionalName: row.member?.user.name?.trim() || null,
     authorProfessional: row.member
-      ? memberToProfessionalProfile(row.member.metadata, row.member.user.name)
+      ? memberToProfessionalProfile(
+          row.member.metadata,
+          row.member.user.name,
+          row.member.registro,
+        )
       : null,
     tipo: row.tipo,
     date: row.date,

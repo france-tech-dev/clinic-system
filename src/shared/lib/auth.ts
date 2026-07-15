@@ -33,6 +33,25 @@ export const auth = betterAuth({
 
   trustedOrigins: [baseUrl],
 
+  user: {
+    additionalFields: {
+      phone: {
+        type: "string",
+        required: false,
+      },
+      birthDate: {
+        type: "date",
+        required: false,
+      },
+      mustChangePassword: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+    },
+  },
+
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,

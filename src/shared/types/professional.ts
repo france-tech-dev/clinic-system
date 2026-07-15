@@ -74,10 +74,11 @@ export function serializeMemberProfessionalMetadata(
 export function memberToProfessionalProfile(
   metadata: string | null | undefined,
   userName: string | null | undefined,
+  registroColumn?: string | null,
 ): ProfessionalProfile | null {
   const stored = parseMemberProfessionalMetadata(metadata);
   const nome = stored.nome.trim() || userName?.trim() || "";
-  const registro = stored.registro.trim();
+  const registro = registroColumn?.trim() || stored.registro.trim();
   if (!nome && !registro) return null;
   return {
     nome: nome || "Profissional",

@@ -82,7 +82,11 @@ export async function getMemberProfessionalProfile(
     memberId,
   );
   if (!member) return null;
-  return memberToProfessionalProfile(member.metadata, member.user.name);
+  return memberToProfessionalProfile(
+    member.metadata,
+    member.user.name,
+    member.registro,
+  );
 }
 
 export async function getMemberProfessionalProfilesByIds(
@@ -99,6 +103,7 @@ export async function getMemberProfessionalProfilesByIds(
     const profile = memberToProfessionalProfile(
       member.metadata,
       member.user.name,
+      member.registro,
     );
     if (profile) map[member.id] = profile;
   }
@@ -115,9 +120,13 @@ export async function getCurrentMemberProfessionalProfile(
   );
   if (!member) return { ...EMPTY_PROFESSIONAL };
   return (
-    memberToProfessionalProfile(member.metadata, member.user.name) ?? {
+    memberToProfessionalProfile(
+      member.metadata,
+      member.user.name,
+      member.registro,
+    ) ?? {
       nome: member.user.name?.trim() || "",
-      registro: "",
+      registro: member.registro?.trim() || "",
       clinica: "",
     }
   );
@@ -138,15 +147,22 @@ export async function saveCurrentMemberProfessionalProfile(
     { nome: professional.nome, registro: professional.registro },
     member.metadata,
   );
-  const updated = await settingsRepository.updateMemberMetadata(
+  const updated = await settingsRepository.updateMemberProfessional(
     organizationId,
     member.id,
-    metadata,
+    {
+      metadata,
+      registro: professional.registro.trim(),
+    },
   );
   if (!updated) throw new Error("Não foi possível salvar o perfil");
 
   return (
-    memberToProfessionalProfile(updated.metadata, updated.user.name) ?? {
+    memberToProfessionalProfile(
+      updated.metadata,
+      updated.user.name,
+      updated.registro,
+    ) ?? {
       nome: professional.nome,
       registro: professional.registro,
       clinica: "",

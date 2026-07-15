@@ -7,6 +7,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconUserPlus,
   IconChartBar,
 } from "@tabler/icons-react";
 
@@ -46,6 +47,11 @@ export const sidebarItems = {
       name: "Pacientes",
       url: paths.pacientes,
       icon: IconUsers,
+    },
+    {
+      name: "Profissionais",
+      url: paths.profissionais,
+      icon: IconUserPlus,
     },
     {
       name: "Relatórios",

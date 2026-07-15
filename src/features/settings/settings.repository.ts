@@ -65,6 +65,16 @@ export const settingsRepository = {
     memberId: string,
     metadata: string,
   ) {
+    return this.updateMemberProfessional(organizationId, memberId, {
+      metadata,
+    });
+  },
+
+  async updateMemberProfessional(
+    organizationId: string,
+    memberId: string,
+    data: { metadata?: string; registro?: string; profession?: string },
+  ) {
     const existing = await db.member.findFirst({
       where: { id: memberId, organizationId },
       select: { id: true },
@@ -72,7 +82,13 @@ export const settingsRepository = {
     if (!existing) return null;
     return db.member.update({
       where: { id: memberId },
-      data: { metadata },
+      data: {
+        ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
+        ...(data.registro !== undefined ? { registro: data.registro } : {}),
+        ...(data.profession !== undefined
+          ? { profession: data.profession }
+          : {}),
+      },
       include: { user: { select: { name: true } } },
     });
   },

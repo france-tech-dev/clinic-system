@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
+import { canAccessClinicPanel } from "@/shared/lib/member-role";
 import { db } from "@/shared/lib/prisma";
-import { Role } from "../prisma/generated/prisma/enums";
 
 function isAuthRoute(pathname: string) {
   return (
@@ -11,35 +11,22 @@ function isAuthRoute(pathname: string) {
   );
 }
 
-function canAccessPanel(role: Role) {
-  return role === Role.OWNER || role === Role.MEMBER || role === Role.MANAGER;
+function isOrgSetupRoute(pathname: string) {
+  return (
+    pathname === paths.organizacao ||
+    pathname.startsWith(`${paths.organizacao}/`)
+  );
 }
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
   const session = await auth.api.getSession({
     headers: req.headers,
   });
 
-  if (isAuthRoute(pathname)) {
-    if (!session) {
-      return NextResponse.next();
-    }
-
-    const user = await db.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true },
-    });
-
-    if (user && canAccessPanel(user.role)) {
-      return NextResponse.redirect(new URL(paths.agenda, req.url));
-    }
-
-    return NextResponse.next();
-  }
-
+  // Sem sessão: só rotas de auth; resto → login
   if (!session) {
+    if (isAuthRoute(pathname)) return NextResponse.next();
     const loginUrl = new URL(paths.auth.login, req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
@@ -47,11 +34,45 @@ export async function proxy(req: NextRequest) {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true },
+    select: {
+      mustChangePassword: true,
+      members: {
+        select: { role: true, organizationId: true },
+        orderBy: { createdAt: "asc" },
+      },
+    },
   });
 
-  if (!user || !canAccessPanel(user.role)) {
-    return NextResponse.redirect(new URL(paths.auth.login, req.url));
+  // Senha temporária: só permite /auth/alterar-senha
+  if (user?.mustChangePassword) {
+    if (pathname === paths.auth.changePassword) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL(paths.auth.changePassword, req.url));
+  }
+
+  const activeOrgId = session.session.activeOrganizationId;
+  const member =
+    user?.members.find((m) => m.organizationId === activeOrgId) ??
+    user?.members[0] ??
+    null;
+  const hasPanel = canAccessClinicPanel(member?.role);
+
+  // Logado nas páginas de auth → manda para o sítio certo
+  if (isAuthRoute(pathname)) {
+    return NextResponse.redirect(
+      new URL(hasPanel ? paths.agenda : paths.organizacao, req.url),
+    );
+  }
+
+  // Sem membership (ou CLIENT): criar clínica ou fora
+  if (!hasPanel) {
+    if (!member && isOrgSetupRoute(pathname)) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(
+      new URL(member ? paths.auth.login : paths.organizacao, req.url),
+    );
   }
 
   if (pathname === paths.root) {

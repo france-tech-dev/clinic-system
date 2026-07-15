@@ -11,6 +11,7 @@ const memberAuthorInclude = {
     select: {
       id: true,
       metadata: true,
+      registro: true,
       user: { select: { name: true } },
     },
   },

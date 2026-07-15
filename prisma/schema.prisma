@@ -60,14 +60,16 @@ enum PatientPricingType {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified Boolean   @default(false) @map("email_verified")
-  image         String?
-  role          Role      @default(MEMBER)
-  accounts      Account[]
-  sessions      Session[]
+  id                 String    @id @default(cuid())
+  name               String?
+  email              String?   @unique
+  emailVerified      Boolean   @default(false) @map("email_verified")
+  image              String?
+  phone              String?
+  birthDate          DateTime? @map("birth_date")
+  mustChangePassword Boolean   @default(false) @map("must_change_password")
+  accounts           Account[]
+  sessions           Session[]
 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -320,7 +322,9 @@ model Member {
   organization        Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId              String
   user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role                String                @default("member")
+  role                Role                  @default(MEMBER)
+  profession          String?
+  registro            String?
   metadata            String?
   createdAt           DateTime
   appointments        Appointment[]

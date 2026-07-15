@@ -4,6 +4,7 @@ export const paths = Object.freeze({
   agenda: "/agenda",
   pacientes: "/pacientes",
   paciente: (id: string) => `/pacientes/${id}`,
+  profissionais: "/profissionais",
   configuracoes: "/configuracoes",
   caixa: "/caixa",
   relatorio: "/relatorio",
@@ -19,6 +20,7 @@ export const paths = Object.freeze({
     logout: "/logout",
     forgotPassword: "/auth/forgot-password",
     resetPassword: "/auth/reset-password",
+    changePassword: "/auth/alterar-senha",
   },
 
   api: {

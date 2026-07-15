@@ -22,7 +22,7 @@ type OrganizationInvitationEmailProps = {
 const ROLE_LABELS: Record<string, string> = {
   owner: "Proprietário",
   admin: "Administrador",
-  manager: "Gerente",
+  manager: "Gestor",
   member: "Membro",
   client: "Cliente",
 };
