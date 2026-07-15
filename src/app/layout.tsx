@@ -20,8 +20,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fichário TO",
-  description: "Biblioteca de atividades e prontuário de Terapia Ocupacional",
+  title: "Neuro France",
+  description:
+    "Sistema de gestão clínica e agendamentos para profissionais da saúde",
   icons: {
     icon: "/logo_dark.png",
     apple: "/logo_dark.png",
