@@ -1,10 +1,8 @@
 import { paths } from "@/shared/constants/paths";
 import {
-  IconBooks,
   IconCalendar,
   IconCash,
   IconLayoutDashboard,
-  IconNotebook,
   IconReport,
   IconSearch,
   IconSettings,
@@ -63,16 +61,6 @@ export const sidebarItems = {
       name: "Buscar",
       url: paths.buscar,
       icon: IconSearch,
-    },
-    {
-      name: "Biblioteca",
-      url: paths.biblioteca,
-      icon: IconBooks,
-    },
-    {
-      name: "Estudo",
-      url: paths.estudo,
-      icon: IconNotebook,
     },
     {
       name: "Configurações",

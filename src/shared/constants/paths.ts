@@ -2,8 +2,6 @@ export const paths = Object.freeze({
   root: "/",
   painel: "/painel",
   agenda: "/agenda",
-  biblioteca: "/biblioteca",
-  estudo: "/estudo",
   pacientes: "/pacientes",
   paciente: (id: string) => `/pacientes/${id}`,
   configuracoes: "/configuracoes",
@@ -12,9 +10,6 @@ export const paths = Object.freeze({
   protocolosGmfm: "/protocolos/gmfm",
   organizacao: "/organizacao",
   buscar: "/buscar",
-
-  /** @deprecated use paths.painel */
-  dashboard: "/painel",
 
   auth: {
     root: "/auth",
