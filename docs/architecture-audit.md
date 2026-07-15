@@ -102,7 +102,7 @@ Impacto alto, diff pequeno. Fazer antes de features novas.
 
 ## P1 — Ficheiros grandes (partir em ~300–400 linhas)
 
-Excluídos da lista: `sidebar.tsx`, `chart.tsx`, `roteiros.ts`, `default-exercises.ts`, `anamnese-schema.ts` (dados/config estáticos ou shadcn).
+Excluídos da lista: `sidebar.tsx`, `chart.tsx`, `roteiros.ts`, `anamnese-schema.ts` (dados/config estáticos ou shadcn).
 
 | Prioridade | Ficheiro                                              | Linhas | Acção sugerida                                                                                                   |
 | ---------- | ----------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------- |
@@ -119,7 +119,7 @@ Excluídos da lista: `sidebar.tsx`, `chart.tsx`, `roteiros.ts`, `default-exercis
 features/patient/
 ├── patient.service.ts          # facade — exporta funções públicas
 ├── _lib/
-│   ├── mappers.ts              # toPatientDTO, toEvaluationDTO, toPlanItemDTO, …
+│   ├── mappers.ts              # toPatientDTO, toEvaluationDTO, …
 │   ├── evaluation-service.ts   # (futuro) create/update/delete evaluation
 │   └── session-service.ts      # (futuro) create/update/delete session
 ```
@@ -238,13 +238,13 @@ Não reabre P0–P1 de camadas (já concluídos). Entregar **por fases** — uma
 
 ### Achados (estado na auditoria; P6.1 já corrige Appointment)
 
-| Área                                             | Situação na auditoria | Depois de P6.1                                        |
-| ------------------------------------------------ | --------------------- | ----------------------------------------------------- |
-| `Appointment`                                    | Sem `memberId`        | ✅ `memberId` → `Member`                              |
-| Calendário WIP settings                          | Nome global da org    | ✅ `professionalName` por evento                      |
-| Settings `professional.*`                        | Perfil org            | Mantém-se (PDF/assinatura)                            |
+| Área                                             | Situação na auditoria | Depois de P6.1                                            |
+| ------------------------------------------------ | --------------------- | --------------------------------------------------------- |
+| `Appointment`                                    | Sem `memberId`        | ✅ `memberId` → `Member`                                  |
+| Calendário WIP settings                          | Nome global da org    | ✅ `professionalName` por evento                          |
+| Settings `professional.*`                        | Perfil org            | Mantém-se (PDF/assinatura)                                |
 | `Evaluation` / `SessionNote` / `CashTransaction` | Sem autor             | Cash ✅; Evaluation/SessionNote ✅; ProtocolAssessment ✅ |
-| Route UI `parsePatientPriceInput`                | Import cruzado        | ✅ `features/patient/_lib/patient-price-input.ts`     |
+| Route UI `parsePatientPriceInput`                | Import cruzado        | ✅ `features/patient/_lib/patient-price-input.ts`         |
 
 ### Decisões de desenho (acordadas)
 
@@ -362,8 +362,6 @@ Cada item de P6.1–P6.3 = validar no browser + `pnpm test` no domínio tocado. 
 | `patient`   |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   | ✅ PDF, meta  |        ✅        |
 | `schedule`  |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   | ✅ calendário |        —         |
 | `finance`   |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   |   ✅ month    |    ✅ dialog     |
-| `exercise`  |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   |       —       |        —         |
-| `study`     |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   |       —       |        —         |
 | `settings`  |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   |       —       |        —         |
 | `dashboard` |     ✅     |   ✅    |   ✅    |   —    |  ✅   |  ✅ alertas   |        —         |
 | `protocol`  |     ✅     |   ✅    |   ✅    |   ✅   |  ✅   |    ✅ GMFM    |        ✅        |

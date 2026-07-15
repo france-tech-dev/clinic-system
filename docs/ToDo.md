@@ -86,7 +86,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 ## P4 — Polish transversal
 
 - [x] Padrão `key` + montagem condicional em dialogs (evitar `useEffect` para sync de props)
-- [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução, biblioteca, estudo)
+- [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução)
 - [x] Migration Prisma versionada (além de `db push` em dev) — baseline `20260714180000_init`
 - [x] Refactors de arquitetura — ver checklist priorizado em [`docs/architecture-audit.md`](./architecture-audit.md) (P0 + P1 + P4 concluídos; **P6.0** auditoria domínio ✅; **P6.1+** pendente)
 

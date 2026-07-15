@@ -18,13 +18,13 @@ Documentos relacionados:
 
 Este projecto é um monólito Next.js multi-tenant (`Organization`) para gestão clínica de Terapia Ocupacional. A escala e complexidade justificam **organização por domínio**, mas **não** a cerimónia de DDD tático (aggregates, domain events, entidades ricas).
 
-| Critério | Escolha |
-|----------|---------|
-| Organização | Monólito modular por feature |
-| Camadas | repository → service → actions |
-| Modelo de dados | Prisma + DTOs planos no boundary |
-| Orquestração multi-domínio | `app/` (pages), nunca feature → feature |
-| Testes | Vitest em funções puras e regras de negócio |
+| Critério                   | Escolha                                     |
+| -------------------------- | ------------------------------------------- |
+| Organização                | Monólito modular por feature                |
+| Camadas                    | repository → service → actions              |
+| Modelo de dados            | Prisma + DTOs planos no boundary            |
+| Orquestração multi-domínio | `app/` (pages), nunca feature → feature     |
+| Testes                     | Vitest em funções puras e regras de negócio |
 
 ---
 
@@ -74,8 +74,6 @@ clinic-system/
     │   │   └── _lib/                 # Helpers puros do domínio
     │   ├── schedule/
     │   ├── finance/
-    │   ├── exercise/
-    │   ├── study/
     │   ├── settings/
     │   └── dashboard/
     │
@@ -98,10 +96,10 @@ clinic-system/
 
 ### Fronteira `server/` vs `features/`
 
-| Pasta | Conteúdo |
-|-------|----------|
-| `src/server/` | Sessão, convites, permissões Better Auth |
-| `src/features/` | Pacientes, agenda, caixa, biblioteca, relatórios, etc. |
+| Pasta           | Conteúdo                                   |
+| --------------- | ------------------------------------------ |
+| `src/server/`   | Sessão, convites, permissões Better Auth   |
+| `src/features/` | Pacientes, agenda, caixa, relatórios, etc. |
 
 Não mover lógica clínica para `server/`. Não mover auth para `features/`.
 
@@ -111,16 +109,16 @@ Não mover lógica clínica para `server/`. Não mover auth para `features/`.
 
 Cada domínio em `features/[nome]/` segue este padrão:
 
-| Ficheiro | Responsabilidade |
-|----------|------------------|
-| `[nome].repository.ts` | Queries e mutações Prisma — **único sítio com `db`** na feature |
-| `[nome].service.ts` | Regras de negócio, mappers DTO — **sem** `'use server'`, **sem** `revalidatePath` |
-| `[nome].schema.ts` | Schemas Zod (validação de input) |
-| `[nome].types.ts` | DTOs planos (sem tipos Prisma no client) |
-| `[nome].actions.ts` | Server Actions finas: validar → service → revalidar |
-| `_lib/` | Funções puras, agregações, helpers de domínio |
-| `components/` | UI partilhada entre rotas **do mesmo domínio** |
-| `hooks/` | Hooks partilhados entre rotas **do mesmo domínio** |
+| Ficheiro               | Responsabilidade                                                                  |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| `[nome].repository.ts` | Queries e mutações Prisma — **único sítio com `db`** na feature                   |
+| `[nome].service.ts`    | Regras de negócio, mappers DTO — **sem** `'use server'`, **sem** `revalidatePath` |
+| `[nome].schema.ts`     | Schemas Zod (validação de input)                                                  |
+| `[nome].types.ts`      | DTOs planos (sem tipos Prisma no client)                                          |
+| `[nome].actions.ts`    | Server Actions finas: validar → service → revalidar                               |
+| `_lib/`                | Funções puras, agregações, helpers de domínio                                     |
+| `components/`          | UI partilhada entre rotas **do mesmo domínio**                                    |
+| `hooks/`               | Hooks partilhados entre rotas **do mesmo domínio**                                |
 
 ### Fluxo de uma mutação
 
@@ -148,13 +146,13 @@ app/  →  features/  →  shared/
     components/  (importa shared/; evitar features/)
 ```
 
-| Origem | Pode importar | Não pode importar |
-|--------|---------------|-------------------|
-| `app/` | `features/`, `shared/`, `components/` | — |
-| `features/` | `shared/` | outras `features/`, `app/` |
-| `shared/` | outros módulos `shared/` | `features/`, `app/` |
-| `components/` | `shared/` | `features/` (preferência) |
-| `server/` | `shared/` | `features/`, `app/` |
+| Origem        | Pode importar                         | Não pode importar          |
+| ------------- | ------------------------------------- | -------------------------- |
+| `app/`        | `features/`, `shared/`, `components/` | —                          |
+| `features/`   | `shared/`                             | outras `features/`, `app/` |
+| `shared/`     | outros módulos `shared/`              | `features/`, `app/`        |
+| `components/` | `shared/`                             | `features/` (preferência)  |
+| `server/`     | `shared/`                             | `features/`, `app/`        |
 
 ### Orquestração multi-domínio
 
@@ -192,12 +190,12 @@ import { X } from "@/app/(authenticated)/caixa/_components/...";
 
 ### Exemplos neste projecto
 
-| Componente | Destino |
-|------------|---------|
-| `CashTransactionFormDialog` | `features/finance/components/` |
-| `PatientPdfPreviewDialog` | `features/patient/components/` |
-| `AppPage` | `app/(authenticated)/_components/` |
-| `Button`, `Dialog` | `components/ui/` |
+| Componente                  | Destino                            |
+| --------------------------- | ---------------------------------- |
+| `CashTransactionFormDialog` | `features/finance/components/`     |
+| `PatientPdfPreviewDialog`   | `features/patient/components/`     |
+| `AppPage`                   | `app/(authenticated)/_components/` |
+| `Button`, `Dialog`          | `components/ui/`                   |
 
 ---
 
@@ -225,8 +223,7 @@ Retorno padrão (`shared/types/action-result.ts`):
 
 ```ts
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+  { success: true; data: T } | { success: false; error: string };
 ```
 
 Regras:
@@ -260,40 +257,38 @@ Ver também: `.cursor/rules/react-effects-and-data.mdc`
 
 Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 
-| Princípio | Como aplicamos |
-|-----------|----------------|
+| Princípio                     | Como aplicamos                                                               |
+| ----------------------------- | ---------------------------------------------------------------------------- |
 | **S** — Single Responsibility | Actions finas; repository = dados; service = regras; `_lib/` = helpers puros |
-| **O** — Open/Closed | Estender service/repository existente antes de criar caminho paralelo |
-| **L** — Liskov | Pouco relevante (sem hierarquias de classes) |
-| **I** — Interface Segregation | DTOs e schemas Zod focados por operação |
-| **D** — Dependency Inversion | `app/` depende de abstracções (services); Prisma isolado nos repositories |
+| **O** — Open/Closed           | Estender service/repository existente antes de criar caminho paralelo        |
+| **L** — Liskov                | Pouco relevante (sem hierarquias de classes)                                 |
+| **I** — Interface Segregation | DTOs e schemas Zod focados por operação                                      |
+| **D** — Dependency Inversion  | `app/` depende de abstracções (services); Prisma isolado nos repositories    |
 
 ---
 
 ## 10. Clean code
 
-| Prática | Regra |
-|---------|-------|
-| Nomes | Verbos para funções (`listPatients`, `buildSummary`); substantivos para tipos |
-| Funções | Pequenas; uma responsabilidade; extrair para `_lib/` quando reutilizável |
-| Ficheiros | Partir quando passar **~300–400 linhas** (excluir shadcn e constantes estáticas) |
-| Duplicação | Procurar em `shared/` e `_lib/` antes de criar — ver `reuse-before-create.mdc` |
-| Comentários | Só para lógica de negócio não óbvia |
-| Abstrações | Criar quando houver **≥2 usos reais**, não para hipóteses futuras |
+| Prática     | Regra                                                                            |
+| ----------- | -------------------------------------------------------------------------------- |
+| Nomes       | Verbos para funções (`listPatients`, `buildSummary`); substantivos para tipos    |
+| Funções     | Pequenas; uma responsabilidade; extrair para `_lib/` quando reutilizável         |
+| Ficheiros   | Partir quando passar **~300–400 linhas** (excluir shadcn e constantes estáticas) |
+| Duplicação  | Procurar em `shared/` e `_lib/` antes de criar — ver `reuse-before-create.mdc`   |
+| Comentários | Só para lógica de negócio não óbvia                                              |
+| Abstrações  | Criar quando houver **≥2 usos reais**, não para hipóteses futuras                |
 
 ---
 
 ## 11. Domínios actuais (`features/`)
 
-| Feature | Responsabilidade |
-|---------|------------------|
-| `patient` | Pacientes, avaliações, evoluções, anamnese, plano, PDF |
-| `schedule` | Agenda, agendamentos, calendário, repetição semanal |
-| `finance` | Fluxo de caixa, lançamentos |
-| `exercise` | Biblioteca de actividades |
-| `study` | Fichário de estudo (cards) |
-| `settings` | Perfil profissional, branding da clínica |
-| `dashboard` | Painel, estatísticas, alertas, busca global |
+| Feature     | Responsabilidade                                    |
+| ----------- | --------------------------------------------------- |
+| `patient`   | Pacientes, avaliações, evoluções, anamnese, PDF     |
+| `schedule`  | Agenda, agendamentos, calendário, repetição semanal |
+| `finance`   | Fluxo de caixa, lançamentos                         |
+| `settings`  | Perfil profissional, branding da clínica            |
+| `dashboard` | Painel, estatísticas, alertas, busca global         |
 
 ---
 
@@ -303,10 +298,10 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 **Comandos:** `pnpm test` · `pnpm test:unit` · `pnpm test:watch` · `pnpm test:e2e` (Playwright, futuro)
 
-| Tipo | Pasta | Ferramenta |
-|------|-------|------------|
-| Unitário | `tests/unit/` | Vitest |
-| E2E | `tests/e2e/` | Playwright (pendente) |
+| Tipo     | Pasta         | Ferramenta            |
+| -------- | ------------- | --------------------- |
+| Unitário | `tests/unit/` | Vitest                |
+| E2E      | `tests/e2e/`  | Playwright (pendente) |
 
 ### Convenção unitários
 
@@ -356,28 +351,28 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 ## 16. O que evitar
 
-| Abordagem | Por quê |
-|-----------|---------|
-| DDD completo (aggregates, events) | Overhead desproporcional para este projecto |
-| Microserviços | Um deploy, uma DB, equipa pequena |
-| Hexagonal em todo o código | Mappers duplicados sem ganho com Prisma |
-| Import entre `features/` | Acoplamento; orquestrar em `app/` |
-| Import entre rotas (`_components/`) | Quebra isolamento de UI |
-| `db` directo em services | Viola camada repository |
-| Clean Architecture dogmática | App Router já resolve boundary server/client |
+| Abordagem                           | Por quê                                      |
+| ----------------------------------- | -------------------------------------------- |
+| DDD completo (aggregates, events)   | Overhead desproporcional para este projecto  |
+| Microserviços                       | Um deploy, uma DB, equipa pequena            |
+| Hexagonal em todo o código          | Mappers duplicados sem ganho com Prisma      |
+| Import entre `features/`            | Acoplamento; orquestrar em `app/`            |
+| Import entre rotas (`_components/`) | Quebra isolamento de UI                      |
+| `db` directo em services            | Viola camada repository                      |
+| Clean Architecture dogmática        | App Router já resolve boundary server/client |
 
 ---
 
 ## 17. Referência de rules Cursor
 
-| Área | Ficheiro |
-|------|----------|
-| Core (sempre activo) | `project-core.mdc` |
-| Server Actions | `nextjs-server-actions.mdc` |
-| UI partilhada | `route-shared-ui.mdc` |
-| Reutilizar antes de criar | `reuse-before-create.mdc` |
-| React / efeitos | `react-effects-and-data.mdc` |
-| Páginas autenticadas | `app-page.mdc` |
-| Frontend | `frontend.mdc` |
-| UX / design | `ux.mdc` |
-| Testes / validação | `testing.mdc` |
+| Área                      | Ficheiro                     |
+| ------------------------- | ---------------------------- |
+| Core (sempre activo)      | `project-core.mdc`           |
+| Server Actions            | `nextjs-server-actions.mdc`  |
+| UI partilhada             | `route-shared-ui.mdc`        |
+| Reutilizar antes de criar | `reuse-before-create.mdc`    |
+| React / efeitos           | `react-effects-and-data.mdc` |
+| Páginas autenticadas      | `app-page.mdc`               |
+| Frontend                  | `frontend.mdc`               |
+| UX / design               | `ux.mdc`                     |
+| Testes / validação        | `testing.mdc`                |
