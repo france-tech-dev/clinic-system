@@ -20,6 +20,30 @@ Usar classes semânticas, não cores fixas:
 - Formulários: `Form` + `react-hook-form` + `zodResolver` quando o projeto já usa esse padrão.
 - Variantes do `Button`/`Badge` em vez de classes custom ad hoc.
 
+## Datas no UI (obrigatório)
+
+- **Nunca** usar `<Input type="date" />` nativo do browser.
+- Usar sempre `DatePicker` de `@/components/ui/date-picker` (Popover + `Calendar` shadcn).
+- Valor no formulário / URL: string `yyyy-MM-dd` (o DatePicker expõe `value` / `onChange` assim).
+- Exibição: `dd/mm/yyyy` via `formatDateBR`.
+
+| Situação | Como |
+| -------- | ---- |
+| Datas clínicas próximas (agenda, sessão, caixa, avaliação, GMFM) | `<DatePicker value={…} onChange={…} />` |
+| Datas distantes (aniversário, nascimento) | `<DatePicker longRange value={…} onChange={…} />` (dropdown mês/ano) |
+| Vista de calendário completa (agenda mensal) | `Calendar` / `react-big-calendar` — não o DatePicker |
+
+```tsx
+// ❌
+<Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+
+// ✅ datas próximas
+<DatePicker value={date} onChange={setDate} />
+
+// ✅ aniversário / nascimento
+<DatePicker longRange value={birthDate} onChange={setBirthDate} />
+```
+
 ## Altura do viewport
 
 - **Não usar `vh`** — em mobile o valor ignora barras do browser e corta conteúdo.
