@@ -73,7 +73,6 @@ export async function getDashboardData(
   const [
     totalPatients,
     activePatients,
-    totalExercises,
     totalEvaluations,
     sessionsThisWeek,
     patients,
@@ -83,7 +82,6 @@ export async function getDashboardData(
   ] = await Promise.all([
     dashboardRepository.countPatients(organizationId),
     dashboardRepository.countActivePatients(organizationId),
-    dashboardRepository.countExercises(organizationId),
     dashboardRepository.countEvaluations(organizationId),
     dashboardRepository.countSessionsSince(organizationId, weekStart),
     dashboardRepository.findActivePatientsWithLastEvaluation(organizationId),
@@ -96,7 +94,6 @@ export async function getDashboardData(
     stats: {
       activePatients,
       totalPatients,
-      totalExercises,
       totalEvaluations,
       sessionsThisWeek,
     },

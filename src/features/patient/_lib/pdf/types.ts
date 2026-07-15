@@ -11,11 +11,6 @@ export type PatientReportRoteiro = {
   notes: string;
 };
 
-export type PatientReportPlanItem = {
-  exerciseTitle: string;
-  objective: string;
-};
-
 export type PatientReportSessionNote = {
   date: string;
   status: string;
@@ -31,7 +26,6 @@ export type PatientReportPayload = {
   evaluations: EvaluationDTO[];
   selectedEvaluation: EvaluationDTO | null;
   anamneseData: Record<string, unknown>;
-  planItems: PatientReportPlanItem[];
   sessionNotes: PatientReportSessionNote[];
   roteiro: PatientReportRoteiro | null;
   evaluationReportOptions: EvaluationReportOptions | null;

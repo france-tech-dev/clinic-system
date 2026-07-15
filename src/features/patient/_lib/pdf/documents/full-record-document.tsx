@@ -8,7 +8,6 @@ import { getPatientReportTitle } from "../report-meta";
 import type { PatientReportPayload } from "../types";
 import { AnamneseSection } from "../sections/anamnese-section";
 import { EvaluationSection } from "../sections/evaluation-section";
-import { PlanSection } from "../sections/plan-section";
 import { SessionsSection } from "../sections/sessions-section";
 
 type PatientReportDocumentProps = {
@@ -38,7 +37,6 @@ export function FullRecordDocument({
           selectedEvaluation={payload.selectedEvaluation}
         />
         <AnamneseSection anamneseData={payload.anamneseData} />
-        <PlanSection planItems={payload.planItems} />
         <SessionsSection sessionNotes={payload.sessionNotes} />
         <SignatureFooter signature={signature} />
         <PageFooter />

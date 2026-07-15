@@ -5,15 +5,11 @@ import type {
   RoteiroNoteSaveInput,
   SessionFormInput,
 } from "./patient.schema";
-import type {
-  PatientDetailDTO,
-  PatientStatus,
-} from "./patient.types";
+import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 import {
   parseAnamneseData,
   toEvaluationDTO,
   toPatientDTO,
-  toPlanItemDTO,
   toRoteiroNoteDTO,
   toSessionDTO,
 } from "./_lib/mappers";
@@ -35,7 +31,6 @@ export async function getPatientDetail(
 
   return {
     patient: toPatientDTO(row),
-    planItems: row.planItems.map(toPlanItemDTO),
     evaluations: row.evaluations.map(toEvaluationDTO),
     anamneseData: parseAnamneseData(row.anamnese?.data),
     sessionNotes: row.sessionNotes.map(toSessionDTO),
@@ -72,26 +67,6 @@ export async function setPatientStatus(
 export async function deletePatient(organizationId: string, id: string) {
   const row = await patientRepository.delete(organizationId, id);
   return row ? toPatientDTO(row) : null;
-}
-
-export async function assignExerciseToPatient(
-  organizationId: string,
-  patientId: string,
-  exerciseId: string,
-) {
-  const row = await patientRepository.assignExercise(
-    organizationId,
-    patientId,
-    exerciseId,
-  );
-  return row ? toPlanItemDTO(row) : null;
-}
-
-export async function removePlanItem(
-  organizationId: string,
-  planItemId: string,
-) {
-  return patientRepository.removePlanItem(organizationId, planItemId);
 }
 
 export async function resolveAuthorMemberId(

@@ -9,7 +9,7 @@ import {
   setEvaluationSection,
   type EvaluationReportOptions,
 } from "@/features/patient/_lib/pdf/evaluation-report-options";
-import { categoryOf } from "@/shared/constants/exercise-categories";
+import { categoryOf } from "@/shared/constants/evaluation-domains";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";

@@ -79,10 +79,6 @@ export function buildPatientReportPayload({
     evaluations: detail.evaluations,
     selectedEvaluation,
     anamneseData: detail.anamneseData,
-    planItems: detail.planItems.map((p) => ({
-      exerciseTitle: p.exerciseTitle,
-      objective: p.objective,
-    })),
     sessionNotes: detail.sessionNotes.map((s) => ({
       date: s.date,
       status: s.status,

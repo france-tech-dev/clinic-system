@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EXERCISE_CATEGORIES } from "@/shared/constants/exercise-categories";
+import { EVALUATION_DOMAINS } from "@/shared/constants/evaluation-domains";
 
 export const PATIENT_STATUSES = ["ativo", "alta", "pausado"] as const;
 export const SESSION_STATUSES = ["compareceu", "faltou", "cancelado"] as const;
@@ -24,15 +24,6 @@ export const patientStatusSchema = z.object({
   status: z.enum(PATIENT_STATUSES),
 });
 
-export const assignExerciseSchema = z.object({
-  patientId: z.string().min(1),
-  exerciseId: z.string().min(1),
-});
-
-export const planItemIdSchema = z.object({
-  id: z.string().min(1),
-});
-
 const domainSchema = z.object({
   categoryId: z.string(),
   score: z.number().int().min(0).max(4),
@@ -46,7 +37,7 @@ export const evaluationFormSchema = z.object({
   queixa: z.string().trim().default(""),
   historia: z.string().trim().default(""),
   domains: z.array(domainSchema).default(
-    EXERCISE_CATEGORIES.map((c) => ({
+    EVALUATION_DOMAINS.map((c) => ({
       categoryId: c.id,
       score: 2,
       note: "",

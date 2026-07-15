@@ -1,6 +1,6 @@
 import { Text, View } from "@react-pdf/renderer";
 import type { EvaluationDTO } from "@/features/patient/patient.types";
-import { categoryOf } from "@/shared/constants/exercise-categories";
+import { categoryOf } from "@/shared/constants/evaluation-domains";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 import type { EvaluationReportOptions } from "../evaluation-report-options";

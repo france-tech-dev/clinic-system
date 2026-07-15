@@ -11,10 +11,6 @@ export const dashboardRepository = {
     });
   },
 
-  countExercises(organizationId: string) {
-    return db.exercise.count({ where: { organizationId } });
-  },
-
   countEvaluations(organizationId: string) {
     return db.evaluation.count({
       where: { patient: { organizationId } },

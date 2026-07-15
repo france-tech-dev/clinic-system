@@ -5,7 +5,6 @@ import type {
   PatientDTO,
   PatientPricingType,
   PatientStatus,
-  PlanItemDTO,
   RoteiroNoteDTO,
   SessionNoteDTO,
   SessionNoteStatus,
@@ -128,30 +127,6 @@ export function toSessionDTO(row: {
   };
 }
 
-export function toPlanItemDTO(row: {
-  id: string;
-  patientId: string;
-  exerciseId: string;
-  createdAt: Date;
-  exercise: {
-    title: string;
-    categoryId: string;
-    level: string;
-    objective: string;
-  };
-}): PlanItemDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    exerciseId: row.exerciseId,
-    exerciseTitle: row.exercise.title,
-    categoryId: row.exercise.categoryId,
-    level: row.exercise.level,
-    objective: row.exercise.objective,
-    createdAt: row.createdAt.toISOString(),
-  };
-}
-
 export function toRoteiroNoteDTO(row: {
   id: string;
   patientId: string;
@@ -170,7 +145,9 @@ export function toRoteiroNoteDTO(row: {
   };
 }
 
-export function parseAnamneseData(raw: string | undefined): Record<string, unknown> {
+export function parseAnamneseData(
+  raw: string | undefined,
+): Record<string, unknown> {
   if (!raw) return {};
   try {
     return JSON.parse(raw) as Record<string, unknown>;

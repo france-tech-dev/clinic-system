@@ -12,17 +12,6 @@ export const searchRepository = {
     });
   },
 
-  searchExercises(organizationId: string, q: string, take = 8) {
-    return db.exercise.findMany({
-      where: {
-        organizationId,
-        OR: [{ title: { contains: q } }, { objective: { contains: q } }],
-      },
-      take,
-      orderBy: { title: "asc" },
-    });
-  },
-
   searchEvaluations(organizationId: string, q: string, take = 8) {
     return db.evaluation.findMany({
       where: {
@@ -44,25 +33,11 @@ export const searchRepository = {
     return db.sessionNote.findMany({
       where: {
         patient: { organizationId },
-        OR: [
-          { atividades: { contains: q } },
-          { observacoes: { contains: q } },
-        ],
+        OR: [{ atividades: { contains: q } }, { observacoes: { contains: q } }],
       },
       include: { patient: { select: { id: true, name: true } } },
       take,
       orderBy: { date: "desc" },
-    });
-  },
-
-  searchStudyCards(organizationId: string, q: string, take = 8) {
-    return db.studyCard.findMany({
-      where: {
-        organizationId,
-        OR: [{ title: { contains: q } }, { content: { contains: q } }],
-      },
-      take,
-      orderBy: { title: "asc" },
     });
   },
 };

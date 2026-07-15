@@ -1,5 +1,5 @@
 import type { EvaluationDTO } from "@/features/patient/patient.types";
-import { EXERCISE_CATEGORIES } from "@/shared/constants/exercise-categories";
+import { EVALUATION_DOMAINS } from "@/shared/constants/evaluation-domains";
 
 export type EvaluationReportSectionId =
   | "diagnostico"
@@ -49,7 +49,7 @@ export function buildDefaultEvaluationReportOptions(
 
   const domainIds =
     evaluation?.domains.map((domain) => domain.categoryId) ??
-    EXERCISE_CATEGORIES.map((category) => category.id);
+    EVALUATION_DOMAINS.map((category) => category.id);
 
   return { sections, domainIds };
 }

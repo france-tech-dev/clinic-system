@@ -4,7 +4,7 @@ import type {
   PatientFormInput,
   SessionFormInput,
 } from "./patient.schema";
-import type { PatientPricingType, PatientStatus } from "./patient.types";
+import type { PatientStatus } from "./patient.types";
 
 const memberAuthorInclude = {
   member: {
@@ -25,9 +25,7 @@ export const patientRepository = {
       where: {
         organizationId,
         ...(opts?.status ? { status: opts.status } : {}),
-        ...(opts?.search
-          ? { name: { contains: opts.search } }
-          : {}),
+        ...(opts?.search ? { name: { contains: opts.search } } : {}),
       },
       include: {
         _count: {
@@ -47,10 +45,6 @@ export const patientRepository = {
     return db.patient.findFirst({
       where: { id, organizationId },
       include: {
-        planItems: {
-          include: { exercise: true },
-          orderBy: { createdAt: "desc" },
-        },
         evaluations: {
           include: memberAuthorInclude,
           orderBy: { date: "desc" },
@@ -77,11 +71,7 @@ export const patientRepository = {
     });
   },
 
-  async update(
-    organizationId: string,
-    id: string,
-    data: PatientFormInput,
-  ) {
+  async update(organizationId: string, id: string, data: PatientFormInput) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
     });
@@ -116,38 +106,6 @@ export const patientRepository = {
     if (!existing) return null;
     await db.patient.delete({ where: { id } });
     return existing;
-  },
-
-  async assignExercise(
-    organizationId: string,
-    patientId: string,
-    exerciseId: string,
-  ) {
-    const patient = await db.patient.findFirst({
-      where: { id: patientId, organizationId },
-    });
-    if (!patient) return null;
-    const exercise = await db.exercise.findFirst({
-      where: { id: exerciseId, organizationId },
-    });
-    if (!exercise) return null;
-    return db.patientPlanItem.upsert({
-      where: {
-        patientId_exerciseId: { patientId, exerciseId },
-      },
-      create: { patientId, exerciseId },
-      update: {},
-      include: { exercise: true },
-    });
-  },
-
-  async removePlanItem(organizationId: string, planItemId: string) {
-    const item = await db.patientPlanItem.findFirst({
-      where: { id: planItemId, patient: { organizationId } },
-    });
-    if (!item) return null;
-    await db.patientPlanItem.delete({ where: { id: planItemId } });
-    return item;
   },
 
   async findMemberByUserId(organizationId: string, userId: string) {

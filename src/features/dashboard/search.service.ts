@@ -1,10 +1,9 @@
 import { paths } from "@/shared/constants/paths";
-import { studyCategoryOf } from "@/shared/constants/study-categories";
 import { searchRepository } from "./search.repository";
 
 export type SearchHit = {
   id: string;
-  kind: "patient" | "exercise" | "evaluation" | "session" | "study";
+  kind: "patient" | "evaluation" | "session";
   title: string;
   subtitle: string;
   href: string;
@@ -17,14 +16,11 @@ export async function globalSearch(
   const q = query.trim();
   if (q.length < 2) return [];
 
-  const [patients, exercises, evaluations, sessions, studyCards] =
-    await Promise.all([
-      searchRepository.searchPatients(organizationId, q),
-      searchRepository.searchExercises(organizationId, q),
-      searchRepository.searchEvaluations(organizationId, q),
-      searchRepository.searchSessions(organizationId, q),
-      searchRepository.searchStudyCards(organizationId, q),
-    ]);
+  const [patients, evaluations, sessions] = await Promise.all([
+    searchRepository.searchPatients(organizationId, q),
+    searchRepository.searchEvaluations(organizationId, q),
+    searchRepository.searchSessions(organizationId, q),
+  ]);
 
   const hits: SearchHit[] = [
     ...patients.map((p) => ({
@@ -33,13 +29,6 @@ export async function globalSearch(
       title: p.name,
       subtitle: p.notes || "Paciente",
       href: paths.paciente(p.id),
-    })),
-    ...exercises.map((e) => ({
-      id: e.id,
-      kind: "exercise" as const,
-      title: e.title,
-      subtitle: e.objective,
-      href: paths.biblioteca,
     })),
     ...evaluations.map((e) => ({
       id: e.id,
@@ -54,13 +43,6 @@ export async function globalSearch(
       title: `${s.patient.name} — Evolução`,
       subtitle: s.atividades || s.date,
       href: paths.paciente(s.patient.id),
-    })),
-    ...studyCards.map((c) => ({
-      id: c.id,
-      kind: "study" as const,
-      title: c.title,
-      subtitle: studyCategoryOf(c.categoryId).label,
-      href: paths.estudo,
     })),
   ];
 

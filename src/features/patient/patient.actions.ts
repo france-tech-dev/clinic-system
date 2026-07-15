@@ -6,13 +6,11 @@ import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
   anamneseSaveSchema,
-  assignExerciseSchema,
   evaluationFormSchema,
   evaluationIdSchema,
   patientFormSchema,
   patientIdSchema,
   patientStatusSchema,
-  planItemIdSchema,
   roteiroNoteSaveSchema,
   sessionFormSchema,
   sessionIdSchema,
@@ -21,7 +19,6 @@ import {
   updateSessionNoteSchema,
 } from "./patient.schema";
 import {
-  assignExerciseToPatient,
   createEvaluation,
   createPatient,
   createSessionNote,
@@ -31,7 +28,6 @@ import {
   resolveAuthorMemberId,
   getPatientDetail,
   listPatients,
-  removePlanItem,
   saveAnamnese,
   saveRoteiroNote,
   setPatientStatus,
@@ -43,7 +39,6 @@ import type {
   EvaluationDTO,
   PatientDetailDTO,
   PatientDTO,
-  PlanItemDTO,
   RoteiroNoteDTO,
   SessionNoteDTO,
 } from "./patient.types";
@@ -157,42 +152,6 @@ export async function deletePatientAction(
   }
 }
 
-export async function assignExerciseAction(
-  input: unknown,
-): Promise<ActionResult<PlanItemDTO>> {
-  try {
-    const parsed = assignExerciseSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
-    const { organizationId } = await requireOrgId();
-    const data = await assignExerciseToPatient(
-      organizationId,
-      parsed.data.patientId,
-      parsed.data.exerciseId,
-    );
-    if (!data) return fail("Paciente ou atividade não encontrados");
-    revalidatePatient(parsed.data.patientId);
-    return ok(data);
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
-export async function removePlanItemAction(
-  input: unknown,
-): Promise<ActionResult<{ id: string }>> {
-  try {
-    const parsed = planItemIdSchema.safeParse(input);
-    if (!parsed.success) return fail("ID inválido");
-    const { organizationId } = await requireOrgId();
-    const removed = await removePlanItem(organizationId, parsed.data.id);
-    if (!removed) return fail("Item não encontrado");
-    revalidatePatient(removed.patientId);
-    return ok({ id: removed.id });
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
 export async function createEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<EvaluationDTO>> {
@@ -203,11 +162,7 @@ export async function createEvaluationAction(
     }
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
-    const data = await createEvaluation(
-      organizationId,
-      parsed.data,
-      memberId,
-    );
+    const data = await createEvaluation(organizationId, parsed.data, memberId);
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
     return ok(data);
@@ -281,11 +236,7 @@ export async function createSessionAction(
     }
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
-    const data = await createSessionNote(
-      organizationId,
-      parsed.data,
-      memberId,
-    );
+    const data = await createSessionNote(organizationId, parsed.data, memberId);
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
     return ok(data);

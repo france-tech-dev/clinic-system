@@ -66,17 +66,6 @@ export type SessionNoteDTO = {
   updatedAt: string;
 };
 
-export type PlanItemDTO = {
-  id: string;
-  patientId: string;
-  exerciseId: string;
-  exerciseTitle: string;
-  categoryId: string;
-  level: string;
-  objective: string;
-  createdAt: string;
-};
-
 export type RoteiroNoteDTO = {
   id: string;
   patientId: string;
@@ -88,7 +77,6 @@ export type RoteiroNoteDTO = {
 
 export type PatientDetailDTO = {
   patient: PatientDTO;
-  planItems: PlanItemDTO[];
   evaluations: EvaluationDTO[];
   anamneseData: Record<string, unknown>;
   sessionNotes: SessionNoteDTO[];
