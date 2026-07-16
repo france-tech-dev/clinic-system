@@ -2,13 +2,12 @@ import { paths } from "@/shared/constants/paths";
 import {
   IconCalendar,
   IconCash,
+  IconClipboardList,
   IconLayoutDashboard,
-  IconReport,
   IconSearch,
   IconSettings,
   IconUsers,
   IconUserPlus,
-  IconChartBar,
 } from "@tabler/icons-react";
 
 export type SidebarSection = {
@@ -54,14 +53,9 @@ export const sidebarItems = {
       icon: IconUserPlus,
     },
     {
-      name: "Relatórios",
-      url: paths.relatorio,
-      icon: IconReport,
-    },
-    {
-      name: "GMFM-88",
-      url: paths.protocolosGmfm,
-      icon: IconChartBar,
+      name: "Avaliações",
+      url: paths.avaliacoes.root,
+      icon: IconClipboardList,
     },
     {
       name: "Buscar",
