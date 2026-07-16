@@ -5,12 +5,10 @@ export const paths = Object.freeze({
   pacientes: "/pacientes",
   paciente: (id: string) => `/pacientes/${id}`,
   profissionais: "/profissionais",
-  configuracoes: "/configuracoes",
   caixa: "/caixa",
-  relatorio: "/relatorio",
-  protocolosGmfm: "/protocolos/gmfm",
   organizacao: "/organizacao",
   buscar: "/buscar",
+  configuracoes: "/configuracoes",
 
   auth: {
     root: "/auth",
@@ -20,7 +18,13 @@ export const paths = Object.freeze({
     logout: "/logout",
     forgotPassword: "/auth/forgot-password",
     resetPassword: "/auth/reset-password",
-    changePassword: "/auth/alterar-senha",
+    changePassword: "/auth/change-password",
+  },
+
+  avaliacoes: {
+    root: "/avaliacoes",
+    /** Workspace de uma avaliação: `/avaliacoes/gmfm-88` */
+    byId: (avaliacaoId: string) => `/avaliacoes/${avaliacaoId}`,
   },
 
   api: {
