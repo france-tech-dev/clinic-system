@@ -102,7 +102,6 @@ export async function saveCurrentMemberProfessionalAction(
     );
     revalidatePath(paths.configuracoes);
     revalidatePath(paths.pacientes, "layout");
-    revalidatePath(paths.relatorio);
     return ok(data);
   } catch (error) {
     return handleError(error);
