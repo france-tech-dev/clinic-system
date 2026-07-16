@@ -128,3 +128,5 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
 - **Logo em produção:** anotado em P2 — implementar antes de deploy em Vercel/similar.
 - **Conflito de horário:** explicitamente fora de escopo.
+
+[ ] **Adicionar Nuqs** para gerenciamento de state.
