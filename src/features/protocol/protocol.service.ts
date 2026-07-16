@@ -1,8 +1,8 @@
-import { GMFM88_PROTOCOL_ID } from "./_lib/gmfm-88-template";
+import { GMFM88_PROTOCOL_ID } from "./assessments/fisioterapia/gmfm-88/template";
 import {
   summarizeGmfm88,
   type Gmfm88Scores,
-} from "./_lib/gmfm-88-scoring";
+} from "./assessments/fisioterapia/gmfm-88/scoring";
 import { protocolRepository } from "./protocol.repository";
 import type {
   ProtocolAssessmentFormInput,

@@ -31,8 +31,8 @@ function handleError(error: unknown): ActionResult<never> {
   return fail("Algo deu errado. Tente novamente.");
 }
 
-function revalidateProtocol(patientId?: string) {
-  revalidatePath(paths.protocolosGmfm);
+function revalidateProtocol(protocolId: string, patientId?: string) {
+  revalidatePath(paths.avaliacoes.byId(protocolId));
   if (patientId) revalidatePath(paths.paciente(patientId));
 }
 
@@ -49,22 +49,6 @@ export async function listProtocolAssessmentsAction(
       parsed.data.patientId,
       parsed.data.protocolId,
     );
-    return ok(data);
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
-export async function getProtocolAssessmentAction(
-  input: unknown,
-): Promise<ActionResult<ProtocolAssessmentDTO>> {
-  try {
-    const parsed = protocolAssessmentIdSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
-
-    const { organizationId } = await requireOrgId();
-    const data = await getProtocolAssessment(organizationId, parsed.data.id);
-    if (!data) return fail("Avaliação não encontrada");
     return ok(data);
   } catch (error) {
     return handleError(error);
@@ -90,7 +74,7 @@ export async function createProtocolAssessmentAction(
     );
     if (!data) return fail("Paciente não encontrado");
 
-    revalidateProtocol(parsed.data.patientId);
+    revalidateProtocol(parsed.data.protocolId, parsed.data.patientId);
     return ok(data);
   } catch (error) {
     return handleError(error);
@@ -108,7 +92,7 @@ export async function updateProtocolAssessmentAction(
     const data = await updateProtocolAssessment(organizationId, parsed.data);
     if (!data) return fail("Avaliação não encontrada");
 
-    revalidateProtocol(parsed.data.patientId);
+    revalidateProtocol(data.protocolId, parsed.data.patientId);
     return ok(data);
   } catch (error) {
     return handleError(error);
@@ -123,13 +107,16 @@ export async function deleteProtocolAssessmentAction(
     if (!parsed.success) return fail("Dados inválidos");
 
     const { organizationId } = await requireOrgId();
-    const existing = await getProtocolAssessment(organizationId, parsed.data.id);
+    const existing = await getProtocolAssessment(
+      organizationId,
+      parsed.data.id,
+    );
     if (!existing) return fail("Avaliação não encontrada");
 
     const data = await deleteProtocolAssessment(organizationId, parsed.data.id);
     if (!data) return fail("Avaliação não encontrada");
 
-    revalidateProtocol(existing.patientId);
+    revalidateProtocol(existing.protocolId, existing.patientId);
     return ok(data);
   } catch (error) {
     return handleError(error);

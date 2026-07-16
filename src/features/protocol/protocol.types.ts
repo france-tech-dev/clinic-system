@@ -1,4 +1,4 @@
-import type { Gmfm88OverallSummary } from "./_lib/gmfm-88-scoring";
+import type { Gmfm88OverallSummary } from "./assessments/fisioterapia/gmfm-88/scoring";
 
 export type ProtocolAssessmentDTO = {
   id: string;

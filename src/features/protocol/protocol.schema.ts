@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GMFM88_ITEM_IDS, GMFM88_PROTOCOL_ID } from "./_lib/gmfm-88-template";
+import { GMFM88_ITEM_IDS, GMFM88_PROTOCOL_ID } from "./assessments/fisioterapia/gmfm-88/template";
 
 const gmfmScoreSchema = z
   .number()
