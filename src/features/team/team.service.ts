@@ -73,8 +73,8 @@ export async function createProfessional(
   const user = await teamRepository.createUserWithPassword({
     name: input.name.trim(),
     email,
-    phone: input.phone.trim(),
-    birthDate: input.birthDate,
+    phone: input.phone?.trim() ?? "",
+    birthDate: input.birthDate ?? "",
     password: input.password,
   });
 
@@ -94,9 +94,9 @@ export async function createProfessional(
     throw new Error("Membro criado sem vínculo na organização");
   }
 
-  const registro = input.registro.trim();
+  const registro = input.registro?.trim() ?? "";
   await teamRepository.updateMemberProfile(member.id, {
-    profession: input.profession,
+    profession: profession.id,
     registro,
     metadata: serializeMemberProfessionalMetadata({
       nome: input.name.trim(),
@@ -162,20 +162,20 @@ export async function updateProfessional(
   }
 
   const name = input.name.trim();
-  const registro = input.registro.trim();
+  const registro = input.registro?.trim() ?? "";
 
   await teamRepository.updateUserProfile(member.userId, {
     name,
     email,
-    phone: input.phone.trim(),
-    birthDate: input.birthDate,
+    phone: input.phone?.trim() ?? "",
+    birthDate: input.birthDate ?? "",
   });
 
   const nextRole =
     isOwner || input.role === "OWNER" ? undefined : toMemberRole(input.role);
 
   await teamRepository.updateMemberProfile(member.id, {
-    profession: input.profession,
+    profession: profession.id,
     registro,
     metadata: serializeMemberProfessionalMetadata(
       {
