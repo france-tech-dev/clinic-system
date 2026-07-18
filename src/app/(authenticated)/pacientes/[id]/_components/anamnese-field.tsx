@@ -1,5 +1,13 @@
+"use client";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import type { AnamneseField } from "@/features/patient/_lib/anamnese-schema";
 import { cn } from "@/shared/lib/utils";
@@ -51,9 +59,7 @@ export function AnamneseField({
                   max={10}
                   className="w-20"
                   value={itemVal}
-                  onChange={(e) =>
-                    onChange({ ...data, [key]: e.target.value })
-                  }
+                  onChange={(e) => onChange({ ...data, [key]: e.target.value })}
                 />
               </div>
             );
@@ -70,20 +76,19 @@ export function AnamneseField({
                 className="grid gap-1 sm:grid-cols-[1fr_10rem] sm:items-center"
               >
                 <span className="text-sm">{row}</span>
-                <select
-                  className="h-8 rounded-md border border-input bg-transparent px-2 text-xs"
+                <NativeSelect
+                  size="sm"
+                  className="w-full text-xs"
                   value={rowVal}
-                  onChange={(e) =>
-                    onChange({ ...data, [key]: e.target.value })
-                  }
+                  onChange={(e) => onChange({ ...data, [key]: e.target.value })}
                 >
-                  <option value="">—</option>
+                  <NativeSelectOption value="">—</NativeSelectOption>
                   {(field.options ?? []).map((opt) => (
-                    <option key={opt} value={opt}>
+                    <NativeSelectOption key={opt} value={opt}>
                       {opt}
-                    </option>
+                    </NativeSelectOption>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
             );
           })}
@@ -95,40 +100,45 @@ export function AnamneseField({
               .split("|")
               .filter(Boolean);
             const checked = selected.includes(opt);
+            const id = `${field.id}-${opt}`;
             return (
-              <label
-                key={opt}
-                className="flex items-center gap-1.5 text-sm"
-              >
-                <input
-                  type="checkbox"
+              <div key={opt} className="flex items-center gap-1.5">
+                <Checkbox
+                  id={id}
                   checked={checked}
-                  onChange={(e) => {
-                    const next = e.target.checked
+                  onCheckedChange={(next) => {
+                    const isChecked = next === true;
+                    const values = isChecked
                       ? [...selected, opt]
                       : selected.filter((s) => s !== opt);
-                    onChange({ ...data, [field.id]: next.join("|") });
+                    onChange({ ...data, [field.id]: values.join("|") });
                   }}
                 />
-                {opt}
-              </label>
+                <Label htmlFor={id} className="text-sm font-normal">
+                  {opt}
+                </Label>
+              </div>
             );
           })}
         </div>
       ) : field.type === "radio" && field.options ? (
-        <div className="flex flex-wrap gap-3">
-          {field.options.map((opt) => (
-            <label key={opt} className="flex items-center gap-1.5 text-sm">
-              <input
-                type="radio"
-                name={field.id}
-                checked={value === opt}
-                onChange={() => onChange({ ...data, [field.id]: opt })}
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
+        <RadioGroup
+          value={value}
+          onValueChange={(next) => onChange({ ...data, [field.id]: next })}
+          className="flex flex-wrap gap-3"
+        >
+          {field.options.map((opt) => {
+            const id = `${field.id}-${opt}`;
+            return (
+              <div key={opt} className="flex items-center gap-1.5">
+                <RadioGroupItem value={opt} id={id} />
+                <Label htmlFor={id} className="text-sm font-normal">
+                  {opt}
+                </Label>
+              </div>
+            );
+          })}
+        </RadioGroup>
       ) : (
         <Input
           placeholder={field.placeholder}

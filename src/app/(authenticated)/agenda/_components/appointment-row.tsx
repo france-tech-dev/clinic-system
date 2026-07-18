@@ -10,6 +10,10 @@ import {
 } from "@/shared/constants/appointment";
 import { appointmentDisplayColor } from "@/features/schedule/_lib/appointment-calendar-utils";
 import { paths } from "@/shared/constants/paths";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 
 export function AppointmentRow({
   appointment,
@@ -67,8 +71,9 @@ export function AppointmentRow({
           <p className="text-xs text-muted-foreground">{appointment.notes}</p>
         )}
       </button>
-      <select
-        className="h-8 rounded-md border border-input bg-transparent px-2 text-xs"
+      <NativeSelect
+        size="sm"
+        className="text-xs"
         value={appointment.status}
         disabled={pending}
         onChange={(e) =>
@@ -76,11 +81,11 @@ export function AppointmentRow({
         }
       >
         {APPOINTMENT_STATUSES.map((s) => (
-          <option key={s.id} value={s.id}>
+          <NativeSelectOption key={s.id} value={s.id}>
             {s.label}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
+      </NativeSelect>
     </li>
   );
 }

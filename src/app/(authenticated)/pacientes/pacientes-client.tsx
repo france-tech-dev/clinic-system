@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import {
   createPatientAction,
   setPatientStatusAction,
 } from "@/features/patient/patient.actions";
@@ -177,18 +181,21 @@ export function PacientesClient({
                 >
                   {STATUS_LABEL[p.status]}
                 </Badge>
-                <select
-                  className="h-8 rounded-md border border-input bg-transparent px-2 text-xs"
+                <NativeSelect
+                  size="sm"
+                  className="text-xs"
                   value={p.status}
                   disabled={pending}
                   onChange={(e) =>
                     changeStatus(p.id, e.target.value as PatientStatus)
                   }
                 >
-                  <option value="ativo">Ativo</option>
-                  <option value="pausado">Pausado</option>
-                  <option value="alta">Alta</option>
-                </select>
+                  <NativeSelectOption value="ativo">Ativo</NativeSelectOption>
+                  <NativeSelectOption value="pausado">
+                    Pausado
+                  </NativeSelectOption>
+                  <NativeSelectOption value="alta">Alta</NativeSelectOption>
+                </NativeSelect>
               </div>
             </li>
           ))}

@@ -26,7 +26,10 @@ import {
   createAppointmentAction,
   updateAppointmentAction,
 } from "@/features/schedule/schedule.actions";
-import type { AppointmentDTO, ScheduleMemberDTO } from "@/features/schedule/schedule.types";
+import type {
+  AppointmentDTO,
+  ScheduleMemberDTO,
+} from "@/features/schedule/schedule.types";
 import type { PatientDTO } from "@/features/patient/patient.types";
 import {
   APPOINTMENT_STATUSES,
@@ -238,7 +241,7 @@ export function AppointmentFormDialog({
               onConfirm={onDelete}
               disabled={pending}
             >
-              <Button variant="destructive" size="sm" disabled={pending}>
+              <Button variant="destructive" disabled={pending}>
                 <Trash2 className="size-4" />
                 Excluir
               </Button>
@@ -260,4 +263,3 @@ export function AppointmentFormDialog({
     </Dialog>
   );
 }
-
