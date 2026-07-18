@@ -20,6 +20,7 @@ alwaysApply: false
 ## UI
 
 - Shadcn + tokens semânticos (`bg-background`, `text-foreground`, `border-border`) — ver `ux.mdc`.
+- Controlos de formulário: sempre `@/components/ui` — ver `shadcn-components.mdc` (sem `<select>` / checkbox / radio nativos).
 - Altura relativa ao viewport: preferir `dvh`, nunca `vh` — ver `ux.mdc`.
 - Não hardcodar cores (`bg-white`, `text-gray-900`).
 

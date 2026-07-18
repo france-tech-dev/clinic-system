@@ -1,0 +1,64 @@
+---
+description: Sempre usar Shadcn e seguir a skill/padrões oficiais do projeto.
+globs: src/**/*.tsx
+alwaysApply: false
+---
+
+# Shadcn — UI obrigatória
+
+Usar sempre `@/components/ui`. Não inventar `<select>` / `<input>` / `<textarea>` / checkbox / radio estilizados à mão.
+
+## Seguir a skill do projeto (obrigatório)
+
+Antes de criar ou alterar UI Shadcn, **ler e aplicar** a skill:
+
+- `.agents/skills/shadcn/SKILL.md`
+
+Regras detalhadas (Incorrect/Correct):
+
+| Área | Ficheiro |
+| ---- | -------- |
+| Formulários | `.agents/skills/shadcn/rules/forms.md` |
+| Composição | `.agents/skills/shadcn/rules/composition.md` |
+| Ícones | `.agents/skills/shadcn/rules/icons.md` |
+| Estilo / Tailwind | `.agents/skills/shadcn/rules/styling.md` |
+| Radix vs Base | `.agents/skills/shadcn/rules/base-vs-radix.md` |
+
+Este projeto: `style: radix-nova`, `iconLibrary: tabler` (`@tabler/icons-react`), aliases em `components.json`.
+
+## Mapa rápido (controlos)
+
+| Necessidade | Componente |
+| ----------- | ---------- |
+| Texto / multilinha | `Input` / `Textarea` |
+| Dropdown (formulário) | `Select` |
+| Dropdown nativo leve | `NativeSelect` + `NativeSelectOption` |
+| Checkbox / radio / switch | `Checkbox` / `RadioGroup` / `Switch` |
+| 2–7 opções em toggle | `ToggleGroup` |
+| Botão / data | `Button` / `DatePicker` (nunca `type="date"` — `ux.mdc`) |
+
+```tsx
+// ❌ select nativo
+<select><option>…</option></select>
+
+// ✅ lista compacta
+<NativeSelect>…</NativeSelect>
+
+// ✅ formulário / diálogo
+<Select>…</Select>
+```
+
+## Padrões da skill (resumo)
+
+- Forms: `FieldGroup` + `Field` (+ `FieldLabel`), não `div` + `Label` soltos.
+- Layout: `flex`/`gap-*`, não `space-y-*`; `size-*` quando w=h; tokens semânticos, sem `dark:` de cor.
+- Ícones em `Button`: `data-icon="inline-start|inline-end"`, sem `size-4` no ícone.
+- Overlays: `DialogTitle` / `SheetTitle` obrigatórios; toast via `sonner`.
+- Antes de markup custom: procurar componente (`Empty`, `Alert`, `Badge`, `Separator`, `Skeleton`, …).
+- Componente em falta → CLI shadcn (`pnpm dlx shadcn@latest add …`); não reinventar.
+
+## Excepções
+
+- `<input type="file">` oculto (upload via ref)
+- `<button type="button">` só para chips/tabs/linhas clicáveis — CTAs usam `Button`
+- Código dentro de `components/ui/*` (implementação do design system)

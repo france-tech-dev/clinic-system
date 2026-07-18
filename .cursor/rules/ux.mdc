@@ -19,6 +19,7 @@ Usar classes semânticas, não cores fixas:
 - Componentes em `@/components/ui`.
 - Formulários: `Form` + `react-hook-form` + `zodResolver` quando o projeto já usa esse padrão.
 - Variantes do `Button`/`Badge` em vez de classes custom ad hoc.
+- **Controlos de formulário:** sempre Shadcn (`Select` / `NativeSelect`, `Input`, `Checkbox`, `RadioGroup`, etc.) — ver `shadcn-components.mdc`. Sem `<select>` / checkbox / radio HTML nativos.
 
 ## Datas no UI (obrigatório)
 
