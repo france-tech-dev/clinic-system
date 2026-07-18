@@ -53,7 +53,16 @@ export const patientRepository = {
         anamnese: true,
         sessionNotes: {
           include: memberAuthorInclude,
-          orderBy: { date: "desc" },
+          orderBy: [{ date: "desc" }, { time: "desc" }],
+        },
+        appointments: {
+          include: {
+            member: {
+              select: { user: { select: { name: true } } },
+            },
+            sessionNote: { select: { id: true } },
+          },
+          orderBy: [{ date: "desc" }, { time: "desc" }],
         },
         roteiroNotes: true,
       },
@@ -188,15 +197,23 @@ export const patientRepository = {
     data: SessionFormInput,
     memberId: string | null,
   ) {
-    const patient = await db.patient.findFirst({
-      where: { id: data.patientId, organizationId },
+    const appointment = await db.appointment.findFirst({
+      where: {
+        id: data.appointmentId,
+        patientId: data.patientId,
+        organizationId,
+        sessionNote: null,
+      },
     });
-    if (!patient) return null;
+    if (!appointment) return null;
+
     return db.sessionNote.create({
       data: {
         patientId: data.patientId,
-        memberId,
-        date: data.date,
+        appointmentId: appointment.id,
+        memberId: memberId ?? appointment.memberId,
+        date: appointment.date,
+        time: appointment.time,
         status: data.status,
         atividades: data.atividades ?? "",
         observacoes: data.observacoes ?? "",
@@ -214,10 +231,23 @@ export const patientRepository = {
       where: { id, patient: { organizationId } },
     });
     if (!existing) return null;
+
+    const appointment = await db.appointment.findFirst({
+      where: {
+        id: data.appointmentId,
+        patientId: data.patientId,
+        organizationId,
+        OR: [{ sessionNote: null }, { sessionNote: { id } }],
+      },
+    });
+    if (!appointment) return null;
+
     return db.sessionNote.update({
       where: { id },
       data: {
-        date: data.date,
+        appointmentId: appointment.id,
+        date: appointment.date,
+        time: appointment.time,
         status: data.status,
         atividades: data.atividades ?? "",
         observacoes: data.observacoes ?? "",

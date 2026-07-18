@@ -69,42 +69,33 @@ export const anamneseSaveSchema = z.object({
   data: z.record(z.string(), z.unknown()),
 });
 
-export const sessionFormSchema = z
-  .object({
-    patientId: z.string().min(1),
-    date: z.string().min(1, "Informe a data da sessão"),
-    status: z.enum(SESSION_STATUSES),
-    atividades: z.string().trim().default(""),
-    observacoes: z.string().trim().default(""),
-  })
-  .superRefine((val, ctx) => {
-    if (val.status === "compareceu" && !val.atividades.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Descreva ao menos as atividades realizadas",
-        path: ["atividades"],
-      });
-    }
-  });
+const sessionFormBaseSchema = z.object({
+  patientId: z.string().min(1),
+  appointmentId: z.string().min(1, "Selecione o agendamento"),
+  status: z.enum(SESSION_STATUSES),
+  atividades: z.string().trim().default(""),
+  observacoes: z.string().trim().default(""),
+});
 
-export const updateSessionNoteSchema = z
-  .object({
-    id: z.string().min(1),
-    patientId: z.string().min(1),
-    date: z.string().min(1, "Informe a data da sessão"),
-    status: z.enum(SESSION_STATUSES),
-    atividades: z.string().trim().default(""),
-    observacoes: z.string().trim().default(""),
-  })
-  .superRefine((val, ctx) => {
-    if (val.status === "compareceu" && !val.atividades.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Descreva ao menos as atividades realizadas",
-        path: ["atividades"],
-      });
-    }
-  });
+function refineSessionAtividades(
+  val: { status: (typeof SESSION_STATUSES)[number]; atividades: string },
+  ctx: z.RefinementCtx,
+) {
+  if (val.status === "compareceu" && !val.atividades.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Descreva ao menos as atividades realizadas",
+      path: ["atividades"],
+    });
+  }
+}
+
+export const sessionFormSchema =
+  sessionFormBaseSchema.superRefine(refineSessionAtividades);
+
+export const updateSessionNoteSchema = sessionFormBaseSchema
+  .extend({ id: z.string().min(1) })
+  .superRefine(refineSessionAtividades);
 
 export const sessionIdSchema = z.object({
   id: z.string().min(1),

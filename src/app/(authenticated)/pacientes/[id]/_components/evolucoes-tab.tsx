@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SessionNoteDTO } from "@/features/patient/patient.types";
+import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 
 export function EvolucoesTab({
@@ -37,6 +38,7 @@ export function EvolucoesTab({
                   <span className="font-medium capitalize">{s.status}</span>
                   <span className="font-mono text-xs text-muted-foreground">
                     {formatDateBR(s.date)}
+                    {s.time ? ` · ${formatTime(s.time)}` : ""}
                   </span>
                 </div>
                 {s.professionalName ? (

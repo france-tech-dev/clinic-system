@@ -9,6 +9,7 @@ import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 import {
   parseAnamneseData,
   toEvaluationDTO,
+  toLinkableAppointmentDTO,
   toPatientDTO,
   toRoteiroNoteDTO,
   toSessionDTO,
@@ -34,6 +35,7 @@ export async function getPatientDetail(
     evaluations: row.evaluations.map(toEvaluationDTO),
     anamneseData: parseAnamneseData(row.anamnese?.data),
     sessionNotes: row.sessionNotes.map(toSessionDTO),
+    appointments: row.appointments.map(toLinkableAppointmentDTO),
     roteiroNotes: row.roteiroNotes.map(toRoteiroNoteDTO),
   };
 }

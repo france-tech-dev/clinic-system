@@ -6,7 +6,7 @@ vi.mock("@/features/schedule/schedule.repository", () => ({
   scheduleRepository: {
     findById: vi.fn(),
     reschedule: vi.fn(),
-    findSessionNoteKeysInRange: vi.fn(),
+    findSessionNoteAppointmentIdsInRange: vi.fn(),
   },
 }));
 
@@ -49,9 +49,9 @@ describe("rescheduleAppointment", () => {
   beforeEach(() => {
     vi.mocked(scheduleRepository.findById).mockReset();
     vi.mocked(scheduleRepository.reschedule).mockReset();
-    vi.mocked(scheduleRepository.findSessionNoteKeysInRange).mockResolvedValue(
-      new Set(),
-    );
+    vi.mocked(
+      scheduleRepository.findSessionNoteAppointmentIdsInRange,
+    ).mockResolvedValue(new Set());
   });
 
   it("retorna not_found quando agendamento não existe", async () => {

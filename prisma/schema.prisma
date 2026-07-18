@@ -218,17 +218,20 @@ model Anamnese {
 }
 
 model SessionNote {
-  id          String            @id @default(cuid())
-  patientId   String
-  patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  memberId    String?
-  member      Member?           @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  date        String
-  status      SessionNoteStatus @default(compareceu)
-  atividades  String            @default("")
-  observacoes String            @default("")
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id            String            @id @default(cuid())
+  patientId     String
+  patient       Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  memberId      String?
+  member        Member?           @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  appointmentId String?           @unique
+  appointment   Appointment?      @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  date          String
+  time          String            @default("")
+  status        SessionNoteStatus @default(compareceu)
+  atividades    String            @default("")
+  observacoes   String            @default("")
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@index([patientId])
   @@index([patientId, date])
@@ -249,6 +252,7 @@ model Appointment {
   duration       Int               @default(45)
   notes          String            @default("")
   status         AppointmentStatus @default(agendado)
+  sessionNote    SessionNote?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 

@@ -38,7 +38,7 @@ export async function ensureDemoPatient(
 
   const baseDate = new Date();
   const evaluation = buildDemoEvaluation(baseDate);
-  const sessionNotes = buildDemoSessionNotes(baseDate);
+  const sessionNotes = buildDemoSessionNotes();
   const appointments = buildDemoAppointments(baseDate);
   const cashTransaction = buildDemoCashTransaction(baseDate);
   const anamneseData = buildDemoAnamneseData();
@@ -95,21 +95,9 @@ export async function ensureDemoPatient(
       },
     });
 
-    for (const note of sessionNotes) {
-      await tx.sessionNote.create({
-        data: {
-          patientId: createdPatient.id,
-          memberId: member.id,
-          date: note.date,
-          status: note.status,
-          atividades: note.atividades,
-          observacoes: note.observacoes,
-        },
-      });
-    }
-
+    const createdAppointments = [];
     for (const appointment of appointments) {
-      await tx.appointment.create({
+      const row = await tx.appointment.create({
         data: {
           organizationId,
           patientId: createdPatient.id,
@@ -119,6 +107,28 @@ export async function ensureDemoPatient(
           duration: appointment.duration,
           status: appointment.status,
           notes: appointment.notes,
+        },
+      });
+      createdAppointments.push({ ...row, withEvolution: appointment.withEvolution });
+    }
+
+    const evolutionAppointments = createdAppointments.filter(
+      (a) => a.withEvolution,
+    );
+    for (let i = 0; i < sessionNotes.length; i++) {
+      const note = sessionNotes[i];
+      const appointment = evolutionAppointments[i];
+      if (!note || !appointment) continue;
+      await tx.sessionNote.create({
+        data: {
+          patientId: createdPatient.id,
+          memberId: member.id,
+          appointmentId: appointment.id,
+          date: appointment.date,
+          time: appointment.time,
+          status: note.status,
+          atividades: note.atividades,
+          observacoes: note.observacoes,
         },
       });
     }

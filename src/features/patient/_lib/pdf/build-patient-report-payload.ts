@@ -81,6 +81,7 @@ export function buildPatientReportPayload({
     anamneseData: detail.anamneseData,
     sessionNotes: detail.sessionNotes.map((s) => ({
       date: s.date,
+      time: s.time,
       status: s.status,
       atividades: s.atividades,
       observacoes: s.observacoes,

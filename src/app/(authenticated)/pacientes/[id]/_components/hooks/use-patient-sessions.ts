@@ -40,6 +40,15 @@ export function usePatientSessions({
       sessionNotes: isEdit
         ? d.sessionNotes.map((x) => (x.id === s.id ? s : x))
         : [s, ...d.sessionNotes],
+      appointments: d.appointments.map((a) => {
+        if (a.id === s.appointmentId) {
+          return { ...a, sessionNoteId: s.id };
+        }
+        if (a.sessionNoteId === s.id && a.id !== s.appointmentId) {
+          return { ...a, sessionNoteId: null };
+        }
+        return a;
+      }),
     }));
     setSessionOpen(false);
   }
@@ -54,6 +63,9 @@ export function usePatientSessions({
       setDetail((d) => ({
         ...d,
         sessionNotes: d.sessionNotes.filter((s) => s.id !== id),
+        appointments: d.appointments.map((a) =>
+          a.sessionNoteId === id ? { ...a, sessionNoteId: null } : a,
+        ),
       }));
       setViewSession(null);
       toast.success("Evolução removida");

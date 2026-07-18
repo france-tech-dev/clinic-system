@@ -49,8 +49,10 @@ describe("patient mappers — autoria", () => {
     const dto = toSessionDTO({
       id: "s1",
       patientId: "p1",
+      appointmentId: "a1",
       memberId: null,
       date: "2026-07-14",
+      time: "09:00",
       status: "compareceu",
       atividades: "jogo",
       observacoes: "",
@@ -61,5 +63,7 @@ describe("patient mappers — autoria", () => {
 
     expect(dto.memberId).toBeNull();
     expect(dto.professionalName).toBeNull();
+    expect(dto.time).toBe("09:00");
+    expect(dto.appointmentId).toBe("a1");
   });
 });

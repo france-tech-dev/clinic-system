@@ -6,6 +6,7 @@ import type {
   PatientPricingType,
   PatientStatus,
   RoteiroNoteDTO,
+  SessionLinkableAppointmentDTO,
   SessionNoteDTO,
   SessionNoteStatus,
 } from "../patient.types";
@@ -109,8 +110,10 @@ export function toEvaluationDTO(row: {
 export function toSessionDTO(row: {
   id: string;
   patientId: string;
+  appointmentId?: string | null;
   memberId?: string | null;
   date: string;
+  time: string;
   status: SessionNoteStatus;
   atividades: string;
   observacoes: string;
@@ -121,14 +124,34 @@ export function toSessionDTO(row: {
   return {
     id: row.id,
     patientId: row.patientId,
+    appointmentId: row.appointmentId ?? null,
     memberId: row.memberId ?? null,
     professionalName: row.member?.user.name?.trim() || null,
     date: row.date,
+    time: row.time ?? "",
     status: row.status,
     atividades: row.atividades,
     observacoes: row.observacoes,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export function toLinkableAppointmentDTO(row: {
+  id: string;
+  date: string;
+  time: string;
+  status: string;
+  sessionNote?: { id: string } | null;
+  member?: { user: { name: string | null } } | null;
+}): SessionLinkableAppointmentDTO {
+  return {
+    id: row.id,
+    date: row.date,
+    time: row.time ?? "",
+    status: row.status,
+    professionalName: row.member?.user.name?.trim() || null,
+    sessionNoteId: row.sessionNote?.id ?? null,
   };
 }
 

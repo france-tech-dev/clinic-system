@@ -49,6 +49,7 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
           open={sessions.sessionOpen}
           onOpenChange={sessions.setSessionOpen}
           patientId={detail.patient.id}
+          appointments={detail.appointments}
           initial={sessions.editingSession}
           pending={sessions.pending}
           startTransition={sessions.startTransition}

@@ -10,8 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -25,12 +23,28 @@ import {
   createSessionAction,
   updateSessionAction,
 } from "@/features/patient/patient.actions";
-import type { SessionNoteDTO } from "@/features/patient/patient.types";
+import type {
+  SessionLinkableAppointmentDTO,
+  SessionNoteDTO,
+} from "@/features/patient/patient.types";
+import {
+  appointmentStatusInfo,
+  formatTime,
+} from "@/shared/constants/appointment";
+import { formatDateBR } from "@/shared/lib/format-date-br";
+
+function appointmentLabel(a: SessionLinkableAppointmentDTO) {
+  const st = appointmentStatusInfo(a.status);
+  const when = `${formatDateBR(a.date)}${a.time ? ` · ${formatTime(a.time)}` : ""}`;
+  const pro = a.professionalName ? ` — ${a.professionalName}` : "";
+  return `${when} (${st.label})${pro}`;
+}
 
 export function SessionFormDialog({
   open,
   onOpenChange,
   patientId,
+  appointments,
   initial,
   pending,
   startTransition,
@@ -39,22 +53,31 @@ export function SessionFormDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
   patientId: string;
+  appointments: SessionLinkableAppointmentDTO[];
   initial: SessionNoteDTO | null;
   pending: boolean;
   startTransition: (fn: () => void) => void;
   onSave: (s: SessionNoteDTO, isEdit: boolean) => void;
 }) {
-  const today = new Date().toISOString().slice(0, 10);
-  const [date, setDate] = useState(initial?.date ?? today);
+  const options = appointments.filter(
+    (a) => !a.sessionNoteId || a.sessionNoteId === initial?.id,
+  );
+  const [appointmentId, setAppointmentId] = useState(
+    initial?.appointmentId ?? options[0]?.id ?? "",
+  );
   const [status, setStatus] = useState(initial?.status ?? "compareceu");
   const [atividades, setAtividades] = useState(initial?.atividades ?? "");
   const [observacoes, setObservacoes] = useState(initial?.observacoes ?? "");
 
   function submit() {
+    if (!appointmentId) {
+      toast.error("Selecione o agendamento");
+      return;
+    }
     startTransition(async () => {
       const payload = {
         patientId,
-        date,
+        appointmentId,
         status: status as "compareceu" | "faltou" | "cancelado",
         atividades,
         observacoes,
@@ -73,39 +96,58 @@ export function SessionFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-serif">
             {initial ? "Editar evolução" : "Nova evolução"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="grid gap-1.5">
-              <Label>Data</Label>
-              <DatePicker value={date} onChange={setDate} />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Status</Label>
+        <div className="grid gap-4">
+          <div className="grid gap-1.5">
+            <Label>Agendamento</Label>
+            {options.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Não há agendamentos disponíveis. Crie um na Agenda antes de
+                registrar a evolução.
+              </p>
+            ) : (
               <Select
-                value={status}
-                onValueChange={(v) => setStatus((v as typeof status) ?? status)}
+                value={appointmentId}
+                onValueChange={(v) => setAppointmentId(v ?? appointmentId)}
               >
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione o atendimento…" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="compareceu">Compareceu</SelectItem>
-                  <SelectItem value="faltou">Faltou</SelectItem>
-                  <SelectItem value="cancelado">Cancelado</SelectItem>
+                  {options.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {appointmentLabel(a)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-            </div>
+            )}
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Status da evolução</Label>
+            <Select
+              value={status}
+              onValueChange={(v) => setStatus((v as typeof status) ?? status)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="compareceu">Compareceu</SelectItem>
+                <SelectItem value="faltou">Faltou</SelectItem>
+                <SelectItem value="cancelado">Cancelado</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid gap-1.5">
             <Label>Atividades realizadas</Label>
             <Textarea
-              rows={3}
+              rows={6}
               value={atividades}
               onChange={(e) => setAtividades(e.target.value)}
             />
@@ -113,7 +155,7 @@ export function SessionFormDialog({
           <div className="grid gap-1.5">
             <Label>Observações</Label>
             <Textarea
-              rows={3}
+              rows={5}
               value={observacoes}
               onChange={(e) => setObservacoes(e.target.value)}
             />
@@ -123,7 +165,10 @@ export function SessionFormDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button disabled={pending} onClick={submit}>
+          <Button
+            disabled={pending || options.length === 0 || !appointmentId}
+            onClick={submit}
+          >
             Salvar
           </Button>
         </DialogFooter>

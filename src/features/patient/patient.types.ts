@@ -56,14 +56,27 @@ export type EvaluationDTO = {
 export type SessionNoteDTO = {
   id: string;
   patientId: string;
+  appointmentId: string | null;
   memberId: string | null;
   professionalName: string | null;
   date: string;
+  time: string;
   status: SessionNoteStatus;
   atividades: string;
   observacoes: string;
   createdAt: string;
   updatedAt: string;
+};
+
+/** Agendamento do paciente para vincular a uma evolução. */
+export type SessionLinkableAppointmentDTO = {
+  id: string;
+  date: string;
+  time: string;
+  status: string;
+  professionalName: string | null;
+  /** Id da evolução já ligada, se houver. */
+  sessionNoteId: string | null;
 };
 
 export type RoteiroNoteDTO = {
@@ -80,5 +93,6 @@ export type PatientDetailDTO = {
   evaluations: EvaluationDTO[];
   anamneseData: Record<string, unknown>;
   sessionNotes: SessionNoteDTO[];
+  appointments: SessionLinkableAppointmentDTO[];
   roteiroNotes: RoteiroNoteDTO[];
 };

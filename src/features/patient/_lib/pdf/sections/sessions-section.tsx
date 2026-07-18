@@ -1,6 +1,7 @@
 import { Text, View } from "@react-pdf/renderer";
 import type { PatientReportSessionNote } from "../types";
 import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatTime } from "@/shared/constants/appointment";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 
 type SessionsSectionProps = {
@@ -12,9 +13,10 @@ export function SessionsSection({ sessionNotes }: SessionsSectionProps) {
     <>
       <Text style={pdfStyles.sectionTitle}>Evoluções</Text>
       {sessionNotes.map((note) => (
-        <View key={`${note.date}-${note.status}`}>
+        <View key={`${note.date}-${note.time}-${note.status}`}>
           <Text style={pdfStyles.subsectionTitle}>
-            {formatDateBR(note.date)} — {note.status}
+            {formatDateBR(note.date)}
+            {note.time ? ` às ${formatTime(note.time)}` : ""} — {note.status}
           </Text>
           <Text style={pdfStyles.paragraph}>{note.atividades}</Text>
           {note.observacoes ? (

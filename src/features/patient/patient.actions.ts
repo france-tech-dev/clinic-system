@@ -52,6 +52,7 @@ function handleError(error: unknown): ActionResult<never> {
 function revalidatePatient(id?: string) {
   revalidatePath(paths.pacientes);
   revalidatePath(paths.painel);
+  revalidatePath(paths.agenda);
   if (id) revalidatePath(paths.paciente(id));
 }
 
@@ -237,7 +238,9 @@ export async function createSessionAction(
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
     const data = await createSessionNote(organizationId, parsed.data, memberId);
-    if (!data) return fail("Paciente não encontrado");
+    if (!data) {
+      return fail("Agendamento não encontrado ou já possui evolução");
+    }
     revalidatePatient(parsed.data.patientId);
     return ok(data);
   } catch (error) {
@@ -256,7 +259,9 @@ export async function updateSessionAction(
     const { organizationId } = await requireOrgId();
     const { id, ...rest } = parsed.data;
     const data = await updateSessionNote(organizationId, id, rest);
-    if (!data) return fail("Evolução não encontrada");
+    if (!data) {
+      return fail("Evolução ou agendamento não encontrado");
+    }
     revalidatePatient(rest.patientId);
     return ok(data);
   } catch (error) {

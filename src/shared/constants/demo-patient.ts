@@ -126,10 +126,9 @@ export function buildDemoAnamneseData() {
   };
 }
 
-export function buildDemoSessionNotes(baseDate: Date) {
+export function buildDemoSessionNotes() {
   return [
     {
-      date: formatIsoDate(offsetDate(baseDate, -21)),
       status: "compareceu" as const,
       atividades:
         "Pinça de grãos com transferência entre potes; circuito com obstáculos baixos; rotina visual da manhã (cartões ilustrados).",
@@ -137,7 +136,6 @@ export function buildDemoSessionNotes(baseDate: Date) {
         "Boa tolerância à pinça por 8 minutos. Precisou de pausa sensorial antes do circuito motor.",
     },
     {
-      date: formatIsoDate(offsetDate(baseDate, -14)),
       status: "compareceu" as const,
       atividades:
         "Treino de abotoamento em camisa adaptada; massinha com moldes; jogo da memória com 6 pares.",
@@ -145,7 +143,6 @@ export function buildDemoSessionNotes(baseDate: Date) {
         "Conseguiu abotoar 2 botões grandes com mínima ajuda. Memória: 4 pares encontrados na segunda tentativa.",
     },
     {
-      date: formatIsoDate(offsetDate(baseDate, -7)),
       status: "compareceu" as const,
       atividades:
         "Caixa sensorial tátil com arroz e objetos escondidos; sequência da rotina matinal; alongamento bilateral.",
@@ -158,11 +155,28 @@ export function buildDemoSessionNotes(baseDate: Date) {
 export function buildDemoAppointments(baseDate: Date) {
   return [
     {
+      date: formatIsoDate(offsetDate(baseDate, -21)),
+      time: "09:00",
+      duration: 50,
+      status: "realizado" as const,
+      notes: "Sessão inicial: pinça e circuito motor.",
+      withEvolution: true,
+    },
+    {
+      date: formatIsoDate(offsetDate(baseDate, -14)),
+      time: "09:00",
+      duration: 50,
+      status: "realizado" as const,
+      notes: "Treino de abotoamento e memória.",
+      withEvolution: true,
+    },
+    {
       date: formatIsoDate(offsetDate(baseDate, -7)),
       time: "09:00",
       duration: 50,
       status: "realizado" as const,
       notes: "Sessão com foco sensorial e rotina matinal.",
+      withEvolution: true,
     },
     {
       date: formatIsoDate(offsetDate(baseDate, 0)),
@@ -170,6 +184,7 @@ export function buildDemoAppointments(baseDate: Date) {
       duration: 50,
       status: "agendado" as const,
       notes: "Continuidade: pinça + AVD vestir.",
+      withEvolution: false,
     },
     {
       date: formatIsoDate(offsetDate(baseDate, 7)),
@@ -177,6 +192,7 @@ export function buildDemoAppointments(baseDate: Date) {
       duration: 50,
       status: "agendado" as const,
       notes: "Reavaliação parcial de objetivos.",
+      withEvolution: false,
     },
   ];
 }

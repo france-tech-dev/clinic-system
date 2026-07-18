@@ -6,10 +6,6 @@ import type {
 } from "./schedule.schema";
 import type { AppointmentDTO, ScheduleMemberDTO } from "./schedule.types";
 
-function sessionNoteKey(patientId: string, date: string) {
-  return `${patientId}:${date}`;
-}
-
 type AppointmentRow = NonNullable<
   Awaited<ReturnType<typeof scheduleRepository.findById>>
 >;
@@ -19,7 +15,10 @@ function professionalNameFrom(row: AppointmentRow): string {
   return name || "Profissional";
 }
 
-function toDTO(row: AppointmentRow, sessionKeys: Set<string>): AppointmentDTO {
+function toDTO(
+  row: AppointmentRow,
+  sessionAppointmentIds: Set<string>,
+): AppointmentDTO {
   return {
     id: row.id,
     patientId: row.patientId,
@@ -31,7 +30,7 @@ function toDTO(row: AppointmentRow, sessionKeys: Set<string>): AppointmentDTO {
     duration: row.duration,
     notes: row.notes,
     status: row.status,
-    hasSessionNote: sessionKeys.has(sessionNoteKey(row.patientId, row.date)),
+    hasSessionNote: sessionAppointmentIds.has(row.id),
     patientPricingType: row.patient.pricingType,
     patientPriceCents: row.patient.priceCents,
     createdAt: row.createdAt.toISOString(),
@@ -56,12 +55,13 @@ async function mapWithSessionKeys(
   startDate: string,
   endDate: string,
 ) {
-  const sessionKeys = await scheduleRepository.findSessionNoteKeysInRange(
-    organizationId,
-    startDate,
-    endDate,
-  );
-  return rows.map((row) => toDTO(row, sessionKeys));
+  const sessionAppointmentIds =
+    await scheduleRepository.findSessionNoteAppointmentIdsInRange(
+      organizationId,
+      startDate,
+      endDate,
+    );
+  return rows.map((row) => toDTO(row, sessionAppointmentIds));
 }
 
 export async function listOrganizationMembers(organizationId: string) {

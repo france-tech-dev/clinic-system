@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { SessionNoteDTO } from "@/features/patient/patient.types";
+import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 
 export function SessionViewDialog({
@@ -28,10 +29,11 @@ export function SessionViewDialog({
   if (!note) return null;
   return (
     <Dialog open={!!note} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-serif capitalize">
             {note.status} — {formatDateBR(note.date)}
+            {note.time ? ` às ${formatTime(note.time)}` : ""}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-2 text-sm">

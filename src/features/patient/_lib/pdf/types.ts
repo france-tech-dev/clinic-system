@@ -13,6 +13,7 @@ export type PatientReportRoteiro = {
 
 export type PatientReportSessionNote = {
   date: string;
+  time: string;
   status: string;
   atividades: string;
   observacoes?: string;

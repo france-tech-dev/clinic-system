@@ -23,7 +23,7 @@ const appointmentInclude = {
 } as const;
 
 export const scheduleRepository = {
-  async findSessionNoteKeysInRange(
+  async findSessionNoteAppointmentIdsInRange(
     organizationId: string,
     startDate: string,
     endDate: string,
@@ -33,10 +33,15 @@ export const scheduleRepository = {
         patient: { organizationId },
         date: { gte: startDate, lte: endDate },
         status: "compareceu",
+        appointmentId: { not: null },
       },
-      select: { patientId: true, date: true },
+      select: { appointmentId: true },
     });
-    return new Set(notes.map((n) => `${n.patientId}:${n.date}`));
+    return new Set(
+      notes
+        .map((n) => n.appointmentId)
+        .filter((id): id is string => !!id),
+    );
   },
 
   async findOrgMembers(organizationId: string) {
@@ -144,18 +149,25 @@ export const scheduleRepository = {
     const member = await this.findMemberInOrg(organizationId, data.memberId);
     if (!member) return null;
 
-    return db.appointment.update({
-      where: { id: data.id },
-      data: {
-        patientId: data.patientId,
-        memberId: data.memberId,
-        date: data.date,
-        time: data.time ?? "",
-        duration: data.duration ?? 50,
-        notes: data.notes ?? "",
-        status: data.status as AppointmentStatusId,
-      },
-      include: appointmentInclude,
+    return db.$transaction(async (tx) => {
+      const row = await tx.appointment.update({
+        where: { id: data.id },
+        data: {
+          patientId: data.patientId,
+          memberId: data.memberId,
+          date: data.date,
+          time: data.time ?? "",
+          duration: data.duration ?? 50,
+          notes: data.notes ?? "",
+          status: data.status as AppointmentStatusId,
+        },
+        include: appointmentInclude,
+      });
+      await tx.sessionNote.updateMany({
+        where: { appointmentId: data.id },
+        data: { date: data.date, time: data.time ?? "" },
+      });
+      return row;
     });
   },
 
@@ -170,10 +182,17 @@ export const scheduleRepository = {
     });
     if (!existing || existing.status !== "agendado") return null;
 
-    return db.appointment.update({
-      where: { id },
-      data: { date, time: time ?? "" },
-      include: appointmentInclude,
+    return db.$transaction(async (tx) => {
+      const row = await tx.appointment.update({
+        where: { id },
+        data: { date, time: time ?? "" },
+        include: appointmentInclude,
+      });
+      await tx.sessionNote.updateMany({
+        where: { appointmentId: id },
+        data: { date, time: time ?? "" },
+      });
+      return row;
     });
   },
 
