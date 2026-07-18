@@ -117,8 +117,9 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 - [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
 - [x] **Protocolos estruturados** — GMFM-88 em `/protocolos/gmfm` (formulário 88 itens, percentuais, gráfico comparativo avaliação vs. reavaliação)
-- [ ] **GMFM-88 PDF** — exportar comparativo / ficha preenchida em PDF
+- [ ] **GMFM-88 PDF** — poder exportar/visualizar o comparativo / ficha preenchida em PDF.
 - [ ] **Anamnese por especialidade** — antes de preencher, escolher área (T.O., Fisio, Psico, Fono…); cada uma com formulário próprio
+- [ ] **Adicionar Nuqs** para gerenciamento de state.
 - [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos
 
 ---
@@ -128,5 +129,3 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
 - **Logo em produção:** anotado em P2 — implementar antes de deploy em Vercel/similar.
 - **Conflito de horário:** explicitamente fora de escopo.
-
-[ ] **Adicionar Nuqs** para gerenciamento de state.
