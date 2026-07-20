@@ -117,6 +117,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 - [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
 - [x] **Protocolos estruturados** — GMFM-88 em `/protocolos/gmfm` (formulário 88 itens, percentuais, gráfico comparativo avaliação vs. reavaliação)
+- [x] **botão para evolução direto na agenda** - botão para criar evolução direto na agenda, para o profissional que está atendendo a criança.
 - [ ] **GMFM-88 PDF** — poder exportar/visualizar o comparativo / ficha preenchida em PDF.
 - [ ] **Anamnese por especialidade** — antes de preencher, escolher área (T.O., Fisio, Psico, Fono…); cada uma com formulário próprio
 - [ ] **Adicionar Nuqs** para gerenciamento de state.
