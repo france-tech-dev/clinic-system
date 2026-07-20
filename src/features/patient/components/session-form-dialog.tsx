@@ -49,6 +49,7 @@ export function SessionFormDialog({
   pending,
   startTransition,
   onSave,
+  lockAppointment = false,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -58,6 +59,8 @@ export function SessionFormDialog({
   pending: boolean;
   startTransition: (fn: () => void) => void;
   onSave: (s: SessionNoteDTO, isEdit: boolean) => void;
+  /** Quando true, o agendamento fica fixo (ex.: aberto a partir da agenda). */
+  lockAppointment?: boolean;
 }) {
   const options = appointments.filter(
     (a) => !a.sessionNoteId || a.sessionNoteId === initial?.id,
@@ -68,6 +71,10 @@ export function SessionFormDialog({
   const [status, setStatus] = useState(initial?.status ?? "compareceu");
   const [atividades, setAtividades] = useState(initial?.atividades ?? "");
   const [observacoes, setObservacoes] = useState(initial?.observacoes ?? "");
+
+  const lockedAppointment = lockAppointment
+    ? (options.find((a) => a.id === appointmentId) ?? options[0] ?? null)
+    : null;
 
   function submit() {
     if (!appointmentId) {
@@ -105,7 +112,11 @@ export function SessionFormDialog({
         <div className="grid gap-4">
           <div className="grid gap-1.5">
             <Label>Agendamento</Label>
-            {options.length === 0 ? (
+            {lockedAppointment ? (
+              <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
+                {appointmentLabel(lockedAppointment)}
+              </p>
+            ) : options.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Não há agendamentos disponíveis. Crie um na Agenda antes de
                 registrar a evolução.

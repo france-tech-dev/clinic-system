@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { NotebookPen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
@@ -49,6 +49,7 @@ export function AppointmentFormDialog({
   startTransition,
   onSaved,
   onDelete,
+  onEvolve,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -65,6 +66,7 @@ export function AppointmentFormDialog({
     repeatCount?: number,
   ) => void;
   onDelete?: () => void;
+  onEvolve?: () => void;
 }) {
   const [patientId, setPatientId] = useState(
     initial?.patientId ?? patients[0]?.id ?? "",
@@ -117,33 +119,19 @@ export function AppointmentFormDialog({
     });
   }
 
+  const canEvolve = Boolean(
+    initial && onEvolve && !initial.hasSessionNote,
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif">
             {initial ? "Editar agendamento" : "Novo agendamento"}
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-3">
-          <div className="grid gap-1.5">
-            <Label>Paciente</Label>
-            <Select
-              value={patientId}
-              onValueChange={(v) => setPatientId(v ?? patientId)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione…" />
-              </SelectTrigger>
-              <SelectContent>
-                {patients.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <div className="grid gap-1.5">
             <Label>Profissional</Label>
             <Select
@@ -157,6 +145,24 @@ export function AppointmentFormDialog({
                 {members.map((m) => (
                   <SelectItem key={m.id} value={m.id}>
                     {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Paciente</Label>
+            <Select
+              value={patientId}
+              onValueChange={(v) => setPatientId(v ?? patientId)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione…" />
+              </SelectTrigger>
+              <SelectContent>
+                {patients.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -233,30 +239,53 @@ export function AppointmentFormDialog({
             />
           </div>
         </div>
-        <DialogFooter className={cn(initial && "sm:justify-between")}>
-          {initial && onDelete && (
-            <DeleteConfirmDialog
-              title="Excluir agendamento?"
-              description="Esta ação não pode ser desfeita. O agendamento será removido permanentemente."
-              onConfirm={onDelete}
-              disabled={pending}
-            >
-              <Button variant="destructive" disabled={pending}>
-                <Trash2 className="size-4" />
-                Excluir
-              </Button>
-            </DeleteConfirmDialog>
-          )}
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
+        <DialogFooter className="flex-col gap-3 sm:flex-col sm:justify-stretch">
+          {canEvolve && (
             <Button
-              disabled={pending || !patientId || !memberId || !date}
-              onClick={submit}
+              variant="secondary"
+              className="w-full"
+              disabled={pending}
+              onClick={onEvolve}
             >
-              Salvar
+              <NotebookPen data-icon="inline-start" />
+              Registrar evolução
             </Button>
+          )}
+          <div
+            className={cn(
+              "flex w-full flex-col-reverse gap-2 sm:flex-row",
+              initial && onDelete ? "sm:justify-between" : "sm:justify-end",
+            )}
+          >
+            {initial && onDelete ? (
+              <DeleteConfirmDialog
+                title="Excluir agendamento?"
+                description="Esta ação não pode ser desfeita. O agendamento será removido permanentemente."
+                onConfirm={onDelete}
+                disabled={pending}
+              >
+                <Button variant="destructive" disabled={pending}>
+                  <Trash2 data-icon="inline-start" />
+                  Excluir
+                </Button>
+              </DeleteConfirmDialog>
+            ) : null}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 sm:flex-none"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1 sm:flex-none"
+                disabled={pending || !patientId || !memberId || !date}
+                onClick={submit}
+              >
+                Salvar
+              </Button>
+            </div>
           </div>
         </DialogFooter>
       </DialogContent>

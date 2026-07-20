@@ -5,7 +5,7 @@ import { EvaluationFormDialog } from "./evaluation-form-dialog";
 import { EvaluationViewDialog } from "./evaluation-view-dialog";
 import type { PatientDetailViewModel } from "./hooks/use-patient-detail";
 import { PatientPdfPreviewDialog } from "@/features/patient/components/patient-pdf-preview-dialog";
-import { SessionFormDialog } from "./session-form-dialog";
+import { SessionFormDialog } from "@/features/patient/components/session-form-dialog";
 import { SessionViewDialog } from "./session-view-dialog";
 
 export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {

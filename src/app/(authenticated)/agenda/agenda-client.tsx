@@ -23,7 +23,11 @@ import type {
   AppointmentDTO,
   ScheduleMemberDTO,
 } from "@/features/schedule/schedule.types";
-import type { PatientDTO } from "@/features/patient/patient.types";
+import type {
+  PatientDTO,
+  SessionLinkableAppointmentDTO,
+} from "@/features/patient/patient.types";
+import { SessionFormDialog } from "@/features/patient/components/session-form-dialog";
 import {
   addDaysIso,
   relativeDayLabel,
@@ -39,6 +43,19 @@ import { AppointmentFormDialog } from "./_components/appointment-form-dialog";
 import { AppointmentRow } from "./_components/appointment-row";
 import { useAgendaCashflow } from "./_components/hooks/use-agenda-cashflow";
 import { AgendaCalendar } from "./agenda-calendar";
+
+function toLinkableAppointment(
+  a: AppointmentDTO,
+): SessionLinkableAppointmentDTO {
+  return {
+    id: a.id,
+    date: a.date,
+    time: a.time,
+    status: a.status,
+    professionalName: a.professionalName,
+    sessionNoteId: a.hasSessionNote ? "existing" : null,
+  };
+}
 
 const MEMBER_FILTER_ALL = "all";
 
@@ -77,6 +94,8 @@ export function AgendaClient({
   const [memberFilter, setMemberFilter] = useState(initialMemberFilter);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AppointmentDTO | null>(null);
+  const [sessionAppointment, setSessionAppointment] =
+    useState<AppointmentDTO | null>(null);
   const [pending, startTransition] = useTransition();
   const cashflow = useAgendaCashflow();
 
@@ -162,6 +181,20 @@ export function AgendaClient({
   function openEditById(id: string) {
     const a = appointmentsById.get(id);
     if (a) openEdit(a);
+  }
+
+  function openEvolve(a: AppointmentDTO) {
+    setFormOpen(false);
+    setSessionAppointment(a);
+  }
+
+  function markHasSessionNote(appointmentId: string) {
+    const patch = (list: AppointmentDTO[]) =>
+      list.map((item) =>
+        item.id === appointmentId ? { ...item, hasSessionNote: true } : item,
+      );
+    setDayAppointments(patch);
+    setUpcoming(patch);
   }
 
   function changeStatus(id: string, status: AppointmentStatusId) {
@@ -371,6 +404,11 @@ export function AgendaClient({
           pending={pending}
           startTransition={startTransition}
           onDelete={editing ? () => remove(editing.id) : undefined}
+          onEvolve={
+            editing && !editing.hasSessionNote
+              ? () => openEvolve(editing)
+              : undefined
+          }
           onSaved={(createdOrUpdated, isEdit, repeatCount) => {
             if (isEdit && !Array.isArray(createdOrUpdated)) {
               const updated = createdOrUpdated;
@@ -419,6 +457,27 @@ export function AgendaClient({
               );
             }
             setFormOpen(false);
+            router.refresh();
+          }}
+        />
+      )}
+
+      {sessionAppointment && (
+        <SessionFormDialog
+          key={`session-${sessionAppointment.id}`}
+          open
+          onOpenChange={(open) => {
+            if (!open) setSessionAppointment(null);
+          }}
+          patientId={sessionAppointment.patientId}
+          appointments={[toLinkableAppointment(sessionAppointment)]}
+          initial={null}
+          lockAppointment
+          pending={pending}
+          startTransition={startTransition}
+          onSave={() => {
+            markHasSessionNote(sessionAppointment.id);
+            setSessionAppointment(null);
             router.refresh();
           }}
         />
