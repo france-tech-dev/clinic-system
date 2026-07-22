@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,20 +14,33 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import { createGuardianAction } from "@/features/guardian/guardian.actions";
+import type { GuardianDTO } from "@/features/guardian/guardian.types";
+import {
+  EMPTY_GUARDIAN_DRAFT,
+  guardianDraftToCreateInput,
+  type GuardianFormDraft,
+} from "@/features/guardian/_lib/guardian-form-defaults";
+import {
+  guardianDraftSchema,
+  type GuardianDraftInput,
+} from "@/features/guardian/guardian.schema";
 import {
   createPatientAction,
   setPatientStatusAction,
 } from "@/features/patient/patient.actions";
 import type {
   PatientDTO,
+  PatientPricingType,
+  PatientSex,
   PatientStatus,
 } from "@/features/patient/patient.types";
 import { paths } from "@/shared/constants/paths";
 import { formatPatientListMeta } from "@/features/patient/_lib/patient-list-meta";
 import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
-import type { PatientPricingType } from "@/features/patient/patient.types";
 
 const STATUS_LABEL: Record<PatientStatus, string> = {
   ativo: "Ativo",
@@ -35,19 +50,31 @@ const STATUS_LABEL: Record<PatientStatus, string> = {
 
 export function PacientesClient({
   initialPatients,
+  initialGuardians,
 }: {
   initialPatients: PatientDTO[];
+  initialGuardians: GuardianDTO[];
 }) {
   const searchParams = useSearchParams();
   const [patients, setPatients] = useState(initialPatients);
+  const [guardians, setGuardians] = useState(initialGuardians);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PatientStatus | null>(null);
   const [open, setOpen] = useState(() => searchParams.get("novo") === "1");
   const [name, setName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [sex, setSex] = useState<PatientSex>("nao_informado");
   const [notes, setNotes] = useState("");
   const [pricingType, setPricingType] = useState<PatientPricingType>("sessao");
   const [priceInput, setPriceInput] = useState("");
+  const [guardianMode, setGuardianMode] = useState<"new" | "existing">("new");
+  const [selectedGuardianId, setSelectedGuardianId] = useState("");
   const [pending, startTransition] = useTransition();
+
+  const guardianForm = useForm<GuardianDraftInput>({
+    resolver: zodResolver(guardianDraftSchema),
+    defaultValues: EMPTY_GUARDIAN_DRAFT,
+  });
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -58,6 +85,18 @@ export function PacientesClient({
     });
   }, [patients, search, statusFilter]);
 
+  function resetForm() {
+    setName("");
+    setBirthDate("");
+    setSex("nao_informado");
+    setNotes("");
+    setPricingType("sessao");
+    setPriceInput("");
+    setGuardianMode("new");
+    setSelectedGuardianId("");
+    guardianForm.reset(EMPTY_GUARDIAN_DRAFT);
+  }
+
   function create() {
     const priceCents = parsePatientPriceInput(priceInput);
     if (priceInput.trim() && priceCents === null) {
@@ -65,27 +104,63 @@ export function PacientesClient({
       return;
     }
 
-    startTransition(async () => {
-      const result = await createPatientAction({
-        name,
-        notes,
-        pricingType,
-        priceCents,
+    const runCreate = (draft?: GuardianFormDraft) => {
+      startTransition(async () => {
+        let guardianId = selectedGuardianId;
+
+        if (guardianMode === "new" && draft) {
+          const guardianResult = await createGuardianAction(
+            guardianDraftToCreateInput(draft),
+          );
+          if (!guardianResult.success) {
+            applyActionFieldErrors(
+              guardianForm.setError,
+              guardianResult.fieldErrors,
+            );
+            toast.error(guardianResult.error);
+            return;
+          }
+          guardianId = guardianResult.data.id;
+          setGuardians((prev) =>
+            [...prev, guardianResult.data].sort((a, b) =>
+              a.name.localeCompare(b.name),
+            ),
+          );
+          if (guardianResult.data.mustChangePassword) {
+            toast.message(
+              "Acesso ao portal criado. O responsável deve alterar a senha no primeiro login.",
+            );
+          }
+        }
+
+        const result = await createPatientAction({
+          name,
+          birthDate: birthDate || null,
+          sex,
+          notes,
+          pricingType,
+          priceCents,
+          guardianId,
+        });
+        if (!result.success) {
+          toast.error(result.error);
+          return;
+        }
+        setPatients((prev) =>
+          [...prev, result.data].sort((a, b) => a.name.localeCompare(b.name)),
+        );
+        toast.success("Paciente adicionado");
+        setOpen(false);
+        resetForm();
       });
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-      setPatients((prev) =>
-        [...prev, result.data].sort((a, b) => a.name.localeCompare(b.name)),
-      );
-      toast.success("Paciente adicionado");
-      setOpen(false);
-      setName("");
-      setNotes("");
-      setPricingType("sessao");
-      setPriceInput("");
-    });
+    };
+
+    if (guardianMode === "new") {
+      void guardianForm.handleSubmit((draft) => runCreate(draft))();
+      return;
+    }
+
+    runCreate();
   }
 
   function changeStatus(id: string, status: PatientStatus) {
@@ -204,15 +279,28 @@ export function PacientesClient({
 
       <CreatePatientDialog
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={(next) => {
+          if (!next) resetForm();
+          setOpen(next);
+        }}
         name={name}
         onNameChange={setName}
+        birthDate={birthDate}
+        onBirthDateChange={setBirthDate}
+        sex={sex}
+        onSexChange={setSex}
         notes={notes}
         onNotesChange={setNotes}
         pricingType={pricingType}
         onPricingTypeChange={setPricingType}
         priceInput={priceInput}
         onPriceInputChange={setPriceInput}
+        guardianMode={guardianMode}
+        onGuardianModeChange={setGuardianMode}
+        selectedGuardianId={selectedGuardianId}
+        onSelectedGuardianIdChange={setSelectedGuardianId}
+        guardians={guardians}
+        guardianForm={guardianForm}
         pending={pending}
         onSubmit={create}
       />

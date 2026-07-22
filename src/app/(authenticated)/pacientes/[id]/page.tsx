@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { getPatientDetail } from "@/features/patient/patient.service";
+import {
+  getPatientDetail,
+} from "@/features/patient/patient.service";
+import { listGuardians } from "@/features/guardian/guardian.service";
+import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
 import {
   getPrintBranding,
@@ -21,6 +25,7 @@ export default async function PacienteDetailPage({
   const { id } = await params;
   let error: string | null = null;
   let detail: PatientDetailDTO | null = null;
+  let guardians: GuardianDTO[] = [];
   let professional: ProfessionalProfile = {
     nome: "",
     registro: "",
@@ -34,12 +39,14 @@ export default async function PacienteDetailPage({
 
   try {
     const { organizationId } = await requireOrgId();
-    const [d, prof, printBranding] = await Promise.all([
+    const [d, g, prof, printBranding] = await Promise.all([
       getPatientDetail(organizationId, id),
+      listGuardians(organizationId),
       getProfessionalProfile(organizationId),
       getPrintBranding(organizationId),
     ]);
     detail = d;
+    guardians = g;
     professional = prof;
     branding = printBranding;
   } catch (e) {
@@ -63,6 +70,7 @@ export default async function PacienteDetailPage({
     <AppPage title={detail.patient.name}>
       <PacienteDetailClient
         initial={detail}
+        initialGuardians={guardians}
         professional={professional}
         branding={branding}
       />

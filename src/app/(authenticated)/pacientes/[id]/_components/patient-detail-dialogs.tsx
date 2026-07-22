@@ -71,14 +71,26 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
           onOpenChange={patientEdit.setEditPatientOpen}
           name={patientEdit.editName}
           onNameChange={patientEdit.setEditName}
+          birthDate={patientEdit.editBirthDate}
+          onBirthDateChange={patientEdit.setEditBirthDate}
+          sex={patientEdit.editSex}
+          onSexChange={patientEdit.setEditSex}
           notes={patientEdit.editNotes}
           onNotesChange={patientEdit.setEditNotes}
           pricingType={patientEdit.editPricingType}
           onPricingTypeChange={patientEdit.setEditPricingType}
           priceInput={patientEdit.editPriceInput}
           onPriceInputChange={patientEdit.setEditPriceInput}
+          guardianId={patientEdit.editGuardianId}
+          onGuardianIdChange={patientEdit.handleGuardianIdChange}
+          guardians={patientEdit.guardians}
+          guardianForm={patientEdit.guardianForm}
+          guardianName={patientEdit.guardianName}
+          guardianEmail={patientEdit.guardianEmail}
+          hasPortalAccess={patientEdit.hasPortalAccess}
           pending={patientEdit.pending}
           onSave={patientEdit.savePatientEdit}
+          onEnablePortal={patientEdit.enablePortal}
         />
       )}
 

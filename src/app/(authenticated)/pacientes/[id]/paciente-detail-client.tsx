@@ -1,5 +1,6 @@
 "use client";
 
+import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
 import type {
   PrintBranding,
@@ -15,14 +16,21 @@ import { PatientDetailTabs } from "./_components/patient-detail-tabs";
 
 export function PacienteDetailClient({
   initial,
+  initialGuardians,
   professional,
   branding,
 }: {
   initial: PatientDetailDTO;
+  initialGuardians: GuardianDTO[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
 }) {
-  const vm = usePatientDetail({ initial, professional, branding });
+  const vm = usePatientDetail({
+    initial,
+    initialGuardians,
+    professional,
+    branding,
+  });
 
   return (
     <div className="flex flex-col gap-4">

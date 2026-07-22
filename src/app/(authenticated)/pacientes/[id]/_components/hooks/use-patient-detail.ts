@@ -7,6 +7,7 @@ import type {
   EvaluationDTO,
   PatientDetailDTO,
 } from "@/features/patient/patient.types";
+import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import { buildPatientReportPayload } from "@/features/patient/_lib/pdf/build-patient-report-payload";
 import type { PatientReportMode } from "@/features/patient/_lib/pdf/types";
 import type {
@@ -26,15 +27,18 @@ import { useRoteiroNotes } from "./use-roteiro-notes";
 
 export function usePatientDetail({
   initial,
+  initialGuardians,
   professional,
   branding,
 }: {
   initial: PatientDetailDTO;
+  initialGuardians: GuardianDTO[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
 }) {
   const router = useRouter();
   const [detail, setDetail] = useState(initial);
+  const [guardians, setGuardians] = useState(initialGuardians);
   const [tab, setTab] = useState<PatientDetailTab>("avaliacao");
   const [pending, startTransition] = useTransition();
 
@@ -56,6 +60,8 @@ export function usePatientDetail({
   const patientEdit = usePatientEdit({
     detail,
     setDetail,
+    guardians,
+    setGuardians,
     pending,
     startTransition,
   });
