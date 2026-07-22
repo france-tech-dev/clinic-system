@@ -1,0 +1,76 @@
+---
+description: Formulários com react-hook-form + Zod + Shadcn Form
+globs: src/**/*.tsx
+alwaysApply: false
+---
+
+# Formulários (react-hook-form)
+
+Padrão obrigatório para formulários com validação (auth, diálogos de criar/editar, campos de domínio).
+
+## Stack
+
+- `useForm` de `react-hook-form`
+- `zodResolver` + schema Zod do domínio (`features/[nome]/*.schema.ts`)
+- UI: `Form` / `FormField` / `FormItem` / `FormLabel` / `FormControl` / `FormMessage` em `@/components/ui/form`
+
+## Estrutura
+
+```tsx
+const form = useForm<Input>({
+  resolver: zodResolver(schema),
+  defaultValues: { ... },
+});
+
+<Form {...form}>
+  <form onSubmit={form.handleSubmit(onSubmit)}>
+    <FormField
+      control={form.control}
+      name="email"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>E-mail</FormLabel>
+          <FormControl>
+            <Input type="email" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  </form>
+</Form>
+```
+
+Campos partilhados (ex. responsável): `useFormContext` dentro de `<Form {...form}>`.
+
+## Validação
+
+- **Cliente:** schema Zod no `resolver` (feedback imediato por campo via `FormMessage`).
+- **Servidor:** action com `safeParse`; devolver `fieldErrors` em `ActionResult`.
+- Erros de negócio (ex. CPF duplicado): `applyActionFieldErrors(form.setError, result.fieldErrors)`.
+
+```tsx
+if (!result.success) {
+  applyActionFieldErrors(form.setError, result.fieldErrors);
+  toast.error(result.error);
+  return;
+}
+```
+
+## Evitar
+
+```tsx
+// ❌ useState + erros manuais por campo
+const [errors, setErrors] = useState<Record<string, string>>({});
+<Input value={email} onChange={...} />
+<span>{errors.email}</span>
+
+// ❌ Só toast genérico sem mensagem no campo
+toast.error(parsed.error.issues[0].message);
+```
+
+## Referências
+
+- Auth: `src/components/auth/login-form.tsx`
+- Domínio: `create-professional-dialog.tsx`, `guardian-form-fields.tsx`
+- Helper: `applyActionFieldErrors` em `shared/lib/zod-field-errors.ts`

@@ -15,6 +15,7 @@ alwaysApply: false
 - Leitura: Server Components + Prisma ou `fetch` com `revalidate`/`tags`.
 - Mutação: Server Actions em `src/features/[feature]/actions.ts` (ver `nextjs-server-actions.mdc`).
 - Cliente: `useActionState` em forms; `useTransition` em ações por clique.
+- **Formulários com validação:** `useForm` + `zodResolver` + `Form`/`FormMessage` — ver `react-hook-form.mdc`.
 - **`useEffect` e estado inicial:** ver `react-effects-and-data.mdc` — dados no servidor, fetch só em handlers, sem `setState` em efeitos.
 
 ## UI

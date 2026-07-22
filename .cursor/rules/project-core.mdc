@@ -79,6 +79,7 @@ Documento completo: [`docs/architecture.md`](../../docs/architecture.md)
 | -------------------- | --------------------------- |
 | Páginas autenticadas | `app-page.mdc`              |
 | UI React             | `frontend.mdc`              |
+| Formulários (RHF)    | `react-hook-form.mdc`       |
 | Controlos Shadcn     | `shadcn-components.mdc`     |
 | Actions              | `nextjs-server-actions.mdc` |
 | Design               | `ux.mdc`                    |
