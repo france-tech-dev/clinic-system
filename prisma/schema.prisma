@@ -64,6 +64,13 @@ enum PatientPricingType {
   pacote
 }
 
+enum PatientSex {
+  feminino
+  masculino
+  outro
+  nao_informado
+}
+
 model User {
   id                 String    @id @default(cuid())
   name               String?
@@ -80,6 +87,7 @@ model User {
   updatedAt   DateTime     @updatedAt
   members     Member[]
   invitations Invitation[]
+  guardian    Guardian?
 
   @@map("users")
 }
@@ -133,6 +141,7 @@ model Verification {
   @@map("verification")
 }
 
+// Organizações
 model Organization {
   id          String       @id
   name        String
@@ -143,6 +152,7 @@ model Organization {
   members     Member[]
   invitations Invitation[]
   patients     Patient[]
+  guardians    Guardian[]
   appointments Appointment[]
   cashTransactions CashTransaction[]
   protocolAssessments ProtocolAssessment[]
@@ -151,17 +161,51 @@ model Organization {
   @@map("organization")
 }
 
+// Responsáveis
+model Guardian {
+  id               String       @id @default(cuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name             String
+  phone            String       @default("")
+  email            String?
+  cpf              String?
+  address          String       @default("")
+  zipCode          String       @default("") @map("zip_code")
+  documentImageUrl String?      @map("document_image_url")
+  insurance        String       @default("particular")
+  motherName       String       @default("") @map("mother_name")
+  motherCpf        String?      @map("mother_cpf")
+  fatherName       String       @default("") @map("father_name")
+  fatherCpf        String?      @map("father_cpf")
+  userId           String?      @unique @map("user_id")
+  user             User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  patients         Patient[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@unique([organizationId, cpf])
+  @@map("guardians")
+}
+
+// Pacientes
 model Patient {
-  id             String            @id @default(cuid())
+  id             String             @id @default(cuid())
   organizationId String
-  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  guardianId     String
+  guardian       Guardian           @relation(fields: [guardianId], references: [id], onDelete: Restrict)
   name           String
-  notes          String            @default("")
-  status         PatientStatus     @default(ativo)
+  birthDate      DateTime?          @map("birth_date")
+  sex            PatientSex         @default(nao_informado)
+  photoUrl       String?            @map("photo_url")
+  notes          String             @default("")
+  status         PatientStatus      @default(ativo)
   pricingType    PatientPricingType @default(sessao)
   priceCents     Int?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
   evaluations    Evaluation[]
   anamnese       Anamnese?
   sessionNotes   SessionNote[]
@@ -172,9 +216,11 @@ model Patient {
 
   @@index([organizationId])
   @@index([organizationId, status])
+  @@index([guardianId])
   @@map("patients")
 }
 
+// Avaliações
 model Evaluation {
   id                String   @id @default(cuid())
   patientId         String
@@ -206,6 +252,7 @@ model Evaluation {
   @@map("evaluations")
 }
 
+// Anamnese
 model Anamnese {
   id        String   @id @default(cuid())
   patientId String   @unique
@@ -217,6 +264,7 @@ model Anamnese {
   @@map("anamneses")
 }
 
+// Notas de sessão
 model SessionNote {
   id            String            @id @default(cuid())
   patientId     String
@@ -239,6 +287,7 @@ model SessionNote {
   @@map("session_notes")
 }
 
+// Agendamentos
 model Appointment {
   id             String            @id @default(cuid())
   organizationId String
@@ -263,6 +312,7 @@ model Appointment {
   @@map("appointments")
 }
 
+// Transações financeiras
 model CashTransaction {
   id             String              @id @default(cuid())
   organizationId String
@@ -286,6 +336,7 @@ model CashTransaction {
   @@map("cash_transactions")
 }
 
+// Notas do roteiro de avaliações
 model RoteiroNote {
   id           String   @id @default(cuid())
   patientId    String
@@ -302,6 +353,7 @@ model RoteiroNote {
   @@map("roteiro_notes")
 }
 
+// Avaliações de protocolo
 model ProtocolAssessment {
   id             String       @id @default(cuid())
   organizationId String
@@ -325,6 +377,7 @@ model ProtocolAssessment {
   @@map("protocol_assessments")
 }
 
+// Profissionais
 model Member {
   id                  String                @id
   organizationId      String
@@ -349,6 +402,7 @@ model Member {
   @@map("member")
 }
 
+// Convites
 model Invitation {
   id             String       @id
   organizationId String
