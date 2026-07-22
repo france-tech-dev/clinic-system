@@ -1,4 +1,5 @@
 import { hashPassword } from "better-auth/crypto";
+import { createCredentialUser } from "@/shared/lib/create-credential-user";
 import { db } from "@/shared/lib/prisma";
 import type { Role } from "../../../prisma/generated/prisma/enums";
 import type { CreateProfessionalInput } from "./team.schema";
@@ -68,29 +69,12 @@ export const teamRepository = {
     birthDate: string;
     password: string;
   }) {
-    const hashed = await hashPassword(data.password);
-    return db.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          emailVerified: true,
-          phone: data.phone,
-          birthDate: parseBirthDate(data.birthDate),
-          mustChangePassword: true,
-        },
-      });
-
-      await tx.account.create({
-        data: {
-          userId: user.id,
-          accountId: user.id,
-          providerId: "credential",
-          password: hashed,
-        },
-      });
-
-      return user;
+    return createCredentialUser({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      birthDate: data.birthDate,
+      password: data.password,
     });
   },
 

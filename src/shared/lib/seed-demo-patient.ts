@@ -54,10 +54,25 @@ export async function ensureDemoPatient(
       );
     }
 
+    const guardian = await tx.guardian.create({
+      data: {
+        organizationId,
+        name: "Responsável Demonstração",
+        phone: "(11) 98888-0000",
+        email: "responsavel.demo@example.com",
+        insurance: "particular",
+        address: "Rua Exemplo, 100",
+        zipCode: "01000-000",
+      },
+    });
+
     const createdPatient = await tx.patient.create({
       data: {
         organizationId,
+        guardianId: guardian.id,
         name: DEMO_PATIENT_NAME,
+        birthDate: new Date(Date.UTC(2018, 2, 15)),
+        sex: "masculino",
         notes: `${DEMO_PATIENT_NOTES}\n${DEMO_PATIENT_SEED_MARKER}`,
         status: "ativo",
         pricingType: "sessao",

@@ -3,8 +3,10 @@ import type {
   EvaluationFormInput,
   PatientFormInput,
   SessionFormInput,
+  UpdatePatientInput,
 } from "./patient.schema";
 import type { PatientStatus } from "./patient.types";
+import { parseBirthDateParam } from "./_lib/mappers";
 
 const memberAuthorInclude = {
   member: {
@@ -15,6 +17,25 @@ const memberAuthorInclude = {
       user: { select: { name: true } },
     },
   },
+} as const;
+
+const guardianSelect = {
+  id: true,
+  name: true,
+  phone: true,
+  email: true,
+  cpf: true,
+  address: true,
+  zipCode: true,
+  documentImageUrl: true,
+  insurance: true,
+  motherName: true,
+  motherCpf: true,
+  fatherName: true,
+  fatherCpf: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
 } as const;
 
 export const patientRepository = {
@@ -29,6 +50,7 @@ export const patientRepository = {
         ...(opts?.search ? { name: { contains: opts.search } } : {}),
       },
       include: {
+        guardian: { select: guardianSelect },
         _count: {
           select: { evaluations: true, sessionNotes: true },
         },
@@ -46,6 +68,7 @@ export const patientRepository = {
     return db.patient.findFirst({
       where: { id, organizationId },
       include: {
+        guardian: { select: guardianSelect },
         evaluations: {
           include: memberAuthorInclude,
           orderBy: { date: "desc" },
@@ -70,30 +93,58 @@ export const patientRepository = {
   },
 
   async create(organizationId: string, data: PatientFormInput) {
+    const guardian = await db.guardian.findFirst({
+      where: { id: data.guardianId, organizationId },
+      select: { id: true },
+    });
+    if (!guardian) return null;
+
     return db.patient.create({
       data: {
         organizationId,
+        guardianId: data.guardianId,
         name: data.name,
+        birthDate: parseBirthDateParam(data.birthDate),
+        sex: data.sex ?? "nao_informado",
+        photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
         pricingType: data.pricingType ?? "sessao",
         priceCents: data.priceCents ?? null,
       },
+      include: { guardian: { select: guardianSelect } },
     });
   },
 
-  async update(organizationId: string, id: string, data: PatientFormInput) {
+  async update(
+    organizationId: string,
+    id: string,
+    data: Omit<UpdatePatientInput, "id">,
+  ) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
+      select: { id: true },
     });
     if (!existing) return null;
+
+    const guardian = await db.guardian.findFirst({
+      where: { id: data.guardianId, organizationId },
+      select: { id: true },
+    });
+    if (!guardian) return null;
+
     return db.patient.update({
       where: { id },
       data: {
+        guardianId: data.guardianId,
         name: data.name,
+        birthDate: parseBirthDateParam(data.birthDate),
+        sex: data.sex ?? "nao_informado",
+        photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
         pricingType: data.pricingType ?? "sessao",
         priceCents: data.priceCents ?? null,
       },
+      include: { guardian: { select: guardianSelect } },
     });
   },
 
@@ -106,12 +157,17 @@ export const patientRepository = {
       where: { id, organizationId },
     });
     if (!existing) return null;
-    return db.patient.update({ where: { id }, data: { status } });
+    return db.patient.update({
+      where: { id },
+      data: { status },
+      include: { guardian: { select: guardianSelect } },
+    });
   },
 
   async delete(organizationId: string, id: string) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
+      include: { guardian: { select: guardianSelect } },
     });
     if (!existing) return null;
     await db.patient.delete({ where: { id } });

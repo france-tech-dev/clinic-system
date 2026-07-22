@@ -28,7 +28,7 @@ const MEMBER = ac.newRole({
 })
 
 const CLIENT = ac.newRole({
-  project: ["read", "create", "update", "delete"],
+  project: ["read"],
 })
 
 export { ac, ADMIN, OWNER, MANAGER, MEMBER, CLIENT, statement }

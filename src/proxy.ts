@@ -18,6 +18,10 @@ function isOrgSetupRoute(pathname: string) {
   );
 }
 
+function isPortalRoute(pathname: string) {
+  return pathname === paths.portal || pathname.startsWith(`${paths.portal}/`);
+}
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const session = await auth.api.getSession({
@@ -64,15 +68,30 @@ export async function proxy(req: NextRequest) {
   }
 
   const hasPanel = canAccessClinicPanel(member?.role);
+  const hasMembership = member != null;
 
   // Logado nas páginas de auth → manda para o sítio certo
   if (isAuthRoute(pathname)) {
-    return NextResponse.redirect(
-      new URL(hasPanel ? paths.agenda : paths.organizacao, req.url),
-    );
+    if (hasPanel) {
+      return NextResponse.redirect(new URL(paths.agenda, req.url));
+    }
+    if (hasMembership) {
+      return NextResponse.redirect(new URL(paths.portal, req.url));
+    }
+    return NextResponse.redirect(new URL(paths.organizacao, req.url));
   }
 
-  // Sem membership (ou CLIENT): criar clínica ou fora
+  // Portal: qualquer autenticado com membership
+  if (isPortalRoute(pathname) && hasMembership) {
+    return NextResponse.next();
+  }
+
+  // Só CLIENT (sem painel): resto das rotas → portal
+  if (hasMembership && !hasPanel) {
+    return NextResponse.redirect(new URL(paths.portal, req.url));
+  }
+
+  // Sem membership: criar clínica
   if (!hasPanel) {
     if (!member && isOrgSetupRoute(pathname)) {
       return NextResponse.next();

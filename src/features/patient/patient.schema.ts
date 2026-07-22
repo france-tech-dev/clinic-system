@@ -3,15 +3,43 @@ import { EVALUATION_DOMAINS } from "@/shared/constants/evaluation-domains";
 
 export const PATIENT_STATUSES = ["ativo", "alta", "pausado"] as const;
 export const SESSION_STATUSES = ["compareceu", "faltou", "cancelado"] as const;
+export const PATIENT_SEXES = [
+  "feminino",
+  "masculino",
+  "outro",
+  "nao_informado",
+] as const;
 
-export const patientFormSchema = z.object({
+const optionalDateParam = z
+  .string()
+  .trim()
+  .transform((v) => (v.length > 0 ? v : null))
+  .pipe(
+    z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
+      .nullable(),
+  );
+
+const patientFieldsSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome do paciente"),
+  birthDate: optionalDateParam.optional().default(null),
+  sex: z.enum(PATIENT_SEXES).default("nao_informado"),
+  photoUrl: z
+    .string()
+    .trim()
+    .transform((v) => (v.length > 0 ? v : null))
+    .optional()
+    .default(null),
   notes: z.string().trim().default(""),
   pricingType: z.enum(["sessao", "pacote"]).default("sessao"),
   priceCents: z.number().int().positive().nullable().optional(),
+  guardianId: z.string().min(1, "Informe o responsável"),
 });
 
-export const updatePatientSchema = patientFormSchema.extend({
+export const patientFormSchema = patientFieldsSchema;
+
+export const updatePatientSchema = patientFieldsSchema.extend({
   id: z.string().min(1),
 });
 
@@ -109,6 +137,7 @@ export const roteiroNoteSaveSchema = z.object({
 });
 
 export type PatientFormInput = z.infer<typeof patientFormSchema>;
+export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;
 export type EvaluationFormInput = z.infer<typeof evaluationFormSchema>;
 export type SessionFormInput = z.infer<typeof sessionFormSchema>;
 export type RoteiroNoteSaveInput = z.infer<typeof roteiroNoteSaveSchema>;

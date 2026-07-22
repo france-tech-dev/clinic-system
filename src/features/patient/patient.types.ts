@@ -1,14 +1,41 @@
 export type PatientStatus = "ativo" | "alta" | "pausado";
 export type SessionNoteStatus = "compareceu" | "faltou" | "cancelado";
 export type PatientPricingType = "sessao" | "pacote";
+export type PatientSex = "feminino" | "masculino" | "outro" | "nao_informado";
+
+/** Resumo do responsável embutido no PatientDTO (sem importar features/guardian). */
+export type PatientGuardianEmbed = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  cpf: string | null;
+  address: string;
+  zipCode: string;
+  documentImageUrl: string | null;
+  insurance: string;
+  motherName: string;
+  motherCpf: string | null;
+  fatherName: string;
+  fatherCpf: string | null;
+  userId: string | null;
+  hasPortalAccess: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type PatientDTO = {
   id: string;
   name: string;
+  birthDate: string | null;
+  sex: PatientSex;
+  photoUrl: string | null;
   notes: string;
   status: PatientStatus;
   pricingType: PatientPricingType;
   priceCents: number | null;
+  guardianId: string;
+  guardian?: PatientGuardianEmbed;
   createdAt: string;
   updatedAt: string;
   evaluationsCount?: number;

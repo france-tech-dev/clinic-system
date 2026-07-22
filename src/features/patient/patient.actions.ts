@@ -45,6 +45,11 @@ import type {
 
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
+  if (error instanceof Error && error.message) {
+    if (error.message.includes("Responsável")) {
+      return fail(error.message);
+    }
+  }
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
 }

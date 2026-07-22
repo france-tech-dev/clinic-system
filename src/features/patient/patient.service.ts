@@ -4,6 +4,7 @@ import type {
   PatientFormInput,
   RoteiroNoteSaveInput,
   SessionFormInput,
+  UpdatePatientInput,
 } from "./patient.schema";
 import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 import {
@@ -45,13 +46,16 @@ export async function createPatient(
   data: PatientFormInput,
 ) {
   const row = await patientRepository.create(organizationId, data);
+  if (!row) {
+    throw new Error("Responsável não encontrado.");
+  }
   return toPatientDTO(row);
 }
 
 export async function updatePatient(
   organizationId: string,
   id: string,
-  data: PatientFormInput,
+  data: Omit<UpdatePatientInput, "id">,
 ) {
   const row = await patientRepository.update(organizationId, id, data);
   return row ? toPatientDTO(row) : null;
