@@ -1,6 +1,6 @@
 import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import type { ZodError } from "zod";
-import type { FieldErrors } from "@/shared/types/action-result";
+import { fail, type ActionResult, type FieldErrors } from "@/shared/types/action-result";
 
 /** Primeira mensagem por campo (path[0]) a partir de um ZodError. */
 export function zodFieldErrors(error: ZodError): FieldErrors {
@@ -19,6 +19,14 @@ export function firstZodMessage(
   fallback = "Dados inválidos",
 ): string {
   return error.issues[0]?.message ?? fallback;
+}
+
+/** ActionResult de falha com mensagem + fieldErrors a partir de um ZodError. */
+export function failZod(
+  error: ZodError,
+  fallback = "Dados inválidos",
+): ActionResult<never> {
+  return fail(firstZodMessage(error, fallback), zodFieldErrors(error));
 }
 
 /** Aplica `fieldErrors` de uma ActionResult no `setError` do react-hook-form. */
