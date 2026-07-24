@@ -29,7 +29,7 @@ const form = useForm<Input>({
       name="email"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>E-mail</FormLabel>
+          <FormLabel>E-mail *</FormLabel>
           <FormControl>
             <Input type="email" {...field} />
           </FormControl>
@@ -43,11 +43,67 @@ const form = useForm<Input>({
 
 Campos partilhados (ex. responsável): `useFormContext` dentro de `<Form {...form}>`.
 
+Preferir `<form onSubmit={...}>` + botão `type="submit"`. Validar com `handleSubmit` / `trigger` — não desativar o botão só para esconder erros de validação.
+
+## FormMessage (obrigatório)
+
+**Cada** `FormField` deve incluir `<FormMessage />` no `FormItem` (erro debaixo do campo, como no login).
+
+```tsx
+// ❌
+<FormItem>
+  <FormLabel>E-mail *</FormLabel>
+  <FormControl>
+    <Input {...field} />
+  </FormControl>
+</FormItem>
+
+// ✅
+<FormItem>
+  <FormLabel>E-mail *</FormLabel>
+  <FormControl>
+    <Input {...field} />
+  </FormControl>
+  <FormMessage />
+</FormItem>
+```
+
+Erros do servidor: `applyActionFieldErrors(form.setError, result.fieldErrors)`.
+
+## Campos obrigatórios
+
+Asterisco simples no texto do label (`Palavra *`). Sem prop `required` no `FormLabel`.
+
+```tsx
+// ✅
+<FormLabel>Nome *</FormLabel>
+<FormLabel>E-mail *</FormLabel>
+
+// ❌
+<FormLabel required>Nome</FormLabel>
+```
+
+Campos opcionais: label sem `*`.
+
+## Layout em 2 colunas (obrigatório)
+
+Grelhas com campos lado a lado (`grid-cols-2` / `sm:grid-cols-2`): sempre `items-start`, para o `FormMessage` de um lado não desalinha o input do outro.
+
+`FormItem` já usa `self-start` em `@/components/ui/form`.
+
+```tsx
+// ❌
+<div className="grid gap-4 sm:grid-cols-2">
+
+// ✅
+<div className="grid items-start gap-4 sm:grid-cols-2">
+```
+
 ## Validação
 
-- **Cliente:** schema Zod no `resolver` (feedback imediato por campo via `FormMessage`).
-- **Servidor:** action com `safeParse`; devolver `fieldErrors` em `ActionResult`.
-- Erros de negócio (ex. CPF duplicado): `applyActionFieldErrors(form.setError, result.fieldErrors)`.
+- **Cliente:** Zod no `resolver` → `FormMessage` por campo.
+- **Servidor:** `safeParse` + `failZod` / `fieldErrors` em `ActionResult`.
+- Negócio (ex. CPF duplicado): `applyActionFieldErrors(form.setError, result.fieldErrors)`.
 
 ```tsx
 if (!result.success) {
@@ -60,17 +116,18 @@ if (!result.success) {
 ## Evitar
 
 ```tsx
-// ❌ useState + erros manuais por campo
+// ❌ useState + erros manuais
 const [errors, setErrors] = useState<Record<string, string>>({});
-<Input value={email} onChange={...} />
-<span>{errors.email}</span>
 
-// ❌ Só toast genérico sem mensagem no campo
+// ❌ Só toast sem FormMessage
 toast.error(parsed.error.issues[0].message);
+
+// ❌ FormField sem FormMessage
+// ❌ FormLabel required / asterisco vermelho estilizado
 ```
 
 ## Referências
 
 - Auth: `src/components/auth/login-form.tsx`
-- Domínio: `create-professional-dialog.tsx`, `guardian-form-fields.tsx`
-- Helper: `applyActionFieldErrors` em `shared/lib/zod-field-errors.ts`
+- Domínio: `guardian-form-fields.tsx`, `patient-form-fields.tsx`, `create-professional-dialog.tsx`
+- Helper: `applyActionFieldErrors` / `failZod` em `shared/lib/zod-field-errors.ts`
