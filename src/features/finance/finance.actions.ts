@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
   cashTransactionFormSchema,
@@ -50,9 +51,7 @@ export async function createCashTransactionAction(
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
     const parsed = cashTransactionFormSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
-    }
+    if (!parsed.success) return failZod(parsed.error);
     const { organizationId } = await requireOrgId();
     const data = await createCashTransaction(organizationId, parsed.data);
     revalidateCashflow();
@@ -67,9 +66,7 @@ export async function updateCashTransactionAction(
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
     const parsed = updateCashTransactionSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
-    }
+    if (!parsed.success) return failZod(parsed.error);
     const { organizationId } = await requireOrgId();
     const data = await updateCashTransaction(organizationId, parsed.data);
     if (!data) return fail("Lançamento não encontrado");
@@ -86,7 +83,7 @@ export async function deleteCashTransactionAction(
   try {
     const parsed = cashTransactionIdSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const data = await deleteCashTransaction(organizationId, parsed.data.id);

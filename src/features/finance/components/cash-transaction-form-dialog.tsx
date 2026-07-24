@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,14 @@ import {
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -27,6 +35,10 @@ import {
   deleteCashTransactionAction,
   updateCashTransactionAction,
 } from "@/features/finance/finance.actions";
+import {
+  cashTransactionDraftSchema,
+  type CashTransactionDraftInput,
+} from "@/features/finance/finance.schema";
 import type { CashTransactionDTO } from "@/features/finance/finance.types";
 import type { PatientDTO } from "@/features/patient/patient.types";
 import {
@@ -36,6 +48,7 @@ import {
   type CashTransactionTypeId,
 } from "@/shared/constants/cash";
 import { centsToBrlInput, parseBrlToCents } from "@/shared/lib/money-utils";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 export type CashTransactionDraft = {
   type?: CashTransactionTypeId;
@@ -46,6 +59,27 @@ export type CashTransactionDraft = {
   patientId?: string | null;
   memberId?: string | null;
 };
+
+function buildDefaults(
+  initial: CashTransactionDTO | null,
+  draft: CashTransactionDraft | null | undefined,
+  defaultDate: string,
+  defaultType: CashTransactionTypeId | undefined,
+  defaultMemberId: string | undefined,
+): CashTransactionDraftInput {
+  const amountCents = initial?.amountCents ?? draft?.amountCents ?? null;
+  return {
+    type: initial?.type ?? draft?.type ?? defaultType ?? "entrada",
+    date: initial?.date ?? draft?.date ?? defaultDate,
+    description: initial?.description ?? draft?.description ?? "",
+    amountInput: amountCents ? centsToBrlInput(amountCents) : "",
+    paymentMethod:
+      initial?.paymentMethod ?? draft?.paymentMethod ?? "dinheiro",
+    patientId: initial?.patientId ?? draft?.patientId ?? "none",
+    memberId:
+      initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "none",
+  };
+}
 
 export function CashTransactionFormDialog({
   open,
@@ -74,49 +108,45 @@ export function CashTransactionFormDialog({
   startTransition: (fn: () => void) => void;
   onSaved: () => void;
 }) {
-  const [type, setType] = useState<CashTransactionTypeId>(
-    initial?.type ?? draft?.type ?? defaultType ?? "entrada",
-  );
-  const [date, setDate] = useState(initial?.date ?? draft?.date ?? defaultDate);
-  const [description, setDescription] = useState(
-    initial?.description ?? draft?.description ?? "",
-  );
-  const [amountInput, setAmountInput] = useState(
-    initial
-      ? centsToBrlInput(initial.amountCents)
-      : draft?.amountCents
-        ? centsToBrlInput(draft.amountCents)
-        : "",
-  );
-  const [paymentMethod, setPaymentMethod] = useState<CashPaymentMethodId>(
-    initial?.paymentMethod ?? draft?.paymentMethod ?? "dinheiro",
-  );
-  const [patientId, setPatientId] = useState<string | null>(
-    initial?.patientId ?? draft?.patientId ?? null,
-  );
-  const [memberId, setMemberId] = useState<string | null>(
-    initial?.memberId ??
-      draft?.memberId ??
-      defaultMemberId ??
-      null,
+  const defaults = buildDefaults(
+    initial,
+    draft,
+    defaultDate,
+    defaultType,
+    defaultMemberId,
   );
 
-  function submit() {
-    const amountCents = parseBrlToCents(amountInput);
+  const form = useForm<CashTransactionDraftInput>({
+    resolver: zodResolver(cashTransactionDraftSchema),
+    defaultValues: defaults,
+  });
+
+  function handleOpenChange(next: boolean) {
+    if (!next) {
+      form.reset(defaults);
+    }
+    onOpenChange(next);
+  }
+
+  function onSubmit(data: CashTransactionDraftInput) {
+    const amountCents = parseBrlToCents(data.amountInput);
     if (amountCents === null) {
-      toast.error("Informe um valor válido");
+      form.setError("amountInput", {
+        type: "manual",
+        message: "Informe um valor válido",
+      });
       return;
     }
 
     startTransition(async () => {
       const payload = {
-        type,
-        date,
-        description,
+        type: data.type,
+        date: data.date,
+        description: data.description,
         amountCents,
-        paymentMethod,
-        patientId,
-        memberId,
+        paymentMethod: data.paymentMethod,
+        patientId: data.patientId === "none" ? null : data.patientId,
+        memberId: data.memberId === "none" ? null : data.memberId,
       };
 
       const result = initial
@@ -124,6 +154,15 @@ export function CashTransactionFormDialog({
         : await createCashTransactionAction(payload);
 
       if (!result.success) {
+        const fieldErrors = result.fieldErrors
+          ? Object.fromEntries(
+              Object.entries(result.fieldErrors).map(([key, message]) => [
+                key === "amountCents" ? "amountInput" : key,
+                message,
+              ]),
+            )
+          : undefined;
+        applyActionFieldErrors(form.setError, fieldErrors);
         toast.error(result.error);
         return;
       }
@@ -151,7 +190,7 @@ export function CashTransactionFormDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif">
@@ -159,121 +198,196 @@ export function CashTransactionFormDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4">
-          <div className="grid gap-1.5">
-            <Label>Tipo</Label>
-            <Select
-              value={type}
-              onValueChange={(v) => setType(v as CashTransactionTypeId)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CASH_TRANSACTION_TYPES.map((item) => (
-                  <SelectItem key={item.id} value={item.id}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="grid gap-1.5">
-              <Label htmlFor="cash-date">Data</Label>
-              <DatePicker
-                id="cash-date"
-                value={date}
-                onChange={setDate}
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="cash-amount">Valor (R$)</Label>
-              <Input
-                id="cash-amount"
-                inputMode="decimal"
-                placeholder="0,00"
-                value={amountInput}
-                onChange={(e) => setAmountInput(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-1.5">
-            <Label htmlFor="cash-description">Descrição</Label>
-            <Input
-              id="cash-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ex: Sessão de terapia ocupacional"
+        <Form {...form}>
+          <form
+            id="cash-transaction-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo *</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      if (v) field.onChange(v);
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {CASH_TRANSACTION_TYPES.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="grid gap-1.5">
-              <Label>Forma de pagamento</Label>
-              <Select
-                value={paymentMethod}
-                onValueChange={(v) =>
-                  setPaymentMethod(v as CashPaymentMethodId)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CASH_PAYMENT_METHODS.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Paciente (opcional)</Label>
-              <Select
-                value={patientId ?? "none"}
-                onValueChange={(v) => setPatientId(v === "none" ? null : v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Nenhum" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {patients.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+            <div className="grid items-start gap-3 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data *</FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        id="cash-date"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {members.length > 0 ? (
-            <div className="grid gap-1.5">
-              <Label>Profissional (opcional)</Label>
-              <Select
-                value={memberId ?? "none"}
-                onValueChange={(v) => setMemberId(v === "none" ? null : v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Nenhum" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {members.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormField
+                control={form.control}
+                name="amountInput"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Valor (R$) *</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="cash-amount"
+                        inputMode="decimal"
+                        placeholder="0,00"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          ) : null}
-        </div>
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descrição *</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="cash-description"
+                      placeholder="Ex: Sessão de terapia ocupacional"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid items-start gap-3 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="paymentMethod"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Forma de pagamento *</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CASH_PAYMENT_METHODS.map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="patientId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Paciente (opcional)</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Nenhum" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Nenhum</SelectItem>
+                        {patients.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {members.length > 0 ? (
+              <FormField
+                control={form.control}
+                name="memberId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Profissional (opcional)</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Nenhum" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Nenhum</SelectItem>
+                        {members.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
+          </form>
+        </Form>
 
         <DialogFooter className="gap-2 sm:justify-between">
           {initial ? (
@@ -300,11 +414,15 @@ export function CashTransactionFormDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
             >
               Cancelar
             </Button>
-            <Button disabled={pending} onClick={submit}>
+            <Button
+              type="submit"
+              form="cash-transaction-form"
+              disabled={pending}
+            >
               Salvar
             </Button>
           </div>

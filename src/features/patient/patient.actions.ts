@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
   anamneseSaveSchema,
@@ -92,7 +93,7 @@ export async function createPatientAction(
   try {
     const parsed = patientFormSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const data = await createPatient(organizationId, parsed.data);
@@ -109,7 +110,7 @@ export async function updatePatientAction(
   try {
     const parsed = updatePatientSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const { id, ...rest } = parsed.data;
@@ -164,7 +165,7 @@ export async function createEvaluationAction(
   try {
     const parsed = evaluationFormSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
@@ -183,7 +184,7 @@ export async function updateEvaluationAction(
   try {
     const parsed = updateEvaluationSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const { id, ...rest } = parsed.data;
@@ -217,7 +218,7 @@ export async function saveAnamneseAction(
 ): Promise<ActionResult<{ patientId: string }>> {
   try {
     const parsed = anamneseSaveSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    if (!parsed.success) return failZod(parsed.error);
     const { organizationId } = await requireOrgId();
     const saved = await saveAnamnese(
       organizationId,
@@ -238,7 +239,7 @@ export async function createSessionAction(
   try {
     const parsed = sessionFormSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
@@ -259,7 +260,7 @@ export async function updateSessionAction(
   try {
     const parsed = updateSessionNoteSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const { id, ...rest } = parsed.data;
@@ -296,7 +297,7 @@ export async function saveRoteiroNoteAction(
   try {
     const parsed = roteiroNoteSaveSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const data = await saveRoteiroNote(organizationId, parsed.data);

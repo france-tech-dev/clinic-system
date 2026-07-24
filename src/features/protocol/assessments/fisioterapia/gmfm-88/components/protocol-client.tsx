@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -26,7 +29,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GmfmAssessmentForm } from "./assessment-form";
+import {
+  GmfmAssessmentForm,
+  type GmfmAssessmentFormValues,
+} from "./assessment-form";
 import { GmfmComparisonChart } from "./comparison-chart";
 import { GMFM88_PROTOCOL_ID } from "../template";
 import {
@@ -41,12 +47,42 @@ import {
   listProtocolAssessmentsAction,
   updateProtocolAssessmentAction,
 } from "@/features/protocol/protocol.actions";
+import {
+  protocolAssessmentFormSchema,
+} from "@/features/protocol/protocol.schema";
 import type {
   ProtocolAssessmentDTO,
   ProtocolComparisonDTO,
 } from "@/features/protocol/protocol.types";
 import type { AssessmentPatientOption } from "@/shared/types/assessment-patient";
 import { formatDateBR } from "@/shared/lib/format-date-br";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+
+function buildDefaults(
+  patientId: string,
+  editing: ProtocolAssessmentDTO | null,
+  assessmentsLength: number,
+): GmfmAssessmentFormValues {
+  if (editing) {
+    return {
+      id: editing.id,
+      patientId,
+      protocolId: GMFM88_PROTOCOL_ID,
+      label: editing.label,
+      date: editing.date,
+      notes: editing.notes,
+      scores: { ...emptyGmfm88Scores(), ...editing.scores },
+    };
+  }
+  return {
+    patientId,
+    protocolId: GMFM88_PROTOCOL_ID,
+    label: assessmentsLength === 0 ? "Avaliação" : "Reavaliação",
+    date: new Date().toISOString().slice(0, 10),
+    notes: "",
+    scores: emptyGmfm88Scores(),
+  };
+}
 
 export function GmfmProtocolClient({
   patients,
@@ -67,18 +103,25 @@ export function GmfmProtocolClient({
   );
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ProtocolAssessmentDTO | null>(null);
-  const [label, setLabel] = useState("Avaliação");
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const [notes, setNotes] = useState("");
-  const [scores, setScores] = useState<Gmfm88Scores>(emptyGmfm88Scores());
   const [pending, startTransition] = useTransition();
+
+  const form = useForm<GmfmAssessmentFormValues>({
+    resolver: zodResolver(
+      protocolAssessmentFormSchema,
+    ) as Resolver<GmfmAssessmentFormValues>,
+    defaultValues: buildDefaults(patientId, null, 0),
+  });
+
+  const scores =
+    (useWatch({ control: form.control, name: "scores" }) as
+      | Gmfm88Scores
+      | undefined) ?? emptyGmfm88Scores();
+  const liveSummary = useMemo(() => summarizeGmfm88(scores), [scores]);
 
   const activePatients = useMemo(
     () => patients.filter((p) => p.status !== "alta"),
     [patients],
   );
-
-  const liveSummary = useMemo(() => summarizeGmfm88(scores), [scores]);
 
   function loadAssessments(id: string) {
     if (!id) {
@@ -107,23 +150,24 @@ export function GmfmProtocolClient({
 
   function openCreate() {
     setEditing(null);
-    setLabel(assessments.length === 0 ? "Avaliação" : "Reavaliação");
-    setDate(new Date().toISOString().slice(0, 10));
-    setNotes("");
-    setScores(emptyGmfm88Scores());
+    form.reset(buildDefaults(patientId, null, assessments.length));
     setFormOpen(true);
   }
 
   function openEdit(item: ProtocolAssessmentDTO) {
     setEditing(item);
-    setLabel(item.label);
-    setDate(item.date);
-    setNotes(item.notes);
-    setScores({ ...emptyGmfm88Scores(), ...item.scores });
+    form.reset(buildDefaults(patientId, item, assessments.length));
     setFormOpen(true);
   }
 
-  function saveAssessment() {
+  function handleFormOpenChange(next: boolean) {
+    if (!next) {
+      form.reset(buildDefaults(patientId, editing, assessments.length));
+    }
+    setFormOpen(next);
+  }
+
+  function onSubmit(data: GmfmAssessmentFormValues) {
     if (!patientId) {
       toast.error("Selecione um paciente");
       return;
@@ -133,10 +177,10 @@ export function GmfmProtocolClient({
       const payload = {
         patientId,
         protocolId: GMFM88_PROTOCOL_ID as "gmfm-88",
-        label,
-        date,
-        notes,
-        scores,
+        label: data.label,
+        date: data.date,
+        notes: data.notes,
+        scores: data.scores,
       };
 
       const result = editing
@@ -144,6 +188,7 @@ export function GmfmProtocolClient({
         : await createProtocolAssessmentAction(payload);
 
       if (!result.success) {
+        applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.error);
         return;
       }
@@ -217,7 +262,7 @@ export function GmfmProtocolClient({
           <Select
             value={patientId || "none"}
             onValueChange={(v) => {
-              const id = v === "none" ? "" : v;
+              const id = v === "none" ? "" : (v ?? "");
               setPatientId(id);
               loadAssessments(id);
             }}
@@ -316,7 +361,7 @@ export function GmfmProtocolClient({
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid items-start gap-3 sm:grid-cols-2">
                   <div className="grid gap-1.5">
                     <span className="text-sm font-medium">Avaliação base</span>
                     <Select value={baselineId} onValueChange={setBaselineId}>
@@ -381,7 +426,7 @@ export function GmfmProtocolClient({
         </p>
       ) : null}
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+      <Dialog open={formOpen} onOpenChange={handleFormOpenChange}>
         <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle className="font-serif">
@@ -389,16 +434,15 @@ export function GmfmProtocolClient({
             </DialogTitle>
           </DialogHeader>
 
-          <GmfmAssessmentForm
-            label={label}
-            onLabelChange={setLabel}
-            date={date}
-            onDateChange={setDate}
-            notes={notes}
-            onNotesChange={setNotes}
-            scores={scores}
-            onScoresChange={setScores}
-          />
+          <Form {...form}>
+            <form
+              id="gmfm-assessment-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
+              <GmfmAssessmentForm />
+            </form>
+          </Form>
 
           <div className="rounded-md border border-border bg-muted/40 p-3 text-sm">
             Prévia: {liveSummary.totalScore}/{liveSummary.maxScore} (
@@ -406,10 +450,17 @@ export function GmfmProtocolClient({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => handleFormOpenChange(false)}
+            >
               Cancelar
             </Button>
-            <Button disabled={pending} onClick={saveAssessment}>
+            <Button
+              type="submit"
+              form="gmfm-assessment-form"
+              disabled={pending}
+            >
               Salvar
             </Button>
           </DialogFooter>

@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import { isAdmin } from "@/server/auth/permissions";
 import {
@@ -49,7 +50,7 @@ export async function createProfessionalAction(
 
     const parsed = createProfessionalSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
 
     const { organizationId } = await requireOrgId();
@@ -73,7 +74,7 @@ export async function updateProfessionalAction(
 
     const parsed = updateProfessionalSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
 
     const { organizationId, userId } = await requireOrgId();
@@ -92,7 +93,7 @@ export async function changeForcedPasswordAction(
   try {
     const parsed = changeForcedPasswordSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
 
     const session = await auth.api.getSession({

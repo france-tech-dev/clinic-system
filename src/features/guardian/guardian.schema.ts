@@ -1,34 +1,38 @@
 import { z } from "zod";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
 
-const optionalEmail = z
-  .string()
-  .trim()
-  .transform((v) => (v.length > 0 ? v : null))
-  .pipe(z.string().email("E-mail inválido").nullable());
+/** Aceita string | null | undefined → trim; vazio → null. */
+const emptyToNull = z
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((v) => {
+    if (v == null) return null;
+    const t = v.trim();
+    return t.length > 0 ? t : null;
+  });
 
-const optionalCpf = z
-  .string()
-  .trim()
-  .transform((v) => (v.length > 0 ? v : null));
+const optionalEmail = emptyToNull.pipe(z.email("E-mail inválido").nullable());
+
+const optionalCpf = emptyToNull;
+
+const optionalText = z
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((v) => (v == null ? "" : v.trim()));
 
 export const guardianFormSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome do responsável"),
-  phone: z.string().trim().default(""),
+  phone: optionalText.default(""),
   email: optionalEmail.optional().default(null),
   cpf: optionalCpf.optional().default(null),
-  address: z.string().trim().default(""),
-  zipCode: z.string().trim().default(""),
-  documentImageUrl: z
-    .string()
-    .trim()
-    .transform((v) => (v.length > 0 ? v : null))
-    .optional()
-    .default(null),
-  insurance: z.string().trim().min(1, "Informe o convênio").default("particular"),
-  motherName: z.string().trim().default(""),
+  address: optionalText.default(""),
+  zipCode: optionalText.default(""),
+  documentImageUrl: emptyToNull.optional().default(null),
+  insurance: optionalText
+    .transform((v) => (v.length > 0 ? v : "particular"))
+    .pipe(z.string().min(1, "Informe o convênio"))
+    .default("particular"),
+  motherName: optionalText.default(""),
   motherCpf: optionalCpf.optional().default(null),
-  fatherName: z.string().trim().default(""),
+  fatherName: optionalText.default(""),
   fatherCpf: optionalCpf.optional().default(null),
 });
 
@@ -92,10 +96,9 @@ export const guardianDraftSchema = z
     email: z
       .string()
       .trim()
-      .refine(
-        (v) => v.length === 0 || z.string().email().safeParse(v).success,
-        { message: "E-mail inválido" },
-      ),
+      .refine((v) => v.length === 0 || z.email().safeParse(v).success, {
+        message: "E-mail inválido",
+      }),
     cpf: z.string(),
     address: z.string(),
     zipCode: z.string(),

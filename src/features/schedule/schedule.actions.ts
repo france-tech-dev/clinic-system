@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import type { AppointmentStatusId } from "@/shared/constants/appointment";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
   appointmentFormSchema,
@@ -53,9 +54,7 @@ export async function createAppointmentAction(
 ): Promise<ActionResult<AppointmentDTO[]>> {
   try {
     const parsed = appointmentFormSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
-    }
+    if (!parsed.success) return failZod(parsed.error);
     const { organizationId, userId } = await requireOrgId();
     const memberId =
       parsed.data.memberId ||
@@ -83,9 +82,7 @@ export async function updateAppointmentAction(
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
     const parsed = updateAppointmentSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
-    }
+    if (!parsed.success) return failZod(parsed.error);
     const { organizationId } = await requireOrgId();
     const data = await updateAppointment(organizationId, {
       ...parsed.data,
@@ -110,7 +107,7 @@ export async function rescheduleAppointmentAction(
   try {
     const parsed = rescheduleAppointmentSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const result = await rescheduleAppointment(

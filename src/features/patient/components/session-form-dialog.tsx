@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useForm, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -23,6 +31,10 @@ import {
   createSessionAction,
   updateSessionAction,
 } from "@/features/patient/patient.actions";
+import {
+  sessionFormSchema,
+  updateSessionNoteSchema,
+} from "@/features/patient/patient.schema";
 import type {
   SessionLinkableAppointmentDTO,
   SessionNoteDTO,
@@ -32,12 +44,37 @@ import {
   formatTime,
 } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+
+type SessionDialogValues = {
+  id?: string;
+  patientId: string;
+  appointmentId: string;
+  status: "compareceu" | "faltou" | "cancelado";
+  atividades: string;
+  observacoes: string;
+};
 
 function appointmentLabel(a: SessionLinkableAppointmentDTO) {
   const st = appointmentStatusInfo(a.status);
   const when = `${formatDateBR(a.date)}${a.time ? ` · ${formatTime(a.time)}` : ""}`;
   const pro = a.professionalName ? ` — ${a.professionalName}` : "";
   return `${when} (${st.label})${pro}`;
+}
+
+function buildDefaults(
+  patientId: string,
+  initial: SessionNoteDTO | null,
+  defaultAppointmentId: string,
+): SessionDialogValues {
+  return {
+    ...(initial ? { id: initial.id } : {}),
+    patientId,
+    appointmentId: initial?.appointmentId ?? defaultAppointmentId,
+    status: initial?.status ?? "compareceu",
+    atividades: initial?.atividades ?? "",
+    observacoes: initial?.observacoes ?? "",
+  };
 }
 
 export function SessionFormDialog({
@@ -65,34 +102,43 @@ export function SessionFormDialog({
   const options = appointments.filter(
     (a) => !a.sessionNoteId || a.sessionNoteId === initial?.id,
   );
-  const [appointmentId, setAppointmentId] = useState(
-    initial?.appointmentId ?? options[0]?.id ?? "",
-  );
-  const [status, setStatus] = useState(initial?.status ?? "compareceu");
-  const [atividades, setAtividades] = useState(initial?.atividades ?? "");
-  const [observacoes, setObservacoes] = useState(initial?.observacoes ?? "");
+  const defaultAppointmentId = options[0]?.id ?? "";
+
+  const form = useForm<SessionDialogValues>({
+    resolver: zodResolver(
+      initial ? updateSessionNoteSchema : sessionFormSchema,
+    ) as Resolver<SessionDialogValues>,
+    defaultValues: buildDefaults(patientId, initial, defaultAppointmentId),
+  });
+
+  const appointmentId = form.watch("appointmentId");
+  const status = form.watch("status");
 
   const lockedAppointment = lockAppointment
     ? (options.find((a) => a.id === appointmentId) ?? options[0] ?? null)
     : null;
 
-  function submit() {
-    if (!appointmentId) {
-      toast.error("Selecione o agendamento");
-      return;
+  function handleOpenChange(next: boolean) {
+    if (next) {
+      form.reset(buildDefaults(patientId, initial, defaultAppointmentId));
     }
+    onOpenChange(next);
+  }
+
+  function onSubmit(data: SessionDialogValues) {
     startTransition(async () => {
       const payload = {
-        patientId,
-        appointmentId,
-        status: status as "compareceu" | "faltou" | "cancelado",
-        atividades,
-        observacoes,
+        patientId: data.patientId,
+        appointmentId: data.appointmentId,
+        status: data.status,
+        atividades: data.atividades,
+        observacoes: data.observacoes,
       };
       const result = initial
         ? await updateSessionAction({ id: initial.id, ...payload })
         : await createSessionAction(payload);
       if (!result.success) {
+        applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.error);
         return;
       }
@@ -101,84 +147,139 @@ export function SessionFormDialog({
     });
   }
 
+  const formId = `session-form-${initial?.id ?? "new"}`;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-serif">
             {initial ? "Editar evolução" : "Nova evolução"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4">
-          <div className="grid gap-1.5">
-            <Label>Agendamento</Label>
-            {lockedAppointment ? (
-              <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
-                {appointmentLabel(lockedAppointment)}
-              </p>
-            ) : options.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Não há agendamentos disponíveis. Crie um na Agenda antes de
-                registrar a evolução.
-              </p>
-            ) : (
-              <Select
-                value={appointmentId}
-                onValueChange={(v) => setAppointmentId(v ?? appointmentId)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione o atendimento…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {options.map((a) => (
-                    <SelectItem key={a.id} value={a.id}>
-                      {appointmentLabel(a)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Status da evolução</Label>
-            <Select
-              value={status}
-              onValueChange={(v) => setStatus((v as typeof status) ?? status)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="compareceu">Compareceu</SelectItem>
-                <SelectItem value="faltou">Faltou</SelectItem>
-                <SelectItem value="cancelado">Cancelado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Atividades realizadas</Label>
-            <Textarea
-              rows={6}
-              value={atividades}
-              onChange={(e) => setAtividades(e.target.value)}
+
+        <Form {...form}>
+          <form
+            id={formId}
+            key={`${initial?.id ?? "new"}-${open}`}
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="appointmentId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Agendamento *</FormLabel>
+                  {lockedAppointment ? (
+                    <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
+                      {appointmentLabel(lockedAppointment)}
+                    </p>
+                  ) : options.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Não há agendamentos disponíveis. Crie um na Agenda antes
+                      de registrar a evolução.
+                    </p>
+                  ) : (
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione o atendimento…" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {options.map((a) => (
+                          <SelectItem key={a.id} value={a.id}>
+                            {appointmentLabel(a)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Observações</Label>
-            <Textarea
-              rows={5}
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status da evolução *</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      if (v) field.onChange(v);
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="compareceu">Compareceu</SelectItem>
+                      <SelectItem value="faltou">Faltou</SelectItem>
+                      <SelectItem value="cancelado">Cancelado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
+
+            <FormField
+              control={form.control}
+              name="atividades"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {status === "compareceu"
+                      ? "Atividades realizadas *"
+                      : "Atividades realizadas"}
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea rows={6} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="observacoes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Observações</FormLabel>
+                  <FormControl>
+                    <Textarea rows={5} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+          >
             Cancelar
           </Button>
           <Button
+            type="submit"
+            form={formId}
             disabled={pending || options.length === 0 || !appointmentId}
-            onClick={submit}
           >
             Salvar
           </Button>

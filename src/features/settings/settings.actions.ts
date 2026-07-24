@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
   memberProfessionalSchema,
@@ -61,7 +62,7 @@ export async function saveProfessionalAction(
   try {
     const parsed = professionalProfileSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const data = await saveProfessionalProfile(organizationId, parsed.data);
@@ -92,7 +93,7 @@ export async function saveCurrentMemberProfessionalAction(
   try {
     const parsed = memberProfessionalSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId, userId } = await requireOrgId();
     const data = await saveCurrentMemberProfessionalProfile(
@@ -114,7 +115,7 @@ export async function saveOrganizationBrandingAction(
   try {
     const parsed = organizationBrandingSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const data = await saveOrganizationBranding(

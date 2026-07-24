@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormContext, useWatch } from "react-hook-form";
 import {
   Accordion,
   AccordionContent,
@@ -7,8 +8,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { DatePicker } from "@/components/ui/date-picker";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -23,56 +29,68 @@ import {
 } from "@/features/protocol/assessments/fisioterapia/gmfm-88/template";
 import type { Gmfm88Scores } from "@/features/protocol/assessments/fisioterapia/gmfm-88/scoring";
 import { summarizeGmfm88Domain } from "@/features/protocol/assessments/fisioterapia/gmfm-88/scoring";
+import type { ProtocolAssessmentFormInput } from "@/features/protocol/protocol.schema";
 import { cn } from "@/shared/lib/utils";
 
 const SCORE_OPTIONS = [0, 1, 2, 3] as const;
 
-export function GmfmAssessmentForm({
-  label,
-  onLabelChange,
-  date,
-  onDateChange,
-  notes,
-  onNotesChange,
-  scores,
-  onScoresChange,
-}: {
-  label: string;
-  onLabelChange: (value: string) => void;
-  date: string;
-  onDateChange: (value: string) => void;
-  notes: string;
-  onNotesChange: (value: string) => void;
-  scores: Gmfm88Scores;
-  onScoresChange: (scores: Gmfm88Scores) => void;
-}) {
+export type GmfmAssessmentFormValues = ProtocolAssessmentFormInput & {
+  id?: string;
+};
+
+export function GmfmAssessmentForm() {
+  const { control, setValue } = useFormContext<GmfmAssessmentFormValues>();
+  const scores =
+    (useWatch({ control, name: "scores" }) as Gmfm88Scores | undefined) ?? {};
+
   function setItemScore(itemId: string, value: number) {
-    onScoresChange({ ...scores, [itemId]: value });
+    setValue(`scores.${itemId}` as `scores.${string}`, value, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   }
 
   return (
     <div className="grid gap-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="grid gap-1.5">
-          <Label htmlFor="gmfm-label">Tipo de avaliação</Label>
-          <Select value={label} onValueChange={onLabelChange}>
-            <SelectTrigger id="gmfm-label">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Avaliação">Avaliação</SelectItem>
-              <SelectItem value="Reavaliação">Reavaliação</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid gap-1.5">
-          <Label htmlFor="gmfm-date">Data</Label>
-          <DatePicker
-            id="gmfm-date"
-            value={date}
-            onChange={onDateChange}
-          />
-        </div>
+      <div className="grid items-start gap-3 sm:grid-cols-2">
+        <FormField
+          control={control}
+          name="label"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tipo de avaliação *</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger id="gmfm-label">
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Avaliação">Avaliação</SelectItem>
+                  <SelectItem value="Reavaliação">Reavaliação</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Data *</FormLabel>
+              <FormControl>
+                <DatePicker
+                  id="gmfm-date"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
 
       <Accordion type="multiple" defaultValue={["A"]} className="w-full">
@@ -127,16 +145,24 @@ export function GmfmAssessmentForm({
         })}
       </Accordion>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="gmfm-notes">Observações (opcional)</Label>
-        <Textarea
-          id="gmfm-notes"
-          rows={2}
-          value={notes}
-          onChange={(e) => onNotesChange(e.target.value)}
-          placeholder="Notas clínicas sobre a aplicação do protocolo"
-        />
-      </div>
+      <FormField
+        control={control}
+        name="notes"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Observações (opcional)</FormLabel>
+            <FormControl>
+              <Textarea
+                id="gmfm-notes"
+                rows={2}
+                placeholder="Notas clínicas sobre a aplicação do protocolo"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <p className="text-xs text-muted-foreground">
         Pontuação por item: 0 = não inicia · {GMFM88_MAX_ITEM_SCORE} = completa

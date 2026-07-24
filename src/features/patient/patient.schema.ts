@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EVALUATION_DOMAINS } from "@/shared/constants/evaluation-domains";
+import { parseBrlToCents } from "@/shared/lib/money-utils";
 
 export const PATIENT_STATUSES = ["ativo", "alta", "pausado"] as const;
 export const SESSION_STATUSES = ["compareceu", "faltou", "cancelado"] as const;
@@ -11,9 +12,12 @@ export const PATIENT_SEXES = [
 ] as const;
 
 const optionalDateParam = z
-  .string()
-  .trim()
-  .transform((v) => (v.length > 0 ? v : null))
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((v) => {
+    if (v == null) return null;
+    const t = v.trim();
+    return t.length > 0 ? t : null;
+  })
   .pipe(
     z
       .string()
@@ -21,17 +25,23 @@ const optionalDateParam = z
       .nullable(),
   );
 
+const emptyToNullUrl = z
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((v) => {
+    if (v == null) return null;
+    const t = v.trim();
+    return t.length > 0 ? t : null;
+  });
+
 const patientFieldsSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome do paciente"),
   birthDate: optionalDateParam.optional().default(null),
   sex: z.enum(PATIENT_SEXES).default("nao_informado"),
-  photoUrl: z
-    .string()
-    .trim()
-    .transform((v) => (v.length > 0 ? v : null))
-    .optional()
-    .default(null),
-  notes: z.string().trim().default(""),
+  photoUrl: emptyToNullUrl.optional().default(null),
+  notes: z
+    .union([z.string(), z.null(), z.undefined()])
+    .transform((v) => (v == null ? "" : v.trim()))
+    .default(""),
   pricingType: z.enum(["sessao", "pacote"]).default("sessao"),
   priceCents: z.number().int().positive().nullable().optional(),
   guardianId: z.string().min(1, "Informe o responsável"),
@@ -41,6 +51,21 @@ export const patientFormSchema = patientFieldsSchema;
 
 export const updatePatientSchema = patientFieldsSchema.extend({
   id: z.string().min(1),
+});
+
+/** Schema do diálogo UI: preço em string BRL (sem guardianId). */
+export const patientDraftSchema = z.object({
+  name: z.string().trim().min(1, "Informe o nome do paciente"),
+  birthDate: z.string(),
+  sex: z.enum(PATIENT_SEXES),
+  notes: z.string(),
+  pricingType: z.enum(["sessao", "pacote"]),
+  priceInput: z
+    .string()
+    .refine(
+      (v) => !v.trim() || parseBrlToCents(v) !== null,
+      "Informe um valor válido",
+    ),
 });
 
 export const patientIdSchema = z.object({
@@ -138,6 +163,7 @@ export const roteiroNoteSaveSchema = z.object({
 
 export type PatientFormInput = z.infer<typeof patientFormSchema>;
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;
+export type PatientDraftInput = z.infer<typeof patientDraftSchema>;
 export type EvaluationFormInput = z.infer<typeof evaluationFormSchema>;
 export type SessionFormInput = z.infer<typeof sessionFormSchema>;
 export type RoteiroNoteSaveInput = z.infer<typeof roteiroNoteSaveSchema>;

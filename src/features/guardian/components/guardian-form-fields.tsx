@@ -30,7 +30,7 @@ export function GuardianFormFields({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome</FormLabel>
+            <FormLabel>Nome *</FormLabel>
             <FormControl>
               <Input placeholder="Nome do responsável" {...field} />
             </FormControl>
@@ -39,7 +39,7 @@ export function GuardianFormFields({
         )}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="phone"
@@ -58,7 +58,7 @@ export function GuardianFormFields({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>E-mail *</FormLabel>
               <FormControl>
                 <Input
                   type="email"
@@ -72,7 +72,7 @@ export function GuardianFormFields({
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="cpf"
@@ -91,7 +91,7 @@ export function GuardianFormFields({
           name="insurance"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Convênio</FormLabel>
+              <FormLabel>Convênio *</FormLabel>
               <FormControl>
                 <Input placeholder="particular" {...field} />
               </FormControl>
@@ -129,7 +129,7 @@ export function GuardianFormFields({
         )}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="motherName"
@@ -158,7 +158,7 @@ export function GuardianFormFields({
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="fatherName"
@@ -193,18 +193,21 @@ export function GuardianFormFields({
             control={control}
             name="enablePortalAccess"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) =>
-                      field.onChange(checked === true)
-                    }
-                  />
-                </FormControl>
-                <FormLabel className="font-normal">
-                  Criar acesso ao portal do responsável
-                </FormLabel>
+              <FormItem>
+                <div className="flex flex-row items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={(checked) =>
+                        field.onChange(checked === true)
+                      }
+                    />
+                  </FormControl>
+                  <FormLabel className="font-normal">
+                    Criar acesso ao portal do responsável
+                  </FormLabel>
+                </div>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -223,13 +226,13 @@ function PortalPasswordFields() {
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Senha temporária</FormLabel>
+              <FormLabel>Senha temporária *</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -242,7 +245,7 @@ function PortalPasswordFields() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar senha</FormLabel>
+              <FormLabel>Confirmar senha *</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>

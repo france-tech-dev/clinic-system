@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
   compareProtocolAssessmentsSchema,
@@ -60,7 +61,7 @@ export async function createProtocolAssessmentAction(
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     const parsed = protocolAssessmentFormSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    if (!parsed.success) return failZod(parsed.error);
 
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveProtocolAuthorMemberId(
@@ -86,7 +87,7 @@ export async function updateProtocolAssessmentAction(
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     const parsed = updateProtocolAssessmentSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    if (!parsed.success) return failZod(parsed.error);
 
     const { organizationId } = await requireOrgId();
     const data = await updateProtocolAssessment(organizationId, parsed.data);
