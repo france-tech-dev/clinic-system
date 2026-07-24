@@ -1,6 +1,15 @@
+"use client";
+
+import { useFormContext } from "react-hook-form";
 import { DatePicker } from "@/components/ui/date-picker";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -8,63 +17,82 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { EvaluationDialogValues } from "../evaluation-form-dialog";
 
-export function EvaluationFormMetaFields({
-  tipo,
-  onTipoChange,
-  date,
-  onDateChange,
-  diagnostico,
-  onDiagnosticoChange,
-  encaminhadoPor,
-  onEncaminhadoPorChange,
-}: {
-  tipo: string;
-  onTipoChange: (value: string) => void;
-  date: string;
-  onDateChange: (value: string) => void;
-  diagnostico: string;
-  onDiagnosticoChange: (value: string) => void;
-  encaminhadoPor: string;
-  onEncaminhadoPorChange: (value: string) => void;
-}) {
+export function EvaluationFormMetaFields() {
+  const { control } = useFormContext<EvaluationDialogValues>();
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="grid gap-1.5">
-          <Label>Tipo</Label>
-          <Select value={tipo} onValueChange={(v) => onTipoChange(v ?? tipo)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Inicial">Avaliação inicial</SelectItem>
-              <SelectItem value="Reavaliação">Reavaliação</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid gap-1.5">
-          <Label>Data</Label>
-          <DatePicker value={date} onChange={onDateChange} />
-        </div>
+      <div className="grid grid-cols-2 items-start gap-3">
+        <FormField
+          control={control}
+          name="tipo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tipo *</FormLabel>
+              <Select
+                value={field.value}
+                onValueChange={(v) => field.onChange(v ?? field.value)}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Inicial">Avaliação inicial</SelectItem>
+                  <SelectItem value="Reavaliação">Reavaliação</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Data *</FormLabel>
+              <FormControl>
+                <DatePicker value={field.value} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="grid gap-1.5">
-          <Label>Diagnóstico / CID</Label>
-          <Input
-            value={diagnostico}
-            onChange={(e) => onDiagnosticoChange(e.target.value)}
-            placeholder="Ex: G80 – Paralisia cerebral"
-          />
-        </div>
-        <div className="grid gap-1.5">
-          <Label>Encaminhado por</Label>
-          <Input
-            value={encaminhadoPor}
-            onChange={(e) => onEncaminhadoPorChange(e.target.value)}
-            placeholder="Médico, escola, família…"
-          />
-        </div>
+      <div className="grid grid-cols-2 items-start gap-3">
+        <FormField
+          control={control}
+          name="diagnostico"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Diagnóstico / CID</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Ex: G80 – Paralisia cerebral"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="encaminhadoPor"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Encaminhado por</FormLabel>
+              <FormControl>
+                <Input placeholder="Médico, escola, família…" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </>
   );

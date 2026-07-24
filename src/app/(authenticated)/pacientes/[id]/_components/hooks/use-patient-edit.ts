@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -21,15 +21,13 @@ import {
 } from "@/features/guardian/guardian.schema";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
 import { updatePatientAction } from "@/features/patient/patient.actions";
-import type {
-  PatientDetailDTO,
-  PatientPricingType,
-  PatientSex,
-} from "@/features/patient/patient.types";
 import {
-  formatPatientPriceInput,
-  parsePatientPriceInput,
-} from "@/features/patient/_lib/patient-price-input";
+  patientDraftSchema,
+  type PatientDraftInput,
+} from "@/features/patient/patient.schema";
+import type { PatientDetailDTO } from "@/features/patient/patient.types";
+import { patientDtoToDraft } from "@/features/patient/_lib/patient-form-defaults";
+import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 export function usePatientEdit({
@@ -48,18 +46,6 @@ export function usePatientEdit({
   startTransition: (fn: () => void) => void;
 }) {
   const [editPatientOpen, setEditPatientOpen] = useState(false);
-  const [editName, setEditName] = useState(detail.patient.name);
-  const [editBirthDate, setEditBirthDate] = useState(
-    detail.patient.birthDate ?? "",
-  );
-  const [editSex, setEditSex] = useState<PatientSex>(detail.patient.sex);
-  const [editNotes, setEditNotes] = useState(detail.patient.notes);
-  const [editPricingType, setEditPricingType] = useState<PatientPricingType>(
-    detail.patient.pricingType,
-  );
-  const [editPriceInput, setEditPriceInput] = useState(
-    formatPatientPriceInput(detail.patient.priceCents),
-  );
   const [editGuardianId, setEditGuardianId] = useState(
     detail.patient.guardianId,
   );
@@ -71,6 +57,11 @@ export function usePatientEdit({
       false,
   );
 
+  const patientForm = useForm<PatientDraftInput>({
+    resolver: zodResolver(patientDraftSchema) as Resolver<PatientDraftInput>,
+    defaultValues: patientDtoToDraft(detail.patient),
+  });
+
   const guardianForm = useForm<GuardianDraftInput>({
     resolver: zodResolver(guardianDraftSchema),
     defaultValues: (() => {
@@ -79,22 +70,14 @@ export function usePatientEdit({
     })(),
   });
 
-  const guardianEmail = useWatch({
-    control: guardianForm.control,
-    name: "email",
-  }) ?? "";
-  const guardianName = useWatch({
-    control: guardianForm.control,
-    name: "name",
-  }) ?? "";
+  const guardianEmail =
+    useWatch({
+      control: guardianForm.control,
+      name: "email",
+    }) ?? "";
 
   function openEditPatient() {
-    setEditName(detail.patient.name);
-    setEditBirthDate(detail.patient.birthDate ?? "");
-    setEditSex(detail.patient.sex);
-    setEditNotes(detail.patient.notes);
-    setEditPricingType(detail.patient.pricingType);
-    setEditPriceInput(formatPatientPriceInput(detail.patient.priceCents));
+    patientForm.reset(patientDtoToDraft(detail.patient));
     setEditGuardianId(detail.patient.guardianId);
     const current = guardians.find((g) => g.id === detail.patient.guardianId);
     guardianForm.reset(
@@ -114,13 +97,14 @@ export function usePatientEdit({
   }
 
   function savePatientEdit() {
-    const priceCents = parsePatientPriceInput(editPriceInput);
-    if (editPriceInput.trim() && priceCents === null) {
-      toast.error("Informe um valor válido");
-      return;
-    }
+    void (async () => {
+      const patientOk = await patientForm.trigger();
+      const guardianOk = await guardianForm.trigger();
+      if (!patientOk || !guardianOk) return;
 
-    void guardianForm.handleSubmit((draft: GuardianFormDraft) => {
+      const patientDraft = patientForm.getValues();
+      const draft = guardianForm.getValues();
+
       startTransition(async () => {
         const guardianResult = await updateGuardianAction({
           id: editGuardianId,
@@ -137,15 +121,16 @@ export function usePatientEdit({
 
         const result = await updatePatientAction({
           id: detail.patient.id,
-          name: editName,
-          birthDate: editBirthDate || null,
-          sex: editSex,
-          notes: editNotes,
-          pricingType: editPricingType,
-          priceCents,
+          name: patientDraft.name,
+          birthDate: patientDraft.birthDate || null,
+          sex: patientDraft.sex,
+          notes: patientDraft.notes,
+          pricingType: patientDraft.pricingType,
+          priceCents: parsePatientPriceInput(patientDraft.priceInput),
           guardianId: editGuardianId,
         });
         if (!result.success) {
+          applyActionFieldErrors(patientForm.setError, result.fieldErrors);
           toast.error(result.error);
           return;
         }
@@ -219,22 +204,10 @@ export function usePatientEdit({
   return {
     editPatientOpen,
     setEditPatientOpen,
-    editName,
-    setEditName,
-    editBirthDate,
-    setEditBirthDate,
-    editSex,
-    setEditSex,
-    editNotes,
-    setEditNotes,
-    editPricingType,
-    setEditPricingType,
-    editPriceInput,
-    setEditPriceInput,
+    patientForm,
     editGuardianId,
     handleGuardianIdChange,
     guardianForm,
-    guardianName,
     guardianEmail,
     hasPortalAccess,
     guardians,

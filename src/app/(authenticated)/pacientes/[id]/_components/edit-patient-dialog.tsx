@@ -2,7 +2,6 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -10,15 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -27,47 +19,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { GuardianFormFields } from "@/features/guardian/components/guardian-form-fields";
 import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
-import { PATIENT_SEXES } from "@/features/patient/patient.schema";
-import type {
-  PatientPricingType,
-  PatientSex,
-} from "@/features/patient/patient.types";
-import {
-  PATIENT_PRICING_TYPES,
-  patientPriceFieldLabel,
-} from "@/shared/constants/patient-pricing";
-
-const SEX_LABEL: Record<PatientSex, string> = {
-  feminino: "Feminino",
-  masculino: "Masculino",
-  outro: "Outro",
-  nao_informado: "Não informado",
-};
+import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
+import type { PatientDraftInput } from "@/features/patient/patient.schema";
 
 export function EditPatientDialog({
   open,
   onOpenChange,
-  name,
-  onNameChange,
-  birthDate,
-  onBirthDateChange,
-  sex,
-  onSexChange,
-  notes,
-  onNotesChange,
-  pricingType,
-  onPricingTypeChange,
-  priceInput,
-  onPriceInputChange,
+  patientForm,
   guardianId,
   onGuardianIdChange,
   guardians,
   guardianForm,
-  guardianName,
   guardianEmail,
   hasPortalAccess,
   pending,
@@ -76,23 +41,11 @@ export function EditPatientDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  name: string;
-  onNameChange: (value: string) => void;
-  birthDate: string;
-  onBirthDateChange: (value: string) => void;
-  sex: PatientSex;
-  onSexChange: (value: PatientSex) => void;
-  notes: string;
-  onNotesChange: (value: string) => void;
-  pricingType: PatientPricingType;
-  onPricingTypeChange: (value: PatientPricingType) => void;
-  priceInput: string;
-  onPriceInputChange: (value: string) => void;
+  patientForm: UseFormReturn<PatientDraftInput>;
   guardianId: string;
   onGuardianIdChange: (id: string) => void;
   guardians: GuardianDTO[];
   guardianForm: UseFormReturn<GuardianDraftInput>;
-  guardianName: string;
   guardianEmail: string;
   hasPortalAccess: boolean;
   pending: boolean;
@@ -106,93 +59,17 @@ export function EditPatientDialog({
           <DialogTitle>Editar paciente</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6">
-          <FieldSet>
-            <FieldLegend>Paciente</FieldLegend>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="edit-patient-name">Nome</FieldLabel>
-                <Input
-                  id="edit-patient-name"
-                  value={name}
-                  onChange={(e) => onNameChange(e.target.value)}
-                />
-              </Field>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel>Data de nascimento</FieldLabel>
-                  <DatePicker
-                    longRange
-                    value={birthDate}
-                    onChange={onBirthDateChange}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel>Sexo</FieldLabel>
-                  <Select
-                    value={sex}
-                    onValueChange={(v) => onSexChange(v as PatientSex)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PATIENT_SEXES.map((id) => (
-                        <SelectItem key={id} value={id}>
-                          {SEX_LABEL[id]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
-
-              <Field>
-                <FieldLabel htmlFor="edit-patient-notes">
-                  Observações
-                </FieldLabel>
-                <Textarea
-                  id="edit-patient-notes"
-                  rows={2}
-                  value={notes}
-                  onChange={(e) => onNotesChange(e.target.value)}
-                />
-              </Field>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel>Cobrança</FieldLabel>
-                  <Select
-                    value={pricingType}
-                    onValueChange={(v) =>
-                      onPricingTypeChange(v as PatientPricingType)
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PATIENT_PRICING_TYPES.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>{patientPriceFieldLabel(pricingType)}</FieldLabel>
-                  <Input
-                    inputMode="decimal"
-                    placeholder="0,00"
-                    value={priceInput}
-                    onChange={(e) => onPriceInputChange(e.target.value)}
-                  />
-                </Field>
-              </div>
-            </FieldGroup>
-          </FieldSet>
+        <form
+          id="edit-patient-form"
+          className="flex flex-col gap-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSave();
+          }}
+        >
+          <Form {...patientForm}>
+            <PatientFormFields />
+          </Form>
 
           <Separator />
 
@@ -246,16 +123,17 @@ export function EditPatientDialog({
               Portal do responsável já ativo.
             </p>
           )}
-        </div>
+        </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
             Cancelar
           </Button>
-          <Button
-            disabled={pending || !name.trim() || !guardianName.trim()}
-            onClick={onSave}
-          >
+          <Button type="submit" form="edit-patient-form" disabled={pending}>
             Salvar
           </Button>
         </DialogFooter>

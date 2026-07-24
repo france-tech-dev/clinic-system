@@ -1,15 +1,21 @@
+"use client";
+
+import { useFormContext, useWatch } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { EvaluationDomain } from "@/features/patient/patient.types";
 import { categoryOf } from "@/shared/constants/evaluation-domains";
 import { cn } from "@/shared/lib/utils";
+import type { EvaluationDialogValues } from "../evaluation-form-dialog";
 
-export function EvaluationFormDomainsSection({
-  domains,
-  onDomainsChange,
-}: {
-  domains: EvaluationDomain[];
-  onDomainsChange: (domains: EvaluationDomain[]) => void;
-}) {
+export function EvaluationFormDomainsSection() {
+  const { control } = useFormContext<EvaluationDialogValues>();
+  const domains = useWatch({ control, name: "domains" }) ?? [];
+
   return (
     <div>
       <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
@@ -31,36 +37,44 @@ export function EvaluationFormDomainsSection({
                   />
                   {cat.label}
                 </span>
-                <div className="flex gap-1">
-                  {[0, 1, 2, 3, 4].map((score) => (
-                    <button
-                      key={score}
-                      type="button"
-                      onClick={() => {
-                        const next = [...domains];
-                        next[index] = { ...domain, score };
-                        onDomainsChange(next);
-                      }}
-                      className={cn(
-                        "size-7 rounded border text-xs font-medium",
-                        domain.score === score
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border text-muted-foreground hover:bg-muted",
-                      )}
-                    >
-                      {score}
-                    </button>
-                  ))}
-                </div>
+                <FormField
+                  control={control}
+                  name={`domains.${index}.score`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex gap-1">
+                        {[0, 1, 2, 3, 4].map((score) => (
+                          <button
+                            key={score}
+                            type="button"
+                            onClick={() => field.onChange(score)}
+                            className={cn(
+                              "size-7 rounded border text-xs font-medium",
+                              field.value === score
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border text-muted-foreground hover:bg-muted",
+                            )}
+                          >
+                            {score}
+                          </button>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <Input
-                placeholder="Observação (opcional)"
-                value={domain.note}
-                onChange={(e) => {
-                  const next = [...domains];
-                  next[index] = { ...domain, note: e.target.value };
-                  onDomainsChange(next);
-                }}
+              <FormField
+                control={control}
+                name={`domains.${index}.note`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Observação (opcional)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
           );

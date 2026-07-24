@@ -24,7 +24,7 @@ export function AnamneseTab({
           className="rounded-md border border-border bg-card p-4"
         >
           <h3 className="font-serif mb-3 text-lg font-semibold">{sec.title}</h3>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid items-start gap-3 sm:grid-cols-2">
             {sec.fields.map((field) => (
               <AnamneseField
                 key={field.id}

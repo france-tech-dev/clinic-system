@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { NotebookPen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,14 @@ import {
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -26,16 +34,37 @@ import {
   createAppointmentAction,
   updateAppointmentAction,
 } from "@/features/schedule/schedule.actions";
+import {
+  appointmentDialogSchema,
+  type AppointmentDialogInput,
+} from "@/features/schedule/schedule.schema";
 import type {
   AppointmentDTO,
   ScheduleMemberDTO,
 } from "@/features/schedule/schedule.types";
 import type { PatientDTO } from "@/features/patient/patient.types";
-import {
-  APPOINTMENT_STATUSES,
-  type AppointmentStatusId,
-} from "@/shared/constants/appointment";
+import { APPOINTMENT_STATUSES } from "@/shared/constants/appointment";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { cn } from "@/shared/lib/utils";
+
+function buildDefaults(
+  initial: AppointmentDTO | null,
+  patients: PatientDTO[],
+  members: ScheduleMemberDTO[],
+  defaultMemberId: string,
+  defaultDate: string,
+): AppointmentDialogInput {
+  return {
+    patientId: initial?.patientId ?? patients[0]?.id ?? "",
+    memberId: initial?.memberId ?? defaultMemberId ?? members[0]?.id ?? "",
+    date: initial?.date ?? defaultDate,
+    time: initial?.time ?? "",
+    duration: initial?.duration ?? 45,
+    notes: initial?.notes ?? "",
+    status: initial?.status ?? "agendado",
+    repeatWeeks: 1,
+  };
+}
 
 export function AppointmentFormDialog({
   open,
@@ -68,33 +97,41 @@ export function AppointmentFormDialog({
   onDelete?: () => void;
   onEvolve?: () => void;
 }) {
-  const [patientId, setPatientId] = useState(
-    initial?.patientId ?? patients[0]?.id ?? "",
+  const defaults = buildDefaults(
+    initial,
+    patients,
+    members,
+    defaultMemberId,
+    defaultDate,
   );
-  const [memberId, setMemberId] = useState(
-    initial?.memberId ?? defaultMemberId ?? members[0]?.id ?? "",
-  );
-  const [date, setDate] = useState(initial?.date ?? defaultDate);
-  const [time, setTime] = useState(initial?.time ?? "");
-  const [duration, setDuration] = useState(initial?.duration ?? 45);
-  const [notes, setNotes] = useState(initial?.notes ?? "");
-  const [status, setStatus] = useState(initial?.status ?? "agendado");
-  const [repeatWeeks, setRepeatWeeks] = useState(1);
 
-  function submit() {
+  const form = useForm<AppointmentDialogInput>({
+    resolver: zodResolver(appointmentDialogSchema),
+    defaultValues: defaults,
+  });
+
+  function handleOpenChange(next: boolean) {
+    if (!next) {
+      form.reset(defaults);
+    }
+    onOpenChange(next);
+  }
+
+  function onSubmit(data: AppointmentDialogInput) {
     startTransition(async () => {
       if (initial) {
         const result = await updateAppointmentAction({
           id: initial.id,
-          patientId,
-          memberId,
-          date,
-          time,
-          duration,
-          notes,
-          status,
+          patientId: data.patientId,
+          memberId: data.memberId,
+          date: data.date,
+          time: data.time,
+          duration: data.duration,
+          notes: data.notes,
+          status: data.status,
         });
         if (!result.success) {
+          applyActionFieldErrors(form.setError, result.fieldErrors);
           toast.error(result.error);
           return;
         }
@@ -102,146 +139,239 @@ export function AppointmentFormDialog({
         onSaved(result.data, true);
         return;
       }
+
       const result = await createAppointmentAction({
-        patientId,
-        memberId,
-        date,
-        time,
-        duration,
-        notes,
-        repeatWeeks,
+        patientId: data.patientId,
+        memberId: data.memberId,
+        date: data.date,
+        time: data.time,
+        duration: data.duration,
+        notes: data.notes,
+        repeatWeeks: data.repeatWeeks,
       });
       if (!result.success) {
+        applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.error);
         return;
       }
-      onSaved(result.data, false, repeatWeeks);
+      onSaved(result.data, false, data.repeatWeeks);
     });
   }
 
-  const canEvolve = Boolean(
-    initial && onEvolve && !initial.hasSessionNote,
-  );
+  const canEvolve = Boolean(initial && onEvolve && !initial.hasSessionNote);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif">
             {initial ? "Editar agendamento" : "Novo agendamento"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-3">
-          <div className="grid gap-1.5">
-            <Label>Profissional</Label>
-            <Select
-              value={memberId}
-              onValueChange={(v) => setMemberId(v ?? memberId)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione…" />
-              </SelectTrigger>
-              <SelectContent>
-                {members.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Paciente</Label>
-            <Select
-              value={patientId}
-              onValueChange={(v) => setPatientId(v ?? patientId)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione…" />
-              </SelectTrigger>
-              <SelectContent>
-                {patients.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="grid gap-1.5">
-              <Label>Data</Label>
-              <DatePicker value={date} onChange={setDate} />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Horário</Label>
-              <Input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
+
+        <Form {...form}>
+          <form
+            id="appointment-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-3"
+          >
+            <FormField
+              control={form.control}
+              name="memberId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Profissional *</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      if (v) field.onChange(v);
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione…" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {members.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>
+                          {m.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="patientId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Paciente *</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      if (v) field.onChange(v);
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione…" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {patients.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 items-start gap-3">
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data *</FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Horário</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Duração (min)</Label>
-            <Input
-              type="number"
-              min={0}
-              step={5}
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value) || 0)}
+
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duração (min) *</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      step={5}
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value) || 0)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          {initial ? (
-            <div className="grid gap-1.5">
-              <Label>Status</Label>
-              <Select
-                value={status}
-                onValueChange={(v) =>
-                  setStatus((v as AppointmentStatusId) ?? status)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {APPOINTMENT_STATUSES.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          ) : (
-            <div className="grid gap-1.5">
-              <Label>Repetir semanalmente</Label>
-              <Input
-                type="number"
-                min={1}
-                max={52}
-                value={repeatWeeks}
-                onChange={(e) =>
-                  setRepeatWeeks(Math.max(1, Number(e.target.value) || 1))
-                }
+
+            {initial ? (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status *</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {APPOINTMENT_STATUSES.map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <p className="text-xs text-muted-foreground">
-                Número de semanas (1 = sem repetição)
-              </p>
-            </div>
-          )}
-          <div className="grid gap-1.5">
-            <Label>Observações (opcional)</Label>
-            <Input
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Ex: primeira sessão, trazer relatório escolar"
+            ) : (
+              <FormField
+                control={form.control}
+                name="repeatWeeks"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Repetir semanalmente *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={52}
+                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(
+                            Math.max(1, Number(e.target.value) || 1),
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      Número de semanas (1 = sem repetição)
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Observações (opcional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Ex: primeira sessão, trazer relatório escolar"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
+          </form>
+        </Form>
+
         <DialogFooter className="flex-col gap-3 sm:flex-col sm:justify-stretch">
           {canEvolve && (
             <Button
+              type="button"
               variant="secondary"
               className="w-full"
               disabled={pending}
@@ -264,7 +394,7 @@ export function AppointmentFormDialog({
                 onConfirm={onDelete}
                 disabled={pending}
               >
-                <Button variant="destructive" disabled={pending}>
+                <Button type="button" variant="destructive" disabled={pending}>
                   <Trash2 data-icon="inline-start" />
                   Excluir
                 </Button>
@@ -272,16 +402,18 @@ export function AppointmentFormDialog({
             ) : null}
             <div className="flex gap-2">
               <Button
+                type="button"
                 variant="outline"
                 className="flex-1 sm:flex-none"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleOpenChange(false)}
               >
                 Cancelar
               </Button>
               <Button
+                type="submit"
+                form="appointment-form"
                 className="flex-1 sm:flex-none"
-                disabled={pending || !patientId || !memberId || !date}
-                onClick={submit}
+                disabled={pending}
               >
                 Salvar
               </Button>

@@ -45,6 +45,7 @@ import {
   getHealthProfession,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 const ROLE_OPTIONS: {
   value: (typeof TEAM_MEMBER_ROLES)[number];
@@ -100,6 +101,7 @@ export function CreateProfessionalDialog({
     startTransition(async () => {
       const result = await createProfessionalAction(data);
       if (!result.success) {
+        applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.error);
         return;
       }
@@ -135,7 +137,7 @@ export function CreateProfessionalDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome</FormLabel>
+                  <FormLabel>Nome *</FormLabel>
                   <FormControl>
                     <Input placeholder="Nome completo" {...field} />
                   </FormControl>
@@ -149,7 +151,7 @@ export function CreateProfessionalDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel>E-mail *</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -162,7 +164,7 @@ export function CreateProfessionalDialog({
               )}
             />
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="profession"
@@ -211,7 +213,7 @@ export function CreateProfessionalDialog({
               />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="phone"
@@ -250,7 +252,7 @@ export function CreateProfessionalDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Papel na clínica</FormLabel>
+                  <FormLabel>Papel na clínica *</FormLabel>
                   <Select
                     value={field.value}
                     onValueChange={(v) => {
@@ -275,13 +277,13 @@ export function CreateProfessionalDialog({
               )}
             />
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha temporária</FormLabel>
+                    <FormLabel>Senha temporária *</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -295,7 +297,7 @@ export function CreateProfessionalDialog({
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirmar senha</FormLabel>
+                    <FormLabel>Confirmar senha *</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>

@@ -46,6 +46,7 @@ import {
   HEALTH_PROFESSION_IDS,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 const ROLE_OPTIONS: {
   value: (typeof TEAM_MEMBER_ROLES)[number] | "OWNER";
@@ -140,6 +141,7 @@ export function EditProfessionalDialog({
     startTransition(async () => {
       const result = await updateProfessionalAction(data);
       if (!result.success) {
+        applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.error);
         return;
       }
@@ -172,7 +174,7 @@ export function EditProfessionalDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome</FormLabel>
+                  <FormLabel>Nome *</FormLabel>
                   <FormControl>
                     <Input placeholder="Nome completo" {...field} />
                   </FormControl>
@@ -186,7 +188,7 @@ export function EditProfessionalDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel>E-mail *</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -199,7 +201,7 @@ export function EditProfessionalDialog({
               )}
             />
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="profession"
@@ -248,7 +250,7 @@ export function EditProfessionalDialog({
               />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="phone"
@@ -282,13 +284,13 @@ export function EditProfessionalDialog({
               />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Papel na clínica</FormLabel>
+                    <FormLabel>Papel na clínica *</FormLabel>
                     <Select
                       value={field.value}
                       disabled={isOwner}
@@ -322,7 +324,7 @@ export function EditProfessionalDialog({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status na clínica</FormLabel>
+                    <FormLabel>Status na clínica *</FormLabel>
                     <Select
                       value={field.value}
                       disabled={isOwner}

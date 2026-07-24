@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus, Search } from "lucide-react";
@@ -19,7 +19,6 @@ import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import {
   EMPTY_GUARDIAN_DRAFT,
   guardianDraftToCreateInput,
-  type GuardianFormDraft,
 } from "@/features/guardian/_lib/guardian-form-defaults";
 import {
   guardianDraftSchema,
@@ -29,15 +28,18 @@ import {
   createPatientAction,
   setPatientStatusAction,
 } from "@/features/patient/patient.actions";
+import {
+  patientDraftSchema,
+  type PatientDraftInput,
+} from "@/features/patient/patient.schema";
 import type {
   PatientDTO,
-  PatientPricingType,
-  PatientSex,
   PatientStatus,
 } from "@/features/patient/patient.types";
+import { EMPTY_PATIENT_DRAFT } from "@/features/patient/_lib/patient-form-defaults";
+import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
 import { paths } from "@/shared/constants/paths";
 import { formatPatientListMeta } from "@/features/patient/_lib/patient-list-meta";
-import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
@@ -61,15 +63,14 @@ export function PacientesClient({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PatientStatus | null>(null);
   const [open, setOpen] = useState(() => searchParams.get("novo") === "1");
-  const [name, setName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [sex, setSex] = useState<PatientSex>("nao_informado");
-  const [notes, setNotes] = useState("");
-  const [pricingType, setPricingType] = useState<PatientPricingType>("sessao");
-  const [priceInput, setPriceInput] = useState("");
   const [guardianMode, setGuardianMode] = useState<"new" | "existing">("new");
   const [selectedGuardianId, setSelectedGuardianId] = useState("");
   const [pending, startTransition] = useTransition();
+
+  const patientForm = useForm<PatientDraftInput>({
+    resolver: zodResolver(patientDraftSchema) as Resolver<PatientDraftInput>,
+    defaultValues: EMPTY_PATIENT_DRAFT,
+  });
 
   const guardianForm = useForm<GuardianDraftInput>({
     resolver: zodResolver(guardianDraftSchema),
@@ -86,31 +87,33 @@ export function PacientesClient({
   }, [patients, search, statusFilter]);
 
   function resetForm() {
-    setName("");
-    setBirthDate("");
-    setSex("nao_informado");
-    setNotes("");
-    setPricingType("sessao");
-    setPriceInput("");
+    patientForm.reset(EMPTY_PATIENT_DRAFT);
     setGuardianMode("new");
     setSelectedGuardianId("");
     guardianForm.reset(EMPTY_GUARDIAN_DRAFT);
   }
 
   function create() {
-    const priceCents = parsePatientPriceInput(priceInput);
-    if (priceInput.trim() && priceCents === null) {
-      toast.error("Valor inválido. Use o formato 0,00");
-      return;
-    }
+    void (async () => {
+      const patientOk = await patientForm.trigger();
+      if (guardianMode === "existing" && !selectedGuardianId) {
+        toast.error("Selecione o responsável");
+        return;
+      }
+      const guardianOk =
+        guardianMode === "new" ? await guardianForm.trigger() : true;
+      if (!patientOk || !guardianOk) return;
 
-    const runCreate = (draft?: GuardianFormDraft) => {
+      const patientDraft = patientForm.getValues();
+      const guardianDraft =
+        guardianMode === "new" ? guardianForm.getValues() : undefined;
+
       startTransition(async () => {
         let guardianId = selectedGuardianId;
 
-        if (guardianMode === "new" && draft) {
+        if (guardianMode === "new" && guardianDraft) {
           const guardianResult = await createGuardianAction(
-            guardianDraftToCreateInput(draft),
+            guardianDraftToCreateInput(guardianDraft),
           );
           if (!guardianResult.success) {
             applyActionFieldErrors(
@@ -134,15 +137,16 @@ export function PacientesClient({
         }
 
         const result = await createPatientAction({
-          name,
-          birthDate: birthDate || null,
-          sex,
-          notes,
-          pricingType,
-          priceCents,
+          name: patientDraft.name,
+          birthDate: patientDraft.birthDate || null,
+          sex: patientDraft.sex,
+          notes: patientDraft.notes,
+          pricingType: patientDraft.pricingType,
+          priceCents: parsePatientPriceInput(patientDraft.priceInput),
           guardianId,
         });
         if (!result.success) {
+          applyActionFieldErrors(patientForm.setError, result.fieldErrors);
           toast.error(result.error);
           return;
         }
@@ -153,14 +157,7 @@ export function PacientesClient({
         setOpen(false);
         resetForm();
       });
-    };
-
-    if (guardianMode === "new") {
-      void guardianForm.handleSubmit((draft) => runCreate(draft))();
-      return;
-    }
-
-    runCreate();
+    })();
   }
 
   function changeStatus(id: string, status: PatientStatus) {
@@ -283,18 +280,7 @@ export function PacientesClient({
           if (!next) resetForm();
           setOpen(next);
         }}
-        name={name}
-        onNameChange={setName}
-        birthDate={birthDate}
-        onBirthDateChange={setBirthDate}
-        sex={sex}
-        onSexChange={setSex}
-        notes={notes}
-        onNotesChange={setNotes}
-        pricingType={pricingType}
-        onPricingTypeChange={setPricingType}
-        priceInput={priceInput}
-        onPriceInputChange={setPriceInput}
+        patientForm={patientForm}
         guardianMode={guardianMode}
         onGuardianModeChange={setGuardianMode}
         selectedGuardianId={selectedGuardianId}

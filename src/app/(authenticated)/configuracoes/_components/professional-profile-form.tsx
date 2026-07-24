@@ -1,27 +1,109 @@
 "use client";
 
+import { useTransition } from "react";
+import { useForm, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  saveCurrentMemberProfessionalAction,
+  saveProfessionalAction,
+} from "@/features/settings/settings.actions";
+import {
+  memberProfessionalSchema,
+  professionalProfileSchema,
+} from "@/features/settings/settings.schema";
 import type { ProfessionalProfile } from "@/features/settings/settings.types";
+import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+
+type ProfileFormValues = {
+  nome: string;
+  registro: string;
+  clinica?: string;
+};
 
 export function ProfessionalProfileForm({
-  form,
-  onFormChange,
-  pending,
-  onSave,
+  initial,
+  mode,
   title = "Dados do profissional",
   description,
   saveLabel = "Salvar",
+  onSaved,
 }: {
-  form: ProfessionalProfile;
-  onFormChange: (form: ProfessionalProfile) => void;
-  pending: boolean;
-  onSave: () => void;
+  initial: { nome: string; registro: string; clinica?: string };
+  mode: "member" | "org";
   title?: string;
   description?: string;
   saveLabel?: string;
+  onSaved?: (data: ProfessionalProfile) => void;
 }) {
+  const [pending, startTransition] = useTransition();
+
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(
+      mode === "org" ? professionalProfileSchema : memberProfessionalSchema,
+    ) as Resolver<ProfileFormValues>,
+    defaultValues:
+      mode === "org"
+        ? {
+            nome: initial.nome,
+            registro: initial.registro,
+            clinica: initial.clinica ?? "",
+          }
+        : {
+            nome: initial.nome,
+            registro: initial.registro,
+          },
+  });
+
+  function onSubmit(data: ProfileFormValues) {
+    startTransition(async () => {
+      const result =
+        mode === "org"
+          ? await saveProfessionalAction({
+              nome: data.nome,
+              registro: data.registro,
+              clinica: data.clinica ?? initial.clinica ?? "",
+            })
+          : await saveCurrentMemberProfessionalAction({
+              nome: data.nome,
+              registro: data.registro,
+            });
+
+      if (!result.success) {
+        applyActionFieldErrors(form.setError, result.fieldErrors);
+        toast.error(result.error);
+        return;
+      }
+
+      if (mode === "org") {
+        form.reset({
+          nome: result.data.nome,
+          registro: result.data.registro,
+          clinica: result.data.clinica,
+        });
+        toast.success("Perfil da clínica salvo");
+      } else {
+        form.reset({
+          nome: result.data.nome,
+          registro: result.data.registro,
+        });
+        toast.success("Seu CREFITO foi salvo");
+      }
+
+      onSaved?.(result.data);
+    });
+  }
+
   return (
     <div className="max-w-lg space-y-4 rounded-md border border-border bg-card p-4">
       <div className="space-y-1">
@@ -32,29 +114,48 @@ export function ProfessionalProfileForm({
           <p className="text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
-      <div className="grid gap-1.5">
-        <Label>Nome do terapeuta</Label>
-        <Input
-          value={form.nome}
-          onChange={(e) => onFormChange({ ...form, nome: e.target.value })}
-          placeholder="Seu nome completo"
-        />
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="grid gap-1.5">
-          <Label>Registro (CREFITO)</Label>
-          <Input
-            value={form.registro}
-            onChange={(e) =>
-              onFormChange({ ...form, registro: e.target.value })
-            }
-            placeholder="Ex: CREFITO-3 000000-TO"
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid gap-4"
+        >
+          <FormField
+            control={form.control}
+            name="nome"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome do terapeuta</FormLabel>
+                <FormControl>
+                  <Input placeholder="Seu nome completo" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-      </div>
-      <Button disabled={pending} onClick={onSave}>
-        {saveLabel}
-      </Button>
+
+          <FormField
+            control={form.control}
+            name="registro"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Registro (CREFITO)</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ex: CREFITO-3 000000-TO"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" disabled={pending}>
+            {saveLabel}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }
