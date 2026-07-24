@@ -26,7 +26,7 @@ import { IconBrandGoogle } from "@tabler/icons-react";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").trim(),
-  email: z.string().email("Email inválido").trim(),
+  email: z.email("Email inválido").trim(),
   password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres").trim(),
   confirmPassword: z
     .string()
@@ -95,13 +95,12 @@ export function SignupForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome Completo</FormLabel>
+                  <FormLabel>Nome Completo *</FormLabel>
                   <FormControl>
                     <Input
                       id="name"
                       type="text"
                       placeholder="João da Silva"
-                      required
                       {...field}
                     />
                   </FormControl>
@@ -117,13 +116,12 @@ export function SignupForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Endereço de e-mail</FormLabel>
+                <FormLabel>Endereço de e-mail *</FormLabel>
                 <FormControl>
                   <Input
                     id="email"
                     type="email"
                     placeholder="joao@example.com"
-                    required
                     {...field}
                   />
                 </FormControl>
@@ -141,13 +139,12 @@ export function SignupForm({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Senha</FormLabel>
+                <FormLabel>Senha *</FormLabel>
                 <FormControl>
                   <Input
                     id="password"
                     type="password"
                     placeholder="A senha deve ter 8 caracteres"
-                    required
                     {...field}
                   />
                 </FormControl>
@@ -162,13 +159,12 @@ export function SignupForm({
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirmar Senha</FormLabel>
+                <FormLabel>Confirmar Senha *</FormLabel>
                 <FormControl>
                   <Input
                     id="confirmPassword"
                     type="password"
                     placeholder="Confirme a senha"
-                    required
                     {...field}
                   />
                 </FormControl>

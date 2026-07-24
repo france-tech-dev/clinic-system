@@ -89,7 +89,7 @@ export function ResetPasswordForm({
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nova senha</FormLabel>
+                  <FormLabel>Nova senha *</FormLabel>
                   <FormControl>
                     <Input
                       id="newPassword"
@@ -110,7 +110,7 @@ export function ResetPasswordForm({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirmar senha</FormLabel>
+                  <FormLabel>Confirmar senha *</FormLabel>
                   <FormControl>
                     <Input
                       id="confirmPassword"

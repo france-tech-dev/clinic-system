@@ -71,7 +71,7 @@ export function ChangePasswordForm({
           name="newPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nova senha</FormLabel>
+              <FormLabel>Nova senha *</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -85,7 +85,7 @@ export function ChangePasswordForm({
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar nova senha</FormLabel>
+              <FormLabel>Confirmar nova senha *</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>

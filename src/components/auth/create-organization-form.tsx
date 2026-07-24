@@ -106,7 +106,7 @@ export function CreateOrganizationForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome da clínica</FormLabel>
+              <FormLabel>Nome da clínica *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -132,7 +132,7 @@ export function CreateOrganizationForm({
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Identificador (URL)</FormLabel>
+              <FormLabel>Identificador (URL) *</FormLabel>
               <FormControl>
                 <Input
                   {...field}

@@ -26,7 +26,7 @@ import { Badge } from "../ui/badge";
 import { IconBrandGoogle } from "@tabler/icons-react";
 
 const formSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
 });
 
@@ -95,7 +95,7 @@ export function LoginForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative">
-                    Endereço de e-mail
+                    Endereço de e-mail *
                     {lastMethod === "email" && (
                       <Badge
                         variant="secondary"
@@ -124,7 +124,7 @@ export function LoginForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel>Senha *</FormLabel>
                   <FormControl>
                     <Input
                       id="password"

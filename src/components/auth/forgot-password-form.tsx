@@ -76,7 +76,7 @@ export function ForgotPasswordForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Endereço de e-mail</FormLabel>
+                  <FormLabel>Endereço de e-mail *</FormLabel>
                   <FormControl>
                     <Input
                       id="email"
