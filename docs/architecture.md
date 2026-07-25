@@ -284,13 +284,15 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 
 | Feature     | Responsabilidade                                    |
 | ----------- | --------------------------------------------------- |
-| `patient`   | Pacientes, avaliações, evoluções, anamnese, PDF     |
+| `patient`   | Pacientes, avaliações clínicas, evoluções, PDF      |
+| `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)  |
 | `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User    |
 | `schedule`  | Agenda, agendamentos, calendário, repetição semanal |
 | `finance`   | Fluxo de caixa, lançamentos                         |
 | `settings`  | Perfil profissional, branding da clínica            |
 | `team`      | Profissionais da clínica                            |
 | `dashboard` | Painel, estatísticas, alertas, busca global         |
+| `protocol`  | Protocolos estruturados (ex.: GMFM-88)              |
 
 ---
 
