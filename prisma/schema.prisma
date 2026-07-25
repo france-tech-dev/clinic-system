@@ -156,6 +156,7 @@ model Organization {
   appointments Appointment[]
   cashTransactions CashTransaction[]
   protocolAssessments ProtocolAssessment[]
+  anamneses    Anamnese[]
 
   @@unique([slug])
   @@map("organization")
@@ -207,7 +208,7 @@ model Patient {
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   evaluations    Evaluation[]
-  anamnese       Anamnese?
+  anamneses      Anamnese[]
   sessionNotes   SessionNote[]
   appointments   Appointment[]
   roteiroNotes   RoteiroNote[]
@@ -252,15 +253,21 @@ model Evaluation {
   @@map("evaluations")
 }
 
-// Anamnese
+// Anamnese (1 por paciente × formulário/especialidade)
 model Anamnese {
-  id        String   @id @default(cuid())
-  patientId String   @unique
-  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  data      String   @default("{}")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  formId         String
+  data           String       @default("{}")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
+  @@unique([patientId, formId])
+  @@index([organizationId])
+  @@index([patientId])
   @@map("anamneses")
 }
 
