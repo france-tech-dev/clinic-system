@@ -6,6 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { SidebarSection } from "@/resources/sidebar-items";
 import Link from "next/link";
@@ -16,6 +17,8 @@ interface NavSectionProps {
 }
 
 export function NavSection({ items, title }: NavSectionProps) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
@@ -27,6 +30,9 @@ export function NavSection({ items, title }: NavSectionProps) {
                 href={item.url}
                 prefetch={true}
                 className="flex items-center gap-2 my-2 bg-red-200"
+                onClick={() => {
+                  if (isMobile) setOpenMobile(false);
+                }}
               >
                 <item.icon />
                 <span className="text-sm bg-red-300">{item.name}</span>
