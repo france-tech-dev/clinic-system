@@ -7,6 +7,7 @@ import {
   formatProfessionalSignature,
   resolveReportProfessional,
 } from "@/shared/types/professional";
+import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import {
   roteiroById,
   roteiroCategoryByTick,
@@ -29,6 +30,8 @@ export type BuildPatientReportPayloadInput = {
     categoryTick: string;
   } | null;
   evaluationReportOptions?: EvaluationReportOptions | null;
+  /** Secções de anamnese já resolvidas no app/. */
+  anamneseSections?: PdfKeyValueSection[];
 };
 
 export function buildPatientReportPayload({
@@ -40,6 +43,7 @@ export function buildPatientReportPayload({
   evaluation = null,
   roteiro = null,
   evaluationReportOptions = null,
+  anamneseSections = [],
 }: BuildPatientReportPayloadInput): PatientReportPayload {
   const resolved = resolveReportProfessional(
     authorProfessional,
@@ -78,7 +82,7 @@ export function buildPatientReportPayload({
     branding,
     evaluations: detail.evaluations,
     selectedEvaluation,
-    anamneseData: detail.anamneseData,
+    anamneseSections: mode === "full" ? anamneseSections : [],
     sessionNotes: detail.sessionNotes.map((s) => ({
       date: s.date,
       time: s.time,

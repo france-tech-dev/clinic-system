@@ -29,6 +29,12 @@ export const paths = Object.freeze({
     byId: (avaliacaoId: string) => `/avaliacoes/${avaliacaoId}`,
   },
 
+  anamnese: {
+    root: "/anamnese",
+    /** Workspace: `/anamnese/anamnese-to` */
+    byId: (formId: string) => `/anamnese/${formId}`,
+  },
+
   api: {
     acceptInvitation: (invitationId: string) =>
       `/api/accept-invitation/${invitationId}`,

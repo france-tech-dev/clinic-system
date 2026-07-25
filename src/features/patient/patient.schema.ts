@@ -117,11 +117,6 @@ export const evaluationIdSchema = z.object({
   id: z.string().min(1),
 });
 
-export const anamneseSaveSchema = z.object({
-  patientId: z.string().min(1),
-  data: z.record(z.string(), z.unknown()),
-});
-
 const sessionFormBaseSchema = z.object({
   patientId: z.string().min(1),
   appointmentId: z.string().min(1, "Selecione o agendamento"),

@@ -241,14 +241,3 @@ export function toRoteiroNoteDTO(row: {
     updatedAt: row.updatedAt.toISOString(),
   };
 }
-
-export function parseAnamneseData(
-  raw: string | undefined,
-): Record<string, unknown> {
-  if (!raw) return {};
-  try {
-    return JSON.parse(raw) as Record<string, unknown>;
-  } catch {
-    return {};
-  }
-}

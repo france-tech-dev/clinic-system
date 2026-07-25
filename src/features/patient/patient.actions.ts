@@ -6,7 +6,6 @@ import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
-  anamneseSaveSchema,
   evaluationFormSchema,
   evaluationIdSchema,
   patientFormSchema,
@@ -29,7 +28,6 @@ import {
   resolveAuthorMemberId,
   getPatientDetail,
   listPatients,
-  saveAnamnese,
   saveRoteiroNote,
   setPatientStatus,
   updateEvaluation,
@@ -208,26 +206,6 @@ export async function deleteEvaluationAction(
     if (!removed) return fail("Avaliação não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
-export async function saveAnamneseAction(
-  input: unknown,
-): Promise<ActionResult<{ patientId: string }>> {
-  try {
-    const parsed = anamneseSaveSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
-    const { organizationId } = await requireOrgId();
-    const saved = await saveAnamnese(
-      organizationId,
-      parsed.data.patientId,
-      parsed.data.data,
-    );
-    if (!saved) return fail("Paciente não encontrado");
-    revalidatePatient(parsed.data.patientId);
-    return ok({ patientId: parsed.data.patientId });
   } catch (error) {
     return handleError(error);
   }

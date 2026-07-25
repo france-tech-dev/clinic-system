@@ -105,7 +105,9 @@ export async function ensureDemoPatient(
 
     await tx.anamnese.create({
       data: {
+        organizationId,
         patientId: createdPatient.id,
+        formId: "anamnese-to",
         data: JSON.stringify(anamneseData),
       },
     });

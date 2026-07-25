@@ -73,7 +73,6 @@ export const patientRepository = {
           include: memberAuthorInclude,
           orderBy: { date: "desc" },
         },
-        anamnese: true,
         sessionNotes: {
           include: memberAuthorInclude,
           orderBy: [{ date: "desc" }, { time: "desc" }],
@@ -230,22 +229,6 @@ export const patientRepository = {
     if (!existing) return null;
     await db.evaluation.delete({ where: { id } });
     return existing;
-  },
-
-  async upsertAnamnese(
-    organizationId: string,
-    patientId: string,
-    data: Record<string, unknown>,
-  ) {
-    const patient = await db.patient.findFirst({
-      where: { id: patientId, organizationId },
-    });
-    if (!patient) return null;
-    return db.anamnese.upsert({
-      where: { patientId },
-      create: { patientId, data: JSON.stringify(data) },
-      update: { data: JSON.stringify(data) },
-    });
   },
 
   async createSession(

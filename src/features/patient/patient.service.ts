@@ -8,7 +8,6 @@ import type {
 } from "./patient.schema";
 import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 import {
-  parseAnamneseData,
   toEvaluationDTO,
   toLinkableAppointmentDTO,
   toPatientDTO,
@@ -34,7 +33,6 @@ export async function getPatientDetail(
   return {
     patient: toPatientDTO(row),
     evaluations: row.evaluations.map(toEvaluationDTO),
-    anamneseData: parseAnamneseData(row.anamnese?.data),
     sessionNotes: row.sessionNotes.map(toSessionDTO),
     appointments: row.appointments.map(toLinkableAppointmentDTO),
     roteiroNotes: row.roteiroNotes.map(toRoteiroNoteDTO),
@@ -114,14 +112,6 @@ export async function updateEvaluation(
 
 export async function deleteEvaluation(organizationId: string, id: string) {
   return patientRepository.deleteEvaluation(organizationId, id);
-}
-
-export async function saveAnamnese(
-  organizationId: string,
-  patientId: string,
-  data: Record<string, unknown>,
-) {
-  return patientRepository.upsertAnamnese(organizationId, patientId, data);
 }
 
 export async function createSessionNote(

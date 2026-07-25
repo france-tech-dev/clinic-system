@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
+import { ProfessionCatalogCard } from "@/components/profession-catalog-card";
 import { listTeamMembers } from "@/features/team/team.service";
 import { filterAssessmentCatalogByProfessions } from "@/features/protocol/assessments";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { Button } from "@/components/ui/button";
-import { ProfessionAssessmentCard } from "./_components/profession-assessment-card";
 
 const professionIdSet = new Set<string>(HEALTH_PROFESSION_IDS);
 
@@ -61,7 +61,19 @@ export default async function AvaliacoesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {catalog.map((item) => (
-              <ProfessionAssessmentCard key={item.professionId} item={item} />
+              <ProfessionCatalogCard
+                key={item.professionId}
+                professionId={item.professionId}
+                label={item.label}
+                council={item.council}
+                items={item.assessments}
+                labels={{
+                  singular: "avaliação",
+                  plural: "avaliações",
+                  emptyDetail:
+                    "Ainda não há avaliações cadastradas para esta profissão.",
+                }}
+              />
             ))}
           </div>
         )}

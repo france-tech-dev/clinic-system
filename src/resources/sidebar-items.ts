@@ -3,6 +3,7 @@ import {
   IconCalendar,
   IconCash,
   IconClipboardList,
+  IconFileText,
   IconLayoutDashboard,
   IconSearch,
   IconSettings,
@@ -56,6 +57,11 @@ export const sidebarItems = {
       name: "Avaliações",
       url: paths.avaliacoes.root,
       icon: IconClipboardList,
+    },
+    {
+      name: "Anamnese",
+      url: paths.anamnese.root,
+      icon: IconFileText,
     },
     {
       name: "Buscar",

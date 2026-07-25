@@ -1,12 +1,12 @@
 import { Document, Page } from "@react-pdf/renderer";
 import { ClinicHeader } from "@/shared/lib/pdf/components/clinic-header";
+import { KeyValueSections } from "@/shared/lib/pdf/components/key-value-sections";
 import { PageFooter } from "@/shared/lib/pdf/components/page-footer";
 import { PatientInfo } from "@/shared/lib/pdf/components/patient-info";
 import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 import { getPatientReportTitle } from "../report-meta";
 import type { PatientReportPayload } from "../types";
-import { AnamneseSection } from "../sections/anamnese-section";
 import { EvaluationSection } from "../sections/evaluation-section";
 import { SessionsSection } from "../sections/sessions-section";
 
@@ -36,7 +36,10 @@ export function FullRecordDocument({
           evaluations={payload.evaluations}
           selectedEvaluation={payload.selectedEvaluation}
         />
-        <AnamneseSection anamneseData={payload.anamneseData} />
+        <KeyValueSections
+          heading="Anamnese"
+          sections={payload.anamneseSections}
+        />
         <SessionsSection sessionNotes={payload.sessionNotes} />
         <SignatureFooter signature={signature} />
         <PageFooter />

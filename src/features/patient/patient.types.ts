@@ -118,7 +118,6 @@ export type RoteiroNoteDTO = {
 export type PatientDetailDTO = {
   patient: PatientDTO;
   evaluations: EvaluationDTO[];
-  anamneseData: Record<string, unknown>;
   sessionNotes: SessionNoteDTO[];
   appointments: SessionLinkableAppointmentDTO[];
   roteiroNotes: RoteiroNoteDTO[];

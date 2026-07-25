@@ -5,8 +5,6 @@ export function getPatientReportTitle(
   roteiroLabel?: string,
 ): string {
   switch (mode) {
-    case "anamnese":
-      return "Anamnese de Terapia Ocupacional";
     case "evaluation":
       return "Relatório de Avaliação Ocupacional";
     case "roteiro":
