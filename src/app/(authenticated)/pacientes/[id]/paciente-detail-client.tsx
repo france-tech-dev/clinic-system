@@ -1,11 +1,13 @@
 "use client";
 
+import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
 } from "@/features/settings/settings.types";
+import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";
@@ -17,17 +19,23 @@ import { PatientDetailTabs } from "./_components/patient-detail-tabs";
 export function PacienteDetailClient({
   initial,
   initialGuardians,
+  initialAnamneses,
+  initialAnamneseSections,
   professional,
   branding,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
+  initialAnamneses: AnamneseSummaryDTO[];
+  initialAnamneseSections: PdfKeyValueSection[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
 }) {
   const vm = usePatientDetail({
     initial,
     initialGuardians,
+    initialAnamneses,
+    initialAnamneseSections,
     professional,
     branding,
   });
@@ -67,11 +75,8 @@ export function PacienteDetailClient({
 
       {vm.tab === "anamnese" && (
         <AnamneseTab
-          data={vm.anamnese.anamneseData}
-          onChange={vm.anamnese.setAnamneseData}
-          pending={vm.anamnese.pending}
-          onSave={vm.anamnese.saveAnamnese}
-          onPreviewReport={() => vm.previewReport("anamnese")}
+          patientId={vm.detail.patient.id}
+          anamneses={vm.anamneses}
         />
       )}
 

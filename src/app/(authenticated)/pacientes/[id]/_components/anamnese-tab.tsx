@@ -1,50 +1,69 @@
+import Link from "next/link";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ANAMNESE_SCHEMA } from "@/features/patient/_lib/anamnese-schema";
-import { AnamneseField } from "./anamnese-field";
+import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
+import { paths } from "@/shared/constants/paths";
+import { formatDateBR } from "@/shared/lib/format-date-br";
 
 export function AnamneseTab({
-  data,
-  onChange,
-  pending,
-  onSave,
-  onPreviewReport,
+  patientId,
+  anamneses,
 }: {
-  data: Record<string, unknown>;
-  onChange: (next: Record<string, unknown>) => void;
-  pending: boolean;
-  onSave: () => void;
-  onPreviewReport: () => void;
+  patientId: string;
+  anamneses: AnamneseSummaryDTO[];
 }) {
   return (
-    <section className="space-y-6">
-      {ANAMNESE_SCHEMA.map((sec) => (
-        <div
-          key={sec.id}
-          className="rounded-md border border-border bg-card p-4"
-        >
-          <h3 className="font-serif mb-3 text-lg font-semibold">{sec.title}</h3>
-          <div className="grid items-start gap-3 sm:grid-cols-2">
-            {sec.fields.map((field) => (
-              <AnamneseField
-                key={field.id}
-                field={field}
-                data={data}
-                onChange={onChange}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-      <div className="flex flex-wrap justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={onPreviewReport}>
-          <FileText className="size-4" />
-          Relatório PDF
-        </Button>
-        <Button disabled={pending} onClick={onSave}>
-          Salvar anamnese
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-muted-foreground">
+          Anamneses preenchidas deste paciente. Abra um formulário para editar
+          ou criar uma nova.
+        </p>
+        <Button asChild size="sm" variant="outline">
+          <Link href={paths.anamnese.root}>
+            <FileText className="size-4" />
+            Nova anamnese
+          </Link>
         </Button>
       </div>
+
+      {anamneses.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card p-6">
+          <p className="font-serif text-lg font-medium">
+            Nenhuma anamnese preenchida
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Escolha a especialidade no hub de Anamnese para começar.
+          </p>
+          <Button asChild className="mt-4" size="sm">
+            <Link href={paths.anamnese.root}>Ir para Anamnese</Link>
+          </Button>
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {anamneses.map((item) => (
+            <li key={item.id}>
+              <Link
+                href={`${paths.anamnese.byId(item.formId)}?paciente=${patientId}`}
+                className="group flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40 hover:bg-primary/5"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium group-hover:text-primary">
+                    {item.label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Actualizada em{" "}
+                    {formatDateBR(item.updatedAt.slice(0, 10))}
+                  </p>
+                </div>
+                <span className="text-sm text-muted-foreground group-hover:text-primary">
+                  Abrir
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

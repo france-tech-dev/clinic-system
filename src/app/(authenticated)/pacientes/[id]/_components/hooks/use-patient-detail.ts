@@ -7,6 +7,7 @@ import type {
   EvaluationDTO,
   PatientDetailDTO,
 } from "@/features/patient/patient.types";
+import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import { buildPatientReportPayload } from "@/features/patient/_lib/pdf/build-patient-report-payload";
 import type { PatientReportMode } from "@/features/patient/_lib/pdf/types";
@@ -16,9 +17,9 @@ import type {
 } from "@/features/settings/settings.types";
 import { formatProfessionalSignature } from "@/features/settings/settings.types";
 import { paths } from "@/shared/constants/paths";
+import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { useRouter } from "next/navigation";
 import type { PatientDetailTab } from "../patient-detail-types";
-import { useAnamneseForm } from "./use-anamnese-form";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientEvaluations } from "./use-patient-evaluations";
 import { usePatientPdfReport } from "@/features/patient/hooks/use-patient-pdf-report";
@@ -28,29 +29,26 @@ import { useRoteiroNotes } from "./use-roteiro-notes";
 export function usePatientDetail({
   initial,
   initialGuardians,
+  initialAnamneses,
+  initialAnamneseSections,
   professional,
   branding,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
+  initialAnamneses: AnamneseSummaryDTO[];
+  initialAnamneseSections: PdfKeyValueSection[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
 }) {
   const router = useRouter();
   const [detail, setDetail] = useState(initial);
   const [guardians, setGuardians] = useState(initialGuardians);
+  const [anamneses] = useState(initialAnamneses);
   const [tab, setTab] = useState<PatientDetailTab>("avaliacao");
   const [pending, startTransition] = useTransition();
 
   const pdfReport = usePatientPdfReport();
-  const anamnese = useAnamneseForm({
-    patientId: detail.patient.id,
-    initialData: initial.anamneseData,
-    setDetail,
-    pending,
-    startTransition,
-    onRefresh: () => router.refresh(),
-  });
   const roteiro = useRoteiroNotes({
     patientId: detail.patient.id,
     initialNotes: initial.roteiroNotes,
@@ -82,10 +80,7 @@ export function usePatientDetail({
   const buildReportPayload = useCallback(
     (reportMode: PatientReportMode, evaluation?: EvaluationDTO) =>
       buildPatientReportPayload({
-        detail: {
-          ...detail,
-          anamneseData: anamnese.anamneseData,
-        },
+        detail,
         mode: reportMode,
         branding,
         professional,
@@ -101,11 +96,12 @@ export function usePatientDetail({
                 categoryTick: roteiro.currentCategory.tick,
               }
             : null,
+        anamneseSections: initialAnamneseSections,
       }),
     [
-      anamnese.anamneseData,
       branding,
       detail,
+      initialAnamneseSections,
       professional,
       roteiro.currentCategory.tick,
       roteiro.roteiroId,
@@ -154,7 +150,7 @@ export function usePatientDetail({
     signature,
     pdfReport,
     previewReport,
-    anamnese,
+    anamneses,
     roteiro,
     patientEdit,
     evaluations,
