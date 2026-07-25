@@ -7,6 +7,7 @@ Documento de arquitectura para humanos: [`docs/architecture.md`](../docs/archite
 | Ficheiro                     | Quando                                                   |
 | ---------------------------- | -------------------------------------------------------- |
 | `project-core.mdc`           | **Sempre** (stack, arquitetura, **padrão de estrutura**) |
+| `clean-architecture.mdc`     | **Sempre** (fronteiras, anti-overengineering)            |
 | `route-shared-ui.mdc`        | **Sempre** (UI partilhada entre rotas)                   |
 | `reuse-before-create.mdc`    | **Sempre** (evitar duplicação)                           |
 | `react-effects-and-data.mdc` | **Sempre** (Server Components, useEffect)                |

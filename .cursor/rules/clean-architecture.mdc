@@ -1,0 +1,50 @@
+---
+description: Arquitectura limpa — camadas, fronteiras e anti-overengineering.
+alwaysApply: true
+---
+
+# Arquitectura limpa (sem complexidade desnecessária)
+
+Documento humano: [`docs/architecture.md`](../../docs/architecture.md)
+
+## Fronteiras
+
+```
+app/  →  features/  →  shared/
+         components/ → shared/   (evitar features/)
+```
+
+- **`features/` não importam entre si** — orquestrar em `app/`
+- **`shared/`** sem regra de negócio clínica
+- UI de **uma** rota → `app/.../_components/`; ≥2 rotas → `features/[domínio]/` ou `src/components/`
+
+## Camadas por domínio
+
+repository (Prisma) → service (regras) → actions (Zod + revalidate).  
+Client não acede a Prisma; DTOs planos no boundary.
+
+## Anti-overengineering
+
+Antes de criar abstração nova:
+
+1. Já existe util/hook/componente semelhante? Extender.
+2. Só **um** uso real? Preferir inline / ficheiro local.
+3. Não espelhar outro domínio “por simetria” se o problema for mais simples.
+4. Evitar 2–3 registries (catalog + ui + schema) quando **um módulo** basta (`id`, metadados, schema, `render`).
+5. Evitar listagens duplicadas no service que fazem a mesma query.
+
+```ts
+// ❌ Três ficheiros de registo para o mesmo formId
+// ✅ Um AnamneseFormModule / AssessmentUiModule registado uma vez
+```
+
+## Catálogos por especialidade (anamnese / avaliações)
+
+- Hub filtra por profissões activas da clínica
+- Workspace: `getX(id)` + `render(ctx)` + `?paciente=`
+- Card de hub partilhado: `src/components/profession-catalog-card.tsx`
+
+## PDF multi-domínio
+
+- Cada feature pode ter documento próprio
+- Composição (ex. prontuário + anamnese): `app/` junta dados; tipos planos em `shared/types` (ex. `PdfKeyValueSection`)
