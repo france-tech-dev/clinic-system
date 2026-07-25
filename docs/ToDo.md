@@ -1,4 +1,4 @@
-# Roadmap — Fichário TO
+# Roadmap — Clinic System
 
 Checklist de melhorias, ordenado por prioridade.  
 Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente

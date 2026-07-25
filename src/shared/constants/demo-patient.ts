@@ -12,7 +12,7 @@ export const DEMO_PATIENT_SEED_MARKER = "seed:demo-patient-apresentacao";
 export const DEMO_PATIENT_NAME = "Miguel Oliveira";
 
 export const DEMO_PATIENT_NOTES =
-  "Caso fictício para demonstração do Fichário TO. Criança de 7 anos, encaminhada para trabalhar coordenação fina, autorregulação e AVDs.";
+  "Caso fictício para demonstração do Clinic System. Criança de 7 anos, encaminhada para trabalhar coordenação fina, autorregulação e AVDs.";
 
 const DOMAIN_SCORES: Record<string, { score: number; note: string }> = {
   fina: {

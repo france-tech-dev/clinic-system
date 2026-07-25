@@ -1,4 +1,4 @@
-# Arquitetura e regras do projecto — Fichário TO
+# Arquitetura e regras do projecto — Clinic System
 
 Documento de referência para a estrutura, camadas e boas práticas que seguimos neste repositório.
 

@@ -11,7 +11,7 @@ export default async function ConfiguracoesPage() {
   let error: string | null = null;
   let profile = { nome: "", registro: "", clinica: "" };
   let memberProfile = { nome: "", registro: "", clinica: "" };
-  let branding = { clinicName: "Fichário TO", logoUrl: "/paris.png" };
+  let branding = { clinicName: "Clinic System", logoUrl: "/paris.png" };
 
   try {
     const { organizationId, userId } = await requireOrgId();

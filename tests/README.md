@@ -1,4 +1,4 @@
-# Testes — Fichário TO
+# Testes — Clinic System
 
 Estrutura separada do código de produção (`src/`).
 
@@ -11,20 +11,20 @@ tests/
 
 ## Comandos
 
-| Comando | O quê |
-|---------|--------|
-| `pnpm test` | Todos os unitários (Vitest) |
-| `pnpm test:unit` | Idem |
-| `pnpm test:watch` | Vitest em modo watch |
-| `pnpm test:e2e` | E2E Playwright (quando configurado) |
+| Comando           | O quê                               |
+| ----------------- | ----------------------------------- |
+| `pnpm test`       | Todos os unitários (Vitest)         |
+| `pnpm test:unit`  | Idem                                |
+| `pnpm test:watch` | Vitest em modo watch                |
+| `pnpm test:e2e`   | E2E Playwright (quando configurado) |
 
 ## Onde colocar cada tipo
 
-| Tipo | Pasta | Ferramenta | Exemplo |
-|------|-------|------------|---------|
-| **Unitário** | `tests/unit/` | Vitest | `tests/unit/features/finance/build-summary.test.ts` |
-| **E2E** | `tests/e2e/` | Playwright | `tests/e2e/agenda.spec.ts` |
-| **Fixtures / helpers** | `tests/helpers/` | — | dados partilhados entre testes |
+| Tipo                   | Pasta            | Ferramenta | Exemplo                                             |
+| ---------------------- | ---------------- | ---------- | --------------------------------------------------- |
+| **Unitário**           | `tests/unit/`    | Vitest     | `tests/unit/features/finance/build-summary.test.ts` |
+| **E2E**                | `tests/e2e/`     | Playwright | `tests/e2e/agenda.spec.ts`                          |
+| **Fixtures / helpers** | `tests/helpers/` | —          | dados partilhados entre testes                      |
 
 ### Convenção unitários
 

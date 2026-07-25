@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { listPatientAnamneses, toAnamneseSummary } from "@/features/anamnese/anamnese.service";
+import {
+  listPatientAnamneses,
+  toAnamneseSummary,
+} from "@/features/anamnese/anamnese.service";
 import { buildAnamnesePdfBlocks } from "@/features/anamnese/_lib/pdf/build-blocks";
 import { getCatalogAnamnese } from "@/features/anamnese/forms";
-import {
-  getPatientDetail,
-} from "@/features/patient/patient.service";
+import { getPatientDetail } from "@/features/patient/patient.service";
 import { listGuardians } from "@/features/guardian/guardian.service";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
@@ -40,7 +41,7 @@ export default async function PacienteDetailPage({
   };
 
   let branding: PrintBranding = {
-    clinicName: "Fichário TO",
+    clinicName: "Clinic System",
     logoUrl: "/paris.png",
   };
 
