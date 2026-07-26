@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { db } from "../src/shared/lib/prisma";
-import { ensureDemoPatient } from "../src/shared/lib/seed-demo-patient";
+import { ensureDemoPatient } from "./seed-demo-patient";
 
 async function main() {
   const organization = await db.organization.findFirst({
