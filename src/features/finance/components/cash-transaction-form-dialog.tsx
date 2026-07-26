@@ -40,7 +40,7 @@ import {
   type CashTransactionDraftInput,
 } from "@/features/finance/finance.schema";
 import type { CashTransactionDTO } from "@/features/finance/finance.types";
-import type { PatientDTO } from "@/features/patient/patient.types";
+import type { PatientOption } from "@/shared/types/patient-option";
 import {
   CASH_PAYMENT_METHODS,
   CASH_TRANSACTION_TYPES,
@@ -97,7 +97,7 @@ export function CashTransactionFormDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  patients: PatientDTO[];
+  patients: PatientOption[];
   members: { id: string; name: string }[];
   initial: CashTransactionDTO | null;
   draft?: CashTransactionDraft | null;
