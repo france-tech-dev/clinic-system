@@ -9,12 +9,10 @@ import type {
 } from "@/features/patient/patient.types";
 
 export function usePatientEvaluations({
-  detail,
   setDetail,
   pending,
   startTransition,
 }: {
-  detail: PatientDetailDTO;
   setDetail: React.Dispatch<React.SetStateAction<PatientDetailDTO>>;
   pending: boolean;
   startTransition: (fn: () => void) => void;

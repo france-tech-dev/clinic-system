@@ -1,0 +1,20 @@
+export type EvaluationDialogValues = {
+  id?: string;
+  patientId: string;
+  tipo: string;
+  date: string;
+  queixa: string;
+  historia: string;
+  domains: { categoryId: string; score: number; note: string }[];
+  objetivos: string;
+  condutas: string;
+  diagnostico: string;
+  encaminhadoPor: string;
+  contextoFamiliar: string;
+  nivelPrevio: string;
+  medicacoes: string;
+  precaucoes: string;
+  equipamentos: string;
+  frequencia: string;
+  criteriosAlta: string;
+};

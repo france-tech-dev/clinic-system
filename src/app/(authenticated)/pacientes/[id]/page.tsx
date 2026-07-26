@@ -58,7 +58,9 @@ export default async function PacienteDetailPage({
     guardians = g;
     professional = prof;
     branding = printBranding;
-    anamneses = anamneseRecords.map(toAnamneseSummary);
+    anamneses = anamneseRecords.map((row) =>
+      toAnamneseSummary(row, getCatalogAnamnese(row.formId)?.name ?? row.formId),
+    );
     anamneseSections = anamneseRecords.flatMap((row) => {
       const label = getCatalogAnamnese(row.formId)?.name ?? row.formId;
       return buildAnamnesePdfBlocks(row.formId, row.data).map((section) => ({

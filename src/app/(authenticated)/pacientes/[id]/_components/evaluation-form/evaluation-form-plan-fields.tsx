@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { EvaluationDialogValues } from "../evaluation-form-dialog";
+import type { EvaluationDialogValues } from "./evaluation-form-types";
 
 export function EvaluationFormPlanFields() {
   const { control } = useFormContext<EvaluationDialogValues>();

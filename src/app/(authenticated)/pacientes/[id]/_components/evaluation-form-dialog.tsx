@@ -27,27 +27,9 @@ import { EvaluationFormClinicalFields } from "./evaluation-form/evaluation-form-
 import { EvaluationFormDomainsSection } from "./evaluation-form/evaluation-form-domains-section";
 import { EvaluationFormMetaFields } from "./evaluation-form/evaluation-form-meta-fields";
 import { EvaluationFormPlanFields } from "./evaluation-form/evaluation-form-plan-fields";
+import type { EvaluationDialogValues } from "./evaluation-form/evaluation-form-types";
 
-export type EvaluationDialogValues = {
-  id?: string;
-  patientId: string;
-  tipo: string;
-  date: string;
-  queixa: string;
-  historia: string;
-  domains: { categoryId: string; score: number; note: string }[];
-  objetivos: string;
-  condutas: string;
-  diagnostico: string;
-  encaminhadoPor: string;
-  contextoFamiliar: string;
-  nivelPrevio: string;
-  medicacoes: string;
-  precaucoes: string;
-  equipamentos: string;
-  frequencia: string;
-  criteriosAlta: string;
-};
+export type { EvaluationDialogValues };
 
 function defaultDomains() {
   return EVALUATION_DOMAINS.map((c) => ({

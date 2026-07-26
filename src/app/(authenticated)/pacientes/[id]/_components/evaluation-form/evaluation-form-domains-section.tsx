@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { categoryOf } from "@/shared/constants/evaluation-domains";
 import { cn } from "@/shared/lib/utils";
-import type { EvaluationDialogValues } from "../evaluation-form-dialog";
+import type { EvaluationDialogValues } from "./evaluation-form-types";
 
 export function EvaluationFormDomainsSection() {
   const { control } = useFormContext<EvaluationDialogValues>();

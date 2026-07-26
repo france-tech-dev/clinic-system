@@ -64,7 +64,6 @@ export function usePatientDetail({
     startTransition,
   });
   const evaluations = usePatientEvaluations({
-    detail,
     setDetail,
     pending,
     startTransition,

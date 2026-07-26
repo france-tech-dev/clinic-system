@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { EvaluationDialogValues } from "../evaluation-form-dialog";
+import type { EvaluationDialogValues } from "./evaluation-form-types";
 
 export function EvaluationFormMetaFields() {
   const { control } = useFormContext<EvaluationDialogValues>();
