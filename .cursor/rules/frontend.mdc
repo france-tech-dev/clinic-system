@@ -23,6 +23,7 @@ alwaysApply: false
 - Shadcn + tokens semânticos (`bg-background`, `text-foreground`, `border-border`) — ver `ux.mdc`.
 - Controlos de formulário: sempre `@/components/ui` — ver `shadcn-components.mdc` (sem `<select>` / checkbox / radio nativos).
 - Altura relativa ao viewport: preferir `dvh`, nunca `vh` — ver `ux.mdc`.
+- Formulários clínicos multi-secção (anamnese, roteiros, GMFM): `ClinicalWorkspaceShell` + módulo com `render(ctx)` — ver `clinical-workspace.mdc` (caminho real 1→2→3; sem lib wizard/EHR).
 - Não hardcodar cores (`bg-white`, `text-gray-900`).
 
 ## Exclusão (obrigatório)

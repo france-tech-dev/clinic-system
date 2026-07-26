@@ -84,5 +84,6 @@ Documento completo: [`docs/architecture.md`](../../docs/architecture.md)
 | Controlos Shadcn     | `shadcn-components.mdc`     |
 | Actions              | `nextjs-server-actions.mdc` |
 | Design               | `ux.mdc`                    |
+| Workspace clínico    | `clinical-workspace.mdc`    |
 | Auth edge            | `middleware.mdc`            |
 | E2E                  | `testing.mdc`               |

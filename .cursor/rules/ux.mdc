@@ -65,6 +65,10 @@ style={{ height: "70vh" }}
 style={{ height: "70dvh" }}
 ```
 
+## Workspace clínico (multi-secção)
+
+Anamneses, roteiros e protocolos densos: índice + painel activo + footer sticky — ver `clinical-workspace.mdc` e `src/components/clinical-workspace-shell.tsx`. Não empilhar todas as secções num scroll longo.
+
 ## Acessibilidade
 
 - Labels em inputs; `role="alert"` em erros de formulário.
