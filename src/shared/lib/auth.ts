@@ -15,8 +15,9 @@ import { OrganizationInvitationEmail } from "@/components/emails/organization-in
 import { ResetPasswordEmail } from "@/components/emails/reset-password";
 import { VerifyEmail } from "@/components/emails/verify-email";
 import { Resend } from "resend";
-import { getActiveOrganization } from "@/server/organizations/organizations";
+import { getActiveOrganization } from "@/server/organizations/active-organization";
 import { paths } from "@/shared/constants/paths";
+import { Role } from "../../../prisma/generated/prisma/enums";
 
 const baseUrl = process.env.BETTER_AUTH_URL as string;
 const invitationAcceptUrl = (invitationId: string) =>
@@ -137,7 +138,7 @@ export const auth = betterAuth({
         CLIENT,
       },
       allowUserToCreateOrganization: true,
-      creatorRole: "OWNER",
+      creatorRole: Role.OWNER,
       async sendInvitationEmail(data) {
         const inviteUrl = invitationAcceptUrl(data.id);
         await resend.emails.send({
