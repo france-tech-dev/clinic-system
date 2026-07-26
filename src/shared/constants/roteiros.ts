@@ -7,7 +7,7 @@ export type RoteiroCategory = {
   rows: RoteiroRow[];
 };
 
-export type RoteiroId = "si" | "grafomotor" | "alimentacao";
+export type RoteiroId = "integracao-sensorial" | "grafomotor" | "alimentacao";
 
 export type Roteiro = {
   id: RoteiroId;
@@ -588,7 +588,7 @@ export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
 ];
 
 export const ROTEIROS: Roteiro[] = [
-  { id: "si", label: "Integração Sensorial", categories: SI_CATEGORIES },
+  { id: "integracao-sensorial", label: "Integração Sensorial", categories: SI_CATEGORIES },
   { id: "grafomotor", label: "Motricidade Fina e Escrita", categories: GRAFOMOTOR_CATEGORIES },
   { id: "alimentacao", label: "Alimentação e Seletividade", categories: ALIMENTACAO_CATEGORIES },
 ];
