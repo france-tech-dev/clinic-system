@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -111,8 +111,11 @@ export function SessionFormDialog({
     defaultValues: buildDefaults(patientId, initial, defaultAppointmentId),
   });
 
-  const appointmentId = form.watch("appointmentId");
-  const status = form.watch("status");
+  const appointmentId = useWatch({
+    control: form.control,
+    name: "appointmentId",
+  });
+  const status = useWatch({ control: form.control, name: "status" });
 
   const lockedAppointment = lockAppointment
     ? (options.find((a) => a.id === appointmentId) ?? options[0] ?? null)
