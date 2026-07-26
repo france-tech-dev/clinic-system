@@ -171,6 +171,29 @@ const [dashboard, cashflow] = await Promise.all([
 import { getCashflowPageData } from "@/features/finance/finance.service";
 ```
 
+### Verificação automática (`pnpm arch`)
+
+As fronteiras acima são validadas por [dependency-cruiser](https://github.com/sverweij/dependency-cruiser) (config em [`.dependency-cruiser.cjs`](../.dependency-cruiser.cjs)). Correm no `pnpm lint` e podem ser corridas isoladamente:
+
+```bash
+pnpm arch
+```
+
+Regras aplicadas (todas `error`):
+
+- `no-cross-feature` — `features/*` não importa outra `features/*`
+- `no-app-imports` — `features/`, `shared/`, `server/`, `components/` não importam `app/`
+- `shared-no-features` — `shared/` não importa `features/`
+- `server-no-features` — `server/` não importa `features/`
+- `components-no-features` — `components/` não importa `features/`
+- `no-circular` — sem dependências circulares em `src/`
+
+Para quebrar ciclos: extrair tipos partilhados para um ficheiro próprio (ex.: `evaluation-form-types.ts`), separar leitura de dados da configuração, ou resolver metadados no boundary (ex.: `toAnamneseSummary(dto, label)` recebe o `label` do catálogo em vez de o service importar o registry).
+
+Não há excepções activas às fronteiras. UI específica de uma rota fica no `_components/` local, mesmo quando consome actions de uma feature.
+
+Partilhar dados finos entre domínios sem acoplar: usar tipos planos em `shared/types/` (ex.: `PatientOption` no diálogo de caixa em vez de `PatientDTO` de `features/patient`).
+
 ---
 
 ## 5. Onde colocar UI e hooks
