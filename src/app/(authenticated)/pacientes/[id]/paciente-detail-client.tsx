@@ -11,6 +11,7 @@ import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";
+import { RoteirosTab } from "./_components/roteiros-tab";
 import { usePatientDetail } from "./_components/hooks/use-patient-detail";
 import { PatientDetailDialogs } from "./_components/patient-detail-dialogs";
 import { PatientDetailHeader } from "./_components/patient-detail-header";
@@ -23,6 +24,7 @@ export function PacienteDetailClient({
   initialAnamneseSections,
   professional,
   branding,
+  showRoteiros,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
@@ -30,6 +32,7 @@ export function PacienteDetailClient({
   initialAnamneseSections: PdfKeyValueSection[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
+  showRoteiros: boolean;
 }) {
   const vm = usePatientDetail({
     initial,
@@ -50,22 +53,29 @@ export function PacienteDetailClient({
         onRemove={vm.removePatient}
       />
 
-      <PatientDetailTabs tab={vm.tab} onTabChange={vm.setTab} />
+      <PatientDetailTabs
+        tab={vm.tab}
+        onTabChange={vm.setTab}
+        showRoteiros={showRoteiros}
+      />
 
       {vm.tab === "avaliacao" && (
         <AvaliacaoTab
           evaluations={vm.detail.evaluations}
-          avaliacaoView={vm.roteiro.avaliacaoView}
+          onNewEvaluation={vm.evaluations.openNewEvaluation}
+          onViewEvaluation={vm.evaluations.setViewEval}
+        />
+      )}
+
+      {vm.tab === "roteiros" && showRoteiros && (
+        <RoteirosTab
           roteiroId={vm.roteiro.roteiroId}
           currentRoteiro={vm.roteiro.currentRoteiro}
           currentCategory={vm.roteiro.currentCategory}
           roteiroDraft={vm.roteiro.roteiroDraft}
           currentRoteiroNote={vm.roteiro.currentRoteiroNote}
           pending={vm.roteiro.pending}
-          onAvaliacaoViewChange={vm.roteiro.setAvaliacaoView}
           onOpenRoteiro={vm.roteiro.openRoteiro}
-          onNewEvaluation={vm.evaluations.openNewEvaluation}
-          onViewEvaluation={vm.evaluations.setViewEval}
           onSelectTick={vm.roteiro.selectTick}
           onRoteiroDraftChange={vm.roteiro.setRoteiroDraft}
           onSaveRoteiroNote={vm.roteiro.saveCurrentRoteiroNote}

@@ -7,6 +7,7 @@ import {
 import { buildAnamnesePdfBlocks } from "@/features/anamnese/_lib/pdf/build-blocks";
 import { getCatalogAnamnese } from "@/features/anamnese/forms";
 import { getPatientDetail } from "@/features/patient/patient.service";
+import { listTeamMembers } from "@/features/team/team.service";
 import { listGuardians } from "@/features/guardian/guardian.service";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
@@ -44,20 +45,28 @@ export default async function PacienteDetailPage({
     clinicName: "Clinic System",
     logoUrl: "/logo_dark.png",
   };
+  let showRoteiros = false;
 
   try {
     const { organizationId } = await requireOrgId();
-    const [d, g, prof, printBranding, anamneseRecords] = await Promise.all([
-      getPatientDetail(organizationId, id),
-      listGuardians(organizationId),
-      getProfessionalProfile(organizationId),
-      getPrintBranding(organizationId),
-      listPatientAnamneses(organizationId, id),
-    ]);
+    const [d, g, prof, printBranding, anamneseRecords, members] =
+      await Promise.all([
+        getPatientDetail(organizationId, id),
+        listGuardians(organizationId),
+        getProfessionalProfile(organizationId),
+        getPrintBranding(organizationId),
+        listPatientAnamneses(organizationId, id),
+        listTeamMembers(organizationId),
+      ]);
     detail = d;
     guardians = g;
     professional = prof;
     branding = printBranding;
+    showRoteiros = members.some(
+      (member) =>
+        member.status === "ativo" &&
+        member.profession === "terapeuta_ocupacional",
+    );
     anamneses = anamneseRecords.map((row) =>
       toAnamneseSummary(
         row,
@@ -97,6 +106,7 @@ export default async function PacienteDetailPage({
         initialAnamneseSections={anamneseSections}
         professional={professional}
         branding={branding}
+        showRoteiros={showRoteiros}
       />
     </AppPage>
   );

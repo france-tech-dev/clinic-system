@@ -7,13 +7,19 @@ import {
 export function PatientDetailTabs({
   tab,
   onTabChange,
+  showRoteiros,
 }: {
   tab: PatientDetailTab;
   onTabChange: (tab: PatientDetailTab) => void;
+  showRoteiros: boolean;
 }) {
+  const tabs = PATIENT_DETAIL_TABS.filter(
+    ([id]) => id !== "roteiros" || showRoteiros,
+  );
+
   return (
     <div className="no-print flex gap-4 overflow-x-auto border-b border-border">
-      {PATIENT_DETAIL_TABS.map(([id, label]) => (
+      {tabs.map(([id, label]) => (
         <button
           key={id}
           type="button"

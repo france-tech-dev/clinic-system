@@ -22,8 +22,7 @@ export function AvaliacaoLista({
       </div>
       {evaluations.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Nenhuma avaliação registrada. Use também os roteiros clínicos acima
-          (SI, grafomotor, alimentação).
+          Nenhuma avaliação registrada.
         </p>
       ) : (
         <ul className="space-y-2">

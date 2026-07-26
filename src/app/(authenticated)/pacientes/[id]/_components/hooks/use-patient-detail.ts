@@ -23,8 +23,8 @@ import type { PatientDetailTab } from "../patient-detail-types";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientEvaluations } from "./use-patient-evaluations";
 import { usePatientPdfReport } from "@/features/patient/hooks/use-patient-pdf-report";
+import { useRoteiroNotes } from "@/features/patient/hooks/use-roteiro-notes";
 import { usePatientSessions } from "./use-patient-sessions";
-import { useRoteiroNotes } from "./use-roteiro-notes";
 
 export function usePatientDetail({
   initial,

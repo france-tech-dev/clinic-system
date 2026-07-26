@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import {
-  getAssessmentUi,
-  getCatalogAssessment,
-} from "@/features/protocol/assessments";
+import { resolveAssessmentUi } from "@/app/(authenticated)/avaliacoes/_lib/resolve-assessment-ui";
+import { getCatalogAssessment } from "@/features/protocol/assessments";
 import { listPatients } from "@/features/patient/patient.service";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 
@@ -17,7 +15,7 @@ export default async function AvaliacaoPage({
 }) {
   const { avaliacao: avaliacaoId } = await params;
   const assessment = getCatalogAssessment(avaliacaoId);
-  const ui = getAssessmentUi(avaliacaoId);
+  const ui = resolveAssessmentUi(avaliacaoId);
   if (!assessment || !ui) notFound();
 
   const query = await searchParams;
