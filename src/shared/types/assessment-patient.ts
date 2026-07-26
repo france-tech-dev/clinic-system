@@ -1,5 +1,3 @@
-export type AssessmentPatientOption = {
-  id: string;
-  name: string;
-  status: string;
-};
+import type { PatientOption } from "./patient-option";
+
+export type AssessmentPatientOption = PatientOption & { status: string };
