@@ -42,7 +42,7 @@ export default async function PacienteDetailPage({
 
   let branding: PrintBranding = {
     clinicName: "Clinic System",
-    logoUrl: "/paris.png",
+    logoUrl: "/logo_dark.png",
   };
 
   try {
@@ -59,7 +59,10 @@ export default async function PacienteDetailPage({
     professional = prof;
     branding = printBranding;
     anamneses = anamneseRecords.map((row) =>
-      toAnamneseSummary(row, getCatalogAnamnese(row.formId)?.name ?? row.formId),
+      toAnamneseSummary(
+        row,
+        getCatalogAnamnese(row.formId)?.name ?? row.formId,
+      ),
     );
     anamneseSections = anamneseRecords.flatMap((row) => {
       const label = getCatalogAnamnese(row.formId)?.name ?? row.formId;

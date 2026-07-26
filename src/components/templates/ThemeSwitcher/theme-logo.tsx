@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 
 const LOGO = {
-  light: "/paris.png",
+  light: "/logo_dark.png",
   dark: "/logo.png",
 } as const;
 
