@@ -427,7 +427,7 @@ export function GmfmProtocolClient({
       ) : null}
 
       <Dialog open={formOpen} onOpenChange={handleFormOpenChange}>
-        <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
+        <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-5xl">
           <DialogHeader>
             <DialogTitle className="font-serif">
               {editing ? "Editar GMFM-88" : "Nova GMFM-88"}

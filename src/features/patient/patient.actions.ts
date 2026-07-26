@@ -28,6 +28,7 @@ import {
   resolveAuthorMemberId,
   getPatientDetail,
   listPatients,
+  listRoteiroNotes,
   saveRoteiroNote,
   setPatientStatus,
   updateEvaluation,
@@ -264,6 +265,20 @@ export async function deleteSessionAction(
     if (!removed) return fail("Evolução não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function listRoteiroNotesAction(
+  patientId: string,
+): Promise<ActionResult<RoteiroNoteDTO[]>> {
+  try {
+    if (!patientId) return fail("Paciente não informado");
+    const { organizationId } = await requireOrgId();
+    const data = await listRoteiroNotes(organizationId, patientId);
+    if (!data) return fail("Paciente não encontrado");
+    return ok(data);
   } catch (error) {
     return handleError(error);
   }

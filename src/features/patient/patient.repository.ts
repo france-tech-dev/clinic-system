@@ -304,6 +304,17 @@ export const patientRepository = {
     return existing;
   },
 
+  async listRoteiroNotes(organizationId: string, patientId: string) {
+    const patient = await db.patient.findFirst({
+      where: { id: patientId, organizationId },
+    });
+    if (!patient) return null;
+    return db.roteiroNote.findMany({
+      where: { patientId },
+      orderBy: { updatedAt: "desc" },
+    });
+  },
+
   async upsertRoteiroNote(
     organizationId: string,
     data: {

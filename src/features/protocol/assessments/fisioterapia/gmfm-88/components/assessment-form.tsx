@@ -1,12 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { ClinicalWorkspaceShell } from "@/components/clinical-workspace-shell";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
   FormControl,
@@ -42,6 +38,16 @@ export function GmfmAssessmentForm() {
   const { control, setValue } = useFormContext<GmfmAssessmentFormValues>();
   const scores =
     (useWatch({ control, name: "scores" }) as Gmfm88Scores | undefined) ?? {};
+  const [activeDomainId, setActiveDomainId] = useState(
+    GMFM88_TEMPLATE.domains[0]?.id ?? "A",
+  );
+
+  const activeDomain =
+    GMFM88_TEMPLATE.domains.find((d) => d.id === activeDomainId) ??
+    GMFM88_TEMPLATE.domains[0];
+  const activeSummary = activeDomain
+    ? summarizeGmfm88Domain(scores, activeDomain.id)
+    : null;
 
   function setItemScore(itemId: string, value: number) {
     setValue(`scores.${itemId}` as `scores.${string}`, value, {
@@ -93,57 +99,63 @@ export function GmfmAssessmentForm() {
         />
       </div>
 
-      <Accordion type="multiple" defaultValue={["A"]} className="w-full">
-        {GMFM88_TEMPLATE.domains.map((domain) => {
-          const summary = summarizeGmfm88Domain(scores, domain.id);
-          return (
-            <AccordionItem key={domain.id} value={domain.id}>
-              <AccordionTrigger className="text-left">
-                <span className="flex flex-1 items-center justify-between gap-2 pr-2">
-                  <span>
-                    {domain.id} — {domain.title}
-                  </span>
-                  {summary ? (
-                    <span className="text-xs font-normal text-muted-foreground">
-                      {summary.totalScore}/{summary.maxScore} (
-                      {summary.percent.toFixed(1)}%)
-                    </span>
-                  ) : null}
-                </span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 pt-1">
-                  {domain.items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="rounded-md border border-border p-3"
+      {activeDomain ? (
+        <ClinicalWorkspaceShell
+          navLabel="Domínios GMFM-88"
+          items={GMFM88_TEMPLATE.domains.map((domain) => {
+            const summary = summarizeGmfm88Domain(scores, domain.id);
+            return {
+              id: domain.id,
+              label: `${domain.id} — ${domain.title}`,
+              meta: summary
+                ? `${summary.totalScore}/${summary.maxScore}`
+                : undefined,
+            };
+          })}
+          activeId={activeDomain.id}
+          onSelect={setActiveDomainId}
+        >
+          <div>
+            <h3 className="font-serif text-lg font-semibold">
+              {activeDomain.id} — {activeDomain.title}
+            </h3>
+            {activeSummary ? (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {activeSummary.totalScore}/{activeSummary.maxScore} (
+                {activeSummary.percent.toFixed(1)}%)
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {activeDomain.items.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-md border border-border p-3"
+              >
+                <p className="mb-2 text-sm leading-snug">{item.label}</p>
+                <div className="flex gap-1">
+                  {SCORE_OPTIONS.map((score) => (
+                    <button
+                      key={score}
+                      type="button"
+                      onClick={() => setItemScore(item.id, score)}
+                      className={cn(
+                        "size-8 rounded border text-xs font-medium",
+                        scores[item.id] === score
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border text-muted-foreground hover:bg-muted",
+                      )}
                     >
-                      <p className="mb-2 text-sm leading-snug">{item.label}</p>
-                      <div className="flex gap-1">
-                        {SCORE_OPTIONS.map((score) => (
-                          <button
-                            key={score}
-                            type="button"
-                            onClick={() => setItemScore(item.id, score)}
-                            className={cn(
-                              "size-8 rounded border text-xs font-medium",
-                              scores[item.id] === score
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border text-muted-foreground hover:bg-muted",
-                            )}
-                          >
-                            {score}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                      {score}
+                    </button>
                   ))}
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          );
-        })}
-      </Accordion>
+              </div>
+            ))}
+          </div>
+        </ClinicalWorkspaceShell>
+      ) : null}
 
       <FormField
         control={control}

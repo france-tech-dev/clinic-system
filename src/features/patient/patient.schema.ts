@@ -151,7 +151,7 @@ export const sessionIdSchema = z.object({
 
 export const roteiroNoteSaveSchema = z.object({
   patientId: z.string().min(1),
-  roteiroId: z.enum(["si", "grafomotor", "alimentacao"]),
+  roteiroId: z.enum(["integracao-sensorial", "grafomotor", "alimentacao"]),
   categoryTick: z.string().min(1),
   notes: z.string().default(""),
 });

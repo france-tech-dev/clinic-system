@@ -140,6 +140,17 @@ export async function deleteSessionNote(organizationId: string, id: string) {
   return patientRepository.deleteSession(organizationId, id);
 }
 
+export async function listRoteiroNotes(
+  organizationId: string,
+  patientId: string,
+) {
+  const rows = await patientRepository.listRoteiroNotes(
+    organizationId,
+    patientId,
+  );
+  return rows ? rows.map(toRoteiroNoteDTO) : null;
+}
+
 export async function saveRoteiroNote(
   organizationId: string,
   data: RoteiroNoteSaveInput,

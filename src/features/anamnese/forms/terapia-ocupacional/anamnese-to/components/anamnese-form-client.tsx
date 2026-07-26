@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
+import { ClinicalWorkspaceShell } from "@/components/clinical-workspace-shell";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -55,12 +56,17 @@ export function AnamneseFormClient({
   const [data, setData] = useState<Record<string, unknown>>(
     initialAnamnese?.data ?? {},
   );
+  const [activeSectionId, setActiveSectionId] = useState(
+    () => schema[0]?.id ?? "",
+  );
   const [pending, startTransition] = useTransition();
   const [previewPayload, setPreviewPayload] =
     useState<AnamneseReportPayload | null>(null);
 
   const patientName =
     activePatients.find((p) => p.id === patientId)?.name ?? "";
+  const activeSection =
+    schema.find((sec) => sec.id === activeSectionId) ?? schema[0];
 
   function handlePatientChange(nextId: string | null) {
     const id = !nextId || nextId === "none" ? "" : nextId;
@@ -138,39 +144,48 @@ export function AnamneseFormClient({
         <p className="text-sm text-muted-foreground">
           Escolha um paciente para preencher a anamnese.
         </p>
-      ) : (
-        <section className="space-y-6">
-          {schema.map((sec) => (
-            <div
-              key={sec.id}
-              className="rounded-md border border-border bg-card p-4"
-            >
-              <h3 className="mb-3 font-serif text-lg font-semibold">
-                {sec.title}
-              </h3>
-              <div className="grid items-start gap-3 sm:grid-cols-2">
-                {sec.fields.map((field) => (
-                  <AnamneseField
-                    key={field.id}
-                    field={field}
-                    data={data}
-                    onChange={setData}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="flex flex-wrap justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={handlePreview}>
-              <FileText className="size-4" />
-              Relatório PDF
-            </Button>
-            <Button disabled={pending} onClick={handleSave}>
-              Salvar anamnese
-            </Button>
+      ) : activeSection ? (
+        <ClinicalWorkspaceShell
+          navLabel="Secções da anamnese"
+          items={schema.map((sec) => ({
+            id: sec.id,
+            label: sec.title,
+          }))}
+          activeId={activeSection.id}
+          onSelect={setActiveSectionId}
+          footer={
+            <>
+              <Button disabled={pending} onClick={handleSave}>
+                Salvar anamnese
+              </Button>
+              <Button variant="outline" size="sm" onClick={handlePreview}>
+                <FileText className="size-4" />
+                Relatório PDF
+              </Button>
+            </>
+          }
+        >
+          <div>
+            <h3 className="font-serif text-lg font-semibold">
+              {activeSection.title}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Secção {schema.findIndex((s) => s.id === activeSection.id) + 1} de{" "}
+              {schema.length}
+            </p>
           </div>
-        </section>
-      )}
+          <div className="grid items-start gap-3 sm:grid-cols-2">
+            {activeSection.fields.map((field) => (
+              <AnamneseField
+                key={field.id}
+                field={field}
+                data={data}
+                onChange={setData}
+              />
+            ))}
+          </div>
+        </ClinicalWorkspaceShell>
+      ) : null}
 
       <AnamnesePdfPreviewDialog
         payload={previewPayload}
