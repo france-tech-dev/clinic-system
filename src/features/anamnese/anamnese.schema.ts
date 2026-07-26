@@ -6,10 +6,6 @@ export const anamneseSaveSchema = z.object({
   data: z.record(z.string(), z.unknown()),
 });
 
-export const listPatientAnamnesesSchema = z.object({
-  patientId: z.string().min(1),
-});
-
 export const getAnamneseSchema = z.object({
   patientId: z.string().min(1),
   formId: z.string().min(1),

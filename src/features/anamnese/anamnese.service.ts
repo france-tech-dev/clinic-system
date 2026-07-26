@@ -1,6 +1,5 @@
 import { anamneseRepository } from "./anamnese.repository";
 import type { AnamneseDTO, AnamneseSummaryDTO } from "./anamnese.types";
-import { getCatalogAnamnese } from "./forms/registry";
 
 function parseData(raw: string): Record<string, unknown> {
   try {
@@ -30,11 +29,19 @@ function toDTO(row: {
   };
 }
 
-export function toAnamneseSummary(dto: AnamneseDTO): AnamneseSummaryDTO {
+/**
+ * Monta o resumo. O `label` (metadado de catálogo) é resolvido pelo caller,
+ * que tem acesso ao registry de forms — evita acoplar o service de dados ao
+ * catálogo (ver docs/architecture.md, secção 4).
+ */
+export function toAnamneseSummary(
+  dto: AnamneseDTO,
+  label: string,
+): AnamneseSummaryDTO {
   return {
     id: dto.id,
     formId: dto.formId,
-    label: getCatalogAnamnese(dto.formId)?.name ?? dto.formId,
+    label,
     updatedAt: dto.updatedAt,
   };
 }
