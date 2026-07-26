@@ -20,6 +20,8 @@ export function ClinicHeader({
   return (
     <View style={pdfStyles.header}>
       {resolvedLogo ? (
+        // @react-pdf/renderer Image não expõe `alt` (não é elemento DOM).
+        // eslint-disable-next-line jsx-a11y/alt-text
         <Image style={pdfStyles.logo} src={resolvedLogo} />
       ) : null}
       <View style={pdfStyles.headerText}>
