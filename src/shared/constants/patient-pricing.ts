@@ -1,6 +1,6 @@
 export const PATIENT_PRICING_TYPES = [
-  { id: "sessao" as const, label: "Por sessão" },
-  { id: "pacote" as const, label: "Por pacote" },
+  { id: "session" as const, label: "Por sessão" },
+  { id: "package" as const, label: "Por pacote" },
 ] as const;
 
 export type PatientPricingTypeId =
@@ -11,5 +11,5 @@ export function patientPricingTypeLabel(id: PatientPricingTypeId): string {
 }
 
 export function patientPriceFieldLabel(type: PatientPricingTypeId): string {
-  return type === "pacote" ? "Valor do pacote (R$)" : "Valor por sessão (R$)";
+  return type === "package" ? "Valor do pacote (R$)" : "Valor por sessão (R$)";
 }

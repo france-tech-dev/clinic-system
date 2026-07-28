@@ -1,7 +1,7 @@
 export type ProfessionalProfile = {
-  nome: string;
-  registro: string;
-  clinica: string;
+  name: string;
+  registration: string;
+  clinic: string;
 };
 
 export type PrintBranding = {
@@ -10,42 +10,43 @@ export type PrintBranding = {
 };
 
 export const EMPTY_PROFESSIONAL: ProfessionalProfile = {
-  nome: "",
-  registro: "",
-  clinica: "",
+  name: "",
+  registration: "",
+  clinic: "",
 };
 
 /** Perfil de assinatura guardado em Member.metadata (JSON). */
 export type MemberProfessionalStored = {
-  nome: string;
-  registro: string;
+  name: string;
+  registration: string;
 };
 
 export function formatProfessionalSignature(p: ProfessionalProfile): string {
-  if (!p.nome.trim()) {
+  if (!p.name.trim()) {
     return "Assinatura e carimbo — Terapeuta Ocupacional";
   }
-  const reg = p.registro.trim() ? ` · ${p.registro.trim()}` : "";
-  return `${p.nome.trim()}${reg} — Terapeuta Ocupacional`;
+  const reg = p.registration.trim() ? ` · ${p.registration.trim()}` : "";
+  return `${p.name.trim()}${reg} — Terapeuta Ocupacional`;
 }
 
 export function parseMemberProfessionalMetadata(
   raw: string | null | undefined,
 ): MemberProfessionalStored {
-  if (!raw?.trim()) return { nome: "", registro: "" };
+  if (!raw?.trim()) return { name: "", registration: "" };
   try {
     const parsed = JSON.parse(raw) as {
       professional?: Partial<MemberProfessionalStored>;
-      nome?: string;
-      registro?: string;
+      name?: string;
+      registration?: string;
     };
     const source = parsed.professional ?? parsed;
     return {
-      nome: typeof source.nome === "string" ? source.nome : "",
-      registro: typeof source.registro === "string" ? source.registro : "",
+      name: typeof source.name === "string" ? source.name : "",
+      registration:
+        typeof source.registration === "string" ? source.registration : "",
     };
   } catch {
-    return { nome: "", registro: "" };
+    return { name: "", registration: "" };
   }
 }
 
@@ -64,26 +65,27 @@ export function serializeMemberProfessionalMetadata(
   return JSON.stringify({
     ...base,
     professional: {
-      nome: profile.nome.trim(),
-      registro: profile.registro.trim(),
+      name: profile.name.trim(),
+      registration: profile.registration.trim(),
     },
   });
 }
 
-/** Constrói perfil usável no PDF a partir do Member (+ nome do User como fallback). */
+/** Constrói perfil usável no PDF a partir do Member (+ name do User como fallback). */
 export function memberToProfessionalProfile(
   metadata: string | null | undefined,
   userName: string | null | undefined,
-  registroColumn?: string | null,
+  registrationColumn?: string | null,
 ): ProfessionalProfile | null {
   const stored = parseMemberProfessionalMetadata(metadata);
-  const nome = stored.nome.trim() || userName?.trim() || "";
-  const registro = registroColumn?.trim() || stored.registro.trim();
-  if (!nome && !registro) return null;
+  const name = stored.name.trim() || userName?.trim() || "";
+  const registration =
+    registrationColumn?.trim() || stored.registration.trim();
+  if (!name && !registration) return null;
   return {
-    nome: nome || "Profissional",
-    registro,
-    clinica: "",
+    name: name || "Profissional",
+    registration,
+    clinic: "",
   };
 }
 
@@ -92,10 +94,10 @@ export function resolveReportProfessional(
   orgFallback: ProfessionalProfile,
 ): ProfessionalProfile {
   if (!author) return orgFallback;
-  if (!author.nome.trim() && !author.registro.trim()) return orgFallback;
+  if (!author.name.trim() && !author.registration.trim()) return orgFallback;
   return {
-    nome: author.nome.trim() || orgFallback.nome,
-    registro: author.registro.trim() || orgFallback.registro,
-    clinica: author.clinica || orgFallback.clinica,
+    name: author.name.trim() || orgFallback.name,
+    registration: author.registration.trim() || orgFallback.registration,
+    clinic: author.clinic || orgFallback.clinic,
   };
 }

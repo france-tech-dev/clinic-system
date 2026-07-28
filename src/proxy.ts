@@ -61,9 +61,9 @@ export async function proxy(req: NextRequest) {
     user?.members[0] ??
     null;
 
-  if (member?.status === "inativo") {
+  if (member?.status === "inactive") {
     const logoutUrl = new URL(paths.auth.logout, req.url);
-    logoutUrl.searchParams.set("aviso", "inativo");
+    logoutUrl.searchParams.set("aviso", "inactive");
     return NextResponse.redirect(logoutUrl);
   }
 

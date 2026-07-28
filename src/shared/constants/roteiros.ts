@@ -7,7 +7,7 @@ export type RoteiroCategory = {
   rows: RoteiroRow[];
 };
 
-export type RoteiroId = "integracao-sensorial" | "grafomotor" | "alimentacao";
+export type RoteiroId = "sensory-integration" | "fine-motor" | "feeding-selectivity";
 
 export type Roteiro = {
   id: RoteiroId;
@@ -15,9 +15,9 @@ export type Roteiro = {
   categories: RoteiroCategory[];
 };
 
-export const SI_CATEGORIES: RoteiroCategory[] = [
+export const SENSORY_INTEGRATION_CATEGORIES: RoteiroCategory[] = [
   {
-    "tick": "VESTIBULAR",
+    "tick": "vestibular",
     "title": "Sistema vestibular",
     "context": "Base para tônus postural, equilíbrio, segurança gravitacional e regulação do estado de alerta.",
     "rows": [
@@ -74,7 +74,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "PROPRIOCEPTIVO",
+    "tick": "proprioceptive",
     "title": "Sistema proprioceptivo",
     "context": "Consciência de posição e força corporal — base da estabilidade postural, da graduação de força e do planejamento motor.",
     "rows": [
@@ -146,7 +146,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "TÁTIL",
+    "tick": "tactile",
     "title": "Sistema tátil",
     "context": "Discriminação e modulação do toque — base da defensividade tátil, da destreza manual e de parte da práxis.",
     "rows": [
@@ -203,7 +203,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "VISUAL",
+    "tick": "visual",
     "title": "Sistema visual",
     "context": "Percepção e controle oculomotor — sustentam cópia, leitura e integração visuo-motora.",
     "rows": [
@@ -230,7 +230,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "INTEGR. BILATERAL",
+    "tick": "bilateral-integration",
     "title": "Integração bilateral",
     "context": "Coordenação dos dois lados do corpo trabalhando juntos, com cruzamento da linha média.",
     "rows": [
@@ -257,7 +257,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "PLANEJ. MOTOR",
+    "tick": "motor-planning",
     "title": "Planejamento motor",
     "context": "Capacidade de organizar e executar ações motoras novas com intenção.",
     "rows": [
@@ -272,14 +272,14 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
         "Desorganização reforça hipótese de dispraxia; investigar em conjunto com práxis."
       ],
       [
-        "Pendurar em equipamentos",
+        "Pendurar em equipment",
         "Consegue se pendurar e sustentar o peso do próprio corpo (barra, argolas)?",
         "Evitação/dificuldade sugere insegurança gravitacional combinada a fraqueza proprioceptiva e comprometimento do planejamento motor."
       ]
     ]
   },
   {
-    "tick": "PRÁXIS",
+    "tick": "praxis",
     "title": "Práxis",
     "context": "Ideação, planejamento e execução de ações motoras — incluindo postura, fala e brincar.",
     "rows": [
@@ -301,7 +301,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "MODULAÇÃO",
+    "tick": "modulation",
     "title": "Modulação e autorregulação",
     "context": "Síntese de como a criança regula a resposta aos estímulos — usada para fechar o raciocínio clínico após observar os sistemas acima.",
     "rows": [
@@ -313,7 +313,7 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
       [
         "Hipo-responsividade em algum sistema",
         "Em qual(is) sistema(s) a criança registra pouco ou não percebe o estímulo?",
-        "Indica sub-registro sensorial — correlaciona com busca sensorial ou letargia, conforme o sistema."
+        "Indica sub-registration sensorial — correlaciona com busca sensorial ou letargia, conforme o sistema."
       ],
       [
         "Alerta",
@@ -339,9 +339,9 @@ export const SI_CATEGORIES: RoteiroCategory[] = [
   }
 ];
 
-export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
+export const FINE_MOTOR_CATEGORIES: RoteiroCategory[] = [
   {
-    "tick": "PREENSÃO",
+    "tick": "grasp",
     "title": "Preensão de lápis e utensílios",
     "context": "Avalia o tipo de pegada usado para escrever e manusear utensílios, base para eficiência e conforto na escrita.",
     "rows": [
@@ -363,14 +363,14 @@ export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "TRAÇO",
+    "tick": "stroke",
     "title": "Pressão e controle do traço",
     "context": "Observa a qualidade da marca deixada no papel e o controle motor fino durante o traçado.",
     "rows": [
       [
         "Pressão no papel",
         "A pressão é uniforme, ou varia muito (traço muito forte, rasgando o papel, ou muito fraco, quase invisível)?",
-        "Pressão excessiva costuma refletir baixo registro proprioceptivo; pressão insuficiente pode indicar hipotonia ou insegurança motora."
+        "Pressão excessiva costuma refletir baixo registration proprioceptivo; pressão insuficiente pode indicar hipotonia ou insegurança motora."
       ],
       [
         "Controle de linhas retas e curvas",
@@ -385,7 +385,7 @@ export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "LETRAS",
+    "tick": "letters",
     "title": "Formação de letras e números",
     "context": "Analisa a legibilidade e a consistência na formação dos grafemas.",
     "rows": [
@@ -407,7 +407,7 @@ export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "ESPAÇO",
+    "tick": "spatial",
     "title": "Organização espacial na folha",
     "context": "Avalia o uso do espaço da página e a organização visual da escrita.",
     "rows": [
@@ -429,7 +429,7 @@ export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "FLUÊNCIA",
+    "tick": "fluency",
     "title": "Velocidade e fluência da escrita",
     "context": "Observa o ritmo e a resistência da criança durante tarefas de escrita mais longas.",
     "rows": [
@@ -451,7 +451,7 @@ export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "TESOURA",
+    "tick": "scissors",
     "title": "Uso de tesoura e ferramentas",
     "context": "Avalia a coordenação bimanual e o planejamento motor no manuseio de instrumentos escolares.",
     "rows": [
@@ -474,9 +474,9 @@ export const GRAFOMOTOR_CATEGORIES: RoteiroCategory[] = [
   }
 ];
 
-export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
+export const FEEDING_SELECTIVITY_CATEGORIES: RoteiroCategory[] = [
   {
-    "tick": "TEXTURAS",
+    "tick": "textures",
     "title": "Aceitação de texturas",
     "context": "Observa a tolerância e reação da criança a diferentes texturas alimentares.",
     "rows": [
@@ -498,7 +498,7 @@ export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "GRUPOS",
+    "tick": "food-groups",
     "title": "Aceitação de cores e grupos alimentares",
     "context": "Mapeia o repertório alimentar em termos de variedade e categorias aceitas.",
     "rows": [
@@ -520,7 +520,7 @@ export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "ORAL-MOTOR",
+    "tick": "oral-motor",
     "title": "Habilidades oral-motoras",
     "context": "Avalia o controle motor da boca durante a mastigação e a deglutição.",
     "rows": [
@@ -542,7 +542,7 @@ export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "COMPORTAMENTO",
+    "tick": "mealtime-behavior",
     "title": "Comportamento à mesa",
     "context": "Observa reações comportamentais durante o momento da refeição.",
     "rows": [
@@ -564,7 +564,7 @@ export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
     ]
   },
   {
-    "tick": "ROTINA",
+    "tick": "mealtime-routine",
     "title": "Ambiente e rotina alimentar",
     "context": "Contextualiza os fatores ambientais e de rotina que influenciam a alimentação.",
     "rows": [
@@ -588,9 +588,9 @@ export const ALIMENTACAO_CATEGORIES: RoteiroCategory[] = [
 ];
 
 export const ROTEIROS: Roteiro[] = [
-  { id: "integracao-sensorial", label: "Integração Sensorial", categories: SI_CATEGORIES },
-  { id: "grafomotor", label: "Motricidade Fina e Escrita", categories: GRAFOMOTOR_CATEGORIES },
-  { id: "alimentacao", label: "Alimentação e Seletividade", categories: ALIMENTACAO_CATEGORIES },
+  { id: "sensory-integration", label: "Integração Sensorial", categories: SENSORY_INTEGRATION_CATEGORIES },
+  { id: "fine-motor", label: "Motricidade Fina e Escrita", categories: FINE_MOTOR_CATEGORIES },
+  { id: "feeding-selectivity", label: "Alimentação e Seletividade", categories: FEEDING_SELECTIVITY_CATEGORIES },
 ];
 
 export function roteiroById(id: string): Roteiro {

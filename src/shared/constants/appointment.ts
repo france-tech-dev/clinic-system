@@ -1,8 +1,8 @@
 export const APPOINTMENT_STATUSES = [
-  { id: "agendado", label: "Agendado", color: "#285C52" },
-  { id: "realizado", label: "Realizado", color: "#5C7A3E" },
-  { id: "faltou", label: "Faltou", color: "#A65D53" },
-  { id: "cancelado", label: "Cancelado", color: "#726C5E" },
+  { id: "scheduled", label: "Agendado", color: "#285C52" },
+  { id: "completed", label: "Realizado", color: "#5C7A3E" },
+  { id: "absent", label: "Faltou", color: "#A65D53" },
+  { id: "cancelled", label: "Cancelado", color: "#726C5E" },
 ] as const;
 
 /** Agendamento com evolução registrada (SessionNote.appointmentId). */
