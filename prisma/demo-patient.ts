@@ -1,6 +1,6 @@
-import { EVALUATION_DOMAINS } from "../src/shared/constants/evaluation-domains";
+import { CLINICAL_EVALUATION_DOMAINS } from "../src/shared/constants/clinical-evaluation-domains";
 
-type DemoEvaluationDomain = {
+type DemoClinicalEvaluationDomain = {
   categoryId: string;
   score: number;
   note: string;
@@ -15,42 +15,42 @@ export const DEMO_PATIENT_NOTES =
   "Caso fictício para demonstração do Clinic System. Criança de 7 anos, encaminhada para trabalhar coordenação fina, autorregulação e AVDs.";
 
 const DOMAIN_SCORES: Record<string, { score: number; note: string }> = {
-  fina: {
+  "fine-motor": {
     score: 1,
     note: "Preensão em pinça frágil; dificuldade com recorte, colagem e traçado.",
   },
-  grossa: {
+  "gross-motor": {
     score: 2,
     note: "Equilíbrio preservado; coordenação bimanual ainda em consolidação.",
   },
-  cognicao: {
+  cognition: {
     score: 2,
     note: "Boa memória visual; planejamento sequencial demanda apoio verbal.",
   },
-  avd: {
+  adl: {
     score: 1,
     note: "Dependência parcial para vestir-se e organizar materiais escolares.",
   },
-  sensorial: {
+  sensory: {
     score: 1,
     note: "Hipersensibilidade tátil em roupas com etiquetas e tecidos ásperos.",
   },
-  coordenacao: {
+  coordination: {
     score: 2,
     note: "Alternância de mãos irregular em tarefas de mesa.",
   },
-  comunicacao: {
+  communication: {
     score: 2,
     note: "Comunicação funcional; prefere interações curtas e previsíveis.",
   },
-  participacao: {
+  participation: {
     score: 2,
     note: "Participa em dupla; evita brincadeiras competitivas em grupo grande.",
   },
 };
 
-export function buildDemoEvaluationDomains(): DemoEvaluationDomain[] {
-  return EVALUATION_DOMAINS.map((category) => {
+export function buildDemoClinicalEvaluationDomains(): DemoClinicalEvaluationDomain[] {
+  return CLINICAL_EVALUATION_DOMAINS.map((category) => {
     const entry = DOMAIN_SCORES[category.id];
     return {
       categoryId: category.id,
@@ -60,93 +60,93 @@ export function buildDemoEvaluationDomains(): DemoEvaluationDomain[] {
   });
 }
 
-export function buildDemoEvaluation(baseDate: Date) {
+export function buildDemoClinicalEvaluation(baseDate: Date) {
   const date = offsetDate(baseDate, -42);
 
   return {
-    tipo: "Inicial",
+    type: "Initial",
     date: formatIsoDate(date),
-    queixa:
+    complaint:
       "Dificuldade para manter atenção em tarefas de mesa, resistência a atividades de coordenação fina e desorganização na rotina de manhã.",
-    historia:
+    history:
       "Encaminhado pela pediatra após relato escolar de baixa autonomia para AVDs e cansaço rápido em atividades manuais. Família relata melhora com rotina visual, mas ainda há resistência sensorial em vestuário.",
-    domains: buildDemoEvaluationDomains(),
-    objetivos:
+    domains: buildDemoClinicalEvaluationDomains(),
+    goals:
       "1. Ampliar preensão em pinça e resistência em tarefas finas.\n2. Ganhar autonomia parcial em vestir-se.\n3. Tolerar estímulos táteis em materiais escolares.\n4. Organizar sequência da rotina matinal com apoio mínimo.",
-    condutas:
+    interventions:
       "Sessões semanais de 50 min com abordagem lúdica, uso de pistas visuais e graduação sensorial. Plano domiciliar com 2 atividades por semana.",
-    diagnostico: "Atraso no desenvolvimento das habilidades visomotoras e AVDs",
-    encaminhadoPor: "Dra. Ana Paula Mendes — Pediatria",
-    contextoFamiliar:
+    diagnosis: "Atraso no desenvolvimento das habilidades visomotoras e AVDs",
+    referredBy: "Dra. Ana Paula Mendes — Pediatria",
+    familyContext:
       "Mora com os pais e irmã mais nova (4 anos). Mãe acompanha sessões quinzenalmente.",
-    nivelPrevio: "Nenhum acompanhamento de TO anterior.",
-    medicacoes: "Nenhuma medicação contínua.",
-    precaucoes: "Evitar estímulos auditivos intensos sem aviso prévio.",
-    equipamentos: "Tábua inclinada, massinha, pinça, cartões de sequência.",
-    frequencia: "1x por semana",
-    criteriosAlta:
+    previousLevel: "Nenhum acompanhamento de TO anterior.",
+    medications: "Nenhuma medicação contínua.",
+    precautions: "Evitar estímulos auditivos intensos sem aviso prévio.",
+    equipment: "Tábua inclinada, massinha, pinça, cartões de sequência.",
+    frequency: "1x por semana",
+    dischargeCriteria:
       "Autonomia para vestir-se com botões médios, preensão funcional para escrita e participação estável em atividades escolares.",
   };
 }
 
 export function buildDemoAnamneseData() {
   return {
-    nomeCrianca: DEMO_PATIENT_NAME,
-    dataNascimento: "15/03/2019",
-    idade: "7 anos",
-    responsavel: "Carla Oliveira",
-    parentesco: "Mãe",
-    telefone: "(11) 98765-4321",
-    escola: "EMEF Prof. João Silva",
-    serieAno: "2º ano",
-    diagnosticos: "TEA — nível 1 de suporte",
-    profissionaisAcompanham: "Pediatra, fonoaudióloga",
-    queixaMotivou:
+    childName: DEMO_PATIENT_NAME,
+    birthDate: "15/03/2019",
+    age: "7 anos",
+    guardianName: "Carla Oliveira",
+    relationship: "Mãe",
+    phone: "(11) 98765-4321",
+    school: "EMEF Prof. João Silva",
+    gradeYear: "2º ano",
+    diagnoses: "TEA — nível 1 de suporte",
+    accompanyingProfessionals: "Pediatra, fonoaudióloga",
+    chiefComplaintReason:
       "A escola relatou dificuldade para iniciar tarefas, baixa autonomia em AVDs e resistência a atividades que envolvem coordenação fina.",
-    queixaDificuldades:
+    chiefComplaintDifficulties:
       "Vestir-se sozinho, organizar materiais, participar de brincadeiras em grupo e tolerar certos tecidos.",
-    queixaDesejo:
+    chiefComplaintDesire:
       "Que Miguel consiga se arrumar para a escola com menos ajuda e participe das atividades em sala.",
-    objetivos6meses:
+    goals6Months:
       "Maior autonomia nas AVDs de manhã e melhor engajamento em tarefas escolares.",
-    gestacaoIntercorrencias: "Gestação sem intercorrências significativas.",
-    tipoParto: "Cesárea eletiva",
-    pesoIdadeGestacional: "3,1 kg — 39 semanas",
-    marcosMotores:
+    pregnancyComplications: "Gestação sem intercorrências significativas.",
+    deliveryType: "Cesárea eletiva",
+    birthWeightGestationalAge: "3,1 kg — 39 semanas",
+    motorMilestones:
       "Sentou aos 7 meses, engatinhou aos 10 meses, andou aos 14 meses.",
-    marcosLinguagem:
+    languageMilestones:
       "Primeiras palavras aos 18 meses; frases curtas a partir dos 3 anos.",
-    diagnosticosMedicos: "TEA — nível 1; acompanhamento multidisciplinar.",
-    medicamentosAtuais: "Nenhum",
-    "prioridades::Alimentação": "6",
-    "prioridades::Vestuário": "9",
-    "prioridades::Coordenação motora": "8",
-    "prioridades::Autorregulação": "7",
-    "prioridades::Sensorial": "8",
+    medicalDiagnoses: "TEA — nível 1; acompanhamento multidisciplinar.",
+    currentMedications: "Nenhum",
+    "priorities::Alimentação": "6",
+    "priorities::Vestuário": "9",
+    "priorities::Coordenação motora": "8",
+    "priorities::Autorregulação": "7",
+    "priorities::Sensorial": "8",
   };
 }
 
 export function buildDemoSessionNotes() {
   return [
     {
-      status: "compareceu" as const,
-      atividades:
+      status: "attended" as const,
+      activities:
         "Pinça de grãos com transferência entre potes; circuito com obstáculos baixos; rotina visual da manhã (cartões ilustrados).",
-      observacoes:
+      observations:
         "Boa tolerância à pinça por 8 minutos. Precisou de pausa sensorial antes do circuito motor.",
     },
     {
-      status: "compareceu" as const,
-      atividades:
+      status: "attended" as const,
+      activities:
         "Treino de abotoamento em camisa adaptada; massinha com moldes; jogo da memória com 6 pares.",
-      observacoes:
+      observations:
         "Conseguiu abotoar 2 botões grandes com mínima ajuda. Memória: 4 pares encontrados na segunda tentativa.",
     },
     {
-      status: "compareceu" as const,
-      atividades:
+      status: "attended" as const,
+      activities:
         "Caixa sensorial tátil com arroz e objetos escondidos; sequência da rotina matinal; alongamento bilateral.",
-      observacoes:
+      observations:
         "Explorou texturas por 12 minutos com regulação adequada. Família relatou melhora leve na rotina de manhã.",
     },
   ];
@@ -158,7 +158,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, -21)),
       time: "09:00",
       duration: 50,
-      status: "realizado" as const,
+      status: "completed" as const,
       notes: "Sessão inicial: pinça e circuito motor.",
       withEvolution: true,
     },
@@ -166,7 +166,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, -14)),
       time: "09:00",
       duration: 50,
-      status: "realizado" as const,
+      status: "completed" as const,
       notes: "Treino de abotoamento e memória.",
       withEvolution: true,
     },
@@ -174,7 +174,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, -7)),
       time: "09:00",
       duration: 50,
-      status: "realizado" as const,
+      status: "completed" as const,
       notes: "Sessão com foco sensorial e rotina matinal.",
       withEvolution: true,
     },
@@ -182,7 +182,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, 0)),
       time: "09:00",
       duration: 50,
-      status: "agendado" as const,
+      status: "scheduled" as const,
       notes: "Continuidade: pinça + AVD vestir.",
       withEvolution: false,
     },
@@ -190,7 +190,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, 7)),
       time: "09:00",
       duration: 50,
-      status: "agendado" as const,
+      status: "scheduled" as const,
       notes: "Reavaliação parcial de objetivos.",
       withEvolution: false,
     },
@@ -199,7 +199,7 @@ export function buildDemoAppointments(baseDate: Date) {
 
 export function buildDemoCashTransaction(baseDate: Date) {
   return {
-    type: "entrada" as const,
+    type: "income" as const,
     amountCents: 15000,
     date: formatIsoDate(offsetDate(baseDate, -7)),
     description: "Sessão de TO — Miguel Oliveira",

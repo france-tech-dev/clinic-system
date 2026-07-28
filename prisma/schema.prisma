@@ -23,52 +23,52 @@ enum Role {
 }
 
 enum PatientStatus {
-  ativo
-  alta
-  pausado
+  active
+  discharged
+  paused
 }
 
 enum MemberStatus {
-  ativo
-  inativo
+  active
+  inactive
 }
 
 enum SessionNoteStatus {
-  compareceu
-  faltou
-  cancelado
+  attended
+  absent
+  cancelled
 }
 
 enum AppointmentStatus {
-  agendado
-  realizado
-  faltou
-  cancelado
+  scheduled
+  completed
+  absent
+  cancelled
 }
 
 enum CashTransactionType {
-  entrada
-  saida
+  income
+  expense
 }
 
 enum CashPaymentMethod {
-  dinheiro
+  cash
   pix
-  cartao
-  transferencia
-  outro
+  card
+  transfer
+  other
 }
 
 enum PatientPricingType {
-  sessao
-  pacote
+  session
+  package
 }
 
 enum PatientSex {
-  feminino
-  masculino
-  outro
-  nao_informado
+  female
+  male
+  other
+  not_informed
 }
 
 model User {
@@ -109,8 +109,8 @@ model Account {
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerId, accountId])
-  @@map("accounts")
   @@index([userId])
+  @@map("accounts")
 }
 
 model Session {
@@ -125,8 +125,8 @@ model Session {
   updatedAt            DateTime @updatedAt
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
   @@index([userId])
+  @@map("sessions")
 }
 
 model Verification {
@@ -143,20 +143,20 @@ model Verification {
 
 // Organizações
 model Organization {
-  id          String       @id
-  name        String
-  slug        String
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
-  members     Member[]
-  invitations Invitation[]
-  patients     Patient[]
-  guardians    Guardian[]
-  appointments Appointment[]
-  cashTransactions CashTransaction[]
-  protocolAssessments ProtocolAssessment[]
-  anamneses    Anamnese[]
+  id                  String               @id
+  name                String
+  slug                String
+  logo                String?
+  createdAt           DateTime
+  metadata            String?
+  members             Member[]
+  invitations         Invitation[]
+  patients            Patient[]
+  guardians           Guardian[]
+  appointments        Appointment[]
+  cashTransactions    CashTransaction[]
+  protocolEvaluations ProtocolEvaluation[]
+  anamneses           Anamnese[]
 
   @@unique([slug])
   @@map("organization")
@@ -185,35 +185,35 @@ model Guardian {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
-  @@index([organizationId])
   @@unique([organizationId, cpf])
+  @@index([organizationId])
   @@map("guardians")
 }
 
 // Pacientes
 model Patient {
-  id             String             @id @default(cuid())
-  organizationId String
-  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  guardianId     String
-  guardian       Guardian           @relation(fields: [guardianId], references: [id], onDelete: Restrict)
-  name           String
-  birthDate      DateTime?          @map("birth_date")
-  sex            PatientSex         @default(nao_informado)
-  photoUrl       String?            @map("photo_url")
-  notes          String             @default("")
-  status         PatientStatus      @default(ativo)
-  pricingType    PatientPricingType @default(sessao)
-  priceCents     Int?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  evaluations    Evaluation[]
-  anamneses      Anamnese[]
-  sessionNotes   SessionNote[]
-  appointments   Appointment[]
-  roteiroNotes   RoteiroNote[]
-  cashTransactions CashTransaction[]
-  protocolAssessments ProtocolAssessment[]
+  id                  String               @id @default(cuid())
+  organizationId      String
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  guardianId          String
+  guardian            Guardian             @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+  name                String
+  birthDate           DateTime?            @map("birth_date")
+  sex                 PatientSex           @default(not_informed)
+  photoUrl            String?              @map("photo_url")
+  notes               String               @default("")
+  status              PatientStatus        @default(active)
+  pricingType         PatientPricingType   @default(session)
+  priceCents          Int?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  clinicalEvaluations ClinicalEvaluation[]
+  anamneses           Anamnese[]
+  sessionNotes        SessionNote[]
+  appointments        Appointment[]
+  roteiroNotes        RoteiroNote[]
+  cashTransactions    CashTransaction[]
+  protocolEvaluations ProtocolEvaluation[]
 
   @@index([organizationId])
   @@index([organizationId, status])
@@ -221,36 +221,36 @@ model Patient {
   @@map("patients")
 }
 
-// Avaliações
-model Evaluation {
+// Avaliações clínicas (prontuário — narrativa + domínios)
+model ClinicalEvaluation {
   id                String   @id @default(cuid())
   patientId         String
   patient           Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   memberId          String?
   member            Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  tipo              String   @default("inicial")
+  type              String   @default("initial")
   date              String
-  queixa            String   @default("")
-  historia          String   @default("")
+  complaint         String   @default("")
+  history           String   @default("")
   domains           String
-  objetivos         String   @default("")
-  condutas          String   @default("")
-  diagnostico       String   @default("")
-  encaminhadoPor    String   @default("")
-  contextoFamiliar  String   @default("")
-  nivelPrevio       String   @default("")
-  medicacoes        String   @default("")
-  precaucoes        String   @default("")
-  equipamentos      String   @default("")
-  frequencia        String   @default("")
-  criteriosAlta     String   @default("")
+  goals             String   @default("")
+  interventions     String   @default("")
+  diagnosis         String   @default("")
+  referredBy        String   @default("")
+  familyContext     String   @default("")
+  previousLevel     String   @default("")
+  medications       String   @default("")
+  precautions       String   @default("")
+  equipment         String   @default("")
+  frequency         String   @default("")
+  dischargeCriteria String   @default("")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   @@index([patientId])
   @@index([patientId, date])
   @@index([memberId])
-  @@map("evaluations")
+  @@map("clinical_evaluations")
 }
 
 // Anamnese (1 por paciente × formulário/especialidade)
@@ -282,9 +282,9 @@ model SessionNote {
   appointment   Appointment?      @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
   date          String
   time          String            @default("")
-  status        SessionNoteStatus @default(compareceu)
-  atividades    String            @default("")
-  observacoes   String            @default("")
+  status        SessionNoteStatus @default(attended)
+  activities    String            @default("")
+  observations  String            @default("")
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
@@ -307,7 +307,7 @@ model Appointment {
   time           String            @default("")
   duration       Int               @default(45)
   notes          String            @default("")
-  status         AppointmentStatus @default(agendado)
+  status         AppointmentStatus @default(scheduled)
   sessionNote    SessionNote?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -328,7 +328,7 @@ model CashTransaction {
   amountCents    Int
   date           String
   description    String              @default("")
-  paymentMethod  CashPaymentMethod   @default(dinheiro)
+  paymentMethod  CashPaymentMethod   @default(cash)
   patientId      String?
   patient        Patient?            @relation(fields: [patientId], references: [id], onDelete: SetNull)
   memberId       String?
@@ -360,8 +360,8 @@ model RoteiroNote {
   @@map("roteiro_notes")
 }
 
-// Avaliações de protocolo
-model ProtocolAssessment {
+// Avaliações de protocolo (instrumentos pontuados, ex. GMFM-88)
+model ProtocolEvaluation {
   id             String       @id @default(cuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -370,7 +370,7 @@ model ProtocolAssessment {
   memberId       String?
   member         Member?      @relation(fields: [memberId], references: [id], onDelete: SetNull)
   protocolId     String
-  label          String       @default("Avaliação")
+  label          String       @default("Evaluation")
   date           String
   scores         String
   notes          String       @default("")
@@ -381,27 +381,27 @@ model ProtocolAssessment {
   @@index([patientId])
   @@index([patientId, protocolId])
   @@index([memberId])
-  @@map("protocol_assessments")
+  @@map("protocol_evaluations")
 }
 
 // Profissionais
 model Member {
-  id                  String                @id
+  id                  String               @id
   organizationId      String
-  organization        Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId              String
-  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role                Role                  @default(MEMBER)
-  status              MemberStatus          @default(ativo)
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role                Role                 @default(MEMBER)
+  status              MemberStatus         @default(active)
   profession          String?
-  registro            String?
+  registration        String?
   metadata            String?
   createdAt           DateTime
   appointments        Appointment[]
   cashTransactions    CashTransaction[]
-  evaluations         Evaluation[]
+  clinicalEvaluations ClinicalEvaluation[]
   sessionNotes        SessionNote[]
-  protocolAssessments ProtocolAssessment[]
+  protocolEvaluations ProtocolEvaluation[]
 
   @@index([organizationId])
   @@index([organizationId, status])

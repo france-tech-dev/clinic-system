@@ -3,7 +3,7 @@ import {
   buildDemoAnamneseData,
   buildDemoAppointments,
   buildDemoCashTransaction,
-  buildDemoEvaluation,
+  buildDemoClinicalEvaluation,
   buildDemoSessionNotes,
   DEMO_PATIENT_NAME,
   DEMO_PATIENT_NOTES,
@@ -37,7 +37,7 @@ export async function ensureDemoPatient(
   }
 
   const baseDate = new Date();
-  const evaluation = buildDemoEvaluation(baseDate);
+  const evaluation = buildDemoClinicalEvaluation(baseDate);
   const sessionNotes = buildDemoSessionNotes();
   const appointments = buildDemoAppointments(baseDate);
   const cashTransaction = buildDemoCashTransaction(baseDate);
@@ -72,34 +72,34 @@ export async function ensureDemoPatient(
         guardianId: guardian.id,
         name: DEMO_PATIENT_NAME,
         birthDate: new Date(Date.UTC(2018, 2, 15)),
-        sex: "masculino",
+        sex: "male",
         notes: `${DEMO_PATIENT_NOTES}\n${DEMO_PATIENT_SEED_MARKER}`,
-        status: "ativo",
-        pricingType: "sessao",
+        status: "active",
+        pricingType: "session",
         priceCents: 15000,
       },
     });
 
-    await tx.evaluation.create({
+    await tx.clinicalEvaluation.create({
       data: {
         patientId: createdPatient.id,
         memberId: member.id,
-        tipo: evaluation.tipo,
+        type: evaluation.type,
         date: evaluation.date,
-        queixa: evaluation.queixa,
-        historia: evaluation.historia,
+        complaint: evaluation.complaint,
+        history: evaluation.history,
         domains: JSON.stringify(evaluation.domains),
-        objetivos: evaluation.objetivos,
-        condutas: evaluation.condutas,
-        diagnostico: evaluation.diagnostico,
-        encaminhadoPor: evaluation.encaminhadoPor,
-        contextoFamiliar: evaluation.contextoFamiliar,
-        nivelPrevio: evaluation.nivelPrevio,
-        medicacoes: evaluation.medicacoes,
-        precaucoes: evaluation.precaucoes,
-        equipamentos: evaluation.equipamentos,
-        frequencia: evaluation.frequencia,
-        criteriosAlta: evaluation.criteriosAlta,
+        goals: evaluation.goals,
+        interventions: evaluation.interventions,
+        diagnosis: evaluation.diagnosis,
+        referredBy: evaluation.referredBy,
+        familyContext: evaluation.familyContext,
+        previousLevel: evaluation.previousLevel,
+        medications: evaluation.medications,
+        precautions: evaluation.precautions,
+        equipment: evaluation.equipment,
+        frequency: evaluation.frequency,
+        dischargeCriteria: evaluation.dischargeCriteria,
       },
     });
 
@@ -147,8 +147,8 @@ export async function ensureDemoPatient(
           date: appointment.date,
           time: appointment.time,
           status: note.status,
-          atividades: note.atividades,
-          observacoes: note.observacoes,
+          activities: note.activities,
+          observations: note.observations,
         },
       });
     }
