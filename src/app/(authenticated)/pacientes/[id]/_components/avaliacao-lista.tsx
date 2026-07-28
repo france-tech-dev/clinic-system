@@ -1,16 +1,16 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { EvaluationDTO } from "@/features/patient/patient.types";
+import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 
 export function AvaliacaoLista({
-  evaluations,
+  clinicalEvaluations,
   onNewEvaluation,
   onViewEvaluation,
 }: {
-  evaluations: EvaluationDTO[];
+  clinicalEvaluations: ClinicalEvaluationDTO[];
   onNewEvaluation: () => void;
-  onViewEvaluation: (evaluation: EvaluationDTO) => void;
+  onViewEvaluation: (evaluation: ClinicalEvaluationDTO) => void;
 }) {
   return (
     <>
@@ -20,13 +20,13 @@ export function AvaliacaoLista({
           Nova avaliação
         </Button>
       </div>
-      {evaluations.length === 0 ? (
+      {clinicalEvaluations.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           Nenhuma avaliação registrada.
         </p>
       ) : (
         <ul className="space-y-2">
-          {evaluations.map((ev) => (
+          {clinicalEvaluations.map((ev) => (
             <li key={ev.id}>
               <button
                 type="button"
@@ -35,7 +35,7 @@ export function AvaliacaoLista({
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium capitalize">
-                    Avaliação {ev.tipo}
+                    Avaliação {ev.type}
                   </span>
                   <span className="font-mono text-xs text-muted-foreground">
                     {formatDateBR(ev.date)}
@@ -46,9 +46,9 @@ export function AvaliacaoLista({
                     {ev.professionalName}
                   </p>
                 ) : null}
-                {ev.queixa && (
+                {ev.complaint && (
                   <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-                    {ev.queixa}
+                    {ev.complaint}
                   </p>
                 )}
               </button>

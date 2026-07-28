@@ -55,7 +55,7 @@ const CALENDAR_MESSAGES = {
 const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar);
 
 function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
-  const canDrag = event.status === "agendado";
+  const canDrag = event.status === "scheduled";
 
   return (
     <div className="agenda-event-content">
@@ -203,7 +203,7 @@ export function AgendaCalendar({
         components={{ event: CalendarEventLabel }}
         onEventDrop={moveEvent}
         draggableAccessor={(event) =>
-          !isPending && (event as CalendarEvent).status === "agendado"
+          !isPending && (event as CalendarEvent).status === "scheduled"
         }
         resizable={false}
         selectable={false}

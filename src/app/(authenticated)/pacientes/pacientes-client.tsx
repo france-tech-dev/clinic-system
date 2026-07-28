@@ -45,9 +45,9 @@ import { cn } from "@/shared/lib/utils";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
 
 const STATUS_LABEL: Record<PatientStatus, string> = {
-  ativo: "Ativo",
-  alta: "Alta",
-  pausado: "Pausado",
+  active: "Ativo",
+  discharged: "Alta",
+  paused: "Pausado",
 };
 
 export function PacientesClient({
@@ -200,9 +200,9 @@ export function PacientesClient({
         {(
           [
             [null, "Todos"],
-            ["ativo", "Ativos"],
-            ["pausado", "Pausados"],
-            ["alta", "Alta"],
+            ["active", "Ativos"],
+            ["paused", "Pausados"],
+            ["discharged", "Alta"],
           ] as const
         ).map(([value, label]) => (
           <button
@@ -245,9 +245,9 @@ export function PacientesClient({
                 <Badge
                   variant="outline"
                   className={cn(
-                    p.status === "ativo" && "border-primary text-primary",
-                    p.status === "alta" && "border-muted-foreground",
-                    p.status === "pausado" &&
+                    p.status === "active" && "border-primary text-primary",
+                    p.status === "discharged" && "border-muted-foreground",
+                    p.status === "paused" &&
                       "border-fichario-patient text-fichario-patient",
                   )}
                 >
@@ -262,11 +262,11 @@ export function PacientesClient({
                     changeStatus(p.id, e.target.value as PatientStatus)
                   }
                 >
-                  <NativeSelectOption value="ativo">Ativo</NativeSelectOption>
-                  <NativeSelectOption value="pausado">
+                  <NativeSelectOption value="active">Ativo</NativeSelectOption>
+                  <NativeSelectOption value="paused">
                     Pausado
                   </NativeSelectOption>
-                  <NativeSelectOption value="alta">Alta</NativeSelectOption>
+                  <NativeSelectOption value="discharged">Alta</NativeSelectOption>
                 </NativeSelect>
               </div>
             </li>

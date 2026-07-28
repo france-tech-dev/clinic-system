@@ -69,7 +69,7 @@ export function ProfissionaisClient({
             <tbody>
               {members.map((m) => {
                 const profession = getHealthProfession(m.profession);
-                const inactive = m.status === "inativo";
+                const inactive = m.status === "inactive";
                 return (
                   <tr
                     key={m.id}
@@ -83,7 +83,7 @@ export function ProfissionaisClient({
                       {profession?.label ?? m.profession ?? "—"}
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">
-                      {m.registro ?? "—"}
+                      {m.registration ?? "—"}
                     </td>
                     <td className="px-3 py-2">
                       {ROLE_LABEL[m.role] ?? m.role}

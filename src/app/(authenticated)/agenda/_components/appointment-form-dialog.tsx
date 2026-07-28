@@ -61,7 +61,7 @@ function buildDefaults(
     time: initial?.time ?? "",
     duration: initial?.duration ?? 45,
     notes: initial?.notes ?? "",
-    status: initial?.status ?? "agendado",
+    status: initial?.status ?? "scheduled",
     repeatWeeks: 1,
   };
 }

@@ -10,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { EvaluationDTO } from "@/features/patient/patient.types";
-import { categoryOf } from "@/shared/constants/evaluation-domains";
+import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
+import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
 import { cn } from "@/shared/lib/utils";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 
-export function EvaluationViewDialog({
+export function ClinicalEvaluationViewDialog({
   evaluation,
   allEvaluations,
   onClose,
@@ -24,12 +24,12 @@ export function EvaluationViewDialog({
   onPreviewReport,
   pending,
 }: {
-  evaluation: EvaluationDTO | null;
-  allEvaluations: EvaluationDTO[];
+  evaluation: ClinicalEvaluationDTO | null;
+  allEvaluations: ClinicalEvaluationDTO[];
   onClose: () => void;
-  onEdit: (ev: EvaluationDTO) => void;
+  onEdit: (ev: ClinicalEvaluationDTO) => void;
   onDelete: (id: string) => void;
-  onPreviewReport: (ev: EvaluationDTO) => void;
+  onPreviewReport: (ev: ClinicalEvaluationDTO) => void;
   pending: boolean;
 }) {
   if (!evaluation) return null;
@@ -46,47 +46,47 @@ export function EvaluationViewDialog({
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-serif">
-            Avaliação {evaluation.tipo} — {formatDateBR(evaluation.date)}
+            Avaliação {evaluation.type} — {formatDateBR(evaluation.date)}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3 text-sm">
-          {evaluation.diagnostico && (
+          {evaluation.diagnosis && (
             <p>
-              <strong>Diagnóstico:</strong> {evaluation.diagnostico}
+              <strong>Diagnóstico:</strong> {evaluation.diagnosis}
             </p>
           )}
-          {evaluation.encaminhadoPor && (
+          {evaluation.referredBy && (
             <p>
-              <strong>Encaminhado por:</strong> {evaluation.encaminhadoPor}
+              <strong>Encaminhado por:</strong> {evaluation.referredBy}
             </p>
           )}
           <p>
-            <strong>Queixa:</strong> {evaluation.queixa || "—"}
+            <strong>Queixa:</strong> {evaluation.complaint || "—"}
           </p>
           <p>
-            <strong>História:</strong> {evaluation.historia || "—"}
+            <strong>História:</strong> {evaluation.history || "—"}
           </p>
-          {evaluation.contextoFamiliar && (
+          {evaluation.familyContext && (
             <p>
-              <strong>Contexto familiar:</strong> {evaluation.contextoFamiliar}
+              <strong>Contexto familiar:</strong> {evaluation.familyContext}
             </p>
           )}
-          {evaluation.nivelPrevio && (
+          {evaluation.previousLevel && (
             <p>
-              <strong>Nível prévio:</strong> {evaluation.nivelPrevio}
+              <strong>Nível prévio:</strong> {evaluation.previousLevel}
             </p>
           )}
-          {(evaluation.medicacoes || evaluation.precaucoes) && (
+          {(evaluation.medications || evaluation.precautions) && (
             <p>
-              {evaluation.medicacoes && (
+              {evaluation.medications && (
                 <>
-                  <strong>Medicações:</strong> {evaluation.medicacoes}
+                  <strong>Medicações:</strong> {evaluation.medications}
                 </>
               )}
-              {evaluation.medicacoes && evaluation.precaucoes && " · "}
-              {evaluation.precaucoes && (
+              {evaluation.medications && evaluation.precautions && " · "}
+              {evaluation.precautions && (
                 <>
-                  <strong>Precauções:</strong> {evaluation.precaucoes}
+                  <strong>Precauções:</strong> {evaluation.precautions}
                 </>
               )}
             </p>
@@ -161,28 +161,28 @@ export function EvaluationViewDialog({
               </div>
             </div>
           )}
-          {evaluation.equipamentos && (
+          {evaluation.equipment && (
             <p>
-              <strong>Equipamentos:</strong> {evaluation.equipamentos}
+              <strong>Equipamentos:</strong> {evaluation.equipment}
             </p>
           )}
           <p>
-            <strong>Objetivos:</strong> {evaluation.objetivos || "—"}
+            <strong>Objetivos:</strong> {evaluation.goals || "—"}
           </p>
           <p>
-            <strong>Condutas:</strong> {evaluation.condutas || "—"}
+            <strong>Condutas:</strong> {evaluation.interventions || "—"}
           </p>
-          {(evaluation.frequencia || evaluation.criteriosAlta) && (
+          {(evaluation.frequency || evaluation.dischargeCriteria) && (
             <p>
-              {evaluation.frequencia && (
+              {evaluation.frequency && (
                 <>
-                  <strong>Frequência:</strong> {evaluation.frequencia}
+                  <strong>Frequência:</strong> {evaluation.frequency}
                 </>
               )}
-              {evaluation.frequencia && evaluation.criteriosAlta && " · "}
-              {evaluation.criteriosAlta && (
+              {evaluation.frequency && evaluation.dischargeCriteria && " · "}
+              {evaluation.dischargeCriteria && (
                 <>
-                  <strong>Critérios de alta:</strong> {evaluation.criteriosAlta}
+                  <strong>Critérios de alta:</strong> {evaluation.dischargeCriteria}
                 </>
               )}
             </p>

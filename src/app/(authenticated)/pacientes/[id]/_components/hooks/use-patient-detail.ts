@@ -4,7 +4,7 @@ import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { deletePatientAction } from "@/features/patient/patient.actions";
 import type {
-  EvaluationDTO,
+  ClinicalEvaluationDTO,
   PatientDetailDTO,
 } from "@/features/patient/patient.types";
 import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
@@ -21,7 +21,7 @@ import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { useRouter } from "next/navigation";
 import type { PatientDetailTab } from "../patient-detail-types";
 import { usePatientEdit } from "./use-patient-edit";
-import { usePatientEvaluations } from "./use-patient-evaluations";
+import { usePatientClinicalEvaluations } from "./use-patient-clinical-evaluations";
 import { usePatientPdfReport } from "@/features/patient/hooks/use-patient-pdf-report";
 import { useRoteiroNotes } from "@/features/patient/hooks/use-roteiro-notes";
 import { usePatientSessions } from "./use-patient-sessions";
@@ -63,7 +63,7 @@ export function usePatientDetail({
     pending,
     startTransition,
   });
-  const evaluations = usePatientEvaluations({
+  const evaluations = usePatientClinicalEvaluations({
     setDetail,
     pending,
     startTransition,
@@ -77,7 +77,7 @@ export function usePatientDetail({
   const signature = formatProfessionalSignature(professional);
 
   const buildReportPayload = useCallback(
-    (reportMode: PatientReportMode, evaluation?: EvaluationDTO) =>
+    (reportMode: PatientReportMode, evaluation?: ClinicalEvaluationDTO) =>
       buildPatientReportPayload({
         detail,
         mode: reportMode,
@@ -107,7 +107,7 @@ export function usePatientDetail({
     ],
   );
 
-  function previewReport(mode: PatientReportMode, evaluation?: EvaluationDTO) {
+  function previewReport(mode: PatientReportMode, evaluation?: ClinicalEvaluationDTO) {
     if (mode === "roteiro") {
       pdfReport.openPreview({
         ...buildReportPayload(mode, evaluation),

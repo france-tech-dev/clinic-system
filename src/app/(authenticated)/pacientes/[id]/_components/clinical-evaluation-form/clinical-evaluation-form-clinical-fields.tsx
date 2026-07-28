@@ -10,16 +10,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { EvaluationDialogValues } from "./evaluation-form-types";
+import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form-types";
 
-export function EvaluationFormClinicalFields() {
-  const { control } = useFormContext<EvaluationDialogValues>();
+export function ClinicalEvaluationFormClinicalFields() {
+  const { control } = useFormContext<ClinicalEvaluationDialogValues>();
 
   return (
     <>
       <FormField
         control={control}
-        name="queixa"
+        name="complaint"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Queixa principal / motivo</FormLabel>
@@ -32,7 +32,7 @@ export function EvaluationFormClinicalFields() {
       />
       <FormField
         control={control}
-        name="historia"
+        name="history"
         render={({ field }) => (
           <FormItem>
             <FormLabel>História clínica / ocupacional</FormLabel>
@@ -45,7 +45,7 @@ export function EvaluationFormClinicalFields() {
       />
       <FormField
         control={control}
-        name="contextoFamiliar"
+        name="familyContext"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Contexto familiar e social</FormLabel>
@@ -58,7 +58,7 @@ export function EvaluationFormClinicalFields() {
       />
       <FormField
         control={control}
-        name="nivelPrevio"
+        name="previousLevel"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Nível de função prévio</FormLabel>
@@ -72,7 +72,7 @@ export function EvaluationFormClinicalFields() {
       <div className="grid grid-cols-2 items-start gap-3">
         <FormField
           control={control}
-          name="medicacoes"
+          name="medications"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Medicações em uso</FormLabel>
@@ -85,7 +85,7 @@ export function EvaluationFormClinicalFields() {
         />
         <FormField
           control={control}
-          name="precaucoes"
+          name="precautions"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Precauções / contraindicações</FormLabel>

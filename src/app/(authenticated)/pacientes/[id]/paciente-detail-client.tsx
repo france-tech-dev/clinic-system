@@ -61,7 +61,7 @@ export function PacienteDetailClient({
 
       {vm.tab === "avaliacao" && (
         <AvaliacaoTab
-          evaluations={vm.detail.evaluations}
+          clinicalEvaluations={vm.detail.clinicalEvaluations}
           onNewEvaluation={vm.evaluations.openNewEvaluation}
           onViewEvaluation={vm.evaluations.setViewEval}
         />

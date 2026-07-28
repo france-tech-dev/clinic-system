@@ -47,7 +47,7 @@ export function CaixaClient({
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<CashTransactionDTO | null>(null);
-  const [defaultType, setDefaultType] = useState<"entrada" | "saida">("entrada");
+  const [defaultType, setDefaultType] = useState<"income" | "expense">("income");
   const [pending, startTransition] = useTransition();
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -70,7 +70,7 @@ export function CaixaClient({
     router.push(buildUrl(initial.month, next || MEMBER_FILTER_ALL));
   }
 
-  function openCreate(type: "entrada" | "saida") {
+  function openCreate(type: "income" | "expense") {
     setEditing(null);
     setDefaultType(type);
     setDialogOpen(true);
@@ -135,11 +135,11 @@ export function CaixaClient({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => openCreate("saida")}>
+          <Button variant="outline" onClick={() => openCreate("expense")}>
             <Plus className="size-4" />
             Saída
           </Button>
-          <Button onClick={() => openCreate("entrada")}>
+          <Button onClick={() => openCreate("income")}>
             <Plus className="size-4" />
             Entrada
           </Button>
@@ -189,12 +189,12 @@ export function CaixaClient({
                   <span
                     className={cn(
                       "shrink-0 font-medium tabular-nums",
-                      tx.type === "entrada"
+                      tx.type === "income"
                         ? "text-emerald-600 dark:text-emerald-400"
                         : "text-red-600 dark:text-red-400",
                     )}
                   >
-                    {tx.type === "entrada" ? "+" : "−"}
+                    {tx.type === "income" ? "+" : "−"}
                     {formatCentsToBrl(tx.amountCents)}
                   </span>
                 </button>

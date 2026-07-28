@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { ProfessionCatalogCard } from "@/components/profession-catalog-card";
 import { listTeamMembers } from "@/features/team/team.service";
-import { filterAssessmentCatalogByProfessions } from "@/features/protocol/assessments";
+import { filterEvaluationCatalogByProfessions } from "@/features/protocol/evaluation-modules";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -12,7 +12,7 @@ const professionIdSet = new Set<string>(HEALTH_PROFESSION_IDS);
 
 export default async function AvaliacoesPage() {
   let error: string | null = null;
-  let catalog = filterAssessmentCatalogByProfessions([]);
+  let catalog = filterEvaluationCatalogByProfessions([]);
 
   try {
     const { organizationId } = await requireOrgId();
@@ -21,13 +21,13 @@ export default async function AvaliacoesPage() {
       members
         .filter(
           (member) =>
-            member.status === "ativo" &&
+            member.status === "active" &&
             member.profession &&
             professionIdSet.has(member.profession),
         )
         .map((member) => member.profession as string),
     );
-    catalog = filterAssessmentCatalogByProfessions(activeProfessionIds);
+    catalog = filterEvaluationCatalogByProfessions(activeProfessionIds);
   } catch (e) {
     error =
       e instanceof OrgContextError

@@ -60,7 +60,7 @@ const DEFAULT_VALUES: CreateProfessionalInput = {
   name: "",
   email: "",
   profession: "terapeuta_ocupacional",
-  registro: "",
+  registration: "",
   phone: "",
   birthDate: "",
   role: "MEMBER",
@@ -197,7 +197,7 @@ export function CreateProfessionalDialog({
 
               <FormField
                 control={form.control}
-                name="registro"
+                name="registration"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Registro ({council})</FormLabel>

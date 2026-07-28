@@ -21,7 +21,7 @@ export default async function AnamneseHubPage() {
       members
         .filter(
           (member) =>
-            member.status === "ativo" &&
+            member.status === "active" &&
             member.profession &&
             professionIdSet.has(member.profession),
         )

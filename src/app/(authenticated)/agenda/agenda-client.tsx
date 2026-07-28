@@ -495,7 +495,7 @@ export function AgendaClient({
           initial={null}
           draft={cashflow.cashDraft}
           defaultDate={todayIso()}
-          defaultType="entrada"
+          defaultType="income"
           defaultMemberId={defaultMemberId}
           pending={pending}
           startTransition={startTransition}

@@ -1,0 +1,20 @@
+export type ClinicalEvaluationDialogValues = {
+  id?: string;
+  patientId: string;
+  type: string;
+  date: string;
+  complaint: string;
+  history: string;
+  domains: { categoryId: string; score: number; note: string }[];
+  goals: string;
+  interventions: string;
+  diagnosis: string;
+  referredBy: string;
+  familyContext: string;
+  previousLevel: string;
+  medications: string;
+  precautions: string;
+  equipment: string;
+  frequency: string;
+  dischargeCriteria: string;
+};

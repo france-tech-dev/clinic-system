@@ -10,19 +10,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { EvaluationDialogValues } from "./evaluation-form-types";
+import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form-types";
 
-export function EvaluationFormPlanFields() {
-  const { control } = useFormContext<EvaluationDialogValues>();
+export function ClinicalEvaluationFormPlanFields() {
+  const { control } = useFormContext<ClinicalEvaluationDialogValues>();
 
   return (
     <>
       <FormField
         control={control}
-        name="equipamentos"
+        name="equipment"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Uso de equipamentos / órteses</FormLabel>
+            <FormLabel>Uso de equipment / órteses</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
@@ -32,7 +32,7 @@ export function EvaluationFormPlanFields() {
       />
       <FormField
         control={control}
-        name="objetivos"
+        name="goals"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Objetivos terapêuticos</FormLabel>
@@ -45,7 +45,7 @@ export function EvaluationFormPlanFields() {
       />
       <FormField
         control={control}
-        name="condutas"
+        name="interventions"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Condutas / plano de intervenção</FormLabel>
@@ -59,7 +59,7 @@ export function EvaluationFormPlanFields() {
       <div className="grid grid-cols-2 items-start gap-3">
         <FormField
           control={control}
-          name="frequencia"
+          name="frequency"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Frequência proposta</FormLabel>
@@ -75,7 +75,7 @@ export function EvaluationFormPlanFields() {
         />
         <FormField
           control={control}
-          name="criteriosAlta"
+          name="dischargeCriteria"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Critérios de alta</FormLabel>

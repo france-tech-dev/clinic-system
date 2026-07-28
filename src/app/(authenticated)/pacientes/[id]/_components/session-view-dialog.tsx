@@ -40,11 +40,11 @@ export function SessionViewDialog({
           <p>
             <strong>Atividades:</strong>
           </p>
-          <p className="whitespace-pre-line">{note.atividades || "—"}</p>
+          <p className="whitespace-pre-line">{note.activities || "—"}</p>
           <p>
             <strong>Observações:</strong>
           </p>
-          <p className="whitespace-pre-line">{note.observacoes || "—"}</p>
+          <p className="whitespace-pre-line">{note.observations || "—"}</p>
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
           <DeleteConfirmDialog

@@ -17,17 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { EvaluationDialogValues } from "./evaluation-form-types";
+import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form-types";
 
-export function EvaluationFormMetaFields() {
-  const { control } = useFormContext<EvaluationDialogValues>();
+export function ClinicalEvaluationFormMetaFields() {
+  const { control } = useFormContext<ClinicalEvaluationDialogValues>();
 
   return (
     <>
       <div className="grid grid-cols-2 items-start gap-3">
         <FormField
           control={control}
-          name="tipo"
+          name="type"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo *</FormLabel>
@@ -41,7 +41,7 @@ export function EvaluationFormMetaFields() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Inicial">Avaliação inicial</SelectItem>
+                  <SelectItem value="Initial">Avaliação inicial</SelectItem>
                   <SelectItem value="Reavaliação">Reavaliação</SelectItem>
                 </SelectContent>
               </Select>
@@ -66,7 +66,7 @@ export function EvaluationFormMetaFields() {
       <div className="grid grid-cols-2 items-start gap-3">
         <FormField
           control={control}
-          name="diagnostico"
+          name="diagnosis"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Diagnóstico / CID</FormLabel>
@@ -82,7 +82,7 @@ export function EvaluationFormMetaFields() {
         />
         <FormField
           control={control}
-          name="encaminhadoPor"
+          name="referredBy"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Encaminhado por</FormLabel>

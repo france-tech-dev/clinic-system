@@ -62,8 +62,8 @@ const STATUS_OPTIONS: {
   value: (typeof TEAM_MEMBER_STATUSES)[number];
   label: string;
 }[] = [
-  { value: "ativo", label: "Ativo" },
-  { value: "inativo", label: "Inativo" },
+  { value: "active", label: "Ativo" },
+  { value: "inactive", label: "Inativo" },
 ];
 
 function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
@@ -86,7 +86,7 @@ function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
     name: member.name,
     email: member.email,
     profession,
-    registro: member.registro ?? "",
+    registration: member.registration ?? "",
     phone: member.phone ?? "",
     birthDate: member.birthDate ?? "",
     role,
@@ -116,11 +116,11 @@ export function EditProfessionalDialog({
       name: "",
       email: "",
       profession: "terapeuta_ocupacional",
-      registro: "",
+      registration: "",
       phone: "",
       birthDate: "",
       role: "MEMBER",
-      status: "ativo",
+      status: "active",
     },
   });
 
@@ -234,7 +234,7 @@ export function EditProfessionalDialog({
 
               <FormField
                 control={form.control}
-                name="registro"
+                name="registration"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Registro ({council})</FormLabel>

@@ -36,9 +36,9 @@ export default async function PacienteDetailPage({
   let anamneses: AnamneseSummaryDTO[] = [];
   let anamneseSections: PdfKeyValueSection[] = [];
   let professional: ProfessionalProfile = {
-    nome: "",
-    registro: "",
-    clinica: "",
+    name: "",
+    registration: "",
+    clinic: "",
   };
 
   let branding: PrintBranding = {
@@ -64,7 +64,7 @@ export default async function PacienteDetailPage({
     branding = printBranding;
     showRoteiros = members.some(
       (member) =>
-        member.status === "ativo" &&
+        member.status === "active" &&
         member.profession === "terapeuta_ocupacional",
     );
     anamneses = anamneseRecords.map((row) =>

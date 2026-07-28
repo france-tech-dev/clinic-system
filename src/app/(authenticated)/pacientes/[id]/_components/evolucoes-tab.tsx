@@ -46,9 +46,9 @@ export function EvolucoesTab({
                     {s.professionalName}
                   </p>
                 ) : null}
-                {s.atividades && (
+                {s.activities && (
                   <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                    {s.atividades}
+                    {s.activities}
                   </p>
                 )}
               </button>

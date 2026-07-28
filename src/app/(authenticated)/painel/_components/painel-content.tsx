@@ -40,7 +40,7 @@ export function PainelContent({
               label={`Pacientes ativos (de ${data.stats.totalPatients})`}
             />
             <StatCard
-              number={String(data.stats.totalEvaluations)}
+              number={String(data.stats.totalClinicalEvaluations)}
               label="Avaliações registradas"
             />
             <StatCard

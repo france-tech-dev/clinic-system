@@ -26,9 +26,9 @@ import type { ProfessionalProfile } from "@/features/settings/settings.types";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 type ProfileFormValues = {
-  nome: string;
-  registro: string;
-  clinica?: string;
+  name: string;
+  registration: string;
+  clinic?: string;
 };
 
 export function ProfessionalProfileForm({
@@ -39,7 +39,7 @@ export function ProfessionalProfileForm({
   saveLabel = "Salvar",
   onSaved,
 }: {
-  initial: { nome: string; registro: string; clinica?: string };
+  initial: { name: string; registration: string; clinic?: string };
   mode: "member" | "org";
   title?: string;
   description?: string;
@@ -55,13 +55,13 @@ export function ProfessionalProfileForm({
     defaultValues:
       mode === "org"
         ? {
-            nome: initial.nome,
-            registro: initial.registro,
-            clinica: initial.clinica ?? "",
+            name: initial.name,
+            registration: initial.registration,
+            clinic: initial.clinic ?? "",
           }
         : {
-            nome: initial.nome,
-            registro: initial.registro,
+            name: initial.name,
+            registration: initial.registration,
           },
   });
 
@@ -70,13 +70,13 @@ export function ProfessionalProfileForm({
       const result =
         mode === "org"
           ? await saveProfessionalAction({
-              nome: data.nome,
-              registro: data.registro,
-              clinica: data.clinica ?? initial.clinica ?? "",
+              name: data.name,
+              registration: data.registration,
+              clinic: data.clinic ?? initial.clinic ?? "",
             })
           : await saveCurrentMemberProfessionalAction({
-              nome: data.nome,
-              registro: data.registro,
+              name: data.name,
+              registration: data.registration,
             });
 
       if (!result.success) {
@@ -87,15 +87,15 @@ export function ProfessionalProfileForm({
 
       if (mode === "org") {
         form.reset({
-          nome: result.data.nome,
-          registro: result.data.registro,
-          clinica: result.data.clinica,
+          name: result.data.name,
+          registration: result.data.registration,
+          clinic: result.data.clinic,
         });
         toast.success("Perfil da clínica salvo");
       } else {
         form.reset({
-          nome: result.data.nome,
-          registro: result.data.registro,
+          name: result.data.name,
+          registration: result.data.registration,
         });
         toast.success("Seu CREFITO foi salvo");
       }
@@ -122,12 +122,12 @@ export function ProfessionalProfileForm({
         >
           <FormField
             control={form.control}
-            name="nome"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome do terapeuta</FormLabel>
                 <FormControl>
-                  <Input placeholder="Seu nome completo" {...field} />
+                  <Input placeholder="Seu name completo" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -136,7 +136,7 @@ export function ProfessionalProfileForm({
 
           <FormField
             control={form.control}
-            name="registro"
+            name="registration"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Registro (CREFITO)</FormLabel>

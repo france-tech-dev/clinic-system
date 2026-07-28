@@ -1,19 +1,19 @@
-import type { EvaluationDTO } from "@/features/patient/patient.types";
+import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
 import { AvaliacaoLista } from "./avaliacao-lista";
 
 export function AvaliacaoTab({
-  evaluations,
+  clinicalEvaluations,
   onNewEvaluation,
   onViewEvaluation,
 }: {
-  evaluations: EvaluationDTO[];
+  clinicalEvaluations: ClinicalEvaluationDTO[];
   onNewEvaluation: () => void;
-  onViewEvaluation: (evaluation: EvaluationDTO) => void;
+  onViewEvaluation: (evaluation: ClinicalEvaluationDTO) => void;
 }) {
   return (
     <section className="space-y-4">
       <AvaliacaoLista
-        evaluations={evaluations}
+        clinicalEvaluations={clinicalEvaluations}
         onNewEvaluation={onNewEvaluation}
         onViewEvaluation={onViewEvaluation}
       />

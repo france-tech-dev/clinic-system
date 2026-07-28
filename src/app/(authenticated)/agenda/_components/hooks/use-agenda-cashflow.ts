@@ -9,7 +9,7 @@ export function buildCashDraftFromAppointment(
   appointment: AppointmentDTO,
 ): CashTransactionDraft {
   return {
-    type: "entrada",
+    type: "income",
     date: appointment.date,
     patientId: appointment.patientId,
     memberId: appointment.memberId,
@@ -34,7 +34,7 @@ export function useAgendaCashflow() {
 
   const onAppointmentStatusChanged = useCallback(
     (appointment: AppointmentDTO, status: AppointmentStatusId) => {
-      if (status === "realizado") {
+      if (status === "completed") {
         openCashDialogForAppointment(appointment);
       }
     },
