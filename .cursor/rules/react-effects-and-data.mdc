@@ -20,7 +20,7 @@ useEffect(() => {
 
 // ✅ Servidor carrega; client inicializa estado
 const detail = await getPatientDetail(orgId, params.paciente);
-<PacienteDetailClient initialEvaluations={detail.evaluations} />;
+<PacienteDetailClient initialClinicalEvaluations={detail.clinicalEvaluations} />;
 
 // ✅ Troca manual pelo utilizador (handler, não effect)
 function handlePatientChange(id: string) {

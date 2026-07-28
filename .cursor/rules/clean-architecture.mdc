@@ -36,17 +36,17 @@ Antes de criar abstração nova:
 
 ```ts
 // ❌ Três ficheiros de registo para o mesmo formId
-// ✅ Um AnamneseFormModule / AssessmentUiModule registado uma vez
+// ✅ Um AnamneseFormModule / EvaluationModuleUI registado uma vez
 ```
 
 ## Catálogos por especialidade (anamnese / avaliações)
 
 - Hub filtra por profissões activas da clínica
-- Workspace: `getCatalogAssessment(id)` + `resolveAssessmentUi(id)` → `render(ctx)` + `?paciente=` — **sem** `if` por tipo na `page.tsx` (composição cross-feature em `app/.../_lib/`)
+- Workspace: `getCatalogEvaluation(id)` + `resolveEvaluationModuleUI(id)` → `render(ctx)` + `?paciente=` — **sem** `if` por tipo na `page.tsx` (composição cross-feature em `app/.../_lib/`)
 - Preferir **um módulo** por instrumento (`id` + metadados + `render`; schema quando fase 2+) — ver `clinical-workspace.mdc`
 - Card de hub partilhado: `src/components/profession-catalog-card.tsx`
 - Destino workspace: design system + shell sem domínio + módulos clínicos (não lib wizard/EHR)
-- Contrato de UI de avaliação: `shared/types/assessment-ui.ts`
+- Contrato de UI de avaliação: `shared/types/evaluation-module-ui.ts`
 
 ## PDF multi-domínio
 

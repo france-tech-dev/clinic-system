@@ -83,19 +83,19 @@ type InstrumentModule = {
 // ❌ Catálogo no hub + UI vazia + if especial na page
 ```
 
-Orquestração da rota: `getCatalogAssessment(id)` + `resolveAssessmentUi(id)` → `notFound` se ausente → `ui.render(ctx)`. Sem ramos por tipo de instrumento na `page.tsx`.
+Orquestração da rota: `getCatalogEvaluation(id)` + `resolveEvaluationModuleUI(id)` → `notFound` se ausente → `ui.render(ctx)`. Sem ramos por tipo de instrumento na `page.tsx`.
 
 ### Instrumento que cruza features
 
 Quando metadados/catálogo vivem num domínio e a UI/persistência noutro (ex. roteiros: catalog em `protocol`, notas em `patient`):
 
-1. Cada feature exporta o seu pedaço (`CatalogAssessmentDef` / `AssessmentUiModule`).
-2. Tipos do contrato (`AssessmentUiModule`) em `shared/types/assessment-ui.ts`.
-3. **`app/`** une os registries (`resolveAssessmentUi`) — features **não** se importam.
+1. Cada feature exporta o seu pedaço (`CatalogEvaluationDef` / `EvaluationModuleUI`).
+2. Tipos do contrato (`EvaluationModuleUI`) em `shared/types/evaluation-module-ui.ts`.
+3. **`app/`** une os registries (`resolveEvaluationModuleUI`) — features **não** se importam.
 
 ```ts
-// app/.../avaliacoes/_lib/resolve-assessment-ui.ts
-return getAssessmentUi(id) ?? getRoteiroAssessmentUi(id);
+// app/.../avaliacoes/_lib/resolve-evaluation-module-ui.ts
+return getEvaluationModuleUI(id) ?? getRoteiroEvaluationModuleUI(id);
 ```
 
 ## Quando usar o shell
