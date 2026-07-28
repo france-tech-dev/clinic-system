@@ -38,7 +38,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] **P6.3** — Caixa por profissional (`CashTransaction.memberId` + filtro `/caixa`)
 - [x] **P6.4** — Autoria em Evaluation/SessionNote (autor = membro da sessão)
 - [x] **P6.5** — Limpezas (`patient-price-input`, shared types, migration baseline)
-- [x] ProtocolAssessment autor + PDF multi-CREFITO (Member.metadata + fallback org)
+- [x] ProtocolEvaluation autor + PDF multi-CREFITO (Member.metadata + fallback org)
 
 ---
 
