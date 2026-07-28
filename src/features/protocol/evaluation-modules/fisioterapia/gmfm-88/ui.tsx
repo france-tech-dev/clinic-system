@@ -1,15 +1,15 @@
 import { GmfmProtocolClient } from "./components/protocol-client";
-import { listProtocolAssessments } from "@/features/protocol/protocol.service";
-import type { AssessmentRenderContext, AssessmentUiModule } from "../../types";
+import { listProtocolEvaluations } from "@/features/protocol/protocol.service";
+import type { EvaluationModuleRenderContext, EvaluationModuleUI } from "../../types";
 import { GMFM88_PROTOCOL_ID } from "./template";
 
 async function renderGmfm88({
   organizationId,
   patients,
   initialPatientId,
-}: AssessmentRenderContext) {
-  const initialAssessments = initialPatientId
-    ? await listProtocolAssessments(
+}: EvaluationModuleRenderContext) {
+  const initialProtocolEvaluations = initialPatientId
+    ? await listProtocolEvaluations(
         organizationId,
         initialPatientId,
         GMFM88_PROTOCOL_ID,
@@ -20,12 +20,12 @@ async function renderGmfm88({
     <GmfmProtocolClient
       patients={patients}
       initialPatientId={initialPatientId}
-      initialAssessments={initialAssessments}
+      initialProtocolEvaluations={initialProtocolEvaluations}
     />
   );
 }
 
-export const gmfm88AssessmentUi: AssessmentUiModule = {
+export const gmfm88EvaluationModuleUI: EvaluationModuleUI = {
   id: GMFM88_PROTOCOL_ID,
   professionId: "fisioterapeuta",
   render: renderGmfm88,

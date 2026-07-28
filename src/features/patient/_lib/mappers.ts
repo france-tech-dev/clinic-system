@@ -1,7 +1,7 @@
 import { memberToProfessionalProfile } from "@/shared/types/professional";
 import type {
-  EvaluationDomain,
-  EvaluationDTO,
+  ClinicalEvaluationDomain,
+  ClinicalEvaluationDTO,
   PatientDTO,
   PatientGuardianEmbed,
   PatientPricingType,
@@ -13,9 +13,9 @@ import type {
   SessionNoteStatus,
 } from "../patient.types";
 
-export function parseDomains(raw: string): EvaluationDomain[] {
+export function parseDomains(raw: string): ClinicalEvaluationDomain[] {
   try {
-    return JSON.parse(raw) as EvaluationDomain[];
+    return JSON.parse(raw) as ClinicalEvaluationDomain[];
   } catch {
     return [];
   }
@@ -92,14 +92,14 @@ export function toPatientDTO(row: {
   guardian?: Parameters<typeof toPatientGuardianEmbed>[0];
   createdAt: Date;
   updatedAt: Date;
-  _count?: { evaluations: number; sessionNotes: number };
-  evaluations?: { date: string }[];
+  _count?: { clinicalEvaluations: number; sessionNotes: number };
+  clinicalEvaluations?: { date: string }[];
 }): PatientDTO {
   return {
     id: row.id,
     name: row.name,
     birthDate: formatBirthDateParam(row.birthDate),
-    sex: row.sex ?? "nao_informado",
+    sex: row.sex ?? "not_informed",
     photoUrl: row.photoUrl ?? null,
     notes: row.notes,
     status: row.status,
@@ -109,40 +109,40 @@ export function toPatientDTO(row: {
     guardian: row.guardian ? toPatientGuardianEmbed(row.guardian) : undefined,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
-    evaluationsCount: row._count?.evaluations,
+    clinicalEvaluationsCount: row._count?.clinicalEvaluations,
     sessionsCount: row._count?.sessionNotes,
-    lastEvaluationDate: row.evaluations?.[0]?.date ?? null,
+    lastClinicalEvaluationDate: row.clinicalEvaluations?.[0]?.date ?? null,
   };
 }
 
-export function toEvaluationDTO(row: {
+export function toClinicalEvaluationDTO(row: {
   id: string;
   patientId: string;
   memberId?: string | null;
-  tipo: string;
+  type: string;
   date: string;
-  queixa: string;
-  historia: string;
+  complaint: string;
+  history: string;
   domains: string;
-  objetivos: string;
-  condutas: string;
-  diagnostico: string;
-  encaminhadoPor: string;
-  contextoFamiliar: string;
-  nivelPrevio: string;
-  medicacoes: string;
-  precaucoes: string;
-  equipamentos: string;
-  frequencia: string;
-  criteriosAlta: string;
+  goals: string;
+  interventions: string;
+  diagnosis: string;
+  referredBy: string;
+  familyContext: string;
+  previousLevel: string;
+  medications: string;
+  precautions: string;
+  equipment: string;
+  frequency: string;
+  dischargeCriteria: string;
   createdAt: Date;
   updatedAt: Date;
   member?: {
     metadata?: string | null;
-    registro?: string | null;
+    registration?: string | null;
     user: { name: string | null };
   } | null;
-}): EvaluationDTO {
+}): ClinicalEvaluationDTO {
   return {
     id: row.id,
     patientId: row.patientId,
@@ -152,25 +152,25 @@ export function toEvaluationDTO(row: {
       ? memberToProfessionalProfile(
           row.member.metadata,
           row.member.user.name,
-          row.member.registro,
+          row.member.registration,
         )
       : null,
-    tipo: row.tipo,
+    type: row.type,
     date: row.date,
-    queixa: row.queixa,
-    historia: row.historia,
+    complaint: row.complaint,
+    history: row.history,
     domains: parseDomains(row.domains),
-    objetivos: row.objetivos,
-    condutas: row.condutas,
-    diagnostico: row.diagnostico,
-    encaminhadoPor: row.encaminhadoPor,
-    contextoFamiliar: row.contextoFamiliar,
-    nivelPrevio: row.nivelPrevio,
-    medicacoes: row.medicacoes,
-    precaucoes: row.precaucoes,
-    equipamentos: row.equipamentos,
-    frequencia: row.frequencia,
-    criteriosAlta: row.criteriosAlta,
+    goals: row.goals,
+    interventions: row.interventions,
+    diagnosis: row.diagnosis,
+    referredBy: row.referredBy,
+    familyContext: row.familyContext,
+    previousLevel: row.previousLevel,
+    medications: row.medications,
+    precautions: row.precautions,
+    equipment: row.equipment,
+    frequency: row.frequency,
+    dischargeCriteria: row.dischargeCriteria,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -184,8 +184,8 @@ export function toSessionDTO(row: {
   date: string;
   time: string;
   status: SessionNoteStatus;
-  atividades: string;
-  observacoes: string;
+  activities: string;
+  observations: string;
   createdAt: Date;
   updatedAt: Date;
   member?: { user: { name: string | null } } | null;
@@ -199,8 +199,8 @@ export function toSessionDTO(row: {
     date: row.date,
     time: row.time ?? "",
     status: row.status,
-    atividades: row.atividades,
-    observacoes: row.observacoes,
+    activities: row.activities,
+    observations: row.observations,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

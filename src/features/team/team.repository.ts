@@ -82,7 +82,7 @@ export const teamRepository = {
     memberId: string,
     data: {
       profession: string;
-      registro: string;
+      registration: string;
       metadata: string;
       status?: TeamMemberStatus;
       role?: Role;
@@ -92,7 +92,7 @@ export const teamRepository = {
       where: { id: memberId },
       data: {
         profession: data.profession,
-        registro: data.registro,
+        registration: data.registration,
         metadata: data.metadata,
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),

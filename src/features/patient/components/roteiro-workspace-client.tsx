@@ -20,7 +20,7 @@ import { useRoteiroNotes } from "@/features/patient/hooks/use-roteiro-notes";
 import { listRoteiroNotesAction } from "@/features/patient/patient.actions";
 import type { RoteiroNoteDTO } from "@/features/patient/patient.types";
 import type { RoteiroId } from "@/shared/constants/roteiros";
-import type { AssessmentPatientOption } from "@/shared/types/assessment-patient";
+import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 
 export function RoteiroWorkspaceClient({
   roteiroId,
@@ -29,7 +29,7 @@ export function RoteiroWorkspaceClient({
   initialNotes,
 }: {
   roteiroId: RoteiroId;
-  patients: AssessmentPatientOption[];
+  patients: EvaluationModulePatientOption[];
   initialPatientId: string | null;
   initialNotes: RoteiroNoteDTO[];
 }) {
@@ -44,7 +44,7 @@ export function RoteiroWorkspaceClient({
     startTransition,
   });
 
-  const activePatients = patients.filter((p) => p.status !== "alta");
+  const activePatients = patients.filter((p) => p.status !== "discharged");
 
   function handlePatientChange(value: string) {
     const id = value === "none" ? "" : (value ?? "");

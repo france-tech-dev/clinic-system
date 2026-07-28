@@ -2,13 +2,13 @@ import { z } from "zod";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
 
 export const TEAM_MEMBER_ROLES = ["MEMBER", "MANAGER", "ADMIN"] as const;
-export const TEAM_MEMBER_STATUSES = ["ativo", "inativo"] as const;
+export const TEAM_MEMBER_STATUSES = ["active", "inactive"] as const;
 
 const professionalBaseSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome"),
   email: z.email("E-mail inválido"),
   profession: z.enum(HEALTH_PROFESSION_IDS).optional(),
-  registro: z.string().trim().optional(),
+  registration: z.string().trim().optional(),
   phone: z.string().trim().optional(),
   birthDate: z.string().trim().optional(),
   role: z.enum(TEAM_MEMBER_ROLES),

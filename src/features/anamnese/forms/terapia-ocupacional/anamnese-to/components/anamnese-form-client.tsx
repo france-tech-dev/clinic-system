@@ -19,7 +19,7 @@ import {
 import type { AnamneseDTO } from "@/features/anamnese/anamnese.types";
 import { AnamnesePdfPreviewDialog } from "@/features/anamnese/components/anamnese-pdf-preview-dialog";
 import type { AnamneseReportPayload } from "@/features/anamnese/_lib/pdf/types";
-import type { AssessmentPatientOption } from "@/shared/types/assessment-patient";
+import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -42,14 +42,14 @@ export function AnamneseFormClient({
   formId: string;
   formTitle: string;
   schema: AnamneseSection[];
-  patients: AssessmentPatientOption[];
+  patients: EvaluationModulePatientOption[];
   initialPatientId: string | null;
   initialAnamnese: AnamneseDTO | null;
   branding: PrintBranding;
   professional: ProfessionalProfile;
 }) {
   const activePatients = useMemo(
-    () => patients.filter((p) => p.status !== "alta"),
+    () => patients.filter((p) => p.status !== "discharged"),
     [patients],
   );
   const [patientId, setPatientId] = useState(initialPatientId ?? "");

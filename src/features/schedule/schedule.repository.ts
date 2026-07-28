@@ -32,7 +32,7 @@ export const scheduleRepository = {
       where: {
         patient: { organizationId },
         date: { gte: startDate, lte: endDate },
-        status: "compareceu",
+        status: "attended",
         appointmentId: { not: null },
       },
       select: { appointmentId: true },
@@ -46,7 +46,7 @@ export const scheduleRepository = {
 
   async findOrgMembers(organizationId: string) {
     return db.member.findMany({
-      where: { organizationId, status: "ativo" },
+      where: { organizationId, status: "active" },
       include: { user: { select: { id: true, name: true } } },
       orderBy: { createdAt: "asc" },
     });
@@ -126,7 +126,7 @@ export const scheduleRepository = {
           time: data.time ?? "",
           duration: data.duration ?? 50,
           notes: data.notes ?? "",
-          status: "agendado",
+          status: "scheduled",
         },
         include: appointmentInclude,
       });
@@ -180,7 +180,7 @@ export const scheduleRepository = {
     const existing = await db.appointment.findFirst({
       where: { id, organizationId },
     });
-    if (!existing || existing.status !== "agendado") return null;
+    if (!existing || existing.status !== "scheduled") return null;
 
     return db.$transaction(async (tx) => {
       const row = await tx.appointment.update({

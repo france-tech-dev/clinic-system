@@ -85,7 +85,7 @@ export async function getMemberProfessionalProfile(
   return memberToProfessionalProfile(
     member.metadata,
     member.user.name,
-    member.registro,
+    member.registration,
   );
 }
 
@@ -103,7 +103,7 @@ export async function getMemberProfessionalProfilesByIds(
     const profile = memberToProfessionalProfile(
       member.metadata,
       member.user.name,
-      member.registro,
+      member.registration,
     );
     if (profile) map[member.id] = profile;
   }
@@ -123,11 +123,11 @@ export async function getCurrentMemberProfessionalProfile(
     memberToProfessionalProfile(
       member.metadata,
       member.user.name,
-      member.registro,
+      member.registration,
     ) ?? {
-      nome: member.user.name?.trim() || "",
-      registro: member.registro?.trim() || "",
-      clinica: "",
+      name: member.user.name?.trim() || "",
+      registration: member.registration?.trim() || "",
+      clinic: "",
     }
   );
 }
@@ -135,7 +135,7 @@ export async function getCurrentMemberProfessionalProfile(
 export async function saveCurrentMemberProfessionalProfile(
   organizationId: string,
   userId: string,
-  professional: Pick<ProfessionalProfile, "nome" | "registro">,
+  professional: Pick<ProfessionalProfile, "name" | "registration">,
 ): Promise<ProfessionalProfile> {
   const member = await settingsRepository.findMemberByUserId(
     organizationId,
@@ -144,7 +144,7 @@ export async function saveCurrentMemberProfessionalProfile(
   if (!member) throw new Error("Membro não encontrado na organização");
 
   const metadata = serializeMemberProfessionalMetadata(
-    { nome: professional.nome, registro: professional.registro },
+    { name: professional.name, registration: professional.registration },
     member.metadata,
   );
   const updated = await settingsRepository.updateMemberProfessional(
@@ -152,7 +152,7 @@ export async function saveCurrentMemberProfessionalProfile(
     member.id,
     {
       metadata,
-      registro: professional.registro.trim(),
+      registration: professional.registration.trim(),
     },
   );
   if (!updated) throw new Error("Não foi possível salvar o perfil");
@@ -161,11 +161,11 @@ export async function saveCurrentMemberProfessionalProfile(
     memberToProfessionalProfile(
       updated.metadata,
       updated.user.name,
-      updated.registro,
+      updated.registration,
     ) ?? {
-      nome: professional.nome,
-      registro: professional.registro,
-      clinica: "",
+      name: professional.name,
+      registration: professional.registration,
+      clinic: "",
     }
   );
 }

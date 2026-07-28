@@ -30,9 +30,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  GmfmAssessmentForm,
-  type GmfmAssessmentFormValues,
-} from "./assessment-form";
+  GmfmEvaluationForm,
+  type GmfmEvaluationFormValues,
+} from "./evaluation-form";
 import { GmfmComparisonChart } from "./comparison-chart";
 import { GMFM88_PROTOCOL_ID } from "../template";
 import {
@@ -41,28 +41,28 @@ import {
   type Gmfm88Scores,
 } from "../scoring";
 import {
-  compareProtocolAssessmentsAction,
-  createProtocolAssessmentAction,
-  deleteProtocolAssessmentAction,
-  listProtocolAssessmentsAction,
-  updateProtocolAssessmentAction,
+  compareProtocolEvaluationsAction,
+  createProtocolEvaluationAction,
+  deleteProtocolEvaluationAction,
+  listProtocolEvaluationsAction,
+  updateProtocolEvaluationAction,
 } from "@/features/protocol/protocol.actions";
 import {
-  protocolAssessmentFormSchema,
+  protocolEvaluationFormSchema,
 } from "@/features/protocol/protocol.schema";
 import type {
-  ProtocolAssessmentDTO,
-  ProtocolComparisonDTO,
+  ProtocolEvaluationDTO,
+  ProtocolEvaluationComparisonDTO,
 } from "@/features/protocol/protocol.types";
-import type { AssessmentPatientOption } from "@/shared/types/assessment-patient";
+import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 function buildDefaults(
   patientId: string,
-  editing: ProtocolAssessmentDTO | null,
+  editing: ProtocolEvaluationDTO | null,
   assessmentsLength: number,
-): GmfmAssessmentFormValues {
+): GmfmEvaluationFormValues {
   if (editing) {
     return {
       id: editing.id,
@@ -87,28 +87,28 @@ function buildDefaults(
 export function GmfmProtocolClient({
   patients,
   initialPatientId,
-  initialAssessments,
+  initialProtocolEvaluations,
 }: {
-  patients: AssessmentPatientOption[];
+  patients: EvaluationModulePatientOption[];
   initialPatientId: string | null;
-  initialAssessments: ProtocolAssessmentDTO[];
+  initialProtocolEvaluations: ProtocolEvaluationDTO[];
 }) {
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
   const [assessments, setAssessments] =
-    useState<ProtocolAssessmentDTO[]>(initialAssessments);
+    useState<ProtocolEvaluationDTO[]>(initialProtocolEvaluations);
   const [baselineId, setBaselineId] = useState("");
   const [followUpId, setFollowUpId] = useState("");
-  const [comparison, setComparison] = useState<ProtocolComparisonDTO | null>(
+  const [comparison, setComparison] = useState<ProtocolEvaluationComparisonDTO | null>(
     null,
   );
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<ProtocolAssessmentDTO | null>(null);
+  const [editing, setEditing] = useState<ProtocolEvaluationDTO | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const form = useForm<GmfmAssessmentFormValues>({
+  const form = useForm<GmfmEvaluationFormValues>({
     resolver: zodResolver(
-      protocolAssessmentFormSchema,
-    ) as Resolver<GmfmAssessmentFormValues>,
+      protocolEvaluationFormSchema,
+    ) as Resolver<GmfmEvaluationFormValues>,
     defaultValues: buildDefaults(patientId, null, 0),
   });
 
@@ -119,7 +119,7 @@ export function GmfmProtocolClient({
   const liveSummary = useMemo(() => summarizeGmfm88(scores), [scores]);
 
   const activePatients = useMemo(
-    () => patients.filter((p) => p.status !== "alta"),
+    () => patients.filter((p) => p.status !== "discharged"),
     [patients],
   );
 
@@ -133,7 +133,7 @@ export function GmfmProtocolClient({
     }
 
     startTransition(async () => {
-      const result = await listProtocolAssessmentsAction({
+      const result = await listProtocolEvaluationsAction({
         patientId: id,
         protocolId: GMFM88_PROTOCOL_ID,
       });
@@ -154,7 +154,7 @@ export function GmfmProtocolClient({
     setFormOpen(true);
   }
 
-  function openEdit(item: ProtocolAssessmentDTO) {
+  function openEdit(item: ProtocolEvaluationDTO) {
     setEditing(item);
     form.reset(buildDefaults(patientId, item, assessments.length));
     setFormOpen(true);
@@ -167,7 +167,7 @@ export function GmfmProtocolClient({
     setFormOpen(next);
   }
 
-  function onSubmit(data: GmfmAssessmentFormValues) {
+  function onSubmit(data: GmfmEvaluationFormValues) {
     if (!patientId) {
       toast.error("Selecione um paciente");
       return;
@@ -184,8 +184,8 @@ export function GmfmProtocolClient({
       };
 
       const result = editing
-        ? await updateProtocolAssessmentAction({ id: editing.id, ...payload })
-        : await createProtocolAssessmentAction(payload);
+        ? await updateProtocolEvaluationAction({ id: editing.id, ...payload })
+        : await createProtocolEvaluationAction(payload);
 
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
@@ -209,7 +209,7 @@ export function GmfmProtocolClient({
 
   function removeAssessment(id: string) {
     startTransition(async () => {
-      const result = await deleteProtocolAssessmentAction({ id });
+      const result = await deleteProtocolEvaluationAction({ id });
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -229,7 +229,7 @@ export function GmfmProtocolClient({
     }
 
     startTransition(async () => {
-      const result = await compareProtocolAssessmentsAction({
+      const result = await compareProtocolEvaluationsAction({
         baselineId,
         followUpId,
       });
@@ -436,11 +436,11 @@ export function GmfmProtocolClient({
 
           <Form {...form}>
             <form
-              id="gmfm-assessment-form"
+              id="gmfm-evaluation-form"
               onSubmit={form.handleSubmit(onSubmit)}
               className="grid gap-4"
             >
-              <GmfmAssessmentForm />
+              <GmfmEvaluationForm />
             </form>
           </Form>
 
@@ -458,7 +458,7 @@ export function GmfmProtocolClient({
             </Button>
             <Button
               type="submit"
-              form="gmfm-assessment-form"
+              form="gmfm-evaluation-form"
               disabled={pending}
             >
               Salvar

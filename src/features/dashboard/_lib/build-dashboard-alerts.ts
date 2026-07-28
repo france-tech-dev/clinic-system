@@ -6,7 +6,7 @@ const MAX_ALERTS = 8;
 type PatientWithLastEvaluation = {
   id: string;
   name: string;
-  evaluations: { date: string }[];
+  clinicalEvaluations: { date: string }[];
 };
 
 export function buildDashboardAlerts(
@@ -16,7 +16,7 @@ export function buildDashboardAlerts(
   const alerts: DashboardAlert[] = [];
 
   for (const patient of patients) {
-    const last = patient.evaluations[0]?.date;
+    const last = patient.clinicalEvaluations[0]?.date;
     if (!last) {
       alerts.push({
         patientId: patient.id,

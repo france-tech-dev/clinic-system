@@ -12,66 +12,66 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Identificação",
     "fields": [
       {
-        "id": "nomeCrianca",
+        "id": "childName",
         "label": "Nome da criança",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "dataNascimento",
+        "id": "birthDate",
         "label": "Data de nascimento",
         "type": "text",
         "w": "sm",
         "placeholder": "__/__/____"
       },
       {
-        "id": "idade",
+        "id": "age",
         "label": "Idade",
         "type": "text",
         "w": "sm"
       },
       {
-        "id": "responsavel",
+        "id": "guardianName",
         "label": "Responsável",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "parentesco",
+        "id": "relationship",
         "label": "Parentesco",
         "type": "text"
       },
       {
-        "id": "telefone",
+        "id": "phone",
         "label": "Telefone",
         "type": "text",
         "w": "sm"
       },
       {
-        "id": "escola",
+        "id": "school",
         "label": "Escola",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "serieAno",
+        "id": "gradeYear",
         "label": "Série/Ano",
         "type": "text"
       },
       {
-        "id": "diagnosticos",
+        "id": "diagnoses",
         "label": "Diagnóstico(s)",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "profissionaisAcompanham",
+        "id": "accompanyingProfessionals",
         "label": "Profissionais que acompanham",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "contatoEmergencia",
+        "id": "emergencyContact",
         "label": "Contato de emergência (nome e telefone)",
         "type": "text",
         "w": "lg"
@@ -83,31 +83,31 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Motivo da consulta e expectativas",
     "fields": [
       {
-        "id": "queixaMotivou",
+        "id": "chiefComplaintReason",
         "label": "O que motivou a busca pela Terapia Ocupacional?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "queixaDificuldades",
+        "id": "chiefComplaintDifficulties",
         "label": "Quais são as maiores dificuldades no dia a dia atualmente?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "queixaDesejo",
+        "id": "chiefComplaintDesire",
         "label": "O que a família gostaria que a criança conseguisse fazer sozinha?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "objetivos6meses",
+        "id": "goals6Months",
         "label": "Expectativas para os próximos meses de acompanhamento",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "prioridades",
+        "id": "priorities",
         "label": "Classifique de 1 a 10 a prioridade de cada área para a família",
         "type": "rating-grid",
         "items": [
@@ -135,71 +135,71 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Histórico de saúde e desenvolvimento",
     "fields": [
       {
-        "id": "gestacaoIntercorrencias",
+        "id": "pregnancyComplications",
         "label": "Intercorrências na gestação (uso de medicamentos, complicações)",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "tipoParto",
+        "id": "deliveryType",
         "label": "Tipo de parto",
         "type": "text"
       },
       {
-        "id": "pesoIdadeGestacional",
+        "id": "birthWeightGestationalAge",
         "label": "Peso ao nascer e idade gestacional",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "utiNeonatal",
+        "id": "neonatalIcu",
         "label": "Necessitou UTI neonatal?",
         "type": "text"
       },
       {
-        "id": "marcosMotores",
+        "id": "motorMilestones",
         "label": "Idade em que sustentou a cabeça, sentou, engatinhou e andou (ou “ainda não”)",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "marcosLinguagem",
+        "id": "languageMilestones",
         "label": "Idade das primeiras palavras e frases. Houve regressão de habilidades já adquiridas?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "diagnosticosMedicos",
+        "id": "medicalDiagnoses",
         "label": "Diagnósticos médicos",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "medicamentosAtuais",
+        "id": "currentMedications",
         "label": "Medicamentos atuais",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "alergiasConvulsoes",
+        "id": "allergiesSeizures",
         "label": "Alergias e/ou convulsões",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "visaoAudicao",
+        "id": "visionHearing",
         "label": "Já fez avaliação de visão e audição? Algum resultado alterado?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "cirurgiasInternacoes",
+        "id": "surgeriesHospitalizations",
         "label": "Cirurgias/Internações",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "terapiasAnteriores",
+        "id": "previousTherapies",
         "label": "Terapias já realizadas (TO, fono, psicologia, fisioterapia, ABA...) — período e o que funcionou ou não",
         "type": "textarea",
         "rows": 4
@@ -212,31 +212,31 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "hint": "o coração da anamnese — como a criança funciona no dia a dia real",
     "fields": [
       {
-        "id": "diaTipico",
+        "id": "typicalDay",
         "label": "Descreva um dia típico da criança, do acordar ao dormir",
         "type": "textarea",
         "rows": 6
       },
       {
-        "id": "horarioSono",
+        "id": "sleepSchedule",
         "label": "Horários de sono, acorda durante a noite, ronca ou tem sono agitado?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "alimentacaoRotina",
+        "id": "feedingRoutine",
         "label": "Como é a alimentação: aceita variedade de texturas e alimentos, ou é seletiva?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "seletividadeAlimentar",
+        "id": "foodSelectivity",
         "label": "Recusa grupos ou texturas específicas? Engasgos ou dificuldade para mastigar?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "avdAlimentacao",
+        "id": "adlFeeding",
         "label": "Independência para se alimentar",
         "type": "status-table",
         "options": [
@@ -252,7 +252,7 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         ]
       },
       {
-        "id": "avdHigiene",
+        "id": "adlHygiene",
         "label": "Higiene pessoal",
         "type": "status-table",
         "options": [
@@ -269,13 +269,13 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         ]
       },
       {
-        "id": "cortesUnhaCabelo",
+        "id": "nailHairCutting",
         "label": "Como reage a corte de unhas e de cabelo? Tolera bem, ou demonstra desconforto, choro ou resistência?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "avdVestuario",
+        "id": "adlDressing",
         "label": "Vestuário",
         "type": "status-table",
         "options": [
@@ -292,7 +292,7 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         ]
       },
       {
-        "id": "avdBanheiro",
+        "id": "adlToileting",
         "label": "Uso do banheiro e mobilidade",
         "type": "status-table",
         "options": [
@@ -309,37 +309,37 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         ]
       },
       {
-        "id": "obsDesfralde",
+        "id": "toiletTrainingNotes",
         "label": "Observações sobre desfralde",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "tarefasDomesticas",
+        "id": "householdTasks",
         "label": "Participa de tarefas domésticas simples apropriadas à idade (guardar brinquedos, ajudar a pôr a mesa, jogar lixo fora)?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "mobilidadeCasa",
+        "id": "homeMobility",
         "label": "Como se movimenta em casa e na comunidade — sobe/desce escadas, anda em superfícies irregulares, entra/sai do carro sozinho?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "nocaoPerigo",
+        "id": "dangerAwareness",
         "label": "Tem noção de perigo (trânsito, objetos cortantes, fogão, altura)?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "usoTelas",
+        "id": "screenUse",
         "label": "Tempo de tela por dia e em quais momentos (lazer, refeições, para se acalmar)?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "autonomiaGeral",
+        "id": "generalAutonomy",
         "label": "De forma geral, como avalia a autonomia da criança nas atividades do dia a dia comparada a outras crianças da mesma idade?",
         "type": "textarea",
         "rows": 4
@@ -351,43 +351,43 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Comunicação e interação social",
     "fields": [
       {
-        "id": "comoComunica",
+        "id": "howCommunicates",
         "label": "Como a criança se comunica? (fala, gestos, CAA)",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "compreensao",
+        "id": "comprehension",
         "label": "Compreende instruções simples? E instruções com mais de uma etapa?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "expressaNecessidades",
+        "id": "expressesNeeds",
         "label": "Consegue expressar necessidades e desejos?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "ecolaliaOutrosPadroes",
+        "id": "echolaliaOtherPatterns",
         "label": "Apresenta ecolalia? Costuma iniciar interações por conta própria?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "brincarPredominante",
+        "id": "predominantPlay",
         "label": "Tipo de brincar predominante: funcional, simbólico (faz de conta) ou repetitivo?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "interacaoColegas",
+        "id": "peerInteraction",
         "label": "Como interage com outras crianças — divide brinquedos, faz amizades, participa de brincadeiras em grupo, tolera ambientes agitados?",
         "type": "textarea",
         "rows": 4
       },
       {
-        "id": "toleraMudancaBrincadeira",
+        "id": "toleratesPlayChange",
         "label": "Tolera quando modificam a brincadeira ou a rotina de um jogo?",
         "type": "textarea",
         "rows": 3
@@ -400,7 +400,7 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "hint": "relatos e observações trazidos pelos familiares no dia a dia",
     "fields": [
       {
-        "id": "sensTatil",
+        "id": "sensTactile",
         "label": "Sistema tátil — como reage a corte de cabelo, unhas, areia, tinta, massinha e grama? E a roupas novas, etiquetas ou costuras? Tolera sujeira nas mãos ou lava as mãos excessivamente?",
         "type": "textarea",
         "rows": 4
@@ -412,13 +412,13 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         "rows": 4
       },
       {
-        "id": "sensProprioceptivo",
+        "id": "sensProprioceptive",
         "label": "Sistema proprioceptivo — busca apertos fortes, carregar peso ou impacto corporal? Costuma quebrar objetos, apertar muito o lápis, derrubar coisas ou buscar colisões?",
         "type": "textarea",
         "rows": 4
       },
       {
-        "id": "sensAuditivo",
+        "id": "sensAuditory",
         "label": "Sistema auditivo — existem sons que incomodam a criança?",
         "type": "textarea",
         "rows": 2
@@ -430,7 +430,7 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         "rows": 2
       },
       {
-        "id": "sensOlfativoOral",
+        "id": "sensOlfactoryOral",
         "label": "Sistema olfativo/oral — costuma cheirar objetos ou mastigar roupas e brinquedos?",
         "type": "textarea",
         "rows": 2
@@ -442,25 +442,25 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Comportamento, autorregulação e funções executivas",
     "fields": [
       {
-        "id": "desencadeiaCrises",
+        "id": "crisisTriggers",
         "label": "O que costuma desencadear crises, ou deixar a criança mais agitada/desorganizada?",
         "type": "textarea",
         "rows": 4
       },
       {
-        "id": "ajudaAcalmar",
+        "id": "calmingHelps",
         "label": "Em quais situações a criança fica mais organizada e o que ajuda a se acalmar?",
         "type": "textarea",
         "rows": 4
       },
       {
-        "id": "rigidezMudancas",
+        "id": "rigidityChanges",
         "label": "Tempo para se reorganizar após uma crise, e rigidez/dificuldade com mudanças de rotina?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "funcoesExecutivas",
+        "id": "executiveFunctions",
         "label": "Consegue esperar a vez, seguir combinados e finalizar tarefas sem se dispersar?",
         "type": "textarea",
         "rows": 3
@@ -472,19 +472,19 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Vida escolar",
     "fields": [
       {
-        "id": "adaptacoesEscolares",
+        "id": "schoolAdaptations",
         "label": "Possui mediador ou necessita de adaptações na sala?",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "desempenhoEscolar",
+        "id": "schoolPerformance",
         "label": "Consegue permanecer sentado, como é a escrita, e quais as principais dificuldades escolares?",
         "type": "textarea",
         "rows": 4
       },
       {
-        "id": "relacionamentoEscolar",
+        "id": "schoolRelationships",
         "label": "Relacionamento com professores e colegas, participação em atividades em grupo",
         "type": "textarea",
         "rows": 3
@@ -496,18 +496,18 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Histórico familiar",
     "fields": [
       {
-        "id": "quemMora",
+        "id": "householdMembers",
         "label": "Quem mora com a criança?",
         "type": "text",
         "w": "lg"
       },
       {
-        "id": "possuiIrmaos",
+        "id": "hasSiblings",
         "label": "Possui irmãos?",
         "type": "text"
       },
       {
-        "id": "historicoFamiliar",
+        "id": "familyHistory",
         "label": "Há histórico familiar de TEA, TDAH, atraso de fala, dificuldades de aprendizagem, ansiedade ou depressão?",
         "type": "textarea",
         "rows": 3
@@ -519,7 +519,7 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "title": "Observações da família",
     "fields": [
       {
-        "id": "obsFamiliaImportante",
+        "id": "importantFamilyNotes",
         "label": "Existe alguma informação importante que não foi perguntada?",
         "type": "textarea",
         "rows": 6
@@ -532,7 +532,7 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
     "hint": "observação e raciocínio clínico direto — não é entrevista com a família",
     "fields": [
       {
-        "id": "sensorialSistemas",
+        "id": "sensorySystems",
         "label": "Processamento sensorial — marcar o que se aplica",
         "type": "status-table",
         "options": [
@@ -551,20 +551,20 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         ]
       },
       {
-        "id": "obsSensorial",
+        "id": "sensoryNotes",
         "label": "Observações adicionais (gatilhos específicos, texturas, sons ou situações problemáticas)",
         "type": "textarea",
         "rows": 6,
         "placeholder": "Espaço para registrar relatos trazidos pela família sobre gatilhos, texturas, sons ou situações específicas..."
       },
       {
-        "id": "hipModulacao",
+        "id": "hypModulation",
         "label": "Hipótese clínica — Modulação sensorial",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "hipDiscriminacao",
+        "id": "hypDiscrimination",
         "label": "Hipótese clínica — Discriminação sensorial",
         "type": "textarea",
         "rows": 3
@@ -576,43 +576,43 @@ export const ANAMNESE_SCHEMA: AnamneseSection[] = [
         "rows": 3
       },
       {
-        "id": "hipCoordenacao",
+        "id": "hypCoordination",
         "label": "Hipótese clínica — Coordenação motora (grossa e fina)",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "hipRegulacao",
+        "id": "hypRegulation",
         "label": "Hipótese clínica — Regulação emocional e comportamental",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "recursosFortes",
+        "id": "strengths",
         "label": "Recursos e pontos fortes observados",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "areasImpactadas",
+        "id": "impactedAreas",
         "label": "Áreas ocupacionais impactadas",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "avaliacoesComplementares",
+        "id": "complementaryAssessments",
         "label": "Avaliações complementares recomendadas",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "objetivosIniciais",
+        "id": "initialGoals",
         "label": "Objetivos terapêuticos iniciais",
         "type": "textarea",
         "rows": 3
       },
       {
-        "id": "frequenciaSugerida",
+        "id": "suggestedFrequency",
         "label": "Frequência e duração sugeridas do atendimento",
         "type": "text",
         "w": "lg",

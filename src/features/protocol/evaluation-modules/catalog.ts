@@ -3,16 +3,16 @@ import { HEALTH_PROFESSIONS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
 import {
   FISIOTERAPIA_PROFESSION_ID,
-  fisioterapiaCatalogAssessments,
+  fisioterapiaCatalogEvaluations,
 } from "./fisioterapia";
 import {
   TERAPIA_OCUPACIONAL_PROFESSION_ID,
-  terapiaOcupacionalCatalogAssessments,
+  terapiaOcupacionalCatalogEvaluations,
 } from "./terapia-ocupacional";
 import type {
-  CatalogAssessment,
-  CatalogAssessmentDef,
-  ProfessionAssessmentCatalogItem,
+  CatalogEvaluation,
+  CatalogEvaluationDef,
+  ProfessionEvaluationCatalogItem,
 } from "./types";
 
 /**
@@ -20,13 +20,13 @@ import type {
  * exporta a sua lista.
  */
 const ASSESSMENTS_BY_PROFESSION: Partial<
-  Record<HealthProfessionId, CatalogAssessmentDef[]>
+  Record<HealthProfessionId, CatalogEvaluationDef[]>
 > = {
-  [FISIOTERAPIA_PROFESSION_ID]: fisioterapiaCatalogAssessments,
-  [TERAPIA_OCUPACIONAL_PROFESSION_ID]: terapiaOcupacionalCatalogAssessments,
+  [FISIOTERAPIA_PROFESSION_ID]: fisioterapiaCatalogEvaluations,
+  [TERAPIA_OCUPACIONAL_PROFESSION_ID]: terapiaOcupacionalCatalogEvaluations,
 };
 
-function withHref(assessment: CatalogAssessmentDef): CatalogAssessment {
+function withHref(assessment: CatalogEvaluationDef): CatalogEvaluation {
   return {
     ...assessment,
     href: paths.avaliacoes.byId(assessment.id),
@@ -37,7 +37,7 @@ function withHref(assessment: CatalogAssessmentDef): CatalogAssessment {
  * Catálogo de avaliações no hub (`/avaliacoes`).
  * O `id` deve coincidir com o registry de UI (`./registry.ts`).
  */
-export const PROFESSION_ASSESSMENT_CATALOG: ProfessionAssessmentCatalogItem[] =
+export const PROFESSION_EVALUATION_CATALOG: ProfessionEvaluationCatalogItem[] =
   HEALTH_PROFESSIONS.map((profession) => ({
     professionId: profession.id,
     label: profession.label,
@@ -51,20 +51,20 @@ export const PROFESSION_ASSESSMENT_CATALOG: ProfessionAssessmentCatalogItem[] =
   });
 
 /** Filtra o catálogo às profissões presentes na clínica (ex.: membros ativos). */
-export function filterAssessmentCatalogByProfessions(
+export function filterEvaluationCatalogByProfessions(
   professionIds: Iterable<string>,
-): ProfessionAssessmentCatalogItem[] {
+): ProfessionEvaluationCatalogItem[] {
   const allowed = new Set(professionIds);
-  return PROFESSION_ASSESSMENT_CATALOG.filter((item) =>
+  return PROFESSION_EVALUATION_CATALOG.filter((item) =>
     allowed.has(item.professionId),
   );
 }
 
 /** Resolve uma avaliação pelo id da URL (`/avaliacoes/[avaliacao]`). */
-export function getCatalogAssessment(
+export function getCatalogEvaluation(
   avaliacaoId: string,
-): CatalogAssessment | undefined {
-  for (const item of PROFESSION_ASSESSMENT_CATALOG) {
+): CatalogEvaluation | undefined {
+  for (const item of PROFESSION_EVALUATION_CATALOG) {
     const assessment = item.assessments.find((a) => a.id === avaliacaoId);
     if (assessment) return assessment;
   }

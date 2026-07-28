@@ -50,9 +50,9 @@ type SessionDialogValues = {
   id?: string;
   patientId: string;
   appointmentId: string;
-  status: "compareceu" | "faltou" | "cancelado";
-  atividades: string;
-  observacoes: string;
+  status: "attended" | "absent" | "cancelled";
+  activities: string;
+  observations: string;
 };
 
 function appointmentLabel(a: SessionLinkableAppointmentDTO) {
@@ -71,9 +71,9 @@ function buildDefaults(
     ...(initial ? { id: initial.id } : {}),
     patientId,
     appointmentId: initial?.appointmentId ?? defaultAppointmentId,
-    status: initial?.status ?? "compareceu",
-    atividades: initial?.atividades ?? "",
-    observacoes: initial?.observacoes ?? "",
+    status: initial?.status ?? "attended",
+    activities: initial?.activities ?? "",
+    observations: initial?.observations ?? "",
   };
 }
 
@@ -134,8 +134,8 @@ export function SessionFormDialog({
         patientId: data.patientId,
         appointmentId: data.appointmentId,
         status: data.status,
-        atividades: data.atividades,
-        observacoes: data.observacoes,
+        activities: data.activities,
+        observations: data.observations,
       };
       const result = initial
         ? await updateSessionAction({ id: initial.id, ...payload })
@@ -227,9 +227,9 @@ export function SessionFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="compareceu">Compareceu</SelectItem>
-                      <SelectItem value="faltou">Faltou</SelectItem>
-                      <SelectItem value="cancelado">Cancelado</SelectItem>
+                      <SelectItem value="attended">Compareceu</SelectItem>
+                      <SelectItem value="absent">Faltou</SelectItem>
+                      <SelectItem value="cancelled">Cancelado</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -239,11 +239,11 @@ export function SessionFormDialog({
 
             <FormField
               control={form.control}
-              name="atividades"
+              name="activities"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {status === "compareceu"
+                    {status === "attended"
                       ? "Atividades realizadas *"
                       : "Atividades realizadas"}
                   </FormLabel>
@@ -257,7 +257,7 @@ export function SessionFormDialog({
 
             <FormField
               control={form.control}
-              name="observacoes"
+              name="observations"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Observações</FormLabel>

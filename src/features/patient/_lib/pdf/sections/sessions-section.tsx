@@ -18,9 +18,9 @@ export function SessionsSection({ sessionNotes }: SessionsSectionProps) {
             {formatDateBR(note.date)}
             {note.time ? ` às ${formatTime(note.time)}` : ""} — {note.status}
           </Text>
-          <Text style={pdfStyles.paragraph}>{note.atividades}</Text>
-          {note.observacoes ? (
-            <Text style={pdfStyles.paragraph}>{note.observacoes}</Text>
+          <Text style={pdfStyles.paragraph}>{note.activities}</Text>
+          {note.observations ? (
+            <Text style={pdfStyles.paragraph}>{note.observations}</Text>
           ) : null}
         </View>
       ))}

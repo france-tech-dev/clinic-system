@@ -6,24 +6,24 @@ import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
-  compareProtocolAssessmentsSchema,
-  listProtocolAssessmentsSchema,
-  protocolAssessmentFormSchema,
-  protocolAssessmentIdSchema,
-  updateProtocolAssessmentSchema,
+  compareProtocolEvaluationsSchema,
+  listProtocolEvaluationsSchema,
+  protocolEvaluationFormSchema,
+  protocolEvaluationIdSchema,
+  updateProtocolEvaluationSchema,
 } from "./protocol.schema";
 import {
-  compareProtocolAssessments,
-  createProtocolAssessment,
-  deleteProtocolAssessment,
-  getProtocolAssessment,
-  listProtocolAssessments,
+  compareProtocolEvaluations,
+  createProtocolEvaluation,
+  deleteProtocolEvaluation,
+  getProtocolEvaluation,
+  listProtocolEvaluations,
   resolveProtocolAuthorMemberId,
-  updateProtocolAssessment,
+  updateProtocolEvaluation,
 } from "./protocol.service";
 import type {
-  ProtocolAssessmentDTO,
-  ProtocolComparisonDTO,
+  ProtocolEvaluationDTO,
+  ProtocolEvaluationComparisonDTO,
 } from "./protocol.types";
 
 function handleError(error: unknown): ActionResult<never> {
@@ -37,15 +37,15 @@ function revalidateProtocol(protocolId: string, patientId?: string) {
   if (patientId) revalidatePath(paths.paciente(patientId));
 }
 
-export async function listProtocolAssessmentsAction(
+export async function listProtocolEvaluationsAction(
   input: unknown,
-): Promise<ActionResult<ProtocolAssessmentDTO[]>> {
+): Promise<ActionResult<ProtocolEvaluationDTO[]>> {
   try {
-    const parsed = listProtocolAssessmentsSchema.safeParse(input);
+    const parsed = listProtocolEvaluationsSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
     const { organizationId } = await requireOrgId();
-    const data = await listProtocolAssessments(
+    const data = await listProtocolEvaluations(
       organizationId,
       parsed.data.patientId,
       parsed.data.protocolId,
@@ -56,11 +56,11 @@ export async function listProtocolAssessmentsAction(
   }
 }
 
-export async function createProtocolAssessmentAction(
+export async function createProtocolEvaluationAction(
   input: unknown,
-): Promise<ActionResult<ProtocolAssessmentDTO>> {
+): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
-    const parsed = protocolAssessmentFormSchema.safeParse(input);
+    const parsed = protocolEvaluationFormSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
 
     const { organizationId, userId } = await requireOrgId();
@@ -68,7 +68,7 @@ export async function createProtocolAssessmentAction(
       organizationId,
       userId,
     );
-    const data = await createProtocolAssessment(
+    const data = await createProtocolEvaluation(
       organizationId,
       parsed.data,
       memberId,
@@ -82,15 +82,15 @@ export async function createProtocolAssessmentAction(
   }
 }
 
-export async function updateProtocolAssessmentAction(
+export async function updateProtocolEvaluationAction(
   input: unknown,
-): Promise<ActionResult<ProtocolAssessmentDTO>> {
+): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
-    const parsed = updateProtocolAssessmentSchema.safeParse(input);
+    const parsed = updateProtocolEvaluationSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
 
     const { organizationId } = await requireOrgId();
-    const data = await updateProtocolAssessment(organizationId, parsed.data);
+    const data = await updateProtocolEvaluation(organizationId, parsed.data);
     if (!data) return fail("Avaliação não encontrada");
 
     revalidateProtocol(data.protocolId, parsed.data.patientId);
@@ -100,21 +100,21 @@ export async function updateProtocolAssessmentAction(
   }
 }
 
-export async function deleteProtocolAssessmentAction(
+export async function deleteProtocolEvaluationAction(
   input: unknown,
-): Promise<ActionResult<ProtocolAssessmentDTO>> {
+): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
-    const parsed = protocolAssessmentIdSchema.safeParse(input);
+    const parsed = protocolEvaluationIdSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
     const { organizationId } = await requireOrgId();
-    const existing = await getProtocolAssessment(
+    const existing = await getProtocolEvaluation(
       organizationId,
       parsed.data.id,
     );
     if (!existing) return fail("Avaliação não encontrada");
 
-    const data = await deleteProtocolAssessment(organizationId, parsed.data.id);
+    const data = await deleteProtocolEvaluation(organizationId, parsed.data.id);
     if (!data) return fail("Avaliação não encontrada");
 
     revalidateProtocol(existing.protocolId, existing.patientId);
@@ -124,15 +124,15 @@ export async function deleteProtocolAssessmentAction(
   }
 }
 
-export async function compareProtocolAssessmentsAction(
+export async function compareProtocolEvaluationsAction(
   input: unknown,
-): Promise<ActionResult<ProtocolComparisonDTO>> {
+): Promise<ActionResult<ProtocolEvaluationComparisonDTO>> {
   try {
-    const parsed = compareProtocolAssessmentsSchema.safeParse(input);
+    const parsed = compareProtocolEvaluationsSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
     const { organizationId } = await requireOrgId();
-    const data = await compareProtocolAssessments(
+    const data = await compareProtocolEvaluations(
       organizationId,
       parsed.data.baselineId,
       parsed.data.followUpId,

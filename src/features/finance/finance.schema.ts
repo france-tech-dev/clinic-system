@@ -9,18 +9,18 @@ const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida");
 
 const transactionType = z.enum(
   CASH_TRANSACTION_TYPES.map((t) => t.id) as [
-    "entrada",
-    "saida",
+    "income",
+    "expense",
   ],
 );
 
 const paymentMethod = z.enum(
   CASH_PAYMENT_METHODS.map((m) => m.id) as [
-    "dinheiro",
+    "cash",
     "pix",
-    "cartao",
-    "transferencia",
-    "outro",
+    "card",
+    "transfer",
+    "other",
   ],
 );
 

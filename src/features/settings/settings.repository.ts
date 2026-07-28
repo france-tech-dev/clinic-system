@@ -73,7 +73,7 @@ export const settingsRepository = {
   async updateMemberProfessional(
     organizationId: string,
     memberId: string,
-    data: { metadata?: string; registro?: string; profession?: string },
+    data: { metadata?: string; registration?: string; profession?: string },
   ) {
     const existing = await db.member.findFirst({
       where: { id: memberId, organizationId },
@@ -84,7 +84,7 @@ export const settingsRepository = {
       where: { id: memberId },
       data: {
         ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
-        ...(data.registro !== undefined ? { registro: data.registro } : {}),
+        ...(data.registration !== undefined ? { registration: data.registration } : {}),
         ...(data.profession !== undefined
           ? { profession: data.profession }
           : {}),

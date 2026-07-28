@@ -33,7 +33,7 @@ function formatBirthDate(value: Date | null | undefined): string | null {
 }
 
 function toTeamMemberStatus(status: string): TeamMemberStatus {
-  return status === "inativo" ? "inativo" : "ativo";
+  return status === "inactive" ? "inactive" : "active";
 }
 
 export async function listTeamMembers(
@@ -46,7 +46,7 @@ export async function listTeamMembers(
     role: row.role,
     status: toTeamMemberStatus(row.status),
     profession: row.profession,
-    registro: row.registro,
+    registration: row.registration,
     name: row.user.name?.trim() || "Sem nome",
     email: row.user.email?.trim() || "",
     phone: row.user.phone,
@@ -94,13 +94,13 @@ export async function createProfessional(
     throw new Error("Membro criado sem vínculo na organização");
   }
 
-  const registro = input.registro?.trim() ?? "";
+  const registration = input.registration?.trim() ?? "";
   await teamRepository.updateMemberProfile(member.id, {
     profession: profession.id,
-    registro,
+    registration,
     metadata: serializeMemberProfessionalMetadata({
-      nome: input.name.trim(),
-      registro,
+      name: input.name.trim(),
+      registration,
     }),
   });
 
@@ -133,11 +133,11 @@ export async function updateProfessional(
   const isOwner = member.role === Role.OWNER;
   const isSelf = member.userId === actorUserId;
 
-  if (isSelf && input.status === "inativo") {
+  if (isSelf && input.status === "inactive") {
     throw new Error("Não pode desativar o seu próprio acesso");
   }
 
-  if (isOwner && input.status === "inativo") {
+  if (isOwner && input.status === "inactive") {
     throw new Error("Não é possível desativar o proprietário da clínica");
   }
 
@@ -162,7 +162,7 @@ export async function updateProfessional(
   }
 
   const name = input.name.trim();
-  const registro = input.registro?.trim() ?? "";
+  const registration = input.registration?.trim() ?? "";
 
   await teamRepository.updateUserProfile(member.userId, {
     name,
@@ -176,11 +176,11 @@ export async function updateProfessional(
 
   await teamRepository.updateMemberProfile(member.id, {
     profession: profession.id,
-    registro,
+    registration,
     metadata: serializeMemberProfessionalMetadata(
       {
-        nome: name,
-        registro,
+        name: name,
+        registration,
       },
       member.metadata,
     ),

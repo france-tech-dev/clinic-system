@@ -7,7 +7,7 @@ export function buildSummary(
   let expenseCents = 0;
 
   for (const tx of transactions) {
-    if (tx.type === "entrada") incomeCents += tx.amountCents;
+    if (tx.type === "income") incomeCents += tx.amountCents;
     else expenseCents += tx.amountCents;
   }
 

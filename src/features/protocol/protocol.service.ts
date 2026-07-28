@@ -1,16 +1,16 @@
-import { GMFM88_PROTOCOL_ID } from "./assessments/fisioterapia/gmfm-88/template";
+import { GMFM88_PROTOCOL_ID } from "./evaluation-modules/fisioterapia/gmfm-88/template";
 import {
   summarizeGmfm88,
   type Gmfm88Scores,
-} from "./assessments/fisioterapia/gmfm-88/scoring";
+} from "./evaluation-modules/fisioterapia/gmfm-88/scoring";
 import { protocolRepository } from "./protocol.repository";
 import type {
-  ProtocolAssessmentFormInput,
-  UpdateProtocolAssessmentInput,
+  ProtocolEvaluationFormInput,
+  UpdateProtocolEvaluationInput,
 } from "./protocol.schema";
 import type {
-  ProtocolAssessmentDTO,
-  ProtocolComparisonDTO,
+  ProtocolEvaluationDTO,
+  ProtocolEvaluationComparisonDTO,
 } from "./protocol.types";
 
 function parseScores(raw: string): Record<string, number | null> {
@@ -21,11 +21,11 @@ function parseScores(raw: string): Record<string, number | null> {
   }
 }
 
-type AssessmentRow = NonNullable<
+type ProtocolEvaluationRow = NonNullable<
   Awaited<ReturnType<typeof protocolRepository.findById>>
 >;
 
-function toDTO(row: AssessmentRow): ProtocolAssessmentDTO {
+function toDTO(row: ProtocolEvaluationRow): ProtocolEvaluationDTO {
   const scores = parseScores(row.scores);
   const summary =
     row.protocolId === GMFM88_PROTOCOL_ID
@@ -60,7 +60,7 @@ export async function resolveProtocolAuthorMemberId(
   return member?.id ?? null;
 }
 
-export async function listProtocolAssessments(
+export async function listProtocolEvaluations(
   organizationId: string,
   patientId: string,
   protocolId?: string,
@@ -73,7 +73,7 @@ export async function listProtocolAssessments(
   return rows.map(toDTO);
 }
 
-export async function getProtocolAssessment(
+export async function getProtocolEvaluation(
   organizationId: string,
   id: string,
 ) {
@@ -81,24 +81,24 @@ export async function getProtocolAssessment(
   return row ? toDTO(row) : null;
 }
 
-export async function createProtocolAssessment(
+export async function createProtocolEvaluation(
   organizationId: string,
-  data: ProtocolAssessmentFormInput,
+  data: ProtocolEvaluationFormInput,
   memberId: string | null,
 ) {
   const row = await protocolRepository.create(organizationId, data, memberId);
   return row ? toDTO(row) : null;
 }
 
-export async function updateProtocolAssessment(
+export async function updateProtocolEvaluation(
   organizationId: string,
-  data: UpdateProtocolAssessmentInput,
+  data: UpdateProtocolEvaluationInput,
 ) {
   const row = await protocolRepository.update(organizationId, data);
   return row ? toDTO(row) : null;
 }
 
-export async function deleteProtocolAssessment(
+export async function deleteProtocolEvaluation(
   organizationId: string,
   id: string,
 ) {
@@ -106,11 +106,11 @@ export async function deleteProtocolAssessment(
   return row ? toDTO(row) : null;
 }
 
-export async function compareProtocolAssessments(
+export async function compareProtocolEvaluations(
   organizationId: string,
   baselineId: string,
   followUpId: string,
-): Promise<ProtocolComparisonDTO | null> {
+): Promise<ProtocolEvaluationComparisonDTO | null> {
   const [baselineRow, followUpRow] = await Promise.all([
     protocolRepository.findById(organizationId, baselineId),
     protocolRepository.findById(organizationId, followUpId),

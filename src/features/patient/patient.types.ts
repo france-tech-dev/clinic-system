@@ -1,7 +1,7 @@
-export type PatientStatus = "ativo" | "alta" | "pausado";
-export type SessionNoteStatus = "compareceu" | "faltou" | "cancelado";
-export type PatientPricingType = "sessao" | "pacote";
-export type PatientSex = "feminino" | "masculino" | "outro" | "nao_informado";
+export type PatientStatus = "active" | "discharged" | "paused";
+export type SessionNoteStatus = "attended" | "absent" | "cancelled";
+export type PatientPricingType = "session" | "package";
+export type PatientSex = "female" | "male" | "other" | "not_informed";
 
 /** Resumo do responsável embutido no PatientDTO (sem importar features/guardian). */
 export type PatientGuardianEmbed = {
@@ -38,44 +38,44 @@ export type PatientDTO = {
   guardian?: PatientGuardianEmbed;
   createdAt: string;
   updatedAt: string;
-  evaluationsCount?: number;
+  clinicalEvaluationsCount?: number;
   sessionsCount?: number;
-  lastEvaluationDate?: string | null;
+  lastClinicalEvaluationDate?: string | null;
 };
 
-export type EvaluationDomain = {
+export type ClinicalEvaluationDomain = {
   categoryId: string;
   score: number;
   note: string;
 };
 
-export type EvaluationDTO = {
+export type ClinicalEvaluationDTO = {
   id: string;
   patientId: string;
   memberId: string | null;
   professionalName: string | null;
   /** Perfil CREFITO do autor (Member.metadata), para PDF. */
   authorProfessional: {
-    nome: string;
-    registro: string;
-    clinica: string;
+    name: string;
+    registration: string;
+    clinic: string;
   } | null;
-  tipo: string;
+  type: string;
   date: string;
-  queixa: string;
-  historia: string;
-  domains: EvaluationDomain[];
-  objetivos: string;
-  condutas: string;
-  diagnostico: string;
-  encaminhadoPor: string;
-  contextoFamiliar: string;
-  nivelPrevio: string;
-  medicacoes: string;
-  precaucoes: string;
-  equipamentos: string;
-  frequencia: string;
-  criteriosAlta: string;
+  complaint: string;
+  history: string;
+  domains: ClinicalEvaluationDomain[];
+  goals: string;
+  interventions: string;
+  diagnosis: string;
+  referredBy: string;
+  familyContext: string;
+  previousLevel: string;
+  medications: string;
+  precautions: string;
+  equipment: string;
+  frequency: string;
+  dischargeCriteria: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -89,8 +89,8 @@ export type SessionNoteDTO = {
   date: string;
   time: string;
   status: SessionNoteStatus;
-  atividades: string;
-  observacoes: string;
+  activities: string;
+  observations: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -117,7 +117,7 @@ export type RoteiroNoteDTO = {
 
 export type PatientDetailDTO = {
   patient: PatientDTO;
-  evaluations: EvaluationDTO[];
+  clinicalEvaluations: ClinicalEvaluationDTO[];
   sessionNotes: SessionNoteDTO[];
   appointments: SessionLinkableAppointmentDTO[];
   roteiroNotes: RoteiroNoteDTO[];

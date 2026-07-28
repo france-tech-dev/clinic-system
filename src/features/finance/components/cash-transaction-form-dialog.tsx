@@ -69,12 +69,12 @@ function buildDefaults(
 ): CashTransactionDraftInput {
   const amountCents = initial?.amountCents ?? draft?.amountCents ?? null;
   return {
-    type: initial?.type ?? draft?.type ?? defaultType ?? "entrada",
+    type: initial?.type ?? draft?.type ?? defaultType ?? "income",
     date: initial?.date ?? draft?.date ?? defaultDate,
     description: initial?.description ?? draft?.description ?? "",
     amountInput: amountCents ? centsToBrlInput(amountCents) : "",
     paymentMethod:
-      initial?.paymentMethod ?? draft?.paymentMethod ?? "dinheiro",
+      initial?.paymentMethod ?? draft?.paymentMethod ?? "cash",
     patientId: initial?.patientId ?? draft?.patientId ?? "none",
     memberId:
       initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "none",

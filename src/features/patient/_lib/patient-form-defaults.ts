@@ -8,9 +8,9 @@ import type {
 export const EMPTY_PATIENT_DRAFT: PatientDraftInput = {
   name: "",
   birthDate: "",
-  sex: "nao_informado",
+  sex: "not_informed",
   notes: "",
-  pricingType: "sessao",
+  pricingType: "session",
   priceInput: "",
 };
 

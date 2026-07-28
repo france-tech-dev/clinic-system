@@ -6,23 +6,23 @@ import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import {
-  evaluationFormSchema,
-  evaluationIdSchema,
+  clinicalEvaluationFormSchema,
+  clinicalEvaluationIdSchema,
   patientFormSchema,
   patientIdSchema,
   patientStatusSchema,
   roteiroNoteSaveSchema,
   sessionFormSchema,
   sessionIdSchema,
-  updateEvaluationSchema,
+  updateClinicalEvaluationSchema,
   updatePatientSchema,
   updateSessionNoteSchema,
 } from "./patient.schema";
 import {
-  createEvaluation,
+  createClinicalEvaluation,
   createPatient,
   createSessionNote,
-  deleteEvaluation,
+  deleteClinicalEvaluation,
   deletePatient,
   deleteSessionNote,
   resolveAuthorMemberId,
@@ -31,12 +31,12 @@ import {
   listRoteiroNotes,
   saveRoteiroNote,
   setPatientStatus,
-  updateEvaluation,
+  updateClinicalEvaluation,
   updatePatient,
   updateSessionNote,
 } from "./patient.service";
 import type {
-  EvaluationDTO,
+  ClinicalEvaluationDTO,
   PatientDetailDTO,
   PatientDTO,
   RoteiroNoteDTO,
@@ -62,7 +62,7 @@ function revalidatePatient(id?: string) {
 }
 
 export async function listPatientsAction(opts?: {
-  status?: "ativo" | "alta" | "pausado" | null;
+  status?: "active" | "discharged" | "paused" | null;
   search?: string;
 }): Promise<ActionResult<PatientDTO[]>> {
   try {
@@ -158,17 +158,17 @@ export async function deletePatientAction(
   }
 }
 
-export async function createEvaluationAction(
+export async function createClinicalEvaluationAction(
   input: unknown,
-): Promise<ActionResult<EvaluationDTO>> {
+): Promise<ActionResult<ClinicalEvaluationDTO>> {
   try {
-    const parsed = evaluationFormSchema.safeParse(input);
+    const parsed = clinicalEvaluationFormSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
     }
     const { organizationId, userId } = await requireOrgId();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
-    const data = await createEvaluation(organizationId, parsed.data, memberId);
+    const data = await createClinicalEvaluation(organizationId, parsed.data, memberId);
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
     return ok(data);
@@ -177,17 +177,17 @@ export async function createEvaluationAction(
   }
 }
 
-export async function updateEvaluationAction(
+export async function updateClinicalEvaluationAction(
   input: unknown,
-): Promise<ActionResult<EvaluationDTO>> {
+): Promise<ActionResult<ClinicalEvaluationDTO>> {
   try {
-    const parsed = updateEvaluationSchema.safeParse(input);
+    const parsed = updateClinicalEvaluationSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
     }
     const { organizationId } = await requireOrgId();
     const { id, ...rest } = parsed.data;
-    const data = await updateEvaluation(organizationId, id, rest);
+    const data = await updateClinicalEvaluation(organizationId, id, rest);
     if (!data) return fail("Avaliação não encontrada");
     revalidatePatient(rest.patientId);
     return ok(data);
@@ -196,14 +196,14 @@ export async function updateEvaluationAction(
   }
 }
 
-export async function deleteEvaluationAction(
+export async function deleteClinicalEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    const parsed = evaluationIdSchema.safeParse(input);
+    const parsed = clinicalEvaluationIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
     const { organizationId } = await requireOrgId();
-    const removed = await deleteEvaluation(organizationId, parsed.data.id);
+    const removed = await deleteClinicalEvaluation(organizationId, parsed.data.id);
     if (!removed) return fail("Avaliação não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });

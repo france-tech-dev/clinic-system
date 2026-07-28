@@ -13,14 +13,14 @@ export const searchRepository = {
   },
 
   searchEvaluations(organizationId: string, q: string, take = 8) {
-    return db.evaluation.findMany({
+    return db.clinicalEvaluation.findMany({
       where: {
         patient: { organizationId },
         OR: [
-          { queixa: { contains: q } },
-          { historia: { contains: q } },
-          { objetivos: { contains: q } },
-          { diagnostico: { contains: q } },
+          { complaint: { contains: q } },
+          { history: { contains: q } },
+          { goals: { contains: q } },
+          { diagnosis: { contains: q } },
         ],
       },
       include: { patient: { select: { id: true, name: true } } },
@@ -33,7 +33,7 @@ export const searchRepository = {
     return db.sessionNote.findMany({
       where: {
         patient: { organizationId },
-        OR: [{ atividades: { contains: q } }, { observacoes: { contains: q } }],
+        OR: [{ activities: { contains: q } }, { observations: { contains: q } }],
       },
       include: { patient: { select: { id: true, name: true } } },
       take,

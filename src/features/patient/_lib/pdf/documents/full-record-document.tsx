@@ -7,7 +7,7 @@ import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 import { getPatientReportTitle } from "../report-meta";
 import type { PatientReportPayload } from "../types";
-import { EvaluationSection } from "../sections/evaluation-section";
+import { ClinicalEvaluationSection } from "../sections/clinical-evaluation-section";
 import { SessionsSection } from "../sections/sessions-section";
 
 type PatientReportDocumentProps = {
@@ -32,8 +32,8 @@ export function FullRecordDocument({
           logoOrigin={logoOrigin}
         />
         <PatientInfo patientName={patientName} />
-        <EvaluationSection
-          evaluations={payload.evaluations}
+        <ClinicalEvaluationSection
+          clinicalEvaluations={payload.clinicalEvaluations}
           selectedEvaluation={payload.selectedEvaluation}
         />
         <KeyValueSections

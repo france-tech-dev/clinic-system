@@ -29,15 +29,15 @@ import {
 } from "@/shared/constants/patient-pricing";
 
 const SEX_LABEL: Record<PatientSex, string> = {
-  feminino: "Feminino",
-  masculino: "Masculino",
-  outro: "Outro",
-  nao_informado: "Não informado",
+  female: "Feminino",
+  male: "Masculino",
+  other: "Outro",
+  not_informed: "Não informado",
 };
 
 export function PatientFormFields() {
   const { control } = useFormContext<PatientDraftInput>();
-  const pricingType = useWatch({ control, name: "pricingType" }) ?? "sessao";
+  const pricingType = useWatch({ control, name: "pricingType" }) ?? "session";
 
   return (
     <div className="flex flex-col gap-4">

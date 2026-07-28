@@ -3,7 +3,7 @@ import type { CashflowSummary } from "@/shared/types/cashflow";
 export type DashboardStats = {
   activePatients: number;
   totalPatients: number;
-  totalEvaluations: number;
+  totalClinicalEvaluations: number;
   sessionsThisWeek: number;
 };
 

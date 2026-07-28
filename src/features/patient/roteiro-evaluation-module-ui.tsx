@@ -2,11 +2,11 @@ import { RoteiroWorkspaceClient } from "@/features/patient/components/roteiro-wo
 import { listRoteiroNotes } from "@/features/patient/patient.service";
 import { ROTEIROS, type RoteiroId } from "@/shared/constants/roteiros";
 import type {
-  AssessmentRenderContext,
-  AssessmentUiModule,
-} from "@/shared/types/assessment-ui";
+  EvaluationModuleRenderContext,
+  EvaluationModuleUI,
+} from "@/shared/types/evaluation-module-ui";
 
-function createRoteiroAssessmentUi(roteiroId: RoteiroId): AssessmentUiModule {
+function createRoteiroEvaluationModuleUI(roteiroId: RoteiroId): EvaluationModuleUI {
   return {
     id: roteiroId,
     professionId: "terapeuta_ocupacional",
@@ -14,7 +14,7 @@ function createRoteiroAssessmentUi(roteiroId: RoteiroId): AssessmentUiModule {
       organizationId,
       patients,
       initialPatientId,
-    }: AssessmentRenderContext) {
+    }: EvaluationModuleRenderContext) {
       const initialNotes = initialPatientId
         ? ((await listRoteiroNotes(organizationId, initialPatientId)) ?? [])
         : [];
@@ -32,12 +32,12 @@ function createRoteiroAssessmentUi(roteiroId: RoteiroId): AssessmentUiModule {
 }
 
 /** UIs de roteiro T.O. — compostas em `app/` com o registry de protocol. */
-export const roteiroAssessmentUiModules: AssessmentUiModule[] = ROTEIROS.map(
-  (roteiro) => createRoteiroAssessmentUi(roteiro.id),
+export const roteiroEvaluationModuleUIs: EvaluationModuleUI[] = ROTEIROS.map(
+  (roteiro) => createRoteiroEvaluationModuleUI(roteiro.id),
 );
 
-export function getRoteiroAssessmentUi(
+export function getRoteiroEvaluationModuleUI(
   avaliacaoId: string,
-): AssessmentUiModule | undefined {
-  return roteiroAssessmentUiModules.find((mod) => mod.id === avaliacaoId);
+): EvaluationModuleUI | undefined {
+  return roteiroEvaluationModuleUIs.find((mod) => mod.id === avaliacaoId);
 }

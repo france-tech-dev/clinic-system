@@ -1,7 +1,7 @@
 import { db } from "@/shared/lib/prisma";
 import type {
-  ProtocolAssessmentFormInput,
-  UpdateProtocolAssessmentInput,
+  ProtocolEvaluationFormInput,
+  UpdateProtocolEvaluationInput,
 } from "./protocol.schema";
 
 const assessmentInclude = {
@@ -26,7 +26,7 @@ export const protocolRepository = {
     patientId: string,
     protocolId?: string,
   ) {
-    return db.protocolAssessment.findMany({
+    return db.protocolEvaluation.findMany({
       where: {
         organizationId,
         patientId,
@@ -38,7 +38,7 @@ export const protocolRepository = {
   },
 
   async findById(organizationId: string, id: string) {
-    return db.protocolAssessment.findFirst({
+    return db.protocolEvaluation.findFirst({
       where: { id, organizationId },
       include: assessmentInclude,
     });
@@ -46,7 +46,7 @@ export const protocolRepository = {
 
   async create(
     organizationId: string,
-    data: ProtocolAssessmentFormInput,
+    data: ProtocolEvaluationFormInput,
     memberId: string | null,
   ) {
     const patient = await db.patient.findFirst({
@@ -55,7 +55,7 @@ export const protocolRepository = {
     });
     if (!patient) return null;
 
-    return db.protocolAssessment.create({
+    return db.protocolEvaluation.create({
       data: {
         organizationId,
         patientId: data.patientId,
@@ -70,14 +70,14 @@ export const protocolRepository = {
     });
   },
 
-  async update(organizationId: string, data: UpdateProtocolAssessmentInput) {
-    const existing = await db.protocolAssessment.findFirst({
+  async update(organizationId: string, data: UpdateProtocolEvaluationInput) {
+    const existing = await db.protocolEvaluation.findFirst({
       where: { id: data.id, organizationId },
       select: { id: true },
     });
     if (!existing) return null;
 
-    return db.protocolAssessment.update({
+    return db.protocolEvaluation.update({
       where: { id: data.id },
       data: {
         label: data.label,
@@ -90,13 +90,13 @@ export const protocolRepository = {
   },
 
   async delete(organizationId: string, id: string) {
-    const existing = await db.protocolAssessment.findFirst({
+    const existing = await db.protocolEvaluation.findFirst({
       where: { id, organizationId },
       include: assessmentInclude,
     });
     if (!existing) return null;
 
-    await db.protocolAssessment.delete({ where: { id } });
+    await db.protocolEvaluation.delete({ where: { id } });
     return existing;
   },
 };

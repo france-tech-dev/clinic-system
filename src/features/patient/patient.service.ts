@@ -1,6 +1,6 @@
 import { patientRepository } from "./patient.repository";
 import type {
-  EvaluationFormInput,
+  ClinicalEvaluationFormInput,
   PatientFormInput,
   RoteiroNoteSaveInput,
   SessionFormInput,
@@ -8,7 +8,7 @@ import type {
 } from "./patient.schema";
 import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 import {
-  toEvaluationDTO,
+  toClinicalEvaluationDTO,
   toLinkableAppointmentDTO,
   toPatientDTO,
   toRoteiroNoteDTO,
@@ -32,7 +32,7 @@ export async function getPatientDetail(
 
   return {
     patient: toPatientDTO(row),
-    evaluations: row.evaluations.map(toEvaluationDTO),
+    clinicalEvaluations: row.clinicalEvaluations.map(toClinicalEvaluationDTO),
     sessionNotes: row.sessionNotes.map(toSessionDTO),
     appointments: row.appointments.map(toLinkableAppointmentDTO),
     roteiroNotes: row.roteiroNotes.map(toRoteiroNoteDTO),
@@ -84,34 +84,34 @@ export async function resolveAuthorMemberId(
   return member?.id ?? null;
 }
 
-export async function createEvaluation(
+export async function createClinicalEvaluation(
   organizationId: string,
-  data: EvaluationFormInput,
+  data: ClinicalEvaluationFormInput,
   memberId: string | null,
 ) {
-  const row = await patientRepository.createEvaluation(
+  const row = await patientRepository.createClinicalEvaluation(
     organizationId,
     data,
     memberId,
   );
-  return row ? toEvaluationDTO(row) : null;
+  return row ? toClinicalEvaluationDTO(row) : null;
 }
 
-export async function updateEvaluation(
+export async function updateClinicalEvaluation(
   organizationId: string,
   id: string,
-  data: EvaluationFormInput,
+  data: ClinicalEvaluationFormInput,
 ) {
-  const row = await patientRepository.updateEvaluation(
+  const row = await patientRepository.updateClinicalEvaluation(
     organizationId,
     id,
     data,
   );
-  return row ? toEvaluationDTO(row) : null;
+  return row ? toClinicalEvaluationDTO(row) : null;
 }
 
-export async function deleteEvaluation(organizationId: string, id: string) {
-  return patientRepository.deleteEvaluation(organizationId, id);
+export async function deleteClinicalEvaluation(organizationId: string, id: string) {
+  return patientRepository.deleteClinicalEvaluation(organizationId, id);
 }
 
 export async function createSessionNote(

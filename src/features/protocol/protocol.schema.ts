@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GMFM88_ITEM_IDS, GMFM88_PROTOCOL_ID } from "./assessments/fisioterapia/gmfm-88/template";
+import { GMFM88_ITEM_IDS, GMFM88_PROTOCOL_ID } from "./evaluation-modules/fisioterapia/gmfm-88/template";
 
 const gmfmScoreSchema = z
   .number()
@@ -24,7 +24,7 @@ const gmfmScoresSchema = z
     }
   });
 
-export const protocolAssessmentFormSchema = z.object({
+export const protocolEvaluationFormSchema = z.object({
   patientId: z.string().min(1),
   protocolId: z.literal(GMFM88_PROTOCOL_ID),
   label: z.string().min(1).max(80),
@@ -33,27 +33,27 @@ export const protocolAssessmentFormSchema = z.object({
   notes: z.string().max(2000).optional().default(""),
 });
 
-export const updateProtocolAssessmentSchema = protocolAssessmentFormSchema.extend({
+export const updateProtocolEvaluationSchema = protocolEvaluationFormSchema.extend({
   id: z.string().min(1),
 });
 
-export const protocolAssessmentIdSchema = z.object({
+export const protocolEvaluationIdSchema = z.object({
   id: z.string().min(1),
 });
 
-export const listProtocolAssessmentsSchema = z.object({
+export const listProtocolEvaluationsSchema = z.object({
   patientId: z.string().min(1),
   protocolId: z.literal(GMFM88_PROTOCOL_ID).optional(),
 });
 
-export const compareProtocolAssessmentsSchema = z.object({
+export const compareProtocolEvaluationsSchema = z.object({
   baselineId: z.string().min(1),
   followUpId: z.string().min(1),
 });
 
-export type ProtocolAssessmentFormInput = z.infer<
-  typeof protocolAssessmentFormSchema
+export type ProtocolEvaluationFormInput = z.infer<
+  typeof protocolEvaluationFormSchema
 >;
-export type UpdateProtocolAssessmentInput = z.infer<
-  typeof updateProtocolAssessmentSchema
+export type UpdateProtocolEvaluationInput = z.infer<
+  typeof updateProtocolEvaluationSchema
 >;

@@ -1,6 +1,6 @@
-import type { CatalogAssessmentDef } from "../../types";
+import type { CatalogEvaluationDef } from "../../types";
 
-export const gmfm88CatalogAssessment: CatalogAssessmentDef = {
+export const gmfm88CatalogEvaluation: CatalogEvaluationDef = {
   id: "gmfm-88",
   name: "GMFM-88",
   description:

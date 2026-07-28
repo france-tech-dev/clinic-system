@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { HealthProfessionId } from "@/shared/constants/professions";
-import type { AssessmentPatientOption } from "@/shared/types/assessment-patient";
+import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -9,7 +9,7 @@ import type { AnamneseSection } from "./field-types";
 
 export type AnamneseRenderContext = {
   organizationId: string;
-  patients: AssessmentPatientOption[];
+  patients: EvaluationModulePatientOption[];
   initialPatientId: string | null;
   branding: PrintBranding;
   professional: ProfessionalProfile;

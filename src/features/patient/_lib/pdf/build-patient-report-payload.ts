@@ -1,4 +1,4 @@
-import type { EvaluationDTO, PatientDetailDTO } from "@/features/patient/patient.types";
+import type { ClinicalEvaluationDTO, PatientDetailDTO } from "@/features/patient/patient.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -14,7 +14,7 @@ import {
   type RoteiroId,
 } from "@/shared/constants/roteiros";
 import type { PatientReportMode, PatientReportPayload } from "./types";
-import type { EvaluationReportOptions } from "./evaluation-report-options";
+import type { ClinicalEvaluationReportOptions } from "./clinical-evaluation-report-options";
 
 export type BuildPatientReportPayloadInput = {
   detail: PatientDetailDTO;
@@ -24,12 +24,12 @@ export type BuildPatientReportPayloadInput = {
   professional: ProfessionalProfile;
   /** Assinatura do autor da avaliação (Member), se houver. */
   authorProfessional?: ProfessionalProfile | null;
-  evaluation?: EvaluationDTO | null;
+  evaluation?: ClinicalEvaluationDTO | null;
   roteiro?: {
     roteiroId: RoteiroId;
     categoryTick: string;
   } | null;
-  evaluationReportOptions?: EvaluationReportOptions | null;
+  evaluationReportOptions?: ClinicalEvaluationReportOptions | null;
   /** Secções de anamnese já resolvidas no app/. */
   anamneseSections?: PdfKeyValueSection[];
 };
@@ -72,7 +72,7 @@ export function buildPatientReportPayload({
 
   const selectedEvaluation =
     mode === "evaluation"
-      ? (evaluation ?? detail.evaluations[0] ?? null)
+      ? (evaluation ?? detail.clinicalEvaluations[0] ?? null)
       : null;
 
   return {
@@ -80,15 +80,15 @@ export function buildPatientReportPayload({
     patientName: detail.patient.name,
     signature,
     branding,
-    evaluations: detail.evaluations,
+    clinicalEvaluations: detail.clinicalEvaluations,
     selectedEvaluation,
     anamneseSections: mode === "full" ? anamneseSections : [],
     sessionNotes: detail.sessionNotes.map((s) => ({
       date: s.date,
       time: s.time,
       status: s.status,
-      atividades: s.atividades,
-      observacoes: s.observacoes,
+      activities: s.activities,
+      observations: s.observations,
     })),
     roteiro: roteiroPayload,
     evaluationReportOptions:

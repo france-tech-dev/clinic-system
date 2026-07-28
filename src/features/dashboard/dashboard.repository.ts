@@ -7,12 +7,12 @@ export const dashboardRepository = {
 
   countActivePatients(organizationId: string) {
     return db.patient.count({
-      where: { organizationId, status: "ativo" },
+      where: { organizationId, status: "active" },
     });
   },
 
-  countEvaluations(organizationId: string) {
-    return db.evaluation.count({
+  countClinicalEvaluations(organizationId: string) {
+    return db.clinicalEvaluation.count({
       where: { patient: { organizationId } },
     });
   },
@@ -26,11 +26,11 @@ export const dashboardRepository = {
     });
   },
 
-  findActivePatientsWithLastEvaluation(organizationId: string) {
+  findActivePatientsWithLastClinicalEvaluation(organizationId: string) {
     return db.patient.findMany({
-      where: { organizationId, status: "ativo" },
+      where: { organizationId, status: "active" },
       include: {
-        evaluations: {
+        clinicalEvaluations: {
           orderBy: { date: "desc" },
           take: 1,
           select: { date: true },
@@ -39,8 +39,8 @@ export const dashboardRepository = {
     });
   },
 
-  findRecentEvaluations(organizationId: string, take = 8) {
-    return db.evaluation.findMany({
+  findRecentClinicalEvaluations(organizationId: string, take = 8) {
+    return db.clinicalEvaluation.findMany({
       where: { patient: { organizationId } },
       include: { patient: { select: { id: true, name: true } } },
       orderBy: { date: "desc" },

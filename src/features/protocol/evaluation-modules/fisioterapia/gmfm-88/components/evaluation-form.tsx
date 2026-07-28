@@ -22,20 +22,20 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   GMFM88_TEMPLATE,
   GMFM88_MAX_ITEM_SCORE,
-} from "@/features/protocol/assessments/fisioterapia/gmfm-88/template";
-import type { Gmfm88Scores } from "@/features/protocol/assessments/fisioterapia/gmfm-88/scoring";
-import { summarizeGmfm88Domain } from "@/features/protocol/assessments/fisioterapia/gmfm-88/scoring";
-import type { ProtocolAssessmentFormInput } from "@/features/protocol/protocol.schema";
+} from "@/features/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
+import type { Gmfm88Scores } from "@/features/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
+import { summarizeGmfm88Domain } from "@/features/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
+import type { ProtocolEvaluationFormInput } from "@/features/protocol/protocol.schema";
 import { cn } from "@/shared/lib/utils";
 
 const SCORE_OPTIONS = [0, 1, 2, 3] as const;
 
-export type GmfmAssessmentFormValues = ProtocolAssessmentFormInput & {
+export type GmfmEvaluationFormValues = ProtocolEvaluationFormInput & {
   id?: string;
 };
 
-export function GmfmAssessmentForm() {
-  const { control, setValue } = useFormContext<GmfmAssessmentFormValues>();
+export function GmfmEvaluationForm() {
+  const { control, setValue } = useFormContext<GmfmEvaluationFormValues>();
   const scores =
     (useWatch({ control, name: "scores" }) as Gmfm88Scores | undefined) ?? {};
   const [activeDomainId, setActiveDomainId] = useState(

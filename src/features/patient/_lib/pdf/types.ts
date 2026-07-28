@@ -1,8 +1,8 @@
-import type { EvaluationDTO } from "@/features/patient/patient.types";
+import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
 import type { PrintBranding } from "@/shared/types/professional";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import type { RoteiroCategory } from "@/shared/constants/roteiros";
-import type { EvaluationReportOptions } from "./evaluation-report-options";
+import type { ClinicalEvaluationReportOptions } from "./clinical-evaluation-report-options";
 
 export type PatientReportMode = "full" | "evaluation" | "roteiro";
 
@@ -16,8 +16,8 @@ export type PatientReportSessionNote = {
   date: string;
   time: string;
   status: string;
-  atividades: string;
-  observacoes?: string;
+  activities: string;
+  observations?: string;
 };
 
 export type PatientReportPayload = {
@@ -25,11 +25,11 @@ export type PatientReportPayload = {
   patientName: string;
   signature: string;
   branding: PrintBranding;
-  evaluations: EvaluationDTO[];
-  selectedEvaluation: EvaluationDTO | null;
+  clinicalEvaluations: ClinicalEvaluationDTO[];
+  selectedEvaluation: ClinicalEvaluationDTO | null;
   /** Blocos de anamnese já achatados (orquestrados no app/). */
   anamneseSections: PdfKeyValueSection[];
   sessionNotes: PatientReportSessionNote[];
   roteiro: PatientReportRoteiro | null;
-  evaluationReportOptions: EvaluationReportOptions | null;
+  evaluationReportOptions: ClinicalEvaluationReportOptions | null;
 };

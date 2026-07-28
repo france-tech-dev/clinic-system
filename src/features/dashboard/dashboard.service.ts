@@ -22,7 +22,7 @@ function todayIso() {
 
 function buildRecentActivity(
   recentEvals: Awaited<
-    ReturnType<typeof dashboardRepository.findRecentEvaluations>
+    ReturnType<typeof dashboardRepository.findRecentClinicalEvaluations>
   >,
   recentSessions: Awaited<
     ReturnType<typeof dashboardRepository.findRecentSessions>
@@ -35,7 +35,7 @@ function buildRecentActivity(
       patientId: e.patient.id,
       patientName: e.patient.name,
       date: e.date,
-      label: `Avaliação ${e.tipo}`,
+      label: `Avaliação ${e.type}`,
     })),
     ...recentSessions.map((s) => ({
       id: s.id,
@@ -73,7 +73,7 @@ export async function getDashboardData(
   const [
     totalPatients,
     activePatients,
-    totalEvaluations,
+    totalClinicalEvaluations,
     sessionsThisWeek,
     patients,
     recentEvals,
@@ -82,10 +82,10 @@ export async function getDashboardData(
   ] = await Promise.all([
     dashboardRepository.countPatients(organizationId),
     dashboardRepository.countActivePatients(organizationId),
-    dashboardRepository.countEvaluations(organizationId),
+    dashboardRepository.countClinicalEvaluations(organizationId),
     dashboardRepository.countSessionsSince(organizationId, weekStart),
-    dashboardRepository.findActivePatientsWithLastEvaluation(organizationId),
-    dashboardRepository.findRecentEvaluations(organizationId),
+    dashboardRepository.findActivePatientsWithLastClinicalEvaluation(organizationId),
+    dashboardRepository.findRecentClinicalEvaluations(organizationId),
     dashboardRepository.findRecentSessions(organizationId),
     dashboardRepository.findTodayAppointments(organizationId, today),
   ]);
@@ -94,7 +94,7 @@ export async function getDashboardData(
     stats: {
       activePatients,
       totalPatients,
-      totalEvaluations,
+      totalClinicalEvaluations,
       sessionsThisWeek,
     },
     alerts: buildDashboardAlerts(patients),

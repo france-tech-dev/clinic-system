@@ -16,7 +16,7 @@ export async function globalSearch(
   const q = query.trim();
   if (q.length < 2) return [];
 
-  const [patients, evaluations, sessions] = await Promise.all([
+  const [patients, clinicalEvaluations, sessions] = await Promise.all([
     searchRepository.searchPatients(organizationId, q),
     searchRepository.searchEvaluations(organizationId, q),
     searchRepository.searchSessions(organizationId, q),
@@ -30,18 +30,18 @@ export async function globalSearch(
       subtitle: p.notes || "Paciente",
       href: paths.paciente(p.id),
     })),
-    ...evaluations.map((e) => ({
+    ...clinicalEvaluations.map((e) => ({
       id: e.id,
       kind: "evaluation" as const,
-      title: `${e.patient.name} — Avaliação ${e.tipo}`,
-      subtitle: e.queixa || e.date,
+      title: `${e.patient.name} — Avaliação ${e.type}`,
+      subtitle: e.complaint || e.date,
       href: paths.paciente(e.patient.id),
     })),
     ...sessions.map((s) => ({
       id: s.id,
       kind: "session" as const,
       title: `${s.patient.name} — Evolução`,
-      subtitle: s.atividades || s.date,
+      subtitle: s.activities || s.date,
       href: paths.paciente(s.patient.id),
     })),
   ];

@@ -68,7 +68,7 @@ export function calendarEventStyle(status: string, hasSessionNote = false) {
     };
   }
   const info = appointmentStatusInfo(status);
-  const isInactive = status === "cancelado" || status === "faltou";
+  const isInactive = status === "cancelled" || status === "absent";
   return {
     backgroundColor: info.color,
     borderColor: info.color,

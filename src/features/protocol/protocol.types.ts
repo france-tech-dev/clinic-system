@@ -1,6 +1,6 @@
-import type { Gmfm88OverallSummary } from "./assessments/fisioterapia/gmfm-88/scoring";
+import type { Gmfm88OverallSummary } from "./evaluation-modules/fisioterapia/gmfm-88/scoring";
 
-export type ProtocolAssessmentDTO = {
+export type ProtocolEvaluationDTO = {
   id: string;
   patientId: string;
   patientName: string;
@@ -16,9 +16,9 @@ export type ProtocolAssessmentDTO = {
   updatedAt: string;
 };
 
-export type ProtocolComparisonDTO = {
-  baseline: ProtocolAssessmentDTO;
-  followUp: ProtocolAssessmentDTO;
+export type ProtocolEvaluationComparisonDTO = {
+  baseline: ProtocolEvaluationDTO;
+  followUp: ProtocolEvaluationDTO;
   domainDeltas: {
     domainId: string;
     title: string;

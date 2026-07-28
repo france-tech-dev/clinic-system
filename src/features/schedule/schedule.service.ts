@@ -176,7 +176,7 @@ export async function rescheduleAppointment(
 ): Promise<AppointmentDTO | "not_found" | "invalid_status"> {
   const existing = await scheduleRepository.findById(organizationId, id);
   if (!existing) return "not_found";
-  if (existing.status !== "agendado") return "invalid_status";
+  if (existing.status !== "scheduled") return "invalid_status";
 
   const row = await scheduleRepository.reschedule(
     organizationId,

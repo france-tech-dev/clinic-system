@@ -1,6 +1,6 @@
 import { db } from "@/shared/lib/prisma";
 import type {
-  EvaluationFormInput,
+  ClinicalEvaluationFormInput,
   PatientFormInput,
   SessionFormInput,
   UpdatePatientInput,
@@ -13,7 +13,7 @@ const memberAuthorInclude = {
     select: {
       id: true,
       metadata: true,
-      registro: true,
+      registration: true,
       user: { select: { name: true } },
     },
   },
@@ -52,9 +52,9 @@ export const patientRepository = {
       include: {
         guardian: { select: guardianSelect },
         _count: {
-          select: { evaluations: true, sessionNotes: true },
+          select: { clinicalEvaluations: true, sessionNotes: true },
         },
-        evaluations: {
+        clinicalEvaluations: {
           orderBy: { date: "desc" },
           take: 1,
           select: { date: true },
@@ -69,7 +69,7 @@ export const patientRepository = {
       where: { id, organizationId },
       include: {
         guardian: { select: guardianSelect },
-        evaluations: {
+        clinicalEvaluations: {
           include: memberAuthorInclude,
           orderBy: { date: "desc" },
         },
@@ -104,10 +104,10 @@ export const patientRepository = {
         guardianId: data.guardianId,
         name: data.name,
         birthDate: parseBirthDateParam(data.birthDate),
-        sex: data.sex ?? "nao_informado",
+        sex: data.sex ?? "not_informed",
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
-        pricingType: data.pricingType ?? "sessao",
+        pricingType: data.pricingType ?? "session",
         priceCents: data.priceCents ?? null,
       },
       include: { guardian: { select: guardianSelect } },
@@ -137,10 +137,10 @@ export const patientRepository = {
         guardianId: data.guardianId,
         name: data.name,
         birthDate: parseBirthDateParam(data.birthDate),
-        sex: data.sex ?? "nao_informado",
+        sex: data.sex ?? "not_informed",
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
-        pricingType: data.pricingType ?? "sessao",
+        pricingType: data.pricingType ?? "session",
         priceCents: data.priceCents ?? null,
       },
       include: { guardian: { select: guardianSelect } },
@@ -180,9 +180,9 @@ export const patientRepository = {
     });
   },
 
-  async createEvaluation(
+  async createClinicalEvaluation(
     organizationId: string,
-    data: EvaluationFormInput,
+    data: ClinicalEvaluationFormInput,
     memberId: string | null,
   ) {
     const patient = await db.patient.findFirst({
@@ -190,7 +190,7 @@ export const patientRepository = {
     });
     if (!patient) return null;
     const { patientId, domains, ...rest } = data;
-    return db.evaluation.create({
+    return db.clinicalEvaluation.create({
       data: {
         patientId,
         memberId,
@@ -201,17 +201,17 @@ export const patientRepository = {
     });
   },
 
-  async updateEvaluation(
+  async updateClinicalEvaluation(
     organizationId: string,
     id: string,
-    data: EvaluationFormInput,
+    data: ClinicalEvaluationFormInput,
   ) {
-    const existing = await db.evaluation.findFirst({
+    const existing = await db.clinicalEvaluation.findFirst({
       where: { id, patient: { organizationId } },
     });
     if (!existing) return null;
     const { patientId, domains, ...rest } = data;
-    return db.evaluation.update({
+    return db.clinicalEvaluation.update({
       where: { id },
       data: {
         patientId,
@@ -222,12 +222,12 @@ export const patientRepository = {
     });
   },
 
-  async deleteEvaluation(organizationId: string, id: string) {
-    const existing = await db.evaluation.findFirst({
+  async deleteClinicalEvaluation(organizationId: string, id: string) {
+    const existing = await db.clinicalEvaluation.findFirst({
       where: { id, patient: { organizationId } },
     });
     if (!existing) return null;
-    await db.evaluation.delete({ where: { id } });
+    await db.clinicalEvaluation.delete({ where: { id } });
     return existing;
   },
 
@@ -254,8 +254,8 @@ export const patientRepository = {
         date: appointment.date,
         time: appointment.time,
         status: data.status,
-        atividades: data.atividades ?? "",
-        observacoes: data.observacoes ?? "",
+        activities: data.activities ?? "",
+        observations: data.observations ?? "",
       },
       include: memberAuthorInclude,
     });
@@ -288,8 +288,8 @@ export const patientRepository = {
         date: appointment.date,
         time: appointment.time,
         status: data.status,
-        atividades: data.atividades ?? "",
-        observacoes: data.observacoes ?? "",
+        activities: data.activities ?? "",
+        observations: data.observations ?? "",
       },
       include: memberAuthorInclude,
     });
