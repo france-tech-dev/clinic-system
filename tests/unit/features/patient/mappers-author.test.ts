@@ -1,36 +1,36 @@
 import { describe, expect, it } from "vitest";
 import {
-  toEvaluationDTO,
+  toClinicalEvaluationDTO,
   toSessionDTO,
 } from "@/features/patient/_lib/mappers";
 
 describe("patient mappers — autoria", () => {
-  it("toEvaluationDTO inclui professionalName do member", () => {
-    const dto = toEvaluationDTO({
+  it("toClinicalEvaluationDTO inclui professionalName do member", () => {
+    const dto = toClinicalEvaluationDTO({
       id: "e1",
       patientId: "p1",
       memberId: "m1",
-      tipo: "inicial",
+      type: "initial",
       date: "2026-07-14",
-      queixa: "",
-      historia: "",
+      complaint: "",
+      history: "",
       domains: "[]",
-      objetivos: "",
-      condutas: "",
-      diagnostico: "",
-      encaminhadoPor: "",
-      contextoFamiliar: "",
-      nivelPrevio: "",
-      medicacoes: "",
-      precaucoes: "",
-      equipamentos: "",
-      frequencia: "",
-      criteriosAlta: "",
+      goals: "",
+      interventions: "",
+      diagnosis: "",
+      referredBy: "",
+      familyContext: "",
+      previousLevel: "",
+      medications: "",
+      precautions: "",
+      equipment: "",
+      frequency: "",
+      dischargeCriteria: "",
       createdAt: new Date("2026-07-01T12:00:00Z"),
       updatedAt: new Date("2026-07-01T12:00:00Z"),
       member: {
         metadata: JSON.stringify({
-          professional: { nome: "", registro: "CREFITO-3 99" },
+          professional: { name: "", registration: "CREFITO-3 99" },
         }),
         user: { name: "Dra. Silva" },
       },
@@ -39,9 +39,9 @@ describe("patient mappers — autoria", () => {
     expect(dto.memberId).toBe("m1");
     expect(dto.professionalName).toBe("Dra. Silva");
     expect(dto.authorProfessional).toEqual({
-      nome: "Dra. Silva",
-      registro: "CREFITO-3 99",
-      clinica: "",
+      name: "Dra. Silva",
+      registration: "CREFITO-3 99",
+      clinic: "",
     });
   });
 
@@ -53,9 +53,9 @@ describe("patient mappers — autoria", () => {
       memberId: null,
       date: "2026-07-14",
       time: "09:00",
-      status: "compareceu",
-      atividades: "jogo",
-      observacoes: "",
+      status: "attended",
+      activities: "jogo",
+      observations: "",
       createdAt: new Date("2026-07-01T12:00:00Z"),
       updatedAt: new Date("2026-07-01T12:00:00Z"),
       member: null,

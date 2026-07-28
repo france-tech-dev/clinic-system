@@ -31,9 +31,9 @@ describe("buildSummary", () => {
 
   it("soma entradas e saídas e calcula saldo", () => {
     const result = buildSummary([
-      tx({ id: "1", type: "entrada", amountCents: 15000 }),
-      tx({ id: "2", type: "entrada", amountCents: 5000 }),
-      tx({ id: "3", type: "saida", amountCents: 3000 }),
+      tx({ id: "1", type: "income", amountCents: 15000 }),
+      tx({ id: "2", type: "income", amountCents: 5000 }),
+      tx({ id: "3", type: "expense", amountCents: 3000 }),
     ]);
 
     expect(result).toEqual({
@@ -45,7 +45,7 @@ describe("buildSummary", () => {
 
   it("trata só saídas com saldo negativo", () => {
     const result = buildSummary([
-      tx({ id: "1", type: "saida", amountCents: 1200 }),
+      tx({ id: "1", type: "expense", amountCents: 1200 }),
     ]);
 
     expect(result).toEqual({

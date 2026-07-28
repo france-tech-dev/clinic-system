@@ -12,9 +12,9 @@ const appointment: AppointmentDTO = {
   time: "10:00",
   duration: 50,
   notes: "",
-  status: "realizado",
+  status: "completed",
   hasSessionNote: true,
-  patientPricingType: "sessao",
+  patientPricingType: "session",
   patientPriceCents: 18000,
   createdAt: "2026-07-01T12:00:00.000Z",
   updatedAt: "2026-07-13T12:00:00.000Z",
@@ -23,7 +23,7 @@ const appointment: AppointmentDTO = {
 describe("buildCashDraftFromAppointment", () => {
   it("monta rascunho de entrada com dados do agendamento", () => {
     expect(buildCashDraftFromAppointment(appointment)).toEqual({
-      type: "entrada",
+      type: "income",
       date: "2026-07-13",
       patientId: "p1",
       memberId: "m1",

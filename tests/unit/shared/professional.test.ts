@@ -10,49 +10,49 @@ describe("professional helpers — multi-CREFITO", () => {
   it("parseMemberProfessionalMetadata lê professional aninhado", () => {
     const raw = JSON.stringify({
       other: 1,
-      professional: { nome: "Ana", registro: "CREFITO-3 1" },
+      professional: { name: "Ana", registration: "CREFITO-3 1" },
     });
     expect(parseMemberProfessionalMetadata(raw)).toEqual({
-      nome: "Ana",
-      registro: "CREFITO-3 1",
+      name: "Ana",
+      registration: "CREFITO-3 1",
     });
   });
 
   it("serializeMemberProfessionalMetadata preserva chaves existentes", () => {
     const next = serializeMemberProfessionalMetadata(
-      { nome: " Ana ", registro: " R1 " },
+      { name: " Ana ", registration: " R1 " },
       JSON.stringify({ teams: ["a"] }),
     );
     expect(JSON.parse(next)).toEqual({
       teams: ["a"],
-      professional: { nome: "Ana", registro: "R1" },
+      professional: { name: "Ana", registration: "R1" },
     });
   });
 
-  it("memberToProfessionalProfile usa nome do user como fallback", () => {
+  it("memberToProfessionalProfile usa name do user como fallback", () => {
     const profile = memberToProfessionalProfile(
-      JSON.stringify({ professional: { nome: "", registro: "X" } }),
+      JSON.stringify({ professional: { name: "", registration: "X" } }),
       "Dra. User",
     );
     expect(profile).toEqual({
-      nome: "Dra. User",
-      registro: "X",
-      clinica: "",
+      name: "Dra. User",
+      registration: "X",
+      clinic: "",
     });
   });
 
   it("resolveReportProfessional cai no fallback da org", () => {
-    const org = { nome: "Org", registro: "ORG", clinica: "Clínica" };
+    const org = { name: "Org", registration: "ORG", clinic: "Clínica" };
     expect(resolveReportProfessional(null, org)).toEqual(org);
     expect(
       resolveReportProfessional(
-        { nome: "Autor", registro: "", clinica: "" },
+        { name: "Autor", registration: "", clinic: "" },
         org,
       ),
     ).toEqual({
-      nome: "Autor",
-      registro: "ORG",
-      clinica: "Clínica",
+      name: "Autor",
+      registration: "ORG",
+      clinic: "Clínica",
     });
   });
 });

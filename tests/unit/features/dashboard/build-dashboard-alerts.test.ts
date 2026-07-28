@@ -6,7 +6,7 @@ describe("buildDashboardAlerts", () => {
 
   it("alerta paciente activo sem avaliação", () => {
     const alerts = buildDashboardAlerts(
-      [{ id: "p1", name: "Ana", evaluations: [] }],
+      [{ id: "p1", name: "Ana", clinicalEvaluations: [] }],
       now,
     );
 
@@ -26,7 +26,7 @@ describe("buildDashboardAlerts", () => {
         {
           id: "p2",
           name: "Bruno",
-          evaluations: [{ date: "2026-03-01" }],
+          clinicalEvaluations: [{ date: "2026-03-01" }],
         },
       ],
       now,
@@ -43,7 +43,7 @@ describe("buildDashboardAlerts", () => {
         {
           id: "p3",
           name: "Carla",
-          evaluations: [{ date: "2026-07-01" }],
+          clinicalEvaluations: [{ date: "2026-07-01" }],
         },
       ],
       now,
@@ -56,7 +56,7 @@ describe("buildDashboardAlerts", () => {
     const patients = Array.from({ length: 12 }, (_, i) => ({
       id: `p${i}`,
       name: `Paciente ${i}`,
-      evaluations: [] as { date: string }[],
+      clinicalEvaluations: [] as { date: string }[],
     }));
 
     expect(buildDashboardAlerts(patients, now)).toHaveLength(8);

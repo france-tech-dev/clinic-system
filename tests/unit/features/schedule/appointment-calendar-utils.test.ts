@@ -28,29 +28,29 @@ describe("appointmentDateTime", () => {
 
 describe("appointmentDisplayColor", () => {
   it("prioriza cor de evolução registada", () => {
-    expect(appointmentDisplayColor("agendado", true)).toBe(
+    expect(appointmentDisplayColor("scheduled", true)).toBe(
       APPOINTMENT_WITH_EVOLUTION_COLOR,
     );
   });
 
   it("usa cor do status sem evolução", () => {
-    expect(appointmentDisplayColor("realizado", false)).toBe(
-      appointmentStatusInfo("realizado").color,
+    expect(appointmentDisplayColor("completed", false)).toBe(
+      appointmentStatusInfo("completed").color,
     );
   });
 });
 
 describe("calendarEventStyle", () => {
   it("aplica opacidade reduzida para cancelado", () => {
-    const style = calendarEventStyle("cancelado", false);
+    const style = calendarEventStyle("cancelled", false);
     expect(style.opacity).toBe(0.55);
     expect(style.backgroundColor).toBe(
-      appointmentStatusInfo("cancelado").color,
+      appointmentStatusInfo("cancelled").color,
     );
   });
 
   it("usa cor de evolução quando há session note", () => {
-    const style = calendarEventStyle("agendado", true);
+    const style = calendarEventStyle("scheduled", true);
     expect(style.backgroundColor).toBe(APPOINTMENT_WITH_EVOLUTION_COLOR);
     expect(style.opacity).toBe(1);
   });
