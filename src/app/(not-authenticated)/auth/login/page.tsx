@@ -8,7 +8,7 @@ export default async function LoginPage({
 }) {
   const { aviso } = await searchParams;
   const inactiveNotice =
-    aviso === "inativo"
+    aviso === "inactive"
       ? "O seu acesso a esta clínica está inativo. Contacte um administrador."
       : null;
 
