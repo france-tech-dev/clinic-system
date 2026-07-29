@@ -1,4 +1,4 @@
-# Neuro France
+# CLINIC SYSTEM - Movi
 
 Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupacional e equipas multi-profissionais): prontuário, agenda, anamnese, avaliações estruturadas, caixa e painel — com isolamento por organização.
 
