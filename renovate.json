@@ -1,0 +1,48 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommits", ":semanticCommitTypeAll(chore)"],
+  "timezone": "America/Sao_Paulo",
+  "schedule": ["before 9am on monday"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "dependencyDashboard": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 9am on the first day of the month"]
+  },
+  "packageRules": [
+    {
+      "description": "Next.js e ESLint config sobem juntos",
+      "matchPackageNames": ["next", "eslint-config-next"],
+      "groupName": "next"
+    },
+    {
+      "description": "Prisma CLI, client e adapters sobem juntos",
+      "matchPackageNames": ["prisma", "@prisma/**"],
+      "groupName": "prisma"
+    },
+    {
+      "description": "TanStack Query no mesmo PR",
+      "matchPackageNames": ["@tanstack/**"],
+      "groupName": "tanstack"
+    },
+    {
+      "description": "Tipos Node/React no mesmo PR",
+      "matchPackageNames": ["@types/**"],
+      "groupName": "types"
+    },
+    {
+      "description": "Majors isolados — review manual, sem merge automático",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["dependencies", "major-update"]
+    },
+    {
+      "description": "Majors de tooling sensíveis — só com aprovação no dashboard",
+      "matchPackageNames": ["typescript", "eslint", "better-sqlite3"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["dependencies", "major-update", "breaking"]
+    }
+  ]
+}
