@@ -5,7 +5,9 @@ CREATE TABLE "users" (
     "email" TEXT,
     "email_verified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
-    "role" TEXT NOT NULL DEFAULT 'MEMBER',
+    "phone" TEXT,
+    "birth_date" DATETIME,
+    "must_change_password" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -63,93 +65,84 @@ CREATE TABLE "organization" (
 );
 
 -- CreateTable
-CREATE TABLE "exercises" (
+CREATE TABLE "guardians" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "organizationId" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "objective" TEXT NOT NULL,
-    "materials" TEXT NOT NULL,
-    "instructions" TEXT NOT NULL,
-    "duration" TEXT NOT NULL,
-    "level" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "phone" TEXT NOT NULL DEFAULT '',
+    "email" TEXT,
+    "cpf" TEXT,
+    "address" TEXT NOT NULL DEFAULT '',
+    "zip_code" TEXT NOT NULL DEFAULT '',
+    "document_image_url" TEXT,
+    "insurance" TEXT NOT NULL DEFAULT 'particular',
+    "mother_name" TEXT NOT NULL DEFAULT '',
+    "mother_cpf" TEXT,
+    "father_name" TEXT NOT NULL DEFAULT '',
+    "father_cpf" TEXT,
+    "user_id" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "exercises_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "study_cards" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "organizationId" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
-    "isCustom" BOOLEAN NOT NULL DEFAULT true,
-    "seedKey" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "study_cards_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "guardians_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "guardians_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "patients" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "organizationId" TEXT NOT NULL,
+    "guardianId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "birth_date" DATETIME,
+    "sex" TEXT NOT NULL DEFAULT 'not_informed',
+    "photo_url" TEXT,
     "notes" TEXT NOT NULL DEFAULT '',
-    "status" TEXT NOT NULL DEFAULT 'ativo',
-    "pricingType" TEXT NOT NULL DEFAULT 'sessao',
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "pricingType" TEXT NOT NULL DEFAULT 'session',
     "priceCents" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "patients_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "patients_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "patients_guardianId_fkey" FOREIGN KEY ("guardianId") REFERENCES "guardians" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
-CREATE TABLE "patient_plan_items" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "patientId" TEXT NOT NULL,
-    "exerciseId" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "patient_plan_items_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "patient_plan_items_exerciseId_fkey" FOREIGN KEY ("exerciseId") REFERENCES "exercises" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "evaluations" (
+CREATE TABLE "clinical_evaluations" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "patientId" TEXT NOT NULL,
     "memberId" TEXT,
-    "tipo" TEXT NOT NULL DEFAULT 'inicial',
+    "type" TEXT NOT NULL DEFAULT 'initial',
     "date" TEXT NOT NULL,
-    "queixa" TEXT NOT NULL DEFAULT '',
-    "historia" TEXT NOT NULL DEFAULT '',
+    "complaint" TEXT NOT NULL DEFAULT '',
+    "history" TEXT NOT NULL DEFAULT '',
     "domains" TEXT NOT NULL,
-    "objetivos" TEXT NOT NULL DEFAULT '',
-    "condutas" TEXT NOT NULL DEFAULT '',
-    "diagnostico" TEXT NOT NULL DEFAULT '',
-    "encaminhadoPor" TEXT NOT NULL DEFAULT '',
-    "contextoFamiliar" TEXT NOT NULL DEFAULT '',
-    "nivelPrevio" TEXT NOT NULL DEFAULT '',
-    "medicacoes" TEXT NOT NULL DEFAULT '',
-    "precaucoes" TEXT NOT NULL DEFAULT '',
-    "equipamentos" TEXT NOT NULL DEFAULT '',
-    "frequencia" TEXT NOT NULL DEFAULT '',
-    "criteriosAlta" TEXT NOT NULL DEFAULT '',
+    "goals" TEXT NOT NULL DEFAULT '',
+    "interventions" TEXT NOT NULL DEFAULT '',
+    "diagnosis" TEXT NOT NULL DEFAULT '',
+    "referredBy" TEXT NOT NULL DEFAULT '',
+    "familyContext" TEXT NOT NULL DEFAULT '',
+    "previousLevel" TEXT NOT NULL DEFAULT '',
+    "medications" TEXT NOT NULL DEFAULT '',
+    "precautions" TEXT NOT NULL DEFAULT '',
+    "equipment" TEXT NOT NULL DEFAULT '',
+    "frequency" TEXT NOT NULL DEFAULT '',
+    "dischargeCriteria" TEXT NOT NULL DEFAULT '',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "evaluations_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "evaluations_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT "clinical_evaluations_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "clinical_evaluations_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "anamneses" (
     "id" TEXT NOT NULL PRIMARY KEY,
+    "organizationId" TEXT NOT NULL,
     "patientId" TEXT NOT NULL,
+    "formId" TEXT NOT NULL,
     "data" TEXT NOT NULL DEFAULT '{}',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "anamneses_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "anamneses_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -158,14 +151,17 @@ CREATE TABLE "session_notes" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "patientId" TEXT NOT NULL,
     "memberId" TEXT,
+    "appointmentId" TEXT,
     "date" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'compareceu',
-    "atividades" TEXT NOT NULL DEFAULT '',
-    "observacoes" TEXT NOT NULL DEFAULT '',
+    "time" TEXT NOT NULL DEFAULT '',
+    "status" TEXT NOT NULL DEFAULT 'attended',
+    "activities" TEXT NOT NULL DEFAULT '',
+    "observations" TEXT NOT NULL DEFAULT '',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "session_notes_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "session_notes_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT "session_notes_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "session_notes_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "appointments" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -178,7 +174,7 @@ CREATE TABLE "appointments" (
     "time" TEXT NOT NULL DEFAULT '',
     "duration" INTEGER NOT NULL DEFAULT 45,
     "notes" TEXT NOT NULL DEFAULT '',
-    "status" TEXT NOT NULL DEFAULT 'agendado',
+    "status" TEXT NOT NULL DEFAULT 'scheduled',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "appointments_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -194,7 +190,7 @@ CREATE TABLE "cash_transactions" (
     "amountCents" INTEGER NOT NULL,
     "date" TEXT NOT NULL,
     "description" TEXT NOT NULL DEFAULT '',
-    "paymentMethod" TEXT NOT NULL DEFAULT 'dinheiro',
+    "paymentMethod" TEXT NOT NULL DEFAULT 'cash',
     "patientId" TEXT,
     "memberId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -217,19 +213,21 @@ CREATE TABLE "roteiro_notes" (
 );
 
 -- CreateTable
-CREATE TABLE "protocol_assessments" (
+CREATE TABLE "protocol_evaluations" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "organizationId" TEXT NOT NULL,
     "patientId" TEXT NOT NULL,
+    "memberId" TEXT,
     "protocolId" TEXT NOT NULL,
-    "label" TEXT NOT NULL DEFAULT 'Avaliação',
+    "label" TEXT NOT NULL DEFAULT 'Evaluation',
     "date" TEXT NOT NULL,
     "scores" TEXT NOT NULL,
     "notes" TEXT NOT NULL DEFAULT '',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "protocol_assessments_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "protocol_assessments_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "protocol_evaluations_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "protocol_evaluations_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "protocol_evaluations_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -237,7 +235,11 @@ CREATE TABLE "member" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "organizationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "role" TEXT NOT NULL DEFAULT 'member',
+    "role" TEXT NOT NULL DEFAULT 'MEMBER',
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "profession" TEXT,
+    "registration" TEXT,
+    "metadata" TEXT,
     "createdAt" DATETIME NOT NULL,
     CONSTRAINT "member_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
@@ -279,19 +281,13 @@ CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 CREATE UNIQUE INDEX "organization_slug_key" ON "organization"("slug");
 
 -- CreateIndex
-CREATE INDEX "exercises_organizationId_idx" ON "exercises"("organizationId");
+CREATE UNIQUE INDEX "guardians_user_id_key" ON "guardians"("user_id");
 
 -- CreateIndex
-CREATE INDEX "exercises_organizationId_categoryId_idx" ON "exercises"("organizationId", "categoryId");
+CREATE INDEX "guardians_organizationId_idx" ON "guardians"("organizationId");
 
 -- CreateIndex
-CREATE INDEX "study_cards_organizationId_idx" ON "study_cards"("organizationId");
-
--- CreateIndex
-CREATE INDEX "study_cards_organizationId_categoryId_idx" ON "study_cards"("organizationId", "categoryId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "study_cards_organizationId_seedKey_key" ON "study_cards"("organizationId", "seedKey");
+CREATE UNIQUE INDEX "guardians_organizationId_cpf_key" ON "guardians"("organizationId", "cpf");
 
 -- CreateIndex
 CREATE INDEX "patients_organizationId_idx" ON "patients"("organizationId");
@@ -300,25 +296,28 @@ CREATE INDEX "patients_organizationId_idx" ON "patients"("organizationId");
 CREATE INDEX "patients_organizationId_status_idx" ON "patients"("organizationId", "status");
 
 -- CreateIndex
-CREATE INDEX "patient_plan_items_patientId_idx" ON "patient_plan_items"("patientId");
+CREATE INDEX "patients_guardianId_idx" ON "patients"("guardianId");
 
 -- CreateIndex
-CREATE INDEX "patient_plan_items_exerciseId_idx" ON "patient_plan_items"("exerciseId");
+CREATE INDEX "clinical_evaluations_patientId_idx" ON "clinical_evaluations"("patientId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "patient_plan_items_patientId_exerciseId_key" ON "patient_plan_items"("patientId", "exerciseId");
+CREATE INDEX "clinical_evaluations_patientId_date_idx" ON "clinical_evaluations"("patientId", "date");
 
 -- CreateIndex
-CREATE INDEX "evaluations_patientId_idx" ON "evaluations"("patientId");
+CREATE INDEX "clinical_evaluations_memberId_idx" ON "clinical_evaluations"("memberId");
 
 -- CreateIndex
-CREATE INDEX "evaluations_patientId_date_idx" ON "evaluations"("patientId", "date");
+CREATE INDEX "anamneses_organizationId_idx" ON "anamneses"("organizationId");
 
 -- CreateIndex
-CREATE INDEX "evaluations_memberId_idx" ON "evaluations"("memberId");
+CREATE INDEX "anamneses_patientId_idx" ON "anamneses"("patientId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "anamneses_patientId_key" ON "anamneses"("patientId");
+CREATE UNIQUE INDEX "anamneses_patientId_formId_key" ON "anamneses"("patientId", "formId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "session_notes_appointmentId_key" ON "session_notes"("appointmentId");
 
 -- CreateIndex
 CREATE INDEX "session_notes_patientId_idx" ON "session_notes"("patientId");
@@ -363,16 +362,22 @@ CREATE INDEX "roteiro_notes_patientId_roteiroId_idx" ON "roteiro_notes"("patient
 CREATE UNIQUE INDEX "roteiro_notes_patientId_roteiroId_categoryTick_key" ON "roteiro_notes"("patientId", "roteiroId", "categoryTick");
 
 -- CreateIndex
-CREATE INDEX "protocol_assessments_organizationId_idx" ON "protocol_assessments"("organizationId");
+CREATE INDEX "protocol_evaluations_organizationId_idx" ON "protocol_evaluations"("organizationId");
 
 -- CreateIndex
-CREATE INDEX "protocol_assessments_patientId_idx" ON "protocol_assessments"("patientId");
+CREATE INDEX "protocol_evaluations_patientId_idx" ON "protocol_evaluations"("patientId");
 
 -- CreateIndex
-CREATE INDEX "protocol_assessments_patientId_protocolId_idx" ON "protocol_assessments"("patientId", "protocolId");
+CREATE INDEX "protocol_evaluations_patientId_protocolId_idx" ON "protocol_evaluations"("patientId", "protocolId");
+
+-- CreateIndex
+CREATE INDEX "protocol_evaluations_memberId_idx" ON "protocol_evaluations"("memberId");
 
 -- CreateIndex
 CREATE INDEX "member_organizationId_idx" ON "member"("organizationId");
+
+-- CreateIndex
+CREATE INDEX "member_organizationId_status_idx" ON "member"("organizationId", "status");
 
 -- CreateIndex
 CREATE INDEX "member_userId_idx" ON "member"("userId");
