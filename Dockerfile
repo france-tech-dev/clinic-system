@@ -29,7 +29,7 @@ RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
 # CLI para migrate no arranque (mesma rede Docker que a BD no Dokploy)
-RUN npm install -g prisma@7.9.1 dotenv
+RUN npm install -g prisma@7.9.1
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
