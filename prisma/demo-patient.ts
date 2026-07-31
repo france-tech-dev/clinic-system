@@ -200,7 +200,7 @@ export function buildDemoAppointments(baseDate: Date) {
 export function buildDemoCashTransaction(baseDate: Date) {
   return {
     type: "income" as const,
-    amountCents: 15000,
+    amount: 150,
     date: formatIsoDate(offsetDate(baseDate, -7)),
     description: "Sessão de TO — Miguel Oliveira",
     paymentMethod: "pix" as const,

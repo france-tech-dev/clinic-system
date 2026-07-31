@@ -76,7 +76,7 @@ export async function ensureDemoPatient(
         notes: `${DEMO_PATIENT_NOTES}\n${DEMO_PATIENT_SEED_MARKER}`,
         status: "active",
         pricingType: "session",
-        priceCents: 15000,
+        price: 150,
       },
     });
 
@@ -159,7 +159,7 @@ export async function ensureDemoPatient(
         patientId: createdPatient.id,
         memberId: member.id,
         type: cashTransaction.type,
-        amountCents: cashTransaction.amountCents,
+        amount: cashTransaction.amount,
         date: cashTransaction.date,
         description: cashTransaction.description,
         paymentMethod: cashTransaction.paymentMethod,
