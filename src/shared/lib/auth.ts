@@ -23,9 +23,15 @@ const baseUrl = process.env.BETTER_AUTH_URL as string;
 const invitationAcceptUrl = (invitationId: string) =>
   `${baseUrl}${paths.api.acceptInvitation(invitationId)}`;
 
-// Passar para a /lib depois
-const resend = new Resend(process.env.RESEND_API_KEY);
 const emailNoReply = process.env.EMAIL_NO_REPLY as string;
+
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not set");
+  }
+  return new Resend(apiKey);
+}
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -84,7 +90,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     async sendResetPassword({ user, url }) {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: emailNoReply,
         to: user.email,
         subject: "Redefina sua senha",
@@ -100,7 +106,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     async sendVerificationEmail({ user, url }: { user: User; url: string }) {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: emailNoReply,
         to: user.email,
         subject: "Verifique seu email",
@@ -117,7 +123,7 @@ export const auth = betterAuth({
     nextCookies(),
     magicLink({
       async sendMagicLink({ email, url }) {
-        await resend.emails.send({
+        await getResend().emails.send({
           from: emailNoReply,
           to: email,
           subject: "Seu link de acesso",
@@ -141,7 +147,7 @@ export const auth = betterAuth({
       creatorRole: Role.OWNER,
       async sendInvitationEmail(data) {
         const inviteUrl = invitationAcceptUrl(data.id);
-        await resend.emails.send({
+        await getResend().emails.send({
           from: emailNoReply,
           to: data.email,
           subject: `Convite para a clínica ${data.organization.name}`,
