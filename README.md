@@ -115,7 +115,24 @@ Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · road
 | `pnpm arch`       | Fronteiras de import (dependency-cruiser)     |
 | `pnpm test`       | Testes unitários (Vitest)                     |
 | `pnpm test:watch` | Vitest em modo watch                          |
+| `pnpm db:migrate` | Aplica migrations (`prisma migrate deploy`)       |
 | `pnpm db:seed`    | Seed (paciente de demonstração)               |
+
+## CI/CD (GitHub Actions + Dokploy)
+
+Fluxo em `main`:
+
+1. **CI** (`.github/workflows/ci.yml`) — `lint`, testes e `build`
+2. **Deploy** (`.github/workflows/deploy.yml`) — `pnpm db:migrate` na base de produção → webhook do Dokploy
+
+### Secrets no GitHub (Settings → Secrets and variables → Actions)
+
+| Secret | Uso |
+| --- | --- |
+| `DATABASE_URL` | Postgres de produção (migrations) |
+| `DOKPLOY_DEPLOY_WEBHOOK` | URL de deploy da aplicação no Dokploy |
+
+No Dokploy: copia o webhook em Application → Deployments / Webhook, e **desactiva o auto-deploy no push** do Git (senão há dois deploys em paralelo). As envs de runtime da app (`DATABASE_URL`, `BETTER_AUTH_*`, `RESEND_*`, etc.) continuam configuradas no painel do Dokploy.
 
 ## Licença
 

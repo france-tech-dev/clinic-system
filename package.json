@@ -16,6 +16,7 @@
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "echo \"E2E ainda não configurado — ver tests/e2e/README.md\" && exit 1",
+    "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "prepare": "husky && prisma generate"
   },
