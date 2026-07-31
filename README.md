@@ -37,7 +37,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 ## Pré-requisitos
 
 - Node.js 20+
-- pnpm 11+
+- pnpm 10+
 - Conta [Resend](https://resend.com) (e-mails)
 - Credenciais Google OAuth (opcional)
 
