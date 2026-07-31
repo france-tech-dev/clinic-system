@@ -6,7 +6,7 @@ RUN apk add --no-cache libc6-compat openssl
 RUN npm install -g pnpm@11.18.0
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 ENV HUSKY=0
