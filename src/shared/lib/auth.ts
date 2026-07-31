@@ -29,7 +29,7 @@ const emailNoReply = process.env.EMAIL_NO_REPLY as string;
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
-    provider: "sqlite",
+    provider: "postgresql",
   }),
 
   trustedOrigins: [baseUrl],

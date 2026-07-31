@@ -39,7 +39,7 @@
     },
     {
       "description": "Majors de tooling sensíveis — só com aprovação no dashboard",
-      "matchPackageNames": ["typescript", "eslint", "better-sqlite3"],
+      "matchPackageNames": ["typescript", "eslint"],
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true,
       "labels": ["dependencies", "major-update", "breaking"]

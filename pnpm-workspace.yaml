@@ -1,14 +1,11 @@
+autoInstallPeers: false
+strictPeerDependencies: false
 allowBuilds:
-  '@prisma/engines': true
-  better-sqlite3: true
+  "@prisma/engines": true
   esbuild: true
   prisma: true
   sharp: true
   unrs-resolver: true
-onlyBuiltDependencies:
-  - "@prisma/engines"
-  - better-sqlite3
-  - esbuild
-  - prisma
-  - sharp
-  - unrs-resolver
+overrides:
+  better-sqlite3: "-"
+  mysql2: "-"

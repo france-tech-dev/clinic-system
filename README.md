@@ -10,7 +10,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 | **React 19**            | Interface                                        |
 | **TypeScript**          | Tipagem                                          |
 | **Better Auth**         | Autenticação, organizações e convites            |
-| **Prisma 7**            | ORM (SQLite em desenvolvimento; Postgres pronto) |
+| **Prisma 7**            | ORM (PostgreSQL)                                 |
 | **Tailwind CSS 4**      | Estilos                                          |
 | **shadcn/ui**           | Componentes                                      |
 | **Zod**                 | Validação nas Server Actions                     |
@@ -37,7 +37,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 ## Pré-requisitos
 
 - Node.js 20+
-- pnpm 10+
+- pnpm 11+
 - Conta [Resend](https://resend.com) (e-mails)
 - Credenciais Google OAuth (opcional)
 
@@ -52,7 +52,7 @@ Crie um ficheiro `.env` na raiz:
 ```env
 BETTER_AUTH_URL="http://localhost:3000"
 BETTER_AUTH_SECRET="gere-um-secret-com-openssl-rand-base64-32"
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/clinic_system"
 RESEND_API_KEY="re_..."
 EMAIL_NO_REPLY="noreply@seudominio.com"
 
