@@ -118,22 +118,11 @@ Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · road
 | `pnpm db:migrate` | Aplica migrations (`prisma migrate deploy`)   |
 | `pnpm db:seed`    | Seed (paciente de demonstração)               |
 
-## CI/CD (GitHub Actions + Dokploy)
+## Deploy (Dokploy)
 
-Fluxo em `main`:
+Build Type: **Dockerfile**. No arranque do contentor corre `prisma migrate deploy` e depois `node server.js` (ver `docker-entrypoint.sh`).
 
-1. **CI** (`.github/workflows/ci.yml`) — `lint`, testes e `build`
-2. **Deploy** (`.github/workflows/deploy.yml`) — `pnpm db:migrate` (URL **externa** da BD) → webhook do Dokploy
-3. A app sobe com `node server.js` (URL **interna** da BD no Dokploy)
-
-### Secrets no GitHub (Settings → Secrets and variables → Actions)
-
-| Secret                   | Uso                                                                                    |
-| ------------------------ | -------------------------------------------------------------------------------------- |
-| `DATABASE_URL`           | **External** Connection URL do Postgres no Dokploy (host público + porta, ex. `:5433`) |
-| `DOKPLOY_DEPLOY_WEBHOOK` | URL de deploy da aplicação no Dokploy                                                  |
-
-No Dokploy: a app usa a URL **Internal**; desactiva o auto-deploy no push do Git (senão há dois deploys em paralelo).
+Usa a URL **Internal** da BD nas envs da app. Podes desactivar a porta External no Postgres se já não precisares dela.
 
 ## Licença
 
