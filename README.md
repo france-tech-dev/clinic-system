@@ -4,20 +4,20 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 
 ## Stack
 
-| Tecnologia              | Uso                                              |
-| ----------------------- | ------------------------------------------------ |
-| **Next.js 16**          | App Router + Server Actions                      |
-| **React 19**            | Interface                                        |
-| **TypeScript**          | Tipagem                                          |
-| **Better Auth**         | Autenticação, organizações e convites            |
-| **Prisma 7**            | ORM (PostgreSQL)                                 |
-| **Tailwind CSS 4**      | Estilos                                          |
-| **shadcn/ui**           | Componentes                                      |
-| **Zod**                 | Validação nas Server Actions                     |
-| **Resend**              | E-mails (verificação, reset, convites)           |
-| **@react-pdf/renderer** | Relatórios PDF (prontuário, anamnese, etc.)      |
-| **react-big-calendar**  | Vista de calendário na agenda                    |
-| **Vitest**              | Testes unitários                                 |
+| Tecnologia              | Uso                                         |
+| ----------------------- | ------------------------------------------- |
+| **Next.js 16**          | App Router + Server Actions                 |
+| **React 19**            | Interface                                   |
+| **TypeScript**          | Tipagem                                     |
+| **Better Auth**         | Autenticação, organizações e convites       |
+| **Prisma 7**            | ORM (PostgreSQL)                            |
+| **Tailwind CSS 4**      | Estilos                                     |
+| **shadcn/ui**           | Componentes                                 |
+| **Zod**                 | Validação nas Server Actions                |
+| **Resend**              | E-mails (verificação, reset, convites)      |
+| **@react-pdf/renderer** | Relatórios PDF (prontuário, anamnese, etc.) |
+| **react-big-calendar**  | Vista de calendário na agenda               |
+| **Vitest**              | Testes unitários                            |
 
 ## Funcionalidades
 
@@ -115,7 +115,7 @@ Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · road
 | `pnpm arch`       | Fronteiras de import (dependency-cruiser)     |
 | `pnpm test`       | Testes unitários (Vitest)                     |
 | `pnpm test:watch` | Vitest em modo watch                          |
-| `pnpm db:migrate` | Aplica migrations (`prisma migrate deploy`)       |
+| `pnpm db:migrate` | Aplica migrations (`prisma migrate deploy`)   |
 | `pnpm db:seed`    | Seed (paciente de demonstração)               |
 
 ## CI/CD (GitHub Actions + Dokploy)
@@ -123,16 +123,17 @@ Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · road
 Fluxo em `main`:
 
 1. **CI** (`.github/workflows/ci.yml`) — `lint`, testes e `build`
-2. **Deploy** (`.github/workflows/deploy.yml`) — `pnpm db:migrate` na base de produção → webhook do Dokploy
+2. **Deploy** (`.github/workflows/deploy.yml`) — `pnpm db:migrate` (URL **externa** da BD) → webhook do Dokploy
+3. A app sobe com `node server.js` (URL **interna** da BD no Dokploy)
 
 ### Secrets no GitHub (Settings → Secrets and variables → Actions)
 
-| Secret | Uso |
-| --- | --- |
-| `DATABASE_URL` | Postgres de produção (migrations) |
-| `DOKPLOY_DEPLOY_WEBHOOK` | URL de deploy da aplicação no Dokploy |
+| Secret                   | Uso                                                                                    |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| `DATABASE_URL`           | **External** Connection URL do Postgres no Dokploy (host público + porta, ex. `:5433`) |
+| `DOKPLOY_DEPLOY_WEBHOOK` | URL de deploy da aplicação no Dokploy                                                  |
 
-No Dokploy: copia o webhook em Application → Deployments / Webhook, e **desactiva o auto-deploy no push** do Git (senão há dois deploys em paralelo). As envs de runtime da app (`DATABASE_URL`, `BETTER_AUTH_*`, `RESEND_*`, etc.) continuam configuradas no painel do Dokploy.
+No Dokploy: a app usa a URL **Internal**; desactiva o auto-deploy no push do Git (senão há dois deploys em paralelo).
 
 ## Licença
 

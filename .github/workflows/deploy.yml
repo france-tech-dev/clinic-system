@@ -40,7 +40,7 @@ jobs:
       - name: Require DATABASE_URL
         run: |
           if [ -z "$DATABASE_URL" ]; then
-            echo "Secret DATABASE_URL is not set"
+            echo "Secret DATABASE_URL is not set (use the External Connection URL)"
             exit 1
           fi
 
