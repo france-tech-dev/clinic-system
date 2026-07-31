@@ -20,7 +20,7 @@ export function patientDtoToDraft(patient: {
   sex: PatientSex;
   notes: string;
   pricingType: PatientPricingType;
-  priceCents: number | null;
+  price: number | null;
 }): PatientDraftInput {
   return {
     name: patient.name,
@@ -28,6 +28,6 @@ export function patientDtoToDraft(patient: {
     sex: patient.sex,
     notes: patient.notes,
     pricingType: patient.pricingType,
-    priceInput: formatPatientPriceInput(patient.priceCents),
+    priceInput: formatPatientPriceInput(patient.price),
   };
 }

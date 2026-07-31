@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { DashboardPageData } from "@/features/dashboard/dashboard.types";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
-import { formatCentsToBrl } from "@/shared/lib/money-utils";
+import { formatBrl } from "@/shared/lib/money-utils";
 import { StatCard } from "./stat-card";
 
 export function PainelContent({
@@ -63,15 +63,15 @@ export function PainelContent({
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               <StatCard
-                number={formatCentsToBrl(data.financeSummary.incomeCents)}
+                number={formatBrl(data.financeSummary.income)}
                 label="Entradas do mês"
               />
               <StatCard
-                number={formatCentsToBrl(data.financeSummary.expenseCents)}
+                number={formatBrl(data.financeSummary.expense)}
                 label="Saídas do mês"
               />
               <StatCard
-                number={formatCentsToBrl(data.financeSummary.balanceCents)}
+                number={formatBrl(data.financeSummary.balance)}
                 label="Saldo do mês"
               />
             </div>

@@ -126,7 +126,7 @@ export function usePatientEdit({
           sex: patientDraft.sex,
           notes: patientDraft.notes,
           pricingType: patientDraft.pricingType,
-          priceCents: parsePatientPriceInput(patientDraft.priceInput),
+          price: parsePatientPriceInput(patientDraft.priceInput),
           guardianId: editGuardianId,
         });
         if (!result.success) {

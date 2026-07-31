@@ -15,7 +15,7 @@ export type CashMemberOption = {
 export type CashTransactionDTO = {
   id: string;
   type: CashTransactionTypeId;
-  amountCents: number;
+  amount: number;
   date: string;
   description: string;
   paymentMethod: CashPaymentMethodId;

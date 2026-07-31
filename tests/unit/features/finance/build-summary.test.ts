@@ -3,7 +3,7 @@ import { buildSummary } from "@/features/finance/_lib/build-summary";
 import type { CashTransactionDTO } from "@/features/finance/finance.types";
 
 function tx(
-  overrides: Partial<CashTransactionDTO> & Pick<CashTransactionDTO, "type" | "amountCents">,
+  overrides: Partial<CashTransactionDTO> & Pick<CashTransactionDTO, "type" | "amount">,
 ): CashTransactionDTO {
   return {
     id: "tx-1",
@@ -23,35 +23,35 @@ function tx(
 describe("buildSummary", () => {
   it("retorna zeros quando não há lançamentos", () => {
     expect(buildSummary([])).toEqual({
-      incomeCents: 0,
-      expenseCents: 0,
-      balanceCents: 0,
+      income: 0,
+      expense: 0,
+      balance: 0,
     });
   });
 
   it("soma entradas e saídas e calcula saldo", () => {
     const result = buildSummary([
-      tx({ id: "1", type: "income", amountCents: 15000 }),
-      tx({ id: "2", type: "income", amountCents: 5000 }),
-      tx({ id: "3", type: "expense", amountCents: 3000 }),
+      tx({ id: "1", type: "income", amount: 150 }),
+      tx({ id: "2", type: "income", amount: 50 }),
+      tx({ id: "3", type: "expense", amount: 30 }),
     ]);
 
     expect(result).toEqual({
-      incomeCents: 20000,
-      expenseCents: 3000,
-      balanceCents: 17000,
+      income: 200,
+      expense: 30,
+      balance: 170,
     });
   });
 
   it("trata só saídas com saldo negativo", () => {
     const result = buildSummary([
-      tx({ id: "1", type: "expense", amountCents: 1200 }),
+      tx({ id: "1", type: "expense", amount: 12 }),
     ]);
 
     expect(result).toEqual({
-      incomeCents: 0,
-      expenseCents: 1200,
-      balanceCents: -1200,
+      income: 0,
+      expense: 12,
+      balance: -12,
     });
   });
 });

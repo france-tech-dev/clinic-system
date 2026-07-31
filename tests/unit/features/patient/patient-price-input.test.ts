@@ -10,13 +10,13 @@ describe("patient-price-input", () => {
     expect(parsePatientPriceInput("  ")).toBeNull();
   });
 
-  it("parsePatientPriceInput converte BRL para centavos", () => {
-    expect(parsePatientPriceInput("150,00")).toBe(15000);
+  it("parsePatientPriceInput converte BRL para reais", () => {
+    expect(parsePatientPriceInput("150,00")).toBe(150);
   });
 
-  it("formatPatientPriceInput formata centavos", () => {
+  it("formatPatientPriceInput formata reais", () => {
     expect(formatPatientPriceInput(null)).toBe("");
     expect(formatPatientPriceInput(0)).toBe("");
-    expect(formatPatientPriceInput(15000)).toBe("150,00");
+    expect(formatPatientPriceInput(150)).toBe("150,00");
   });
 });

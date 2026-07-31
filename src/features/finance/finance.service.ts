@@ -22,7 +22,7 @@ function toDTO(row: CashRow): CashTransactionDTO {
   return {
     id: row.id,
     type: row.type,
-    amountCents: row.amountCents,
+    amount: Number(row.amount),
     date: row.date,
     description: row.description,
     paymentMethod: row.paymentMethod,

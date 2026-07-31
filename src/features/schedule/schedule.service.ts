@@ -32,7 +32,8 @@ function toDTO(
     status: row.status,
     hasSessionNote: sessionAppointmentIds.has(row.id),
     patientPricingType: row.patient.pricingType,
-    patientPriceCents: row.patient.priceCents,
+    patientPrice:
+      row.patient.price == null ? null : Number(row.patient.price),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

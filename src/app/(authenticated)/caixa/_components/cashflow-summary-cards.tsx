@@ -1,4 +1,4 @@
-import { formatCentsToBrl } from "@/shared/lib/money-utils";
+import { formatBrl } from "@/shared/lib/money-utils";
 import type { CashflowSummary } from "@/features/finance/finance.types";
 import { cn } from "@/shared/lib/utils";
 
@@ -10,19 +10,19 @@ export function CashflowSummaryCards({
   const items = [
     {
       label: "Entradas",
-      value: formatCentsToBrl(summary.incomeCents),
+      value: formatBrl(summary.income),
       className: "text-emerald-600 dark:text-emerald-400",
     },
     {
       label: "Saídas",
-      value: formatCentsToBrl(summary.expenseCents),
+      value: formatBrl(summary.expense),
       className: "text-red-600 dark:text-red-400",
     },
     {
       label: "Saldo",
-      value: formatCentsToBrl(summary.balanceCents),
+      value: formatBrl(summary.balance),
       className:
-        summary.balanceCents >= 0
+        summary.balance >= 0
           ? "text-foreground"
           : "text-red-600 dark:text-red-400",
     },

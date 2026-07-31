@@ -3,17 +3,17 @@ import type { CashTransactionDTO, CashflowSummary } from "../finance.types";
 export function buildSummary(
   transactions: CashTransactionDTO[],
 ): CashflowSummary {
-  let incomeCents = 0;
-  let expenseCents = 0;
+  let income = 0;
+  let expense = 0;
 
   for (const tx of transactions) {
-    if (tx.type === "income") incomeCents += tx.amountCents;
-    else expenseCents += tx.amountCents;
+    if (tx.type === "income") income += tx.amount;
+    else expense += tx.amount;
   }
 
   return {
-    incomeCents,
-    expenseCents,
-    balanceCents: incomeCents - expenseCents,
+    income,
+    expense,
+    balance: income - expense,
   };
 }

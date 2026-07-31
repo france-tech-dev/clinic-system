@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
-import { parseBrlToCents } from "@/shared/lib/money-utils";
+import { parseBrl } from "@/shared/lib/money-utils";
 
 export const PATIENT_STATUSES = ["active", "discharged", "paused"] as const;
 export const SESSION_STATUSES = ["attended", "absent", "cancelled"] as const;
@@ -43,7 +43,7 @@ const patientFieldsSchema = z.object({
     .transform((v) => (v == null ? "" : v.trim()))
     .default(""),
   pricingType: z.enum(["session", "package"]).default("session"),
-  priceCents: z.number().int().positive().nullable().optional(),
+  price: z.number().positive().nullable().optional(),
   guardianId: z.string().min(1, "Informe o responsável"),
 });
 
@@ -63,7 +63,7 @@ export const patientDraftSchema = z.object({
   priceInput: z
     .string()
     .refine(
-      (v) => !v.trim() || parseBrlToCents(v) !== null,
+      (v) => !v.trim() || parseBrl(v) !== null,
       "Informe um valor válido",
     ),
 });

@@ -3,7 +3,7 @@ import {
   CASH_PAYMENT_METHODS,
   CASH_TRANSACTION_TYPES,
 } from "@/shared/constants/cash";
-import { parseBrlToCents } from "@/shared/lib/money-utils";
+import { parseBrl } from "@/shared/lib/money-utils";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida");
 
@@ -32,10 +32,7 @@ export const cashTransactionFormSchema = z.object({
     .trim()
     .min(1, "Informe uma descrição")
     .max(200, "Descrição muito longa"),
-  amountCents: z
-    .number()
-    .int()
-    .positive("Valor deve ser maior que zero"),
+  amount: z.number().positive("Valor deve ser maior que zero"),
   paymentMethod: paymentMethod,
   patientId: z.string().min(1).nullable().optional(),
   memberId: z.string().min(1).nullable().optional(),
@@ -58,7 +55,7 @@ export const cashTransactionDraftSchema = z.object({
     .string()
     .trim()
     .min(1, "Informe um valor")
-    .refine((v) => parseBrlToCents(v) !== null, "Informe um valor válido"),
+    .refine((v) => parseBrl(v) !== null, "Informe um valor válido"),
   paymentMethod: paymentMethod,
   patientId: z.string().min(1),
   memberId: z.string().min(1),

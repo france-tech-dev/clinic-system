@@ -33,7 +33,7 @@ export type PatientDTO = {
   notes: string;
   status: PatientStatus;
   pricingType: PatientPricingType;
-  priceCents: number | null;
+  price: number | null;
   guardianId: string;
   guardian?: PatientGuardianEmbed;
   createdAt: string;

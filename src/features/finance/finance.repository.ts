@@ -54,7 +54,7 @@ export const financeRepository = {
       data: {
         organizationId,
         type: data.type as CashTransactionTypeId,
-        amountCents: data.amountCents,
+        amount: data.amount,
         date: data.date,
         description: data.description,
         paymentMethod: data.paymentMethod as CashPaymentMethodId,
@@ -76,7 +76,7 @@ export const financeRepository = {
       where: { id: data.id },
       data: {
         type: data.type as CashTransactionTypeId,
-        amountCents: data.amountCents,
+        amount: data.amount,
         date: data.date,
         description: data.description,
         paymentMethod: data.paymentMethod as CashPaymentMethodId,

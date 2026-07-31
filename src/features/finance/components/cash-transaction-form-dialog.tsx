@@ -47,14 +47,14 @@ import {
   type CashPaymentMethodId,
   type CashTransactionTypeId,
 } from "@/shared/constants/cash";
-import { centsToBrlInput, parseBrlToCents } from "@/shared/lib/money-utils";
+import { amountToBrlInput, parseBrl } from "@/shared/lib/money-utils";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 export type CashTransactionDraft = {
   type?: CashTransactionTypeId;
   date?: string;
   description?: string;
-  amountCents?: number | null;
+  amount?: number | null;
   paymentMethod?: CashPaymentMethodId;
   patientId?: string | null;
   memberId?: string | null;
@@ -67,12 +67,12 @@ function buildDefaults(
   defaultType: CashTransactionTypeId | undefined,
   defaultMemberId: string | undefined,
 ): CashTransactionDraftInput {
-  const amountCents = initial?.amountCents ?? draft?.amountCents ?? null;
+  const amount = initial?.amount ?? draft?.amount ?? null;
   return {
     type: initial?.type ?? draft?.type ?? defaultType ?? "income",
     date: initial?.date ?? draft?.date ?? defaultDate,
     description: initial?.description ?? draft?.description ?? "",
-    amountInput: amountCents ? centsToBrlInput(amountCents) : "",
+    amountInput: amount ? amountToBrlInput(amount) : "",
     paymentMethod:
       initial?.paymentMethod ?? draft?.paymentMethod ?? "cash",
     patientId: initial?.patientId ?? draft?.patientId ?? "none",
@@ -129,8 +129,8 @@ export function CashTransactionFormDialog({
   }
 
   function onSubmit(data: CashTransactionDraftInput) {
-    const amountCents = parseBrlToCents(data.amountInput);
-    if (amountCents === null) {
+    const amount = parseBrl(data.amountInput);
+    if (amount === null) {
       form.setError("amountInput", {
         type: "manual",
         message: "Informe um valor válido",
@@ -143,7 +143,7 @@ export function CashTransactionFormDialog({
         type: data.type,
         date: data.date,
         description: data.description,
-        amountCents,
+        amount,
         paymentMethod: data.paymentMethod,
         patientId: data.patientId === "none" ? null : data.patientId,
         memberId: data.memberId === "none" ? null : data.memberId,
@@ -157,7 +157,7 @@ export function CashTransactionFormDialog({
         const fieldErrors = result.fieldErrors
           ? Object.fromEntries(
               Object.entries(result.fieldErrors).map(([key, message]) => [
-                key === "amountCents" ? "amountInput" : key,
+                key === "amount" ? "amountInput" : key,
                 message,
               ]),
             )

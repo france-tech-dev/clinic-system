@@ -15,7 +15,7 @@ const appointment: AppointmentDTO = {
   status: "completed",
   hasSessionNote: true,
   patientPricingType: "session",
-  patientPriceCents: 18000,
+  patientPrice: 180,
   createdAt: "2026-07-01T12:00:00.000Z",
   updatedAt: "2026-07-13T12:00:00.000Z",
 };
@@ -28,7 +28,7 @@ describe("buildCashDraftFromAppointment", () => {
       patientId: "p1",
       memberId: "m1",
       description: "Sessão — Ana Silva",
-      amountCents: 18000,
+      amount: 180,
     });
   });
 });

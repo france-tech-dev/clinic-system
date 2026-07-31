@@ -20,7 +20,7 @@ export type AppointmentDTO = {
   status: AppointmentStatusId;
   hasSessionNote: boolean;
   patientPricingType: "session" | "package";
-  patientPriceCents: number | null;
+  patientPrice: number | null;
   createdAt: string;
   updatedAt: string;
 };

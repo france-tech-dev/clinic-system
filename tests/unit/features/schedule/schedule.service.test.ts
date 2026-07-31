@@ -29,7 +29,7 @@ const baseRow = {
     id: "patient-1",
     name: "Ana",
     pricingType: "session" as const,
-    priceCents: 15000,
+    price: 150,
   },
   member: {
     id: "member-1",

@@ -142,7 +142,7 @@ export function PacientesClient({
           sex: patientDraft.sex,
           notes: patientDraft.notes,
           pricingType: patientDraft.pricingType,
-          priceCents: parsePatientPriceInput(patientDraft.priceInput),
+          price: parsePatientPriceInput(patientDraft.priceInput),
           guardianId,
         });
         if (!result.success) {

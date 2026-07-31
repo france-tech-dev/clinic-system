@@ -87,7 +87,7 @@ export function toPatientDTO(row: {
   notes: string;
   status: PatientStatus;
   pricingType: PatientPricingType;
-  priceCents: number | null;
+  price: { toString(): string } | number | null;
   guardianId: string;
   guardian?: Parameters<typeof toPatientGuardianEmbed>[0];
   createdAt: Date;
@@ -104,7 +104,7 @@ export function toPatientDTO(row: {
     notes: row.notes,
     status: row.status,
     pricingType: row.pricingType,
-    priceCents: row.priceCents,
+    price: row.price == null ? null : Number(row.price),
     guardianId: row.guardianId,
     guardian: row.guardian ? toPatientGuardianEmbed(row.guardian) : undefined,
     createdAt: row.createdAt.toISOString(),

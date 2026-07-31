@@ -18,7 +18,7 @@ import {
 } from "@/shared/constants/cash";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
-import { formatCentsToBrl } from "@/shared/lib/money-utils";
+import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -195,7 +195,7 @@ export function CaixaClient({
                     )}
                   >
                     {tx.type === "income" ? "+" : "−"}
-                    {formatCentsToBrl(tx.amountCents)}
+                    {formatBrl(tx.amount)}
                   </span>
                 </button>
               </li>

@@ -108,7 +108,7 @@ export const patientRepository = {
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
         pricingType: data.pricingType ?? "session",
-        priceCents: data.priceCents ?? null,
+        price: data.price ?? null,
       },
       include: { guardian: { select: guardianSelect } },
     });
@@ -141,7 +141,7 @@ export const patientRepository = {
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
         pricingType: data.pricingType ?? "session",
-        priceCents: data.priceCents ?? null,
+        price: data.price ?? null,
       },
       include: { guardian: { select: guardianSelect } },
     });

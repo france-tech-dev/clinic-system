@@ -10,7 +10,7 @@ const patientSelect = {
   id: true,
   name: true,
   pricingType: true,
-  priceCents: true,
+  price: true,
 } as const;
 
 const appointmentInclude = {

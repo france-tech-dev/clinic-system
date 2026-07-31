@@ -14,7 +14,7 @@ export function buildCashDraftFromAppointment(
     patientId: appointment.patientId,
     memberId: appointment.memberId,
     description: `Sessão — ${appointment.patientName}`,
-    amountCents: appointment.patientPriceCents,
+    amount: appointment.patientPrice,
   };
 }
 

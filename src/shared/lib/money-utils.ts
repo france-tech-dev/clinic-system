@@ -3,12 +3,12 @@ const brlFormatter = new Intl.NumberFormat("pt-BR", {
   currency: "BRL",
 });
 
-export function formatCentsToBrl(cents: number): string {
-  return brlFormatter.format(cents / 100);
+export function formatBrl(amount: number): string {
+  return brlFormatter.format(amount);
 }
 
-/** Converte "150,00" ou "150.50" para centavos inteiros. */
-export function parseBrlToCents(value: string): number | null {
+/** Converte "150,00" ou "150.50" para reais. */
+export function parseBrl(value: string): number | null {
   const trimmed = value.trim();
   if (!trimmed) return null;
 
@@ -21,9 +21,9 @@ export function parseBrlToCents(value: string): number | null {
   const amount = Number(normalized);
   if (!Number.isFinite(amount) || amount <= 0) return null;
 
-  return Math.round(amount * 100);
+  return Math.round(amount * 100) / 100;
 }
 
-export function centsToBrlInput(cents: number): string {
-  return (cents / 100).toFixed(2).replace(".", ",");
+export function amountToBrlInput(amount: number): string {
+  return amount.toFixed(2).replace(".", ",");
 }

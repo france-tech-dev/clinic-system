@@ -1,5 +1,5 @@
 export type CashflowSummary = {
-  incomeCents: number;
-  expenseCents: number;
-  balanceCents: number;
+  income: number;
+  expense: number;
+  balance: number;
 };
