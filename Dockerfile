@@ -28,9 +28,6 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
-# CLI para migrate no arranque (mesma rede Docker que a BD no Dokploy)
-RUN npm install -g prisma@7.9.1
-
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
@@ -38,6 +35,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
+
+RUN npm install prisma@7.9.1 --omit=dev \
+  && chown -R nextjs:nodejs /app/node_modules
 
 USER nextjs
 EXPOSE 3000
