@@ -18,13 +18,13 @@ export function AuthPage({ children }: AuthPageProps) {
             <div className="flex h-20 w-20 items-center justify-center">
               <Image
                 src="/logo.png"
-                alt="Boilerplate"
+                alt="Movi Clinicas"
                 width={200}
                 height={200}
                 className="mx-auto max-w-full object-contain"
               />
             </div>
-            Boilerplate
+            Movi Clinicas
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Neuro France",
+  title: "Movi Clinicas",
   description:
     "Sistema de gestão clínica e agendamentos para profissionais da saúde",
   icons: {
