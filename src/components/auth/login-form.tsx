@@ -99,7 +99,7 @@ export function LoginForm({
                     {lastMethod === "email" && (
                       <Badge
                         variant="secondary"
-                        className="absolute right-1 top-[-9px] text-xs"
+                        className="absolute right-1 -top-2.25 text-xs"
                       >
                         Último uso
                       </Badge>
@@ -163,7 +163,7 @@ export function LoginForm({
             {lastMethod === "google" && (
               <Badge
                 variant="secondary"
-                className="absolute right-1 top-[-9px] text-xs"
+                className="absolute right-1 -top-2.25 text-xs"
               >
                 Último uso
               </Badge>
