@@ -14,7 +14,7 @@ import {
 import { OrganizationInvitationEmail } from "@/components/emails/organization-invitation";
 import { ResetPasswordEmail } from "@/components/emails/reset-password";
 import { VerifyEmail } from "@/components/emails/verify-email";
-import { Resend } from "resend";
+import { sendEmail } from "@/shared/lib/email";
 import { getActiveOrganization } from "@/server/organizations/active-organization";
 import { paths } from "@/shared/constants/paths";
 import { Role } from "../../../prisma/generated/prisma/enums";
@@ -22,16 +22,6 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 const baseUrl = process.env.BETTER_AUTH_URL as string;
 const invitationAcceptUrl = (invitationId: string) =>
   `${baseUrl}${paths.api.acceptInvitation(invitationId)}`;
-
-const emailNoReply = process.env.EMAIL_NO_REPLY as string;
-
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY is not set");
-  }
-  return new Resend(apiKey);
-}
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -90,8 +80,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     async sendResetPassword({ user, url }) {
-      await getResend().emails.send({
-        from: emailNoReply,
+      await sendEmail({
         to: user.email,
         subject: "Redefina sua senha",
         react: ResetPasswordEmail({
@@ -106,8 +95,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     async sendVerificationEmail({ user, url }: { user: User; url: string }) {
-      await getResend().emails.send({
-        from: emailNoReply,
+      await sendEmail({
         to: user.email,
         subject: "Verifique seu email",
         react: VerifyEmail({
@@ -123,8 +111,7 @@ export const auth = betterAuth({
     nextCookies(),
     magicLink({
       async sendMagicLink({ email, url }) {
-        await getResend().emails.send({
-          from: emailNoReply,
+        await sendEmail({
           to: email,
           subject: "Seu link de acesso",
           react: VerifyEmail({
@@ -147,8 +134,7 @@ export const auth = betterAuth({
       creatorRole: Role.OWNER,
       async sendInvitationEmail(data) {
         const inviteUrl = invitationAcceptUrl(data.id);
-        await getResend().emails.send({
-          from: emailNoReply,
+        await sendEmail({
           to: data.email,
           subject: `Convite para a clínica ${data.organization.name}`,
           react: OrganizationInvitationEmail({

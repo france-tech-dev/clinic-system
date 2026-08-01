@@ -14,7 +14,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 | **Tailwind CSS 4**      | Estilos                                     |
 | **shadcn/ui**           | Componentes                                 |
 | **Zod**                 | Validação nas Server Actions                |
-| **Resend**              | E-mails (verificação, reset, convites)      |
+| **Brevo (SMTP)**        | E-mails (verificação, reset, convites)      |
 | **@react-pdf/renderer** | Relatórios PDF (prontuário, anamnese, etc.) |
 | **react-big-calendar**  | Vista de calendário na agenda               |
 | **Vitest**              | Testes unitários                            |
@@ -38,7 +38,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 
 - Node.js 20+
 - pnpm 11+
-- Conta [Resend](https://resend.com) (e-mails)
+- Conta [Brevo](https://www.brevo.com) (e-mails via SMTP)
 - Credenciais Google OAuth (opcional)
 
 ## Como rodar
@@ -53,7 +53,10 @@ Crie um ficheiro `.env` na raiz:
 BETTER_AUTH_URL="http://localhost:3000"
 BETTER_AUTH_SECRET="gere-um-secret-com-openssl-rand-base64-32"
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/clinic_system"
-RESEND_API_KEY="re_..."
+
+# Brevo SMTP (Settings → SMTP & API)
+BREVO_SMTP_USER="o-login-smtp-do-brevo"
+BREVO_SMTP_KEY="a-chave-smtp-do-brevo"
 EMAIL_NO_REPLY="noreply@seudominio.com"
 
 # Google OAuth (opcional)
