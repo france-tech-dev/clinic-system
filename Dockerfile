@@ -1,32 +1,42 @@
-# syntax=docker/dockerfile:1
-
 FROM node:22-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache libc6-compat openssl
-RUN npm install -g pnpm@11.18.0
+RUN corepack enable && corepack prepare pnpm@11.18.0 --activate
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 ENV HUSKY=0
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV HUSKY=0
 ENV NEXT_TELEMETRY_DISABLED=1
+
+ARG BETTER_AUTH_URL
+ARG BETTER_AUTH_SECRET
+ENV BETTER_AUTH_URL=$BETTER_AUTH_URL
+ENV BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET
 RUN pnpm run build
 
-FROM base AS runner
+# Imagem final sem pnpm/corepack — só o necessário para runtime + migrate
+FROM node:22-alpine AS runner
+WORKDIR /app
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
-# Prisma CLI isolado — não misturar npm com o node_modules do standalone (pnpm)
+
+# Prisma CLI isolado
 ENV PATH="/opt/prisma/node_modules/.bin:$PATH"
 ENV NODE_PATH=/opt/prisma/node_modules
+
+RUN apk add --no-cache libc6-compat openssl
 
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
