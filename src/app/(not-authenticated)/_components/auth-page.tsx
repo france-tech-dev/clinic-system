@@ -22,6 +22,7 @@ export function AuthPage({ children }: AuthPageProps) {
                 width={200}
                 height={200}
                 className="mx-auto max-w-full object-contain"
+                loading="eager"
               />
             </div>
             Movi Clinicas
@@ -32,11 +33,13 @@ export function AuthPage({ children }: AuthPageProps) {
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://i.pinimg.com/736x/64/54/ae/6454ae91eb3a58e151efce7e1121c14a.jpg"
-          alt="Barbershop interior"
+        <Image
+          src="/auth-clinica.jpg"
+          alt="Professional attending to a patient"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          width={1000}
+          height={1000}
+          loading="eager"
         />
       </div>
     </div>
