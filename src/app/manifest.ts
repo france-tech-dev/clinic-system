@@ -3,23 +3,23 @@ import { paths } from "@/shared/constants/paths";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "NOME DA EMPRESA AQUI",
-    short_name: "EMPRESA",
+    name: "Movi Clinicas",
+    short_name: "Movi",
     description:
-      "NOME DA EMPRESA AQUI é um sistema interno para uso corporativo.",
+      "Sistema de gestão clínica e agendamentos para profissionais da saúde.",
     start_url: paths.auth.login,
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000000",
     icons: [
       {
-        src: "/logo_dark.png",
+        src: "/icon.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/logo_dark.png",
+        src: "/icon.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "any",

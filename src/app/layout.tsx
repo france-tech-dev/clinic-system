@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   description:
     "Sistema de gestão clínica e agendamentos para profissionais da saúde",
   icons: {
-    icon: "/logo_dark.png",
-    apple: "/logo_dark.png",
-    shortcut: "/logo_dark.png",
+    icon: "/icon.png",
+    apple: "/icon.png",
+    shortcut: "/icon.png",
   },
 };
 
