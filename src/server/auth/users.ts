@@ -39,7 +39,7 @@ export const signIn = async (email: string, password: string) => {
         password,
       },
     });
-    return { success: true, message: "Login successful" };
+    return { success: true, message: "Login realizado com sucesso" };
   } catch (error: unknown) {
     const e = error as Error;
 
@@ -94,7 +94,7 @@ export const requestPasswordReset = async (
     return {
       success: true,
       message:
-        "Se o e-mail existir, voce recebera um link para redefinir sua senha.",
+        "Se o e-mail existir, você receberá um link para redefinir sua senha.",
     };
   } catch (error) {
     const e = error as Error;
