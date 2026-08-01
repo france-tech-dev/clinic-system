@@ -112,7 +112,9 @@ export function CreateProfessionalDialog({
       }
 
       toast.success(
-        "Profissional cadastrado. No primeiro login terá de alterar a senha.",
+        result.data.mustChangePassword
+          ? "Profissional cadastrado. No primeiro login terá de alterar a senha."
+          : "Profissional adicionado à clínica com a conta já existente.",
       );
       form.reset(DEFAULT_VALUES);
       onOpenChange(false);

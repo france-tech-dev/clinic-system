@@ -60,27 +60,40 @@ export async function createProfessional(
   input: CreateProfessionalInput,
 ): Promise<CreatedProfessionalDTO> {
   const email = input.email.trim().toLowerCase();
-  const existing = await teamRepository.findUserByEmail(email);
-  if (existing) {
-    throw new Error("Já existe um utilizador com este e-mail");
-  }
-
   const profession = getHealthProfession(input.profession);
   if (!profession) {
     throw new Error("Profissão inválida");
   }
 
-  const user = await teamRepository.createUserWithPassword({
-    name: input.name.trim(),
-    email,
-    phone: input.phone?.trim() ?? "",
-    birthDate: input.birthDate ?? "",
-    password: input.password,
-  });
+  const existing = await teamRepository.findUserByEmail(email);
+  let userId: string;
+  let mustChangePassword: boolean;
+
+  if (existing) {
+    const alreadyMember = await teamRepository.findMemberByUserId(
+      organizationId,
+      existing.id,
+    );
+    if (alreadyMember) {
+      throw new Error("Este profissional já faz parte desta clínica");
+    }
+    userId = existing.id;
+    mustChangePassword = false;
+  } else {
+    const user = await teamRepository.createUserWithPassword({
+      name: input.name.trim(),
+      email,
+      phone: input.phone?.trim() ?? "",
+      birthDate: input.birthDate ?? "",
+      password: input.password,
+    });
+    userId = user.id;
+    mustChangePassword = true;
+  }
 
   await auth.api.addMember({
     body: {
-      userId: user.id,
+      userId,
       organizationId,
       role: toMemberRole(input.role),
     },
@@ -88,7 +101,7 @@ export async function createProfessional(
 
   const member = await teamRepository.findMemberByUserId(
     organizationId,
-    user.id,
+    userId,
   );
   if (!member) {
     throw new Error("Membro criado sem vínculo na organização");
@@ -106,9 +119,9 @@ export async function createProfessional(
 
   return {
     memberId: member.id,
-    userId: user.id,
+    userId,
     email,
-    mustChangePassword: true,
+    mustChangePassword,
   };
 }
 
