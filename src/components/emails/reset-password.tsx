@@ -67,10 +67,10 @@ export function ResetPasswordEmail({
 
             <Section className="mt-[32px] border-t border-gray-200 pt-[24px]">
               <Text className="m-0 text-center text-[12px] text-gray-500">
-                © 2026 Seu Nome da Empresa. Todos os direitos reservados.
+                © 2026 Movi Clinicas. Todos os direitos reservados.
               </Text>
               <Text className="m-0 text-center text-[12px] text-gray-500">
-                123 Rua da Empresa, São José, BR
+                São José, SC.
               </Text>
             </Section>
           </Container>
