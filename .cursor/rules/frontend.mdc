@@ -30,18 +30,16 @@ alwaysApply: false
 
 - **Nunca** usar `window.confirm()` para apagar dados.
 - Usar sempre `DeleteConfirmDialog` de `@/components/ui/delete-confirm-dialog`.
-- Envolver o botão de excluir como `children`; personalizar `title` / `description`; `onConfirm` chama a action.
+- Envolver o botão de excluir como `children`; `onConfirm` chama a action.
+- **Manter a mensagem padrão** do componente (`title`, `description`, `confirmLabel`, `cancelLabel`). Não passar estes props salvo necessidade excepcional justificada.
 
 ```tsx
-<DeleteConfirmDialog
-  title="Excluir lançamento?"
-  description="Esta ação não pode ser desfeita."
-  onConfirm={handleDelete}
-  disabled={pending}
->
+<DeleteConfirmDialog onConfirm={handleDelete} disabled={pending}>
   <Button variant="destructive">Excluir</Button>
 </DeleteConfirmDialog>
 ```
+
+Padrão do diálogo: título «Excluir?», descrição «Esta ação não pode ser desfeita. O item será removido permanentemente.».
 
 ## Estrutura (quando criar feature nova)
 

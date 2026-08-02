@@ -76,4 +76,6 @@ Anamneses, roteiros e protocolos densos: índice + painel activo + footer sticky
 ## Ações destrutivas
 
 - Botões que removem dados devem pedir confirmação com `DeleteConfirmDialog` (ver `frontend.mdc`).
+- Usar a mensagem padrão do componente — não customizar `title` / `description`.
 - Botão de confirmação: `variant="destructive"`; cancelar sempre visível.
+- Não se aplica a limpar campos reversíveis (ex. remover logo da clínica).
