@@ -56,7 +56,7 @@ export function RoteiroWorkspaceClient({
     startTransition(async () => {
       const result = await listRoteiroNotesAction(id);
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       roteiro.replaceNotes(result.data, roteiroId);

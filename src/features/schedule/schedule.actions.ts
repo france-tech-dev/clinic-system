@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import type { AppointmentStatusId } from "@/shared/constants/appointment";
+import { requirePermission } from "@/server/auth/permissions";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -26,6 +27,7 @@ import type { AppointmentDTO } from "./schedule.types";
 
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
+  if (error instanceof Error) return fail(error.message);
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
 }
@@ -42,6 +44,7 @@ export async function getAgendaDataAction(
   ActionResult<{ dayAppointments: AppointmentDTO[]; upcoming: AppointmentDTO[] }>
 > {
   try {
+    await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getAgendaPageData(organizationId, selectedDate, today));
   } catch (error) {
@@ -53,6 +56,7 @@ export async function createAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO[]>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = appointmentFormSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
     const { organizationId, userId } = await requireOrgId();
@@ -81,6 +85,7 @@ export async function updateAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = updateAppointmentSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
     const { organizationId } = await requireOrgId();
@@ -105,6 +110,7 @@ export async function rescheduleAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = rescheduleAppointmentSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -131,6 +137,7 @@ export async function setAppointmentStatusAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = appointmentStatusSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
     const { organizationId } = await requireOrgId();
@@ -151,6 +158,7 @@ export async function deleteAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
+    await requirePermission({ project: ["delete"] });
     const parsed = appointmentIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
     const { organizationId } = await requireOrgId();

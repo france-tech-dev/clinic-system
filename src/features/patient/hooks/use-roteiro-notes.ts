@@ -89,7 +89,7 @@ export function useRoteiroNotes({
         notes: roteiroDraft,
       });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setRoteiroNotes((prev) => {

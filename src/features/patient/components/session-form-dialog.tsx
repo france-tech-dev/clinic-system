@@ -142,7 +142,7 @@ export function SessionFormDialog({
         : await createSessionAction(payload);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success(initial ? "Evolução atualizada" : "Evolução registrada");

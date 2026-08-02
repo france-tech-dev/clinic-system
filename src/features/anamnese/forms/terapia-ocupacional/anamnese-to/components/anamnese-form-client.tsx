@@ -78,7 +78,7 @@ export function AnamneseFormClient({
     startTransition(async () => {
       const result = await getAnamneseAction({ patientId: id, formId });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setData(result.data?.data ?? {});
@@ -97,7 +97,7 @@ export function AnamneseFormClient({
         data,
       });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success("Anamnese salva");

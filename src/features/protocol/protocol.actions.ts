@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
+import { requirePermission } from "@/server/auth/permissions";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -28,6 +29,7 @@ import type {
 
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
+  if (error instanceof Error) return fail(error.message);
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
 }
@@ -41,6 +43,7 @@ export async function listProtocolEvaluationsAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolEvaluationDTO[]>> {
   try {
+    await requirePermission({ project: ["read"] });
     const parsed = listProtocolEvaluationsSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
@@ -60,6 +63,7 @@ export async function createProtocolEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = protocolEvaluationFormSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
 
@@ -86,6 +90,7 @@ export async function updateProtocolEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = updateProtocolEvaluationSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
 
@@ -104,6 +109,7 @@ export async function deleteProtocolEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
+    await requirePermission({ project: ["delete"] });
     const parsed = protocolEvaluationIdSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
@@ -128,6 +134,7 @@ export async function compareProtocolEvaluationsAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolEvaluationComparisonDTO>> {
   try {
+    await requirePermission({ project: ["read"] });
     const parsed = compareProtocolEvaluationsSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 

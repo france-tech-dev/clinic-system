@@ -2,7 +2,7 @@
 
 import { auth } from "@/shared/lib/auth";
 import { db } from "@/shared/lib/prisma";
-import { isAdmin } from "../auth/permissions";
+import { requirePermission } from "../auth/permissions";
 import { headers } from "next/headers";
 import { Role } from "../../../prisma/generated/prisma/enums";
 
@@ -12,6 +12,7 @@ export const addMember = async (
   role: Role,
 ) => {
   try {
+    await requirePermission({ project: ["create"] });
     await auth.api.addMember({
       body: {
         userId,
@@ -20,40 +21,35 @@ export const addMember = async (
       },
     });
     return {
-      success: true,
-      message: "Member added successfully",
+      success: true as const,
+      message: "Membro adicionado com sucesso",
     };
   } catch (error) {
+    const e = error as Error;
     return {
-      success: false,
-      error: error || "Failed to add member",
+      success: false as const,
+      message: e.message || "Falha ao adicionar membro",
     };
   }
 };
 
 export const removeMember = async (memberId: string) => {
-  const admin = await isAdmin();
-  if (!admin) {
-    return {
-      success: false,
-      error: "You are not authorized to remove members",
-    };
-  }
-
   try {
+    await requirePermission({ project: ["delete"] });
     await db.member.delete({
       where: {
         id: memberId,
       },
     });
     return {
-      success: true,
-      message: "Member removed successfully",
+      success: true as const,
+      message: "Membro removido com sucesso",
     };
   } catch (error) {
+    const e = error as Error;
     return {
-      success: false,
-      error: error || "Failed to remove member",
+      success: false as const,
+      message: e.message || "Falha ao remover membro",
     };
   }
 };
@@ -64,6 +60,7 @@ export const sendInvitationMember = async (
   organizationId: string,
 ) => {
   try {
+    await requirePermission({ project: ["create"] });
     await auth.api.createInvitation({
       body: {
         email,
@@ -74,13 +71,14 @@ export const sendInvitationMember = async (
       headers: await headers(),
     });
     return {
-      success: true,
-      message: "Invitation sent successfully",
+      success: true as const,
+      message: "Convite enviado com sucesso",
     };
   } catch (error) {
+    const e = error as Error;
     return {
-      success: false,
-      error: error || "Failed to send invitation member",
+      success: false as const,
+      message: e.message || "Falha ao enviar convite",
     };
   }
 };

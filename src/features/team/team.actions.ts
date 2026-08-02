@@ -7,7 +7,7 @@ import { auth } from "@/shared/lib/auth";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
-import { hasOrgPermission } from "@/server/auth/permissions";
+import { requirePermission } from "@/server/auth/permissions";
 import {
   changeForcedPasswordSchema,
   createProfessionalSchema,
@@ -34,6 +34,8 @@ export async function listTeamMembersAction(): Promise<
   ActionResult<TeamMemberDTO[]>
 > {
   try {
+    await requirePermission({ project: ["read"] });
+
     const { organizationId } = await requireOrgId();
     return ok(await listTeamMembers(organizationId));
   } catch (error) {
@@ -45,9 +47,7 @@ export async function createProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<CreatedProfessionalDTO>> {
   try {
-    if (!(await hasOrgPermission({ member: ["create"] }))) {
-      return fail("Sem permissão para cadastrar profissionais");
-    }
+    await requirePermission({ project: ["create"] });
 
     const parsed = createProfessionalSchema.safeParse(input);
     if (!parsed.success) {
@@ -68,9 +68,7 @@ export async function updateProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<void>> {
   try {
-    if (!(await hasOrgPermission({ member: ["update"] }))) {
-      return fail("Sem permissão para editar profissionais");
-    }
+    await requirePermission({ project: ["update"] });
 
     const parsed = updateProfessionalSchema.safeParse(input);
     if (!parsed.success) {
@@ -91,9 +89,7 @@ export async function deleteProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<void>> {
   try {
-    if (!(await hasOrgPermission({ member: ["delete"] }))) {
-      return fail("Sem permissão para excluir profissionais");
-    }
+    await requirePermission({ project: ["delete"] });
 
     const parsed = deleteProfessionalSchema.safeParse(input);
     if (!parsed.success) {

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requirePermission } from "@/server/auth/permissions";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
@@ -45,11 +46,7 @@ import type {
 
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error && error.message) {
-    if (error.message.includes("Responsável")) {
-      return fail(error.message);
-    }
-  }
+  if (error instanceof Error) return fail(error.message);
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
 }
@@ -66,6 +63,7 @@ export async function listPatientsAction(opts?: {
   search?: string;
 }): Promise<ActionResult<PatientDTO[]>> {
   try {
+    await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await listPatients(organizationId, opts));
   } catch (error) {
@@ -77,6 +75,7 @@ export async function getPatientDetailAction(
   id: string,
 ): Promise<ActionResult<PatientDetailDTO>> {
   try {
+    await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
     const detail = await getPatientDetail(organizationId, id);
     if (!detail) return fail("Paciente não encontrado");
@@ -90,6 +89,7 @@ export async function createPatientAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = patientFormSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -107,6 +107,7 @@ export async function updatePatientAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = updatePatientSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -126,6 +127,7 @@ export async function setPatientStatusAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = patientStatusSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
     const { organizationId } = await requireOrgId();
@@ -146,6 +148,7 @@ export async function deletePatientAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
+    await requirePermission({ project: ["delete"] });
     const parsed = patientIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
     const { organizationId } = await requireOrgId();
@@ -162,6 +165,7 @@ export async function createClinicalEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<ClinicalEvaluationDTO>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = clinicalEvaluationFormSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -181,6 +185,7 @@ export async function updateClinicalEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<ClinicalEvaluationDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = updateClinicalEvaluationSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -200,6 +205,7 @@ export async function deleteClinicalEvaluationAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
+    await requirePermission({ project: ["delete"] });
     const parsed = clinicalEvaluationIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
     const { organizationId } = await requireOrgId();
@@ -216,6 +222,7 @@ export async function createSessionAction(
   input: unknown,
 ): Promise<ActionResult<SessionNoteDTO>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = sessionFormSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -237,6 +244,7 @@ export async function updateSessionAction(
   input: unknown,
 ): Promise<ActionResult<SessionNoteDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = updateSessionNoteSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -258,6 +266,7 @@ export async function deleteSessionAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
+    await requirePermission({ project: ["delete"] });
     const parsed = sessionIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
     const { organizationId } = await requireOrgId();
@@ -274,6 +283,7 @@ export async function listRoteiroNotesAction(
   patientId: string,
 ): Promise<ActionResult<RoteiroNoteDTO[]>> {
   try {
+    await requirePermission({ project: ["read"] });
     if (!patientId) return fail("Paciente não informado");
     const { organizationId } = await requireOrgId();
     const data = await listRoteiroNotes(organizationId, patientId);
@@ -288,6 +298,7 @@ export async function saveRoteiroNoteAction(
   input: unknown,
 ): Promise<ActionResult<RoteiroNoteDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = roteiroNoteSaveSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);

@@ -163,7 +163,7 @@ export function CashTransactionFormDialog({
             )
           : undefined;
         applyActionFieldErrors(form.setError, fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
 
@@ -180,7 +180,7 @@ export function CashTransactionFormDialog({
     startTransition(async () => {
       const result = await deleteCashTransactionAction({ id: initial.id });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success("Lançamento removido");

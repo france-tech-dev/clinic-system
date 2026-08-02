@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
+import { requirePermission } from "@/server/auth/permissions";
 import { firstZodMessage, zodFieldErrors } from "@/shared/lib/zod-field-errors";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import {
@@ -37,17 +38,7 @@ function fieldErrorsFromMessage(message: string): FieldErrors | undefined {
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
   if (error instanceof Error && error.message) {
-    const known =
-      error.message.includes("CPF") ||
-      error.message.includes("e-mail") ||
-      error.message.includes("E-mail") ||
-      error.message.includes("portal") ||
-      error.message.includes("senhas") ||
-      error.message.includes("Responsável") ||
-      error.message.includes("utilizador");
-    if (known) {
-      return fail(error.message, fieldErrorsFromMessage(error.message));
-    }
+    return fail(error.message, fieldErrorsFromMessage(error.message));
   }
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
@@ -62,6 +53,7 @@ export async function createGuardianAction(
   input: unknown,
 ): Promise<ActionResult<CreatedGuardianDTO>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = createGuardianSchema.safeParse(input);
     if (!parsed.success) {
       return fail(
@@ -82,6 +74,7 @@ export async function updateGuardianAction(
   input: unknown,
 ): Promise<ActionResult<GuardianDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = updateGuardianSchema.safeParse(input);
     if (!parsed.success) {
       return fail(
@@ -103,6 +96,7 @@ export async function enableGuardianPortalAccessAction(
   input: unknown,
 ): Promise<ActionResult<CreatedGuardianDTO>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = enableGuardianPortalSchema.safeParse(input);
     if (!parsed.success) {
       return fail(

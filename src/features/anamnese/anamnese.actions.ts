@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
+import { requirePermission } from "@/server/auth/permissions";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -17,6 +18,7 @@ import type { AnamneseDTO } from "./anamnese.types";
 
 function handleError(error: unknown): ActionResult<never> {
   if (error instanceof OrgContextError) return fail(error.message);
+  if (error instanceof Error) return fail(error.message);
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
 }
@@ -31,6 +33,7 @@ export async function getAnamneseAction(
   input: unknown,
 ): Promise<ActionResult<AnamneseDTO | null>> {
   try {
+    await requirePermission({ project: ["read"] });
     const parsed = getAnamneseSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
     const { organizationId } = await requireOrgId();
@@ -49,6 +52,7 @@ export async function saveAnamneseAction(
   input: unknown,
 ): Promise<ActionResult<AnamneseDTO>> {
   try {
+    await requirePermission({ project: ["create"] });
     const parsed = anamneseSaveSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
     const { organizationId } = await requireOrgId();

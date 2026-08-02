@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
+import { requirePermission } from "@/server/auth/permissions";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -38,6 +39,7 @@ export async function getProfessionalAction(): Promise<
   ActionResult<ProfessionalProfile>
 > {
   try {
+    await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getProfessionalProfile(organizationId));
   } catch (error) {
@@ -49,6 +51,7 @@ export async function getPrintBrandingAction(): Promise<
   ActionResult<PrintBranding>
 > {
   try {
+    await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getPrintBranding(organizationId));
   } catch (error) {
@@ -60,6 +63,7 @@ export async function saveProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<ProfessionalProfile>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = professionalProfileSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -78,6 +82,7 @@ export async function getCurrentMemberProfessionalAction(): Promise<
   ActionResult<ProfessionalProfile>
 > {
   try {
+    await requirePermission({ project: ["read"] });
     const { organizationId, userId } = await requireOrgId();
     return ok(
       await getCurrentMemberProfessionalProfile(organizationId, userId),
@@ -91,6 +96,7 @@ export async function saveCurrentMemberProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<ProfessionalProfile>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = memberProfessionalSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -113,6 +119,7 @@ export async function saveOrganizationBrandingAction(
   input: unknown,
 ): Promise<ActionResult<PrintBranding>> {
   try {
+    await requirePermission({ project: ["update"] });
     const parsed = organizationBrandingSchema.safeParse(input);
     if (!parsed.success) {
       return failZod(parsed.error);
@@ -133,6 +140,7 @@ export async function uploadOrganizationLogoAction(
   formData: FormData,
 ): Promise<ActionResult<PrintBranding>> {
   try {
+    await requirePermission({ project: ["update"] });
     const file = formData.get("logo");
     if (!(file instanceof File) || file.size === 0) {
       return fail("Selecione uma imagem");
@@ -151,6 +159,7 @@ export async function removeOrganizationLogoAction(): Promise<
   ActionResult<PrintBranding>
 > {
   try {
+    await requirePermission({ project: ["update"] });
     const { organizationId } = await requireOrgId();
     const data = await removeOrganizationLogo(organizationId);
     revalidateBrandingPaths();

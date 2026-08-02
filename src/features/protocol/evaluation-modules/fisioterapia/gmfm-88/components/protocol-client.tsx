@@ -138,7 +138,7 @@ export function GmfmProtocolClient({
         protocolId: GMFM88_PROTOCOL_ID,
       });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setAssessments(result.data);
@@ -189,7 +189,7 @@ export function GmfmProtocolClient({
 
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
 
@@ -211,7 +211,7 @@ export function GmfmProtocolClient({
     startTransition(async () => {
       const result = await deleteProtocolEvaluationAction({ id });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success("Avaliação removida");
@@ -234,7 +234,7 @@ export function GmfmProtocolClient({
         followUpId,
       });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setComparison(result.data);
