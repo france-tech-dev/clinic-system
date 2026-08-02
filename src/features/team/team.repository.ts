@@ -38,6 +38,14 @@ export const teamRepository = {
     });
   },
 
+  async markEmailVerified(userId: string) {
+    return db.user.update({
+      where: { id: userId },
+      data: { emailVerified: true },
+      select: { id: true },
+    });
+  },
+
   async findMemberByUserId(organizationId: string, userId: string) {
     return db.member.findFirst({
       where: { organizationId, userId },

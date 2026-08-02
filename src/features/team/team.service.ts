@@ -77,6 +77,7 @@ export async function createProfessional(
     if (alreadyMember) {
       throw new Error("Este profissional já faz parte desta clínica");
     }
+    await teamRepository.markEmailVerified(existing.id);
     userId = existing.id;
     mustChangePassword = false;
   } else {
@@ -146,8 +147,9 @@ export async function deleteProfessional(
     throw new Error("Não pode excluir o seu próprio acesso");
   }
 
-  const appointmentCount =
-    await teamRepository.countAppointmentsByMember(member.id);
+  const appointmentCount = await teamRepository.countAppointmentsByMember(
+    member.id,
+  );
   if (appointmentCount > 0) {
     throw new Error(
       "Não é possível excluir: existem agendamentos vinculados. Desative o profissional ou reatribua os agendamentos.",
