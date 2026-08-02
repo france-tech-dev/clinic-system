@@ -83,6 +83,7 @@ Documento completo: [`docs/architecture.md`](../../docs/architecture.md)
 | Formulários (RHF)    | `react-hook-form.mdc`       |
 | Controlos Shadcn     | `shadcn-components.mdc`     |
 | Actions              | `nextjs-server-actions.mdc` |
+| Permissões (RBAC)    | `permissions.mdc`           |
 | Design               | `ux.mdc`                    |
 | Workspace clínico    | `clinical-workspace.mdc`    |
 | Auth edge            | `middleware.mdc`            |

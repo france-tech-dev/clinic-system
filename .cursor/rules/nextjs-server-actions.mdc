@@ -48,6 +48,7 @@ export type ActionResult<T = void> =
 5. **Features não importam entre si** — orquestrar em `app/`; utils comuns em `shared/`.
 6. **DB só em repository** — services não acedem a `db` directamente.
 7. Manter **nomes exportados** estáveis ao refatorar.
+8. **Permissões** — `await requirePermission({ project: […] })` no início do `try`; ver `permissions.mdc`.
 
 ## Cliente
 
