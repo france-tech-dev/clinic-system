@@ -115,7 +115,7 @@ export function usePatientEdit({
             guardianForm.setError,
             guardianResult.fieldErrors,
           );
-          toast.error(guardianResult.error);
+          toast.error(guardianResult.message);
           return;
         }
 
@@ -131,7 +131,7 @@ export function usePatientEdit({
         });
         if (!result.success) {
           applyActionFieldErrors(patientForm.setError, result.fieldErrors);
-          toast.error(result.error);
+          toast.error(result.message);
           return;
         }
 
@@ -171,7 +171,7 @@ export function usePatientEdit({
             guardianForm.setError,
             saveGuardian.fieldErrors,
           );
-          toast.error(saveGuardian.error);
+          toast.error(saveGuardian.message);
           return;
         }
 
@@ -182,7 +182,7 @@ export function usePatientEdit({
         });
         if (!result.success) {
           applyActionFieldErrors(guardianForm.setError, result.fieldErrors);
-          toast.error(result.error);
+          toast.error(result.message);
           return;
         }
 

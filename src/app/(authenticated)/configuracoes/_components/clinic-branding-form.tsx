@@ -55,7 +55,7 @@ export function ClinicBrandingForm({
       const result = await saveOrganizationBrandingAction(data);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setBranding(result.data);
@@ -71,7 +71,7 @@ export function ClinicBrandingForm({
     startLogoTransition(async () => {
       const result = await uploadOrganizationLogoAction(formData);
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setBranding(result.data);
@@ -84,7 +84,7 @@ export function ClinicBrandingForm({
     startLogoTransition(async () => {
       const result = await removeOrganizationLogoAction();
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setBranding(result.data);

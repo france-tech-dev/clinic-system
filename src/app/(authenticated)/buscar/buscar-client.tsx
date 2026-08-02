@@ -22,7 +22,7 @@ export function BuscarClient() {
     startTransition(async () => {
       const result = await globalSearchAction(value);
       if (!result.success) {
-        setError(result.error);
+        setError(result.message);
         setHits([]);
         return;
       }

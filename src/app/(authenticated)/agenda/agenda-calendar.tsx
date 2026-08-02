@@ -165,7 +165,7 @@ export function AgendaCalendar({
         });
         if (!result.success) {
           setLocalEvents(previous);
-          toast.error(result.error);
+          toast.error(result.message);
           return;
         }
         toast.success("Agendamento realocado");

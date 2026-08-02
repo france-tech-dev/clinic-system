@@ -132,7 +132,7 @@ export function AppointmentFormDialog({
         });
         if (!result.success) {
           applyActionFieldErrors(form.setError, result.fieldErrors);
-          toast.error(result.error);
+          toast.error(result.message);
           return;
         }
         toast.success("Agendamento atualizado");
@@ -151,7 +151,7 @@ export function AppointmentFormDialog({
       });
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       onSaved(result.data, false, data.repeatWeeks);

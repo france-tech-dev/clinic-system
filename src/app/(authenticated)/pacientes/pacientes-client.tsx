@@ -120,7 +120,7 @@ export function PacientesClient({
               guardianForm.setError,
               guardianResult.fieldErrors,
             );
-            toast.error(guardianResult.error);
+            toast.error(guardianResult.message);
             return;
           }
           guardianId = guardianResult.data.id;
@@ -147,7 +147,7 @@ export function PacientesClient({
         });
         if (!result.success) {
           applyActionFieldErrors(patientForm.setError, result.fieldErrors);
-          toast.error(result.error);
+          toast.error(result.message);
           return;
         }
         setPatients((prev) =>
@@ -164,7 +164,7 @@ export function PacientesClient({
     startTransition(async () => {
       const result = await setPatientStatusAction({ id, status });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setPatients((prev) => prev.map((p) => (p.id === id ? result.data : p)));

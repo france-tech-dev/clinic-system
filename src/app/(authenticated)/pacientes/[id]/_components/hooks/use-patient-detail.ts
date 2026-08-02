@@ -131,7 +131,7 @@ export function usePatientDetail({
     startTransition(async () => {
       const result = await deletePatientAction({ id: detail.patient.id });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success("Paciente removido");

@@ -46,7 +46,7 @@ export function usePatientClinicalEvaluations({
     startTransition(async () => {
       const result = await deleteClinicalEvaluationAction({ id });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setDetail((d) => ({

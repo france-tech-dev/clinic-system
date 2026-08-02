@@ -43,7 +43,7 @@ export function ChangePasswordForm({
     startTransition(async () => {
       const result = await changeForcedPasswordAction(data);
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success("Senha atualizada");

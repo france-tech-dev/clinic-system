@@ -142,7 +142,7 @@ export function EditProfessionalDialog({
       const result = await updateProfessionalAction(data);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
 

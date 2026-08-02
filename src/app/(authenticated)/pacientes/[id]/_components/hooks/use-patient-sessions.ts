@@ -57,7 +57,7 @@ export function usePatientSessions({
     startTransition(async () => {
       const result = await deleteSessionAction({ id });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setDetail((d) => ({

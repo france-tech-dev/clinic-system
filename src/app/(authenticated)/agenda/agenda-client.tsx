@@ -201,7 +201,7 @@ export function AgendaClient({
     startTransition(async () => {
       const result = await setAppointmentStatusAction({ id, status });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       const updated = result.data;
@@ -219,7 +219,7 @@ export function AgendaClient({
     startTransition(async () => {
       const result = await deleteAppointmentAction({ id });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       setDayAppointments((prev) => prev.filter((a) => a.id !== id));

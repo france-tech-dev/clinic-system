@@ -123,7 +123,7 @@ export function ClinicalEvaluationFormDialog({
         : await createClinicalEvaluationAction(payload);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
-        toast.error(result.error);
+        toast.error(result.message);
         return;
       }
       toast.success(initial ? "Avaliação atualizada" : "Avaliação registrada");
