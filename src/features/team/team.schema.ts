@@ -38,6 +38,12 @@ export const updateProfessionalSchema = professionalBaseSchema
 
 export type UpdateProfessionalInput = z.infer<typeof updateProfessionalSchema>;
 
+export const deleteProfessionalSchema = z.object({
+  memberId: z.string().trim().min(1, "Profissional inválido"),
+});
+
+export type DeleteProfessionalInput = z.infer<typeof deleteProfessionalSchema>;
+
 export const changeForcedPasswordSchema = z
   .object({
     newPassword: z

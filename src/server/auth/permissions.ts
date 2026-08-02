@@ -1,26 +1,22 @@
-"use server"
+"use server";
 
-import { auth } from "@/shared/lib/auth"
-import { headers } from "next/headers"
+import { auth } from "@/shared/lib/auth";
+import { headers } from "next/headers";
 
-export const isAdmin = async () => {
+type PermissionCheck = Record<string, string[]>;
+
+/** Verifica permissões do membro na organização activa (Better Auth AC). */
+export async function hasOrgPermission(
+  permissions: PermissionCheck,
+): Promise<boolean> {
   try {
-    const { success, error } = await auth.api.hasPermission({
+    const result = await auth.api.hasPermission({
       headers: await headers(),
-      body: {
-        permissions: {
-          project: ["read", "create", "update", "delete"],
-        },
-      },
-    })
-
-    if (error) {
-      return { success: false, message: error || "Failed to check permissions" }
-    }
-
-    return success
+      body: { permissions },
+    });
+    return result.success === true;
   } catch (error) {
-    console.error(error)
-    return { success: false, message: error || "Failed to check permissions" }
+    console.error(error);
+    return false;
   }
 }

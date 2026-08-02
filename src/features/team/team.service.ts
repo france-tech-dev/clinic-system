@@ -125,6 +125,41 @@ export async function createProfessional(
   };
 }
 
+export async function deleteProfessional(
+  organizationId: string,
+  actorUserId: string,
+  memberId: string,
+): Promise<void> {
+  const member = await teamRepository.findMemberForUpdate(
+    organizationId,
+    memberId,
+  );
+  if (!member) {
+    throw new Error("Profissional não encontrado nesta clínica");
+  }
+
+  if (member.role === Role.OWNER) {
+    throw new Error("Não é possível excluir o proprietário da clínica");
+  }
+
+  if (member.userId === actorUserId) {
+    throw new Error("Não pode excluir o seu próprio acesso");
+  }
+
+  const appointmentCount =
+    await teamRepository.countAppointmentsByMember(member.id);
+  if (appointmentCount > 0) {
+    throw new Error(
+      "Não é possível excluir: existem agendamentos vinculados. Desative o profissional ou reatribua os agendamentos.",
+    );
+  }
+
+  const result = await teamRepository.deleteMember(organizationId, member.id);
+  if (result.count === 0) {
+    throw new Error("Profissional não encontrado nesta clínica");
+  }
+}
+
 export async function updateProfessional(
   organizationId: string,
   actorUserId: string,

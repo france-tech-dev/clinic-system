@@ -7,15 +7,17 @@ import { auth } from "@/shared/lib/auth";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
-import { isAdmin } from "@/server/auth/permissions";
+import { hasOrgPermission } from "@/server/auth/permissions";
 import {
   changeForcedPasswordSchema,
   createProfessionalSchema,
+  deleteProfessionalSchema,
   updateProfessionalSchema,
 } from "./team.schema";
 import {
   changeForcedPassword,
   createProfessional,
+  deleteProfessional,
   listTeamMembers,
   updateProfessional,
 } from "./team.service";
@@ -43,8 +45,7 @@ export async function createProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<CreatedProfessionalDTO>> {
   try {
-    const admin = await isAdmin();
-    if (admin !== true) {
+    if (!(await hasOrgPermission({ member: ["create"] }))) {
       return fail("Sem permissão para cadastrar profissionais");
     }
 
@@ -67,8 +68,7 @@ export async function updateProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<void>> {
   try {
-    const admin = await isAdmin();
-    if (admin !== true) {
+    if (!(await hasOrgPermission({ member: ["update"] }))) {
       return fail("Sem permissão para editar profissionais");
     }
 
@@ -79,6 +79,29 @@ export async function updateProfessionalAction(
 
     const { organizationId, userId } = await requireOrgId();
     await updateProfessional(organizationId, userId, parsed.data);
+    revalidatePath(paths.profissionais);
+    revalidatePath(paths.agenda);
+    return ok(undefined);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function deleteProfessionalAction(
+  input: unknown,
+): Promise<ActionResult<void>> {
+  try {
+    if (!(await hasOrgPermission({ member: ["delete"] }))) {
+      return fail("Sem permissão para excluir profissionais");
+    }
+
+    const parsed = deleteProfessionalSchema.safeParse(input);
+    if (!parsed.success) {
+      return failZod(parsed.error);
+    }
+
+    const { organizationId, userId } = await requireOrgId();
+    await deleteProfessional(organizationId, userId, parsed.data.memberId);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
     return ok(undefined);

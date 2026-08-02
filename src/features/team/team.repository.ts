@@ -62,6 +62,16 @@ export const teamRepository = {
     });
   },
 
+  async countAppointmentsByMember(memberId: string) {
+    return db.appointment.count({ where: { memberId } });
+  },
+
+  async deleteMember(organizationId: string, memberId: string) {
+    return db.member.deleteMany({
+      where: { id: memberId, organizationId },
+    });
+  },
+
   async createUserWithPassword(data: {
     name: string;
     email: string;
