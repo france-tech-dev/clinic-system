@@ -13,14 +13,13 @@ const statement = {
 
 const ac = createAccessControl(statement);
 
-/** Grants por papel — base org via *Ac.statements, não via defaultStatements. */
-const ADMIN = ac.newRole({
-  ...adminAc.statements,
+const OWNER = ac.newRole({
+  ...ownerAc.statements,
   project: ["read", "create", "update", "delete"],
 });
 
-const OWNER = ac.newRole({
-  ...ownerAc.statements,
+const ADMIN = ac.newRole({
+  ...adminAc.statements,
   project: ["read", "create", "update", "delete"],
 });
 

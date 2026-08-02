@@ -1,18 +1,20 @@
 export type FieldErrors = Record<string, string>;
 
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string; fieldErrors?: FieldErrors };
+  | { success: true; data: T; message?: string }
+  | { success: false; message: string; fieldErrors?: FieldErrors };
 
-export function ok<T>(data: T): ActionResult<T> {
-  return { success: true, data };
+export function ok<T>(data: T, message?: string): ActionResult<T> {
+  return message !== undefined
+    ? { success: true, data, message }
+    : { success: true, data };
 }
 
 export function fail(
-  error: string,
+  message: string,
   fieldErrors?: FieldErrors,
 ): ActionResult<never> {
   return fieldErrors
-    ? { success: false, error, fieldErrors }
-    : { success: false, error };
+    ? { success: false, message, fieldErrors }
+    : { success: false, message };
 }

@@ -5,18 +5,17 @@ import { headers } from "next/headers";
 
 type PermissionCheck = Record<string, string[]>;
 
-/** Verifica permissões do membro na organização activa (Better Auth AC). */
-export async function hasOrgPermission(
+export async function requirePermission(
   permissions: PermissionCheck,
-): Promise<boolean> {
+): Promise<void> {
   try {
     const result = await auth.api.hasPermission({
       headers: await headers(),
       body: { permissions },
     });
-    return result.success === true;
+    if (result.success === true) return;
   } catch (error) {
     console.error(error);
-    return false;
   }
+  throw new Error("Sem permissão.");
 }
