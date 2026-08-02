@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
 import { paths } from "@/shared/constants/paths";
@@ -13,32 +13,20 @@ export function AnamneseTab({
   anamneses: AnamneseSummaryDTO[];
 }) {
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground">
-          Anamneses preenchidas deste paciente. Abra um formulário para editar
-          ou criar uma nova.
-        </p>
-        <Button asChild size="sm" variant="outline">
+    <>
+      <div className="no-print flex justify-end">
+        <Button asChild size="sm">
           <Link href={paths.anamnese.root}>
-            <FileText className="size-4" />
+            <Plus className="size-4" />
             Nova anamnese
           </Link>
         </Button>
       </div>
 
       {anamneses.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-6">
-          <p className="font-serif text-lg font-medium">
-            Nenhuma anamnese preenchida
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Escolha a especialidade no hub de Anamnese para começar.
-          </p>
-          <Button asChild className="mt-4" size="sm">
-            <Link href={paths.anamnese.root}>Ir para Anamnese</Link>
-          </Button>
-        </div>
+        <p className="text-sm text-muted-foreground">
+          Nenhuma anamnese registrada.
+        </p>
       ) : (
         <ul className="flex flex-col gap-2">
           {anamneses.map((item) => (
@@ -52,8 +40,7 @@ export function AnamneseTab({
                     {item.label}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Actualizada em{" "}
-                    {formatDateBR(item.updatedAt.slice(0, 10))}
+                    Actualizada em {formatDateBR(item.updatedAt.slice(0, 10))}
                   </p>
                 </div>
                 <span className="text-sm text-muted-foreground group-hover:text-primary">
@@ -64,6 +51,6 @@ export function AnamneseTab({
           ))}
         </ul>
       )}
-    </section>
+    </>
   );
 }
