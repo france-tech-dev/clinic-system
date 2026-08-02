@@ -392,8 +392,6 @@ export function CashTransactionFormDialog({
         <DialogFooter className="gap-2 sm:justify-between">
           {initial ? (
             <DeleteConfirmDialog
-              title="Excluir lançamento?"
-              description="Esta ação não pode ser desfeita. O lançamento será removido permanentemente do caixa."
               onConfirm={handleDelete}
               disabled={pending}
             >

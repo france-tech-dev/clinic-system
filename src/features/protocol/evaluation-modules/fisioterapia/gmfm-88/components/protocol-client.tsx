@@ -329,8 +329,6 @@ export function GmfmProtocolClient({
                       Editar
                     </Button>
                     <DeleteConfirmDialog
-                      title="Excluir avaliação GMFM-88?"
-                      description="Esta avaliação será removida permanentemente."
                       onConfirm={() => removeAssessment(a.id)}
                       disabled={pending}
                     >
