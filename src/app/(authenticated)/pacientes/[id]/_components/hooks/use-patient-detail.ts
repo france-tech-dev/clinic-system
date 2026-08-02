@@ -126,8 +126,6 @@ export function usePatientDetail({
   }
 
   function removePatient() {
-    if (!confirm(`Remover ${detail.patient.name} e todos os dados associados?`))
-      return;
     startTransition(async () => {
       const result = await deletePatientAction({ id: detail.patient.id });
       if (!result.success) {

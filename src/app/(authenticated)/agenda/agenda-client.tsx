@@ -36,9 +36,7 @@ import {
 } from "@/shared/constants/appointment";
 import { paths } from "@/shared/constants/paths";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  CashTransactionFormDialog,
-} from "@/features/finance/components/cash-transaction-form-dialog";
+import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
 import { AppointmentFormDialog } from "./_components/appointment-form-dialog";
 import { AppointmentRow } from "./_components/appointment-row";
 import { useAgendaCashflow } from "./_components/hooks/use-agenda-cashflow";
@@ -254,11 +252,9 @@ export function AgendaClient({
           {members.length > 0 ? (
             <Select
               value={memberFilter}
-              onValueChange={(v) =>
-                changeMemberFilter(v ?? MEMBER_FILTER_ALL)
-              }
+              onValueChange={(v) => changeMemberFilter(v ?? MEMBER_FILTER_ALL)}
             >
-              <SelectTrigger className="w-[200px]" size="sm">
+              <SelectTrigger className="w-50" size="sm">
                 <SelectValue placeholder="Profissional" />
               </SelectTrigger>
               <SelectContent>

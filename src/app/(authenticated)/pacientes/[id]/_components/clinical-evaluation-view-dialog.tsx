@@ -190,8 +190,6 @@ export function ClinicalEvaluationViewDialog({
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
           <DeleteConfirmDialog
-            title="Excluir avaliação?"
-            description="Esta ação não pode ser desfeita. A avaliação será removida permanentemente."
             onConfirm={() => onDelete(evaluation.id)}
             disabled={pending}
           >

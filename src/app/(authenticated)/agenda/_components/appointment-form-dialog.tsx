@@ -389,8 +389,6 @@ export function AppointmentFormDialog({
           >
             {initial && onDelete ? (
               <DeleteConfirmDialog
-                title="Excluir agendamento?"
-                description="Esta ação não pode ser desfeita. O agendamento será removido permanentemente."
                 onConfirm={onDelete}
                 disabled={pending}
               >

@@ -7,10 +7,12 @@ import { ProfissionaisClient } from "./profissionais-client";
 
 export default async function ProfissionaisPage() {
   let members: TeamMemberDTO[] = [];
+  let currentUserId = "";
   let error: string | null = null;
 
   try {
-    const { organizationId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgId();
+    currentUserId = userId;
     members = await listTeamMembers(organizationId);
   } catch (e) {
     error =
@@ -25,7 +27,10 @@ export default async function ProfissionaisPage() {
         <p className="text-sm text-destructive">{error}</p>
       ) : (
         <Suspense fallback={<p className="text-sm">A carregar…</p>}>
-          <ProfissionaisClient initialMembers={members} />
+          <ProfissionaisClient
+            initialMembers={members}
+            currentUserId={currentUserId}
+          />
         </Suspense>
       )}
     </AppPage>

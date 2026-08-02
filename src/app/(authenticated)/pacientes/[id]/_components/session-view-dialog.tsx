@@ -48,8 +48,6 @@ export function SessionViewDialog({
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
           <DeleteConfirmDialog
-            title="Excluir evolução?"
-            description="Esta ação não pode ser desfeita. A evolução será removida permanentemente."
             onConfirm={() => onDelete(note.id)}
             disabled={pending}
           >

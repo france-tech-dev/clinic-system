@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, FileText, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { paths } from "@/shared/constants/paths";
 
 export function PatientDetailHeader({
@@ -37,15 +38,12 @@ export function PatientDetailHeader({
           <FileText className="size-4" />
           Prontuário PDF
         </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          disabled={pending}
-          onClick={onRemove}
-        >
-          <Trash2 className="size-4" />
-          Remover
-        </Button>
+        <DeleteConfirmDialog onConfirm={onRemove} disabled={pending}>
+          <Button variant="destructive" size="sm" disabled={pending}>
+            <Trash2 className="size-4" />
+            Remover
+          </Button>
+        </DeleteConfirmDialog>
       </div>
     </div>
   );
