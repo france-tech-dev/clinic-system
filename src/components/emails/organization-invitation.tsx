@@ -44,16 +44,16 @@ export function OrganizationInvitationEmail({
         Convite para participar da organização {organizationName} na Boilerplate
       </Preview>
       <Tailwind>
-        <Body className="bg-gray-100 py-[40px] font-sans">
-          <Container className="mx-auto max-w-[600px] rounded-[8px] bg-white p-[40px] shadow-sm">
+        <Body className="bg-gray-100 py-10 font-sans">
+          <Container className="mx-auto max-w-150 rounded-lg bg-white p-10 shadow-sm">
             <Section>
-              <Heading className="mb-[24px] text-center text-[24px] font-bold text-gray-900">
+              <Heading className="mb-6 text-center text-2xl font-bold text-gray-900">
                 Você foi convidado
               </Heading>
 
-              <Text className="mb-[16px] text-[16px] text-gray-700">Olá!</Text>
+              <Text className="mb-4 text-base text-gray-700">Olá!</Text>
 
-              <Text className="mb-[16px] text-[16px] text-gray-700">
+              <Text className="mb-4 text-base text-gray-700">
                 <span className="font-medium">{inviterName}</span> convidou você
                 para entrar na organização{" "}
                 <span className="font-medium">{organizationName}</span> na
@@ -61,38 +61,38 @@ export function OrganizationInvitationEmail({
                 <span className="font-medium">{formatRole(role)}</span>.
               </Text>
 
-              <Text className="mb-[16px] text-[16px] text-gray-700">
+              <Text className="mb-4 text-base text-gray-700">
                 Para aceitar o convite, faça login com este e-mail (se ainda não
                 tiver conta, cadastre-se) e clique no botão abaixo.
               </Text>
 
-              <Section className="my-[32px] text-center">
+              <Section className="my-8 text-center">
                 <Button
                   href={inviteUrl}
-                  className="box-border rounded-[6px] bg-blue-600 px-[32px] py-[12px] text-[16px] font-medium text-white no-underline"
+                  className="box-border rounded-md bg-blue-600 px-8 py-3 text-base font-medium text-white no-underline"
                 >
                   Aceitar convite
                 </Button>
               </Section>
 
-              <Text className="mb-[16px] text-[14px] text-gray-600">
+              <Text className="mb-4 text-sm text-gray-600">
                 Se o botão não funcionar, copie e cole o link no navegador:
               </Text>
 
-              <Text className="mb-[24px] break-all text-[14px] text-blue-600">
+              <Text className="mb-6 break-all text-sm text-blue-600">
                 {inviteUrl}
               </Text>
 
-              <Text className="text-[14px] text-gray-600">
+              <Text className="text-sm text-gray-600">
                 Se você não esperava este convite, pode ignorar este e-mail.
               </Text>
             </Section>
 
-            <Section className="mt-[32px] border-t border-gray-200 pt-[24px]">
-              <Text className="m-0 text-center text-[12px] text-gray-500">
+            <Section className="mt-8 border-t border-gray-200 pt-6">
+              <Text className="m-0 text-center text-xs text-gray-500">
                 © 2026 Boilerplate. Todos os direitos reservados.
               </Text>
-              <Text className="m-0 text-center text-[12px] text-gray-500">
+              <Text className="m-0 text-center text-xs text-gray-500">
                 123 Rua da Empresa, São José, BR
               </Text>
             </Section>

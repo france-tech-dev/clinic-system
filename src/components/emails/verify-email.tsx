@@ -25,58 +25,58 @@ export function VerifyEmail({ userName, verificationUrl }: VerifyEmailProps) {
         Verifique seu endereço de email para completar seu registro{" "}
       </Preview>
       <Tailwind>
-        <Body className="bg-gray-100 py-[40px] font-sans">
-          <Container className="mx-auto max-w-[600px] rounded-[8px] bg-white p-[40px] shadow-sm">
+        <Body className="bg-gray-100 py-10 font-sans">
+          <Container className="mx-auto max-w-150 rounded-lg bg-white p-10 shadow-sm">
             <Section>
-              <Heading className="mb-[24px] text-center text-[24px] font-bold text-gray-900">
+              <Heading className="mb-6 text-center text-2xl font-bold text-gray-900">
                 Verifique seu endereço de email
               </Heading>
 
-              <Text className="mb-[16px] text-[16px] text-gray-700">
+              <Text className="mb-4 text-base text-gray-700">
                 Olá{userName ? `, ${userName}` : ""}!
               </Text>
 
-              <Text className="mb-[16px] text-[16px] text-gray-700">
+              <Text className="mb-4 text-base text-gray-700">
                 Obrigado por se cadastrar! Estamos ansiosos para ter você na
                 equipe. Para completar seu registro e começar a usar sua conta,
                 por favor verifique seu endereço de email clicando no botão
                 abaixo.
               </Text>
 
-              <Section className="my-[32px] text-center">
+              <Section className="my-8 text-center">
                 <Button
                   href={verificationUrl}
-                  className="box-border rounded-[6px] bg-blue-600 px-[32px] py-[12px] text-[16px] font-medium text-white no-underline"
+                  className="box-border rounded-md bg-blue-600 px-8 py-3 text-base font-medium text-white no-underline"
                 >
                   Verificar endereço de email
                 </Button>
               </Section>
 
-              <Text className="mb-[16px] text-[14px] text-gray-600">
+              <Text className="mb-4 text-sm text-gray-600">
                 Se o botão acima não funcionar, você também pode copiar e colar
                 o link abaixo no seu navegador:
               </Text>
 
-              <Text className="mb-[24px] break-all text-[14px] text-blue-600">
+              <Text className="mb-6 break-all text-sm text-blue-600">
                 {verificationUrl}
               </Text>
 
-              <Text className="mb-[16px] text-[14px] text-gray-600">
+              <Text className="mb-4 text-sm text-gray-600">
                 Este link de verificação expirará em 24 horas por motivos de
                 segurança.
               </Text>
 
-              <Text className="text-[14px] text-gray-600">
+              <Text className="text-sm text-gray-600">
                 Se você não criou uma conta conosco, pode ignorar este email com
                 segurança.
               </Text>
             </Section>
 
-            <Section className="mt-[32px] border-t border-gray-200 pt-[24px]">
-              <Text className="m-0 text-center text-[12px] text-gray-500">
+            <Section className="mt-8 border-t border-gray-200 pt-6">
+              <Text className="m-0 text-center text-xs text-gray-500">
                 © 2026 Movi Clinicas. Todos os direitos reservados.
               </Text>
-              <Text className="m-0 text-center text-[12px] text-gray-500">
+              <Text className="m-0 text-center text-xs text-gray-500">
                 São José, SC.
               </Text>
             </Section>

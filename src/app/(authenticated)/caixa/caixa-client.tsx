@@ -47,7 +47,9 @@ export function CaixaClient({
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<CashTransactionDTO | null>(null);
-  const [defaultType, setDefaultType] = useState<"income" | "expense">("income");
+  const [defaultType, setDefaultType] = useState<"income" | "expense">(
+    "income",
+  );
   const [pending, startTransition] = useTransition();
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -113,11 +115,9 @@ export function CaixaClient({
           {members.length > 0 ? (
             <Select
               value={memberFilter}
-              onValueChange={(v) =>
-                changeMemberFilter(v ?? MEMBER_FILTER_ALL)
-              }
+              onValueChange={(v) => changeMemberFilter(v ?? MEMBER_FILTER_ALL)}
             >
-              <SelectTrigger className="w-[200px]" size="sm">
+              <SelectTrigger className="w-50" size="sm">
                 <SelectValue placeholder="Profissional" />
               </SelectTrigger>
               <SelectContent>
@@ -180,9 +180,7 @@ export function CaixaClient({
                     <p className="mt-1 text-xs text-muted-foreground">
                       {formatDateBR(tx.date)} ·{" "}
                       {cashPaymentMethodLabel(tx.paymentMethod)}
-                      {tx.professionalName
-                        ? ` · ${tx.professionalName}`
-                        : ""}
+                      {tx.professionalName ? ` · ${tx.professionalName}` : ""}
                       {tx.patientName ? ` · ${tx.patientName}` : ""}
                     </p>
                   </div>
@@ -215,9 +213,7 @@ export function CaixaClient({
           defaultDate={today}
           defaultType={defaultType}
           defaultMemberId={
-            memberFilter !== MEMBER_FILTER_ALL
-              ? memberFilter
-              : defaultMemberId
+            memberFilter !== MEMBER_FILTER_ALL ? memberFilter : defaultMemberId
           }
           pending={pending}
           startTransition={startTransition}
