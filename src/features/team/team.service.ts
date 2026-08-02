@@ -83,8 +83,8 @@ export async function createProfessional(
     const user = await teamRepository.createUserWithPassword({
       name: input.name.trim(),
       email,
-      phone: input.phone?.trim() ?? "",
-      birthDate: input.birthDate ?? "",
+      phone: input.phone?.trim() || null,
+      birthDate: input.birthDate,
       password: input.password,
     });
     userId = user.id;
@@ -215,8 +215,8 @@ export async function updateProfessional(
   await teamRepository.updateUserProfile(member.userId, {
     name,
     email,
-    phone: input.phone?.trim() ?? "",
-    birthDate: input.birthDate ?? "",
+    phone: input.phone?.trim() || null,
+    birthDate: input.birthDate,
   });
 
   const nextRole =

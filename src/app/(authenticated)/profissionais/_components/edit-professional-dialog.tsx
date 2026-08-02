@@ -270,7 +270,7 @@ export function EditProfessionalDialog({
                 name="birthDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Aniversário</FormLabel>
+                    <FormLabel>Aniversário *</FormLabel>
                     <FormControl>
                       <DatePicker
                         longRange

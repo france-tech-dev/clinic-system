@@ -5,8 +5,10 @@ import type { Role } from "../../../prisma/generated/prisma/enums";
 import type { CreateProfessionalInput } from "./team.schema";
 import type { TeamMemberStatus } from "./team.types";
 
-function parseBirthDate(value: string): Date {
+function parseOptionalBirthDate(value: string | null | undefined): Date | null {
+  if (!value?.trim()) return null;
   const [year, month, day] = value.split("-").map(Number);
+  if ([year, month, day].some(Number.isNaN)) return null;
   return new Date(Date.UTC(year, month - 1, day));
 }
 
@@ -75,8 +77,8 @@ export const teamRepository = {
   async createUserWithPassword(data: {
     name: string;
     email: string;
-    phone: string;
-    birthDate: string;
+    phone?: string | null;
+    birthDate?: string | null;
     password: string;
   }) {
     return createCredentialUser({
@@ -115,8 +117,8 @@ export const teamRepository = {
     data: {
       name: string;
       email: string;
-      phone: string;
-      birthDate: string;
+      phone?: string | null;
+      birthDate?: string | null;
     },
   ) {
     return db.user.update({
@@ -124,8 +126,8 @@ export const teamRepository = {
       data: {
         name: data.name,
         email: data.email,
-        phone: data.phone,
-        birthDate: parseBirthDate(data.birthDate),
+        phone: data.phone?.trim() || null,
+        birthDate: parseOptionalBirthDate(data.birthDate),
       },
     });
   },
