@@ -258,7 +258,7 @@ export function AppointmentFormDialog({
                 name="time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Horário</FormLabel>
+                    <FormLabel>Horário *</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} />
                     </FormControl>
@@ -388,10 +388,7 @@ export function AppointmentFormDialog({
             )}
           >
             {initial && onDelete ? (
-              <DeleteConfirmDialog
-                onConfirm={onDelete}
-                disabled={pending}
-              >
+              <DeleteConfirmDialog onConfirm={onDelete} disabled={pending}>
                 <Button type="button" variant="destructive" disabled={pending}>
                   <Trash2 data-icon="inline-start" />
                   Excluir

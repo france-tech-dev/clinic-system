@@ -26,13 +26,16 @@ export const updateAppointmentSchema = z.object({
   status: z.enum(statusIds),
 });
 
-/** Schema do diálogo (criar + editar): status e repeatWeeks sempre presentes no form. */
 export const appointmentDialogSchema = z.object({
   patientId: z.string().min(1, "Selecione um paciente"),
   memberId: z.string().min(1, "Selecione um profissional"),
   date: z.string().min(1, "Informe a data"),
-  time: z.string().trim(),
-  duration: z.number().int().min(0).max(480),
+  time: z.string().trim().min(1, "Informe o horário"),
+  duration: z
+    .number()
+    .int()
+    .min(1, "Informe a duração")
+    .max(480, "A duração máxima é de 8 horas"),
   notes: z.string().trim(),
   status: z.enum(statusIds),
   repeatWeeks: z.number().int().min(1).max(52),
