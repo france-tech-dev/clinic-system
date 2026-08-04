@@ -122,6 +122,18 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] **Anamnese por especialidade** — antes de preencher, escolher área (T.O., Fisio, Psico, Fono…); cada uma com formulário próprio (1ª entrega: T.O. em `/anamnese`)
 - [ ] **Adicionar Nuqs** para gerenciamento de state.
 - [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos
+- [ ] **Ficha de avaliação** — ficha de avaliação com todos os domínios e subdomínios, com os itens e respostas, e o resultado final da avaliação.
+- [ ] **Paginação** — paginação para as páginas que tem lista de itens, com 10 itens por página.
+- [ ] **Ordenação** — ordenação para as páginas que tem lista de itens, com opções de ordenação por data, nome, idade, etc.
+- [ ] **Filtros** — filtros para as páginas que tem lista de itens, com opções de filtro por data, nome, idade, etc.
+- [ ] **Exportação** — exportação para as páginas que tem lista de itens, com opções de exportação para PDF, CSV, etc.
+- [ ] **Responsividade** — responsividade para as páginas que tem lista de itens, com opções de responsividade para mobile, tablet, desktop, etc.
+
+### Observabilidade
+
+- [ ] **Relatório de acessos** - relatório de acessos pela forma de acesso, computador, celular, tablet, etc.
+- [ ] **Relatório de erros** - relatório de erros pela forma de erro, erro de sistema, erro de usuário, erro de rede, etc.
+- [ ] **Relatório de performance** - relatório de performance pela forma de performance, tempo de resposta, tempo de processamento, etc.
 
 ---
 
