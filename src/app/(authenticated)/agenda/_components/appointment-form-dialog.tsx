@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
+import { EntityCombobox } from "@/components/entity-combobox";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -181,25 +182,15 @@ export function AppointmentFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Profissional *</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => {
-                      if (v) field.onChange(v);
-                    }}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecione…" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {members.map((m) => (
-                        <SelectItem key={m.id} value={m.id}>
-                          {m.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <EntityCombobox
+                      options={members}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Selecione…"
+                      emptyText="Nenhum profissional encontrado"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -211,25 +202,15 @@ export function AppointmentFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Paciente *</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => {
-                      if (v) field.onChange(v);
-                    }}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecione…" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {patients.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <EntityCombobox
+                      options={patients}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder="Selecione…"
+                      emptyText="Nenhum paciente encontrado"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

@@ -9,21 +9,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { EntityCombobox } from "@/components/entity-combobox";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { GuardianFormFields } from "@/features/guardian/components/guardian-form-fields";
 import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
 import type { PatientDraftInput } from "@/features/patient/patient.schema";
+
+function guardianOptionLabel(g: GuardianDTO) {
+  return [g.name, g.cpf || null].filter(Boolean).join(" · ");
+}
 
 export function EditPatientDialog({
   open,
@@ -76,25 +74,15 @@ export function EditPatientDialog({
           {guardians.length > 1 ? (
             <Field>
               <FieldLabel>Responsável vinculado</FieldLabel>
-              <Select
+              <EntityCombobox
+                options={guardians.map((g) => ({
+                  id: g.id,
+                  name: guardianOptionLabel(g),
+                }))}
                 value={guardianId}
-                onValueChange={(v) => {
-                  if (!v) return;
-                  onGuardianIdChange(v);
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {guardians.map((g) => (
-                    <SelectItem key={g.id} value={g.id}>
-                      {g.name}
-                      {g.cpf ? ` · ${g.cpf}` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onValueChange={onGuardianIdChange}
+                emptyText="Nenhum responsável encontrado"
+              />
             </Field>
           ) : null}
 

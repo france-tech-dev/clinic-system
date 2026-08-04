@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import { EntityCombobox } from "@/components/entity-combobox";
 import {
   Select,
   SelectContent,
@@ -259,26 +260,16 @@ export function GmfmProtocolClient({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Select
-            value={patientId || "none"}
-            onValueChange={(v) => {
-              const id = v === "none" ? "" : (v ?? "");
+          <EntityCombobox
+            options={activePatients}
+            value={patientId}
+            onValueChange={(id) => {
               setPatientId(id);
               loadAssessments(id);
             }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o paciente" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Selecione…</SelectItem>
-              {activePatients.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Selecione o paciente"
+            emptyText="Nenhum paciente encontrado"
+          />
 
           {patientId ? (
             <div className="flex flex-wrap gap-2">

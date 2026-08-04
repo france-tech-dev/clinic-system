@@ -21,13 +21,7 @@ import { formatDateBR } from "@/shared/lib/format-date-br";
 import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { EntityCombobox } from "@/components/entity-combobox";
 
 const MEMBER_FILTER_ALL = "all";
 
@@ -113,24 +107,19 @@ export function CaixaClient({
             </Button>
           </div>
           {members.length > 0 ? (
-            <Select
+            <EntityCombobox
+              options={members}
               value={memberFilter}
-              onValueChange={(v) => changeMemberFilter(v ?? MEMBER_FILTER_ALL)}
-            >
-              <SelectTrigger className="w-50" size="sm">
-                <SelectValue placeholder="Profissional" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={MEMBER_FILTER_ALL}>
-                  Todos os profissionais
-                </SelectItem>
-                {members.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onValueChange={changeMemberFilter}
+              placeholder="Profissional"
+              emptyText="Nenhum profissional encontrado"
+              extraOption={{
+                id: MEMBER_FILTER_ALL,
+                name: "Todos os profissionais",
+              }}
+              className="w-50"
+              aria-label="Filtrar por profissional"
+            />
           ) : null}
         </div>
 

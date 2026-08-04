@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
+import { EntityCombobox } from "@/components/entity-combobox";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -328,26 +329,16 @@ export function CashTransactionFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Paciente (opcional)</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={(v) => {
-                        if (v) field.onChange(v);
-                      }}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Nenhum" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">Nenhum</SelectItem>
-                        {patients.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <EntityCombobox
+                        options={patients}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Nenhum"
+                        emptyText="Nenhum paciente encontrado"
+                        extraOption={{ id: "none", name: "Nenhum" }}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -361,26 +352,16 @@ export function CashTransactionFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Profissional (opcional)</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={(v) => {
-                        if (v) field.onChange(v);
-                      }}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Nenhum" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">Nenhum</SelectItem>
-                        {members.map((m) => (
-                          <SelectItem key={m.id} value={m.id}>
-                            {m.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <EntityCombobox
+                        options={members}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Nenhum"
+                        emptyText="Nenhum profissional encontrado"
+                        extraOption={{ id: "none", name: "Nenhum" }}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

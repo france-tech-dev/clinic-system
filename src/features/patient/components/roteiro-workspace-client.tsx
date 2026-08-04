@@ -2,19 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { EntityCombobox } from "@/components/entity-combobox";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { RoteiroSection } from "@/features/patient/components/roteiro-section";
 import { useRoteiroNotes } from "@/features/patient/hooks/use-roteiro-notes";
 import { listRoteiroNotesAction } from "@/features/patient/patient.actions";
@@ -47,7 +41,7 @@ export function RoteiroWorkspaceClient({
   const activePatients = patients.filter((p) => p.status !== "discharged");
 
   function handlePatientChange(value: string) {
-    const id = value === "none" ? "" : (value ?? "");
+    const id = value || "";
     setPatientId(id);
     if (!id) {
       roteiro.replaceNotes([], roteiroId);
@@ -75,22 +69,13 @@ export function RoteiroWorkspaceClient({
           <CardTitle className="font-serif text-lg">Paciente</CardTitle>
         </CardHeader>
         <CardContent>
-          <Select
-            value={patientId || "none"}
+          <EntityCombobox
+            options={activePatients}
+            value={patientId}
             onValueChange={handlePatientChange}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o paciente" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Selecione…</SelectItem>
-              {activePatients.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Selecione o paciente"
+            emptyText="Nenhum paciente encontrado"
+          />
         </CardContent>
       </Card>
 

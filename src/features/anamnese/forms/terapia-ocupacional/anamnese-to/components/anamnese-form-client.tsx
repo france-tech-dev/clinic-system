@@ -4,14 +4,8 @@ import { useMemo, useState, useTransition } from "react";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
 import { ClinicalWorkspaceShell } from "@/components/clinical-workspace-shell";
+import { EntityCombobox } from "@/components/entity-combobox";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   getAnamneseAction,
   saveAnamneseAction,
@@ -68,8 +62,8 @@ export function AnamneseFormClient({
   const activeSection =
     schema.find((sec) => sec.id === activeSectionId) ?? schema[0];
 
-  function handlePatientChange(nextId: string | null) {
-    const id = !nextId || nextId === "none" ? "" : nextId;
+  function handlePatientChange(nextId: string) {
+    const id = nextId || "";
     setPatientId(id);
     if (!id) {
       setData({});
@@ -122,22 +116,13 @@ export function AnamneseFormClient({
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 sm:max-w-md">
         <label className="text-sm font-medium">Paciente</label>
-        <Select
-          value={patientId || "none"}
+        <EntityCombobox
+          options={activePatients}
+          value={patientId}
           onValueChange={handlePatientChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione o paciente" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">Selecione o paciente</SelectItem>
-            {activePatients.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Selecione o paciente"
+          emptyText="Nenhum paciente encontrado"
+        />
       </div>
 
       {!patientId ? (

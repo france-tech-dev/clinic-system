@@ -6,13 +6,7 @@ import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { EntityCombobox } from "@/components/entity-combobox";
 import {
   deleteAppointmentAction,
   setAppointmentStatusAction,
@@ -250,24 +244,19 @@ export function AgendaClient({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {members.length > 0 ? (
-            <Select
+            <EntityCombobox
+              options={members}
               value={memberFilter}
-              onValueChange={(v) => changeMemberFilter(v ?? MEMBER_FILTER_ALL)}
-            >
-              <SelectTrigger className="w-50" size="sm">
-                <SelectValue placeholder="Profissional" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={MEMBER_FILTER_ALL}>
-                  Todos os profissionais
-                </SelectItem>
-                {members.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onValueChange={changeMemberFilter}
+              placeholder="Profissional"
+              emptyText="Nenhum profissional encontrado"
+              extraOption={{
+                id: MEMBER_FILTER_ALL,
+                name: "Todos os profissionais",
+              }}
+              className="w-50"
+              aria-label="Filtrar por profissional"
+            />
           ) : null}
           <Button size="sm" onClick={openCreate}>
             <Plus className="size-4" />

@@ -16,6 +16,7 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
+import { EntityCombobox } from "@/components/entity-combobox";
 import { Form } from "@/components/ui/form";
 import {
   Select,
@@ -29,6 +30,12 @@ import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
 import type { PatientDraftInput } from "@/features/patient/patient.schema";
+
+function guardianOptionLabel(g: GuardianDTO) {
+  return [g.name, g.cpf || null, g.hasPortalAccess ? "portal" : null]
+    .filter(Boolean)
+    .join(" · ");
+}
 
 export function CreatePatientDialog({
   open,
@@ -106,23 +113,15 @@ export function CreatePatientDialog({
               {guardianMode === "existing" ? (
                 <Field>
                   <FieldLabel>Responsável</FieldLabel>
-                  <Select
-                    value={selectedGuardianId || undefined}
-                    onValueChange={(v) => onSelectedGuardianIdChange(v ?? "")}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {guardians.map((g) => (
-                        <SelectItem key={g.id} value={g.id}>
-                          {g.name}
-                          {g.cpf ? ` · ${g.cpf}` : ""}
-                          {g.hasPortalAccess ? " · portal" : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <EntityCombobox
+                    options={guardians.map((g) => ({
+                      id: g.id,
+                      name: guardianOptionLabel(g),
+                    }))}
+                    value={selectedGuardianId}
+                    onValueChange={onSelectedGuardianIdChange}
+                    emptyText="Nenhum responsável encontrado"
+                  />
                 </Field>
               ) : null}
             </FieldGroup>
