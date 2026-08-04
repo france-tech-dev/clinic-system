@@ -8,6 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description:
       "Sistema de gestão clínica e agendamentos para profissionais da saúde.",
     start_url: paths.auth.login,
+    scope: paths.root,
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000000",
