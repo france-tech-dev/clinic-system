@@ -7,9 +7,17 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus, Search } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -175,12 +183,10 @@ export function PacientesClient({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {filtered.length} na lista
-          </p>
-        </div>
-        <Button onClick={() => setOpen(true)}>
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} na lista
+        </p>
+        <Button className="w-full sm:w-auto" onClick={() => setOpen(true)}>
           <Plus className="size-4" />
           Novo paciente
         </Button>
@@ -226,22 +232,24 @@ export function PacientesClient({
           Nenhum paciente encontrado. Adicione o primeiro paciente.
         </p>
       ) : (
-        <ul className="divide-y divide-border rounded-md border border-border bg-card">
+        <ItemGroup data-size="sm">
           {filtered.map((p) => (
-            <li
+            <Item
               key={p.id}
-              className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+              variant="outline"
+              role="listitem"
+              className="bg-card"
             >
-              <Link
-                href={paths.paciente(p.id)}
-                className="min-w-0 flex-1 hover:underline"
-              >
-                <p className="font-medium">{p.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatPatientListMeta(p)}
-                </p>
-              </Link>
-              <div className="flex items-center gap-2">
+              <ItemContent className="min-w-0">
+                <Link
+                  href={paths.paciente(p.id)}
+                  className="min-w-0 hover:underline"
+                >
+                  <ItemTitle>{p.name}</ItemTitle>
+                  <ItemDescription>{formatPatientListMeta(p)}</ItemDescription>
+                </Link>
+              </ItemContent>
+              <ItemActions className="shrink-0">
                 <Badge
                   variant="outline"
                   className={cn(
@@ -266,12 +274,14 @@ export function PacientesClient({
                   <NativeSelectOption value="paused">
                     Pausado
                   </NativeSelectOption>
-                  <NativeSelectOption value="discharged">Alta</NativeSelectOption>
+                  <NativeSelectOption value="discharged">
+                    Alta
+                  </NativeSelectOption>
                 </NativeSelect>
-              </div>
-            </li>
+              </ItemActions>
+            </Item>
           ))}
-        </ul>
+        </ItemGroup>
       )}
 
       <CreatePatientDialog

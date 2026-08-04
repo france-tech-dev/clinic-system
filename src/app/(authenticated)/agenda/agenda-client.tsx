@@ -236,13 +236,11 @@ export function AgendaClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sessões agendadas da clínica
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <p className="text-sm text-muted-foreground">
+          Sessões agendadas da clínica
+        </p>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           {members.length > 0 ? (
             <EntityCombobox
               options={members}
@@ -254,11 +252,11 @@ export function AgendaClient({
                 id: MEMBER_FILTER_ALL,
                 name: "Todos os profissionais",
               }}
-              className="w-50"
+              className="w-full sm:w-50"
               aria-label="Filtrar por profissional"
             />
           ) : null}
-          <Button size="sm" onClick={openCreate}>
+          <Button size="sm" className="w-full sm:w-auto" onClick={openCreate}>
             <Plus className="size-4" />
             Novo agendamento
           </Button>

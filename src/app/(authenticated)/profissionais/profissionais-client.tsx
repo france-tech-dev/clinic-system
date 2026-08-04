@@ -8,8 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
-  deleteProfessionalAction,
-} from "@/features/team/team.actions";
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { deleteProfessionalAction } from "@/features/team/team.actions";
 import { getHealthProfession } from "@/shared/constants/professions";
 import type { TeamMemberDTO } from "@/features/team/team.types";
 import { CreateProfessionalDialog } from "./_components/create-professional-dialog";
@@ -28,6 +44,48 @@ const ROLE_LABEL: Record<string, string> = {
 
 function isOwnerRole(role: string) {
   return role === "OWNER" || role === "owner";
+}
+
+function MemberActions({
+  member,
+  canDelete,
+  pending,
+  onEdit,
+  onDelete,
+}: {
+  member: TeamMemberDTO;
+  canDelete: boolean;
+  pending: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        aria-label={`Editar ${member.name}`}
+        onClick={onEdit}
+      >
+        <Pencil className="size-4" />
+      </Button>
+      {canDelete ? (
+        <DeleteConfirmDialog onConfirm={onDelete} disabled={pending}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={`Excluir ${member.name}`}
+            disabled={pending}
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </DeleteConfirmDialog>
+      ) : null}
+    </div>
+  );
 }
 
 export function ProfissionaisClient({
@@ -64,7 +122,7 @@ export function ProfissionaisClient({
         <p className="text-sm text-muted-foreground">
           {members.length} na lista
         </p>
-        <Button onClick={() => setCreateOpen(true)}>
+        <Button className="w-full sm:w-auto" onClick={() => setCreateOpen(true)}>
           <Plus className="size-4" />
           Novo profissional
         </Button>
@@ -75,87 +133,126 @@ export function ProfissionaisClient({
           Nenhum profissional cadastrado nesta clínica.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/40 text-left text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2 font-medium">Nome</th>
-                <th className="px-3 py-2 font-medium">E-mail</th>
-                <th className="px-3 py-2 font-medium">Profissão</th>
-                <th className="px-3 py-2 font-medium">Registro</th>
-                <th className="px-3 py-2 font-medium">Papel</th>
-                <th className="px-3 py-2 font-medium">Status</th>
-                <th className="px-3 py-2 font-medium">Contato</th>
-                <th className="px-3 py-2 font-medium">
-                  <span className="sr-only">Ações</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((m) => {
-                const profession = getHealthProfession(m.profession);
-                const inactive = m.status === "inactive";
-                const canDelete =
-                  !isOwnerRole(m.role) && m.userId !== currentUserId;
-                return (
-                  <tr key={m.id} className="border-t border-border">
-                    <td className="px-3 py-2">{m.name}</td>
-                    <td className="px-3 py-2 text-muted-foreground">
-                      {m.email}
-                    </td>
-                    <td className="px-3 py-2">
-                      {profession?.label ?? m.profession ?? "—"}
-                    </td>
-                    <td className="px-3 py-2 text-muted-foreground">
-                      {m.registration ?? "—"}
-                    </td>
-                    <td className="px-3 py-2">
-                      {ROLE_LABEL[m.role] ?? m.role}
-                    </td>
-                    <td className="px-3 py-2">
-                      <Badge variant={inactive ? "secondary" : "outline"}>
-                        {inactive ? "Inativo" : "Ativo"}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-2 text-muted-foreground">
-                      {m.phone ?? "—"}
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-sm"
-                          aria-label={`Editar ${m.name}`}
-                          onClick={() => setEditing(m)}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        {canDelete ? (
-                          <DeleteConfirmDialog
-                            onConfirm={() => handleDelete(m)}
-                            disabled={pending}
-                          >
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-sm"
-                              aria-label={`Excluir ${m.name}`}
-                              disabled={pending}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="size-4" />
-                            </Button>
-                          </DeleteConfirmDialog>
-                        ) : null}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="hidden rounded-md border border-border md:block">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead>Nome</TableHead>
+                  <TableHead>E-mail</TableHead>
+                  <TableHead>Profissão</TableHead>
+                  <TableHead>Registro</TableHead>
+                  <TableHead>Papel</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Contato</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Ações</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.map((m) => {
+                  const profession = getHealthProfession(m.profession);
+                  const inactive = m.status === "inactive";
+                  const canDelete =
+                    !isOwnerRole(m.role) && m.userId !== currentUserId;
+                  return (
+                    <TableRow key={m.id}>
+                      <TableCell>{m.name}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {m.email}
+                      </TableCell>
+                      <TableCell>
+                        {profession?.label ?? m.profession ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {m.registration ?? "—"}
+                      </TableCell>
+                      <TableCell>{ROLE_LABEL[m.role] ?? m.role}</TableCell>
+                      <TableCell>
+                        <Badge variant={inactive ? "secondary" : "outline"}>
+                          {inactive ? "Inativo" : "Ativo"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {m.phone ?? "—"}
+                      </TableCell>
+                      <TableCell>
+                        <MemberActions
+                          member={m}
+                          canDelete={canDelete}
+                          pending={pending}
+                          onEdit={() => setEditing(m)}
+                          onDelete={() => handleDelete(m)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+
+          <ItemGroup data-size="sm" className="md:hidden">
+            {members.map((m) => {
+              const profession = getHealthProfession(m.profession);
+              const inactive = m.status === "inactive";
+              const canDelete =
+                !isOwnerRole(m.role) && m.userId !== currentUserId;
+              return (
+                <Item
+                  key={m.id}
+                  variant="outline"
+                  role="listitem"
+                  className="flex-col items-stretch bg-card"
+                >
+                  <ItemHeader>
+                    <ItemContent>
+                      <ItemTitle>{m.name}</ItemTitle>
+                      <ItemDescription>{m.email}</ItemDescription>
+                    </ItemContent>
+                    <Badge variant={inactive ? "secondary" : "outline"}>
+                      {inactive ? "Inativo" : "Ativo"}
+                    </Badge>
+                  </ItemHeader>
+                  <dl className="grid w-full gap-1.5 text-sm">
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-muted-foreground">Profissão</dt>
+                      <dd className="text-right">
+                        {profession?.label ?? m.profession ?? "—"}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-muted-foreground">Registro</dt>
+                      <dd className="text-right">{m.registration ?? "—"}</dd>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-muted-foreground">Papel</dt>
+                      <dd className="text-right">
+                        {ROLE_LABEL[m.role] ?? m.role}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-muted-foreground">Contato</dt>
+                      <dd className="text-right">{m.phone ?? "—"}</dd>
+                    </div>
+                  </dl>
+                  <ItemFooter className="border-t border-border pt-2">
+                    <ItemActions className="w-full justify-end">
+                      <MemberActions
+                        member={m}
+                        canDelete={canDelete}
+                        pending={pending}
+                        onEdit={() => setEditing(m)}
+                        onDelete={() => handleDelete(m)}
+                      />
+                    </ItemActions>
+                  </ItemFooter>
+                </Item>
+              );
+            })}
+          </ItemGroup>
+        </>
       )}
 
       <CreateProfessionalDialog

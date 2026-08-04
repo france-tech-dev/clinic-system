@@ -26,6 +26,7 @@ import {
   formatAppointmentDate,
   formatAppointmentTime,
 } from "@/features/schedule/_lib/appointment-calendar-utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { paths } from "@/shared/constants/paths";
 import "./agenda-calendar.css";
 
@@ -75,7 +76,7 @@ function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
       </div>
       {canDrag ? (
         <span
-          className="agenda-event-drag-handle"
+          className="agenda-event-drag-handle hidden md:inline-flex"
           title="Arrastar para remarcar"
           aria-hidden
         >
@@ -99,6 +100,7 @@ export function AgendaCalendar({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isMobile = useIsMobile();
   const [view, setView] = useState<View>(initialCalView);
   const [isPending, startTransition] = useTransition();
   const [localEvents, setLocalEvents] = useState(events);
@@ -109,26 +111,33 @@ export function AgendaCalendar({
     setLocalEvents(events);
   }
 
+  /** Em telemóvel só a vista dia é utilizável; week/month ficam no estado para o desktop. */
+  const displayView: View = isMobile ? Views.DAY : view;
+  const availableViews = isMobile
+    ? ([Views.DAY] as View[])
+    : ([Views.DAY, Views.WEEK, Views.MONTH] as View[]);
+
   const onNavigate = useCallback(
     (newDate: Date) => {
       const next = new URLSearchParams(searchParams.toString());
       next.set("view", "calendario");
       next.set("viewDate", formatAppointmentDate(newDate));
-      next.set("calView", view);
+      next.set("calView", isMobile ? Views.DAY : view);
       router.push(`${paths.agenda}?${next.toString()}`);
     },
-    [router, searchParams, view],
+    [router, searchParams, view, isMobile],
   );
 
   const onView = useCallback(
     (nextView: View) => {
+      if (isMobile && nextView !== Views.DAY) return;
       setView(nextView);
       const next = new URLSearchParams(searchParams.toString());
       next.set("view", "calendario");
       next.set("calView", nextView);
       router.push(`${paths.agenda}?${next.toString()}`);
     },
-    [router, searchParams],
+    [router, searchParams, isMobile],
   );
 
   const eventPropGetter = useCallback((event: CalendarEvent) => {
@@ -177,8 +186,11 @@ export function AgendaCalendar({
 
   return (
     <div className="agenda-calendar rounded-md border border-border bg-card p-3 lg:p-4">
-      <p className="mb-3 text-sm text-muted-foreground">
+      <p className="mb-3 hidden text-sm text-muted-foreground md:block">
         Use o ícone à direita do agendamento para arrastar. Clique para editar.
+      </p>
+      <p className="mb-3 text-sm text-muted-foreground md:hidden">
+        Vista do dia. Toque num agendamento para editar.
       </p>
       <DnDCalendar
         localizer={localizer}
@@ -188,9 +200,9 @@ export function AgendaCalendar({
         titleAccessor="title"
         date={viewDate}
         onNavigate={onNavigate}
-        view={view}
+        view={displayView}
         onView={onView}
-        views={[Views.DAY, Views.WEEK, Views.MONTH]}
+        views={availableViews}
         step={30}
         timeslots={2}
         min={set(new Date(), { hours: 7, minutes: 0, seconds: 0 })}
@@ -201,9 +213,11 @@ export function AgendaCalendar({
         style={{ height: "70dvh", minHeight: "420px" }}
         eventPropGetter={eventPropGetter}
         components={{ event: CalendarEventLabel }}
-        onEventDrop={moveEvent}
+        onEventDrop={isMobile ? undefined : moveEvent}
         draggableAccessor={(event) =>
-          !isPending && (event as CalendarEvent).status === "scheduled"
+          !isMobile &&
+          !isPending &&
+          (event as CalendarEvent).status === "scheduled"
         }
         resizable={false}
         selectable={false}
