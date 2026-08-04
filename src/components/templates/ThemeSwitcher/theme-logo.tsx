@@ -17,10 +17,10 @@ interface ThemeLogoProps {
 }
 
 export function ThemeLogo({
-  alt = "NOME DA EMPRESA AQUI",
-  width = 200,
-  height = 200,
-  className = "w-full object-cover",
+  alt = "Movi Clinicas",
+  width = 120,
+  height = 48,
+  className = "h-20 w-auto max-w-full object-contain",
 }: ThemeLogoProps) {
   const theme = useTheme();
 
