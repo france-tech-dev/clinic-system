@@ -6,12 +6,15 @@ import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
-import { EntityCombobox } from "@/components/entity-combobox";
+import { EntityMultiCombobox } from "@/components/entity-multi-combobox";
 import {
   deleteAppointmentAction,
   setAppointmentStatusAction,
 } from "@/features/schedule/schedule.actions";
-import { filterAppointmentsByMemberId } from "@/features/schedule/_lib/filter-appointments-by-member";
+import {
+  filterAppointmentsByMemberId,
+  filterAppointmentsByPatientId,
+} from "@/features/schedule/_lib/filter-appointments-by-member";
 import type { CalendarEvent } from "@/features/schedule/_lib/appointment-calendar-utils";
 import type {
   AppointmentDTO,
@@ -49,7 +52,16 @@ function toLinkableAppointment(
   };
 }
 
-const MEMBER_FILTER_ALL = "all";
+function applyAgendaFilters<T extends { memberId: string; patientId: string }>(
+  items: T[],
+  memberIds: string[],
+  patientIds: string[],
+): T[] {
+  return filterAppointmentsByPatientId(
+    filterAppointmentsByMemberId(items, memberIds),
+    patientIds,
+  );
+}
 
 export function AgendaClient({
   initialView,
@@ -64,6 +76,7 @@ export function AgendaClient({
   members,
   defaultMemberId,
   initialMemberFilter,
+  initialPatientFilter,
 }: {
   initialView: "lista" | "calendario";
   initialDate: string;
@@ -76,7 +89,8 @@ export function AgendaClient({
   patients: PatientDTO[];
   members: ScheduleMemberDTO[];
   defaultMemberId: string;
-  initialMemberFilter: string;
+  initialMemberFilter: string[];
+  initialPatientFilter: string[];
 }) {
   const router = useRouter();
   const [activeView, setActiveView] = useState(initialView);
@@ -84,6 +98,7 @@ export function AgendaClient({
   const [dayAppointments, setDayAppointments] = useState(initialDay);
   const [upcoming, setUpcoming] = useState(initialUpcoming);
   const [memberFilter, setMemberFilter] = useState(initialMemberFilter);
+  const [patientFilter, setPatientFilter] = useState(initialPatientFilter);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AppointmentDTO | null>(null);
   const [sessionAppointment, setSessionAppointment] =
@@ -96,19 +111,22 @@ export function AgendaClient({
     [patients],
   );
 
+  const hasActiveFilters =
+    memberFilter.length > 0 || patientFilter.length > 0;
+
   const filteredDayAppointments = useMemo(
-    () => filterAppointmentsByMemberId(dayAppointments, memberFilter),
-    [dayAppointments, memberFilter],
+    () => applyAgendaFilters(dayAppointments, memberFilter, patientFilter),
+    [dayAppointments, memberFilter, patientFilter],
   );
 
   const filteredUpcoming = useMemo(
-    () => filterAppointmentsByMemberId(upcoming, memberFilter),
-    [upcoming, memberFilter],
+    () => applyAgendaFilters(upcoming, memberFilter, patientFilter),
+    [upcoming, memberFilter, patientFilter],
   );
 
   const filteredCalendarEvents = useMemo(
-    () => filterAppointmentsByMemberId(calendarEvents, memberFilter),
-    [calendarEvents, memberFilter],
+    () => applyAgendaFilters(calendarEvents, memberFilter, patientFilter),
+    [calendarEvents, memberFilter, patientFilter],
   );
 
   const appointmentsById = useMemo(() => {
@@ -127,7 +145,8 @@ export function AgendaClient({
     view: "lista" | "calendario",
     date: string,
     viewDate?: string,
-    member?: string,
+    memberIds?: string[],
+    patientIds?: string[],
     calView?: "day" | "week" | "month",
   ) {
     const params = new URLSearchParams();
@@ -137,9 +156,13 @@ export function AgendaClient({
       params.set("viewDate", viewDate ?? date);
       params.set("calView", calView ?? initialCalView);
     }
-    const memberValue = member ?? memberFilter;
-    if (memberValue && memberValue !== MEMBER_FILTER_ALL) {
-      params.set("member", memberValue);
+    const nextMembers = memberIds ?? memberFilter;
+    if (nextMembers.length > 0) {
+      params.set("member", nextMembers.join(","));
+    }
+    const nextPatients = patientIds ?? patientFilter;
+    if (nextPatients.length > 0) {
+      params.set("patient", nextPatients.join(","));
     }
     return `${paths.agenda}?${params.toString()}`;
   }
@@ -154,10 +177,18 @@ export function AgendaClient({
     router.push(buildUrl(view, selectedDate, viewDateIso));
   }
 
-  function changeMemberFilter(next: string) {
-    const value = next || MEMBER_FILTER_ALL;
-    setMemberFilter(value);
-    router.push(buildUrl(activeView, selectedDate, viewDateIso, value));
+  function changeMemberFilter(next: string[]) {
+    setMemberFilter(next);
+    router.push(
+      buildUrl(activeView, selectedDate, viewDateIso, next, patientFilter),
+    );
+  }
+
+  function changePatientFilter(next: string[]) {
+    setPatientFilter(next);
+    router.push(
+      buildUrl(activeView, selectedDate, viewDateIso, memberFilter, next),
+    );
   }
 
   function openCreate() {
@@ -240,19 +271,26 @@ export function AgendaClient({
         <p className="text-sm text-muted-foreground">
           Sessões agendadas da clínica
         </p>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-start">
+          {sortedPatients.length > 0 ? (
+            <EntityMultiCombobox
+              options={sortedPatients}
+              value={patientFilter}
+              onValueChange={changePatientFilter}
+              placeholder="Pacientes"
+              emptyText="Nenhum paciente encontrado"
+              className="w-full sm:w-56"
+              aria-label="Filtrar por paciente"
+            />
+          ) : null}
           {members.length > 0 ? (
-            <EntityCombobox
+            <EntityMultiCombobox
               options={members}
               value={memberFilter}
               onValueChange={changeMemberFilter}
-              placeholder="Profissional"
+              placeholder="Profissionais"
               emptyText="Nenhum profissional encontrado"
-              extraOption={{
-                id: MEMBER_FILTER_ALL,
-                name: "Todos os profissionais",
-              }}
-              className="w-full sm:w-50"
+              className="w-full sm:w-56"
               aria-label="Filtrar por profissional"
             />
           ) : null}
@@ -309,10 +347,7 @@ export function AgendaClient({
             {filteredDayAppointments.length === 0 ? (
               <p className="py-4 text-sm text-muted-foreground">
                 Nenhum agendamento para este dia
-                {memberFilter !== MEMBER_FILTER_ALL
-                  ? " com este profissional"
-                  : ""}
-                .
+                {hasActiveFilters ? " com estes filtros" : ""}.
               </p>
             ) : (
               <ul className="space-y-2">
@@ -336,10 +371,7 @@ export function AgendaClient({
             {upcomingGroups.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Nenhum agendamento futuro
-                {memberFilter !== MEMBER_FILTER_ALL
-                  ? " com este profissional"
-                  : " registrado"}
-                .
+                {hasActiveFilters ? " com estes filtros" : " registrado"}.
               </p>
             ) : (
               upcomingGroups.map((g) => (

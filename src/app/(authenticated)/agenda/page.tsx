@@ -20,14 +20,20 @@ import { todayIso } from "@/shared/constants/appointment";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { AgendaClient } from "./agenda-client";
 
-const MEMBER_FILTER_ALL = "all";
-
-function parseMemberFilter(
+function parseIdList(
   raw: string | undefined,
-  members: ScheduleMemberDTO[],
-): string {
-  if (!raw || raw === MEMBER_FILTER_ALL) return MEMBER_FILTER_ALL;
-  return members.some((m) => m.id === raw) ? raw : MEMBER_FILTER_ALL;
+  validIds: ReadonlySet<string>,
+): string[] {
+  if (!raw?.trim()) return [];
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const part of raw.split(",")) {
+    const id = part.trim();
+    if (!id || !validIds.has(id) || seen.has(id)) continue;
+    seen.add(id);
+    result.push(id);
+  }
+  return result;
 }
 
 const CAL_VIEWS = new Set(["day", "week", "month"]);
@@ -43,6 +49,7 @@ type AgendaPageProps = {
     viewDate?: string;
     calView?: string;
     member?: string;
+    patient?: string;
   }>;
 };
 
@@ -63,7 +70,8 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   let patients: PatientDTO[] = [];
   let members: ScheduleMemberDTO[] = [];
   let defaultMemberId = "";
-  let initialMemberFilter = MEMBER_FILTER_ALL;
+  let initialMemberFilter: string[] = [];
+  let initialPatientFilter: string[] = [];
 
   try {
     const { organizationId, userId } = await requireOrgId();
@@ -87,7 +95,14 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     calendarAppointments = rangeAppointments;
     members = orgMembers;
     defaultMemberId = currentMemberId ?? orgMembers[0]?.id ?? "";
-    initialMemberFilter = parseMemberFilter(params.member, orgMembers);
+    initialMemberFilter = parseIdList(
+      params.member,
+      new Set(orgMembers.map((m) => m.id)),
+    );
+    initialPatientFilter = parseIdList(
+      params.patient,
+      new Set(patientList.map((p) => p.id)),
+    );
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -96,6 +111,10 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   }
 
   const calendarEvents = appointmentsToCalendarEvents(calendarAppointments);
+  const filterKey = [
+    initialMemberFilter.join(","),
+    initialPatientFilter.join(","),
+  ].join("|");
 
   return (
     <AppPage title="Agenda">
@@ -103,7 +122,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         <p className="text-sm text-destructive">{error}</p>
       ) : (
         <AgendaClient
-          key={`${selectedDate}-${view}-${viewDateIso}-${calView}-${initialMemberFilter}`}
+          key={`${selectedDate}-${view}-${viewDateIso}-${calView}-${filterKey}`}
           initialView={view}
           initialDate={selectedDate}
           viewDateIso={viewDateIso}
@@ -116,6 +135,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           members={members}
           defaultMemberId={defaultMemberId}
           initialMemberFilter={initialMemberFilter}
+          initialPatientFilter={initialPatientFilter}
         />
       )}
     </AppPage>
