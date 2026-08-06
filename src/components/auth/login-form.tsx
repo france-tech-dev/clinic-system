@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { paths } from "@/shared/constants/paths";
-import { signIn } from "@/server/auth/users";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,13 +54,23 @@ export function LoginForm({
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     startTransition(async () => {
-      const { success, message } = await signIn(data.email, data.password);
-      if (success) {
-        toast.success(message);
-        router.push(paths.agenda);
-      } else {
-        toast.error(message);
+      // Via HTTP /api/auth — para o rate limit do Better Auth aplicar (auth.api.* não limita).
+      const { error } = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        if (error.status === 429) return;
+        toast.error(
+          error.message ||
+            "Algo de errado aconteceu, tente novamente mais tarde.",
+        );
+        return;
       }
+
+      toast.success("Login realizado com sucesso");
+      router.push(paths.agenda);
     });
   };
 

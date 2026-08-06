@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { paths } from "@/shared/constants/paths";
-import { signUp } from "@/server/auth/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -52,19 +51,33 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (data.password !== data.confirmPassword) {
+      form.setError("confirmPassword", {
+        message: "As senhas não coincidem",
+      });
+      return;
+    }
+
     startTransition(async () => {
-      const { success, message } = await signUp(
-        data.name,
-        data.email,
-        data.password,
-        data.confirmPassword,
-      );
-      if (success) {
-        toast.success(`${message}. Verifique seu email para ativar sua conta.`);
-        router.push(paths.agenda);
-      } else {
-        toast.error(message);
+      const { error } = await authClient.signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        if (error.status === 429) return;
+        toast.error(
+          error.message ||
+            "Algo de errado aconteceu, tente novamente mais tarde.",
+        );
+        return;
       }
+
+      toast.success(
+        "Cadastro realizado com sucesso. Verifique seu email para ativar sua conta.",
+      );
+      router.push(paths.agenda);
     });
   };
 

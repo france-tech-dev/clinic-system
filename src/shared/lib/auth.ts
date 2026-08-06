@@ -30,6 +30,16 @@ export const auth = betterAuth({
 
   trustedOrigins: [baseUrl],
 
+  // Defaults do Better Auth para endpoints sensíveis (sign-in, reset, etc.).
+  // Storage em DB para partilhar contadores entre réplicas Docker.
+  // ipAddress: configurar quando o proxy de produção estiver definido.
+  rateLimit: {
+    storage: "database",
+    customRules: {
+      "/get-session": false,
+    },
+  },
+
   user: {
     additionalFields: {
       phone: {
