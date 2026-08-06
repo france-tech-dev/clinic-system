@@ -62,6 +62,9 @@ EMAIL_NO_REPLY="noreply@seudominio.com"
 # Google OAuth (opcional)
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
+
+# Pool Postgres (opcional; default 10)
+# DATABASE_POOL_MAX="10"
 ```
 
 ```bash
@@ -76,6 +79,20 @@ Opcional, após criar a conta/organização:
 
 ```bash
 pnpm db:seed
+```
+
+## Segurança (rate limit)
+
+- **Better Auth** — contadores em Postgres (`RateLimit`), para partilhar limites entre réplicas Docker. Defaults nos endpoints sensíveis (sign-in, reset, etc.); `/get-session` sem throttle.
+- **Accept invitation** — `assertRateLimit` na rota pública `/api/accept-invitation/[invitationId]`.
+- Em produção com proxy, configurar `ipAddress` no Better Auth quando o header de IP estiver definido.
+
+Validar localmente ou em staging:
+
+```bash
+pnpm validate:rate-limit -- --url http://127.0.0.1:3000
+# duas réplicas (contador partilhado na BD):
+pnpm validate:rate-limit -- --a http://127.0.0.1:3001 --b http://127.0.0.1:3002
 ```
 
 ## Estrutura
@@ -109,23 +126,26 @@ Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · road
 
 ## Scripts
 
-| Comando           | Descrição                                     |
-| ----------------- | --------------------------------------------- |
-| `pnpm dev`        | Servidor de desenvolvimento                   |
-| `pnpm build`      | `prisma generate` + build Next.js             |
-| `pnpm start`      | Servidor de produção                          |
-| `pnpm lint`       | ESLint + verificação de arquitectura (`arch`) |
-| `pnpm arch`       | Fronteiras de import (dependency-cruiser)     |
-| `pnpm test`       | Testes unitários (Vitest)                     |
-| `pnpm test:watch` | Vitest em modo watch                          |
-| `pnpm db:migrate` | Aplica migrations (`prisma migrate deploy`)   |
-| `pnpm db:seed`    | Seed (paciente de demonstração)               |
+| Comando                   | Descrição                                     |
+| ------------------------- | --------------------------------------------- |
+| `pnpm dev`                | Servidor de desenvolvimento                   |
+| `pnpm build`              | `prisma generate` + build Next.js             |
+| `pnpm start`              | Servidor de produção                          |
+| `pnpm lint`               | ESLint + verificação de arquitectura (`arch`) |
+| `pnpm arch`               | Fronteiras de import (dependency-cruiser)     |
+| `pnpm test`               | Testes unitários (Vitest)                     |
+| `pnpm test:watch`         | Vitest em modo watch                          |
+| `pnpm db:migrate`         | Aplica migrations (`prisma migrate deploy`)   |
+| `pnpm db:seed`            | Seed (paciente de demonstração)               |
+| `pnpm validate:rate-limit`| Probe de rate limit (auth / réplicas)         |
 
 ## Deploy (Dokploy)
 
 Build Type: **Dockerfile**. No arranque do contentor corre `prisma migrate deploy` e depois `node server.js` (ver `docker-entrypoint.sh`).
 
 Usa a URL **Internal** da BD nas envs da app. Podes desactivar a porta External no Postgres se já não precisares dela.
+
+Com **várias réplicas**, o rate limit em database é obrigatório (já configurado) — storage em memória não partilha contadores entre processos.
 
 ## Licença
 

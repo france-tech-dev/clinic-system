@@ -11,7 +11,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ## P1 — Calendário visual com drag-and-drop
 
-**Status:** concluído (com melhorias em andamento)
+**Status:** concluído
 
 ### Concluído
 
@@ -61,7 +61,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ## P3 — Fluxo de caixa
 
-**Status:** MVP + extensões em andamento
+**Status:** MVP + extensões concluídos · melhorias futuras pendentes
 
 ### Concluído (MVP)
 
@@ -85,10 +85,14 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ## P4 — Polish transversal
 
+**Status:** concluído · segurança auth incluída
+
 - [x] Padrão `key` + montagem condicional em dialogs (evitar `useEffect` para sync de props)
 - [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução)
-- [x] Migration Prisma versionada (além de `db push` em dev) — baseline `20260714180000_init`
+- [x] Migration Prisma versionada (além de `db push` em dev) — baseline `20260731063400_init`
 - [x] Refactors de arquitetura — ver checklist consolidado em [`docs/architecture-audit.md`](./architecture-audit.md) (P0 + P1 + P4 + P6 concluídos)
+- [x] **Rate limit** — Better Auth com `storage: "database"` (modelo `RateLimit`) + `/get-session` sem throttle; `assertRateLimit` em `/api/accept-invitation/[invitationId]`; UI trata 429; script `pnpm validate:rate-limit`
+- [ ] **Rate limit IP no proxy** — configurar `ipAddress` no Better Auth quando o proxy de produção (Dokploy) expuser o header correcto
 
 ---
 
@@ -98,47 +102,46 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 1. P1 — Calendário ✅
 2. P2 — PDF + branding ✅
 3. P3 — Caixa MVP ✅ → extensões ✅
-4. P4 — Polish + deploy prep
+4. P4 — Polish + rate limit (DB) ✅ · ipAddress no proxy pendente
 5. P6 — Multi-profissional (P6.0–P6.5 ✅)
-6. P5 — Relatórios clínicos (expansão)
+6. P5 — Relatórios clínicos (expansão) — em curso
 ```
 
 ---
 
 ## P5 — Relatórios clínicos (expansão)
 
-**Status:** página `/relatorio` criada · funcionalidades avançadas pendentes
+**Status:** PDF e protocolos no fluxo actual · hub `/relatorio` e export GMFM pendentes
 
 ### Concluído
 
-- [x] Página dedicada `/relatorio` para geração de relatórios PDF (prontuário, anamnese, avaliação e roteiro)
+- [x] PDF de prontuário / anamnese a partir do detalhe do paciente e dos formulários (preview + download) — ver P2
+- [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
+- [x] **Protocolos estruturados** — GMFM-88 em `/avaliacoes/gmfm-88` (formulário 88 itens, percentuais, gráfico comparativo avaliação vs. reavaliação)
+- [x] **Evolução na agenda** — criar evolução directamente a partir do agendamento
+- [x] **Anamnese por especialidade** — hub `/anamnese` filtrado pelas profissões activas (1ª entrega: T.O.)
 
 ### Pendente
 
-- [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
-- [x] **Protocolos estruturados** — GMFM-88 em `/protocolos/gmfm` (formulário 88 itens, percentuais, gráfico comparativo avaliação vs. reavaliação)
-- [x] **botão para evolução direto na agenda** - botão para criar evolução direto na agenda, para o profissional que está atendendo a criança.
-- [ ] **GMFM-88 PDF** — poder exportar/visualizar o comparativo / ficha preenchida em PDF.
-- [x] **Anamnese por especialidade** — antes de preencher, escolher área (T.O., Fisio, Psico, Fono…); cada uma com formulário próprio (1ª entrega: T.O. em `/anamnese`)
-- [ ] **Adicionar Nuqs** para gerenciamento de state.
-- [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos
-- [ ] **Ficha de avaliação** — ficha de avaliação com todos os domínios e subdomínios, com os itens e respostas, e o resultado final da avaliação.
-- [ ] **Paginação** — paginação para as páginas que tem lista de itens, com 10 itens por página.
-- [ ] **Ordenação** — ordenação para as páginas que tem lista de itens, com opções de ordenação por data, nome, idade, etc.
-- [ ] **Filtros** — filtros para as páginas que tem lista de itens, com opções de filtro por data, nome, idade, etc.
-- [ ] **Exportação** — exportação para as páginas que tem lista de itens, com opções de exportação para PDF, CSV, etc.
-- [ ] **Responsividade** — responsividade para as páginas que tem lista de itens, com opções de responsividade para mobile, tablet, desktop, etc.
+- [ ] **Hub `/relatorio`** — página dedicada para gerar PDF (prontuário, anamnese, avaliação, roteiro) num só sítio
+- [ ] **GMFM-88 PDF** — exportar/visualizar o comparativo / ficha preenchida em PDF
+- [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos (`/portal` ainda é stub)
+- [ ] **Ficha de avaliação** — ficha com todos os domínios e subdomínios, itens, respostas e resultado final
+- [ ] **Paginação** — listas com 10 itens por página
+- [ ] **Filtros** — por data, nome, idade, etc. nas listagens
+- [ ] **Exportação** — PDF/CSV das listagens
 
-### Observabilidade
+### Observabilidade (futuro)
 
-- [ ] **Relatório de acessos** - relatório de acessos pela forma de acesso, computador, celular, tablet, etc.
-- [ ] **Relatório de erros** - relatório de erros pela forma de erro, erro de sistema, erro de usuário, erro de rede, etc.
-- [ ] **Relatório de performance** - relatório de performance pela forma de performance, tempo de resposta, tempo de processamento, etc.
+- [ ] Relatório de acessos (dispositivo: computador, celular, tablet, …)
+- [ ] Relatório de erros (sistema, utilizador, rede, …)
+- [ ] Relatório de performance (tempo de resposta / processamento)
 
 ---
 
 ## Notas
 
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
-- **Logo em produção:** anotado em P2 — implementar antes de deploy em Vercel/similar.
+- **Logo em produção:** anotado em P2 — implementar antes de deploy em Vercel/similar (Dokploy com volume local pode adiar).
 - **Conflito de horário:** explicitamente fora de escopo.
+- **Rate limit:** contadores na BD para réplicas Docker; ver README · secção Segurança.
