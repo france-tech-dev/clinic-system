@@ -73,43 +73,6 @@ export async function saveProfessionalProfile(
   return professional;
 }
 
-export async function getMemberProfessionalProfile(
-  organizationId: string,
-  memberId: string,
-): Promise<ProfessionalProfile | null> {
-  const member = await settingsRepository.findMemberInOrg(
-    organizationId,
-    memberId,
-  );
-  if (!member) return null;
-  return memberToProfessionalProfile(
-    member.metadata,
-    member.user.name,
-    member.registration,
-  );
-}
-
-export async function getMemberProfessionalProfilesByIds(
-  organizationId: string,
-  memberIds: string[],
-): Promise<Record<string, ProfessionalProfile>> {
-  const unique = [...new Set(memberIds.filter(Boolean))];
-  const members = await settingsRepository.findMembersByIds(
-    organizationId,
-    unique,
-  );
-  const map: Record<string, ProfessionalProfile> = {};
-  for (const member of members) {
-    const profile = memberToProfessionalProfile(
-      member.metadata,
-      member.user.name,
-      member.registration,
-    );
-    if (profile) map[member.id] = profile;
-  }
-  return map;
-}
-
 export async function getCurrentMemberProfessionalProfile(
   organizationId: string,
   userId: string,
