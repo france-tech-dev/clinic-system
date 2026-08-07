@@ -16,7 +16,12 @@ app/                             → rota, hub, ?paciente=, gating por profissã
 ```
 
 Referência de layout: `src/components/clinical-workspace-shell.tsx`.  
-Padrão de módulo forte: `AnamneseFormModule` em `features/anamnese/forms/`.
+Padrões de módulo forte (metadados + `render` no mesmo ficheiro):
+
+- Anamnese: `AnamneseFormModule` — `features/anamnese/forms/<profissão>/<id>/module.tsx`
+- Avaliação nativa (`protocol`): `EvaluationModule` — `features/protocol/evaluation-modules/<profissão>/<id>/module.tsx` (ex. GMFM-88)
+
+Instrumento **dentro de uma feature** → um `module.tsx`. Split catalog/UI só quando cruzar features (roteiros).
 
 ## Anti-padrões (proibido)
 
@@ -70,7 +75,7 @@ Todo instrumento listado no hub (`/anamnese`, `/avaliacoes`) deve ter:
 4. PDF no domínio, se aplicável
 
 ```ts
-// ✅ Um módulo (preferido — anamnese)
+// ✅ Um módulo (anamnese / GMFM — mesma feature)
 type InstrumentModule = {
   id: string;
   name: string;
@@ -80,8 +85,12 @@ type InstrumentModule = {
   render: (ctx) => Promise<ReactNode>;
 };
 
+// ❌ catalog.ts + ui.tsx separados na mesma feature
 // ❌ Catálogo no hub + UI vazia + if especial na page
 ```
+
+**Metadados de hub** = `id`, `name`, `description` (+ `professionId`) — o que o cartão lista.  
+O hub deriva o catálogo do registry; a rota resolve o módulo e chama `render(ctx)`.
 
 Orquestração da rota: `getCatalogEvaluation(id)` + `resolveEvaluationModuleUI(id)` → `notFound` se ausente → `ui.render(ctx)`. Sem ramos por tipo de instrumento na `page.tsx`.
 
@@ -92,6 +101,7 @@ Quando metadados/catálogo vivem num domínio e a UI/persistência noutro (ex. r
 1. Cada feature exporta o seu pedaço (`CatalogEvaluationDef` / `EvaluationModuleUI`).
 2. Tipos do contrato (`EvaluationModuleUI`) em `shared/types/evaluation-module-ui.ts`.
 3. **`app/`** une os registries (`resolveEvaluationModuleUI`) — features **não** se importam.
+4. Não unificar à força num `module.tsx` se isso forçar import feature → feature.
 
 ```ts
 // app/.../avaliacoes/_lib/resolve-evaluation-module-ui.ts
@@ -118,8 +128,8 @@ UI de especialidade (hub + aba no paciente) só com membro **activo** dessa prof
 
 ## Checklist antes de novo instrumento
 
-1. Existe módulo semelhante? Extender o padrão (anamnese module / assessment module).
-2. Registar metadados **e** `render(ctx)` — hub e rota usam o mesmo id.
+1. Existe módulo semelhante? Extender `AnamneseFormModule` ou `EvaluationModule` (`module.tsx`).
+2. Na mesma feature: um `module.tsx` com metadados **e** `render(ctx)` — hub deriva do registry; mesmo `id` na rota.
 3. Layout denso? → `ClinicalWorkspaceShell` + uma secção activa + footer sticky.
 4. Campos repetíveis em ≥3 sítios? → schema + renderer (fase 2), não mais JSX duplicado.
 5. Precisas de lib de wizard/EHR? → **não**; compor com Shadcn + shell + módulo.

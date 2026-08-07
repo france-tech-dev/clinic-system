@@ -35,18 +35,19 @@ Antes de criar abstração nova:
 5. Evitar listagens duplicadas no service que fazem a mesma query.
 
 ```ts
-// ❌ Três ficheiros de registo para o mesmo formId
-// ✅ Um AnamneseFormModule / EvaluationModuleUI registado uma vez
+// ❌ catalog.ts + ui.tsx + schema.ts de registo para o mesmo id
+// ✅ Um AnamneseFormModule / EvaluationModule (module.tsx) registado uma vez
 ```
 
 ## Catálogos por especialidade (anamnese / avaliações)
 
 - Hub filtra por profissões activas da clínica
-- Workspace: `getCatalogEvaluation(id)` + `resolveEvaluationModuleUI(id)` → `render(ctx)` + `?paciente=` — **sem** `if` por tipo na `page.tsx` (composição cross-feature em `app/.../_lib/`)
-- Preferir **um módulo** por instrumento (`id` + metadados + `render`; schema quando fase 2+) — ver `clinical-workspace.mdc`
+- Instrumento na **mesma** feature → `module.tsx` unificado (`EvaluationModule` / `AnamneseFormModule`); catálogo derivado do registry
+- Workspace: `getCatalogEvaluation(id)` + `resolveEvaluationModuleUI(id)` → `render(ctx)` + `?paciente=` — **sem** `if` por tipo na `page.tsx`
+- Cross-feature (ex. roteiros): `CatalogEvaluationDef` + `EvaluationModuleUI` compostos em `app/.../_lib/` — ver `clinical-workspace.mdc`
 - Card de hub partilhado: `src/components/profession-catalog-card.tsx`
 - Destino workspace: design system + shell sem domínio + módulos clínicos (não lib wizard/EHR)
-- Contrato de UI de avaliação: `shared/types/evaluation-module-ui.ts`
+- Contrato de UI de avaliação (cross-feature): `shared/types/evaluation-module-ui.ts`
 
 ## PDF multi-domínio
 
