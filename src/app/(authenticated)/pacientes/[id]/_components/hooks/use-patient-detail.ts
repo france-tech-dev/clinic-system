@@ -10,7 +10,10 @@ import type {
 import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import { buildPatientReportPayload } from "@/features/patient/_lib/pdf/build-patient-report-payload";
-import type { PatientReportMode } from "@/features/patient/_lib/pdf/types";
+import type {
+  PatientReportMode,
+  PatientReportPayload,
+} from "@/features/patient/_lib/pdf/types";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -22,7 +25,6 @@ import { useRouter } from "next/navigation";
 import type { PatientDetailTab } from "../patient-detail-types";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientClinicalEvaluations } from "./use-patient-clinical-evaluations";
-import { usePatientPdfReport } from "@/features/patient/hooks/use-patient-pdf-report";
 import { useRoteiroNotes } from "@/features/patient/hooks/use-roteiro-notes";
 import { usePatientSessions } from "./use-patient-sessions";
 
@@ -47,8 +49,14 @@ export function usePatientDetail({
   const [anamneses] = useState(initialAnamneses);
   const [tab, setTab] = useState<PatientDetailTab>("avaliacao");
   const [pending, startTransition] = useTransition();
+  const [previewPayload, setPreviewPayload] =
+    useState<PatientReportPayload | null>(null);
 
-  const pdfReport = usePatientPdfReport();
+  const pdfReport = {
+    previewPayload,
+    openPreview: (payload: PatientReportPayload) => setPreviewPayload(payload),
+    closePreview: () => setPreviewPayload(null),
+  };
   const roteiro = useRoteiroNotes({
     patientId: detail.patient.id,
     initialNotes: initial.roteiroNotes,
@@ -107,7 +115,10 @@ export function usePatientDetail({
     ],
   );
 
-  function previewReport(mode: PatientReportMode, evaluation?: ClinicalEvaluationDTO) {
+  function previewReport(
+    mode: PatientReportMode,
+    evaluation?: ClinicalEvaluationDTO,
+  ) {
     if (mode === "roteiro") {
       pdfReport.openPreview({
         ...buildReportPayload(mode, evaluation),

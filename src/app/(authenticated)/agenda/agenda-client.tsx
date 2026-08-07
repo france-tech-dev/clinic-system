@@ -32,6 +32,7 @@ import {
   type AppointmentStatusId,
 } from "@/shared/constants/appointment";
 import { paths } from "@/shared/constants/paths";
+import { replacePathAndQuery } from "@/shared/lib/replace-path-and-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
 import { AppointmentFormDialog } from "./_components/appointment-form-dialog";
@@ -63,6 +64,8 @@ function applyAgendaFilters<T extends { memberId: string; patientId: string }>(
   );
 }
 
+type CalView = "day" | "week" | "month";
+
 export function AgendaClient({
   initialView,
   initialDate,
@@ -81,7 +84,7 @@ export function AgendaClient({
   initialView: "lista" | "calendario";
   initialDate: string;
   viewDateIso: string;
-  initialCalView: "day" | "week" | "month";
+  initialCalView: CalView;
   initialDay: AppointmentDTO[];
   initialUpcoming: AppointmentDTO[];
   calendarEvents: CalendarEvent[];
@@ -95,6 +98,8 @@ export function AgendaClient({
   const router = useRouter();
   const [activeView, setActiveView] = useState(initialView);
   const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [calendarViewDateIso, setCalendarViewDateIso] = useState(viewDateIso);
+  const [calView, setCalView] = useState<CalView>(initialCalView);
   const [dayAppointments, setDayAppointments] = useState(initialDay);
   const [upcoming, setUpcoming] = useState(initialUpcoming);
   const [memberFilter, setMemberFilter] = useState(initialMemberFilter);
@@ -147,14 +152,14 @@ export function AgendaClient({
     viewDate?: string,
     memberIds?: string[],
     patientIds?: string[],
-    calView?: "day" | "week" | "month",
+    nextCalView?: CalView,
   ) {
     const params = new URLSearchParams();
     params.set("view", view);
     params.set("date", date);
     if (view === "calendario") {
       params.set("viewDate", viewDate ?? date);
-      params.set("calView", calView ?? initialCalView);
+      params.set("calView", nextCalView ?? calView);
     }
     const nextMembers = memberIds ?? memberFilter;
     if (nextMembers.length > 0) {
@@ -167,27 +172,49 @@ export function AgendaClient({
     return `${paths.agenda}?${params.toString()}`;
   }
 
+  /** UI-only: URL partilhável sem refetch RSC. */
+  function syncUrl(
+    view: "lista" | "calendario",
+    date: string,
+    viewDate?: string,
+    memberIds?: string[],
+    patientIds?: string[],
+    nextCalView?: CalView,
+  ) {
+    replacePathAndQuery(
+      buildUrl(view, date, viewDate, memberIds, patientIds, nextCalView),
+    );
+  }
+
   function navigate(date: string) {
     setSelectedDate(date);
-    router.push(buildUrl(activeView, date, viewDateIso));
+    router.push(buildUrl(activeView, date, calendarViewDateIso));
   }
 
   function switchView(view: "lista" | "calendario") {
     setActiveView(view);
-    router.push(buildUrl(view, selectedDate, viewDateIso));
+    syncUrl(view, selectedDate, calendarViewDateIso);
   }
 
   function changeMemberFilter(next: string[]) {
     setMemberFilter(next);
-    router.push(
-      buildUrl(activeView, selectedDate, viewDateIso, next, patientFilter),
+    syncUrl(
+      activeView,
+      selectedDate,
+      calendarViewDateIso,
+      next,
+      patientFilter,
     );
   }
 
   function changePatientFilter(next: string[]) {
     setPatientFilter(next);
-    router.push(
-      buildUrl(activeView, selectedDate, viewDateIso, memberFilter, next),
+    syncUrl(
+      activeView,
+      selectedDate,
+      calendarViewDateIso,
+      memberFilter,
+      next,
     );
   }
 
@@ -272,17 +299,15 @@ export function AgendaClient({
           Sessões agendadas da clínica
         </p>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-start">
-          {sortedPatients.length > 0 ? (
-            <EntityMultiCombobox
-              options={sortedPatients}
-              value={patientFilter}
-              onValueChange={changePatientFilter}
-              placeholder="Pacientes"
-              emptyText="Nenhum paciente encontrado"
-              className="w-full sm:w-56"
-              aria-label="Filtrar por paciente"
-            />
-          ) : null}
+          <EntityMultiCombobox
+            options={sortedPatients}
+            value={patientFilter}
+            onValueChange={changePatientFilter}
+            placeholder="Pacientes"
+            emptyText="Nenhum paciente encontrado"
+            className="w-full sm:w-56"
+            aria-label="Filtrar por paciente"
+          />
           {members.length > 0 ? (
             <EntityMultiCombobox
               options={members}
@@ -399,8 +424,28 @@ export function AgendaClient({
         <TabsContent value="calendario" className="mt-4">
           <AgendaCalendar
             events={filteredCalendarEvents}
-            viewDate={new Date(`${viewDateIso}T12:00:00`)}
-            initialCalView={initialCalView}
+            viewDateIso={calendarViewDateIso}
+            loadedViewDateIso={viewDateIso}
+            calView={calView}
+            onCalViewChange={(next) => {
+              setCalView(next);
+              syncUrl(
+                "calendario",
+                selectedDate,
+                calendarViewDateIso,
+                undefined,
+                undefined,
+                next,
+              );
+            }}
+            onViewDateChange={(nextIso, needsServerFetch) => {
+              setCalendarViewDateIso(nextIso);
+              if (needsServerFetch) {
+                router.push(buildUrl("calendario", selectedDate, nextIso));
+              } else {
+                syncUrl("calendario", selectedDate, nextIso);
+              }
+            }}
             onSelectEvent={openEditById}
           />
         </TabsContent>

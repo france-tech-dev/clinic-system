@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useTransition, type MouseEvent } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GripVertical } from "lucide-react";
 import {
   Calendar,
@@ -26,6 +26,7 @@ import {
   formatAppointmentDate,
   formatAppointmentTime,
 } from "@/features/schedule/_lib/appointment-calendar-utils";
+import { parseIsoDateParam } from "@/features/schedule/_lib/schedule-appointments-range";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { paths } from "@/shared/constants/paths";
 import "./agenda-calendar.css";
@@ -54,6 +55,10 @@ const CALENDAR_MESSAGES = {
 };
 
 const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar);
+
+function isSameCalendarMonth(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+}
 
 function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
   const canDrag = event.status === "scheduled";
@@ -89,19 +94,25 @@ function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
 
 export function AgendaCalendar({
   events,
-  viewDate,
-  initialCalView,
+  viewDateIso,
+  loadedViewDateIso,
+  calView,
+  onCalViewChange,
+  onViewDateChange,
   onSelectEvent,
 }: {
   events: CalendarEvent[];
-  viewDate: Date;
-  initialCalView: "day" | "week" | "month";
+  /** Data visível actual (estado client). */
+  viewDateIso: string;
+  /** Mês cujos eventos já vieram do servidor. */
+  loadedViewDateIso: string;
+  calView: "day" | "week" | "month";
+  onCalViewChange: (view: "day" | "week" | "month") => void;
+  onViewDateChange: (iso: string, needsServerFetch: boolean) => void;
   onSelectEvent?: (id: string) => void;
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const isMobile = useIsMobile();
-  const [view, setView] = useState<View>(initialCalView);
   const [isPending, startTransition] = useTransition();
   const [localEvents, setLocalEvents] = useState(events);
   const [prevEvents, setPrevEvents] = useState(events);
@@ -111,33 +122,40 @@ export function AgendaCalendar({
     setLocalEvents(events);
   }
 
+  const viewDate =
+    parseIsoDateParam(viewDateIso) ?? new Date(`${viewDateIso}T12:00:00`);
+
   /** Em telemóvel só a vista dia é utilizável; week/month ficam no estado para o desktop. */
-  const displayView: View = isMobile ? Views.DAY : view;
+  const displayView: View = isMobile ? Views.DAY : calView;
   const availableViews = isMobile
     ? ([Views.DAY] as View[])
     : ([Views.DAY, Views.WEEK, Views.MONTH] as View[]);
 
   const onNavigate = useCallback(
     (newDate: Date) => {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set("view", "calendario");
-      next.set("viewDate", formatAppointmentDate(newDate));
-      next.set("calView", isMobile ? Views.DAY : view);
-      router.push(`${paths.agenda}?${next.toString()}`);
+      const loadedMonthDate =
+        parseIsoDateParam(loadedViewDateIso) ??
+        new Date(`${loadedViewDateIso}T12:00:00`);
+      const iso = formatAppointmentDate(newDate);
+      const needsServerFetch = !isSameCalendarMonth(newDate, loadedMonthDate);
+      onViewDateChange(iso, needsServerFetch);
     },
-    [router, searchParams, view, isMobile],
+    [loadedViewDateIso, onViewDateChange],
   );
 
   const onView = useCallback(
     (nextView: View) => {
       if (isMobile && nextView !== Views.DAY) return;
-      setView(nextView);
-      const next = new URLSearchParams(searchParams.toString());
-      next.set("view", "calendario");
-      next.set("calView", nextView);
-      router.push(`${paths.agenda}?${next.toString()}`);
+      if (
+        nextView !== Views.DAY &&
+        nextView !== Views.WEEK &&
+        nextView !== Views.MONTH
+      ) {
+        return;
+      }
+      onCalViewChange(nextView);
     },
-    [router, searchParams, isMobile],
+    [isMobile, onCalViewChange],
   );
 
   const eventPropGetter = useCallback((event: CalendarEvent) => {

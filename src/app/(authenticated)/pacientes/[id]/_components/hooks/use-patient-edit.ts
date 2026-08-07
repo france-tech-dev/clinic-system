@@ -27,7 +27,7 @@ import {
 } from "@/features/patient/patient.schema";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
 import { patientDtoToDraft } from "@/features/patient/_lib/patient-form-defaults";
-import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
+import { parseBrl } from "@/shared/lib/money-utils";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 export function usePatientEdit({
@@ -126,7 +126,7 @@ export function usePatientEdit({
           sex: patientDraft.sex,
           notes: patientDraft.notes,
           pricingType: patientDraft.pricingType,
-          price: parsePatientPriceInput(patientDraft.priceInput),
+          price: parseBrl(patientDraft.priceInput),
           guardianId: editGuardianId,
         });
         if (!result.success) {

@@ -45,7 +45,7 @@ import type {
   PatientStatus,
 } from "@/features/patient/patient.types";
 import { EMPTY_PATIENT_DRAFT } from "@/features/patient/_lib/patient-form-defaults";
-import { parsePatientPriceInput } from "@/features/patient/_lib/patient-price-input";
+import { parseBrl } from "@/shared/lib/money-utils";
 import { paths } from "@/shared/constants/paths";
 import { formatPatientListMeta } from "@/features/patient/_lib/patient-list-meta";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
@@ -150,7 +150,7 @@ export function PacientesClient({
           sex: patientDraft.sex,
           notes: patientDraft.notes,
           pricingType: patientDraft.pricingType,
-          price: parsePatientPriceInput(patientDraft.priceInput),
+          price: parseBrl(patientDraft.priceInput),
           guardianId,
         });
         if (!result.success) {
