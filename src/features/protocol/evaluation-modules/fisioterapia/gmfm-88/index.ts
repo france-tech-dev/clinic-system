@@ -1,5 +1,4 @@
-export { gmfm88CatalogEvaluation } from "./catalog";
-export { gmfm88EvaluationModuleUI } from "./ui";
+export { gmfm88Module } from "./module";
 export {
   GMFM88_PROTOCOL_ID,
   GMFM88_MAX_ITEM_SCORE,

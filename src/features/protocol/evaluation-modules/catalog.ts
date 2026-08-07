@@ -1,10 +1,7 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
 import { HEALTH_PROFESSIONS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
-import {
-  FISIOTERAPIA_PROFESSION_ID,
-  fisioterapiaCatalogEvaluations,
-} from "./fisioterapia";
+import { listEvaluationModules } from "./registry";
 import {
   TERAPIA_OCUPACIONAL_PROFESSION_ID,
   terapiaOcupacionalCatalogEvaluations,
@@ -16,15 +13,23 @@ import type {
 } from "./types";
 
 /**
- * Catálogo por profissão — cada pasta em `assessments/<profissão>/`
- * exporta a sua lista.
+ * Catálogo do hub `/avaliacoes`.
+ * - Instrumentos nativos: derivados do registry único (metadados + render).
+ * - Roteiros T.O.: só metadados aqui; UI em `patient` (composição em `app/`).
  */
-const ASSESSMENTS_BY_PROFESSION: Partial<
-  Record<HealthProfessionId, CatalogEvaluationDef[]>
-> = {
-  [FISIOTERAPIA_PROFESSION_ID]: fisioterapiaCatalogEvaluations,
-  [TERAPIA_OCUPACIONAL_PROFESSION_ID]: terapiaOcupacionalCatalogEvaluations,
-};
+function catalogDefsByProfession(
+  professionId: HealthProfessionId,
+): CatalogEvaluationDef[] {
+  const fromModules = listEvaluationModules()
+    .filter((mod) => mod.professionId === professionId)
+    .map(({ id, name, description }) => ({ id, name, description }));
+
+  if (professionId === TERAPIA_OCUPACIONAL_PROFESSION_ID) {
+    return [...fromModules, ...terapiaOcupacionalCatalogEvaluations];
+  }
+
+  return fromModules;
+}
 
 function withHref(assessment: CatalogEvaluationDef): CatalogEvaluation {
   return {
@@ -33,16 +38,12 @@ function withHref(assessment: CatalogEvaluationDef): CatalogEvaluation {
   };
 }
 
-/**
- * Catálogo de avaliações no hub (`/avaliacoes`).
- * O `id` deve coincidir com o registry de UI (`./registry.ts`).
- */
 export const PROFESSION_EVALUATION_CATALOG: ProfessionEvaluationCatalogItem[] =
   HEALTH_PROFESSIONS.map((profession) => ({
     professionId: profession.id,
     label: profession.label,
     council: profession.council,
-    assessments: (ASSESSMENTS_BY_PROFESSION[profession.id] ?? []).map(withHref),
+    assessments: catalogDefsByProfession(profession.id).map(withHref),
   })).sort((a, b) => {
     if (a.assessments.length === b.assessments.length) {
       return a.label.localeCompare(b.label, "pt-BR");

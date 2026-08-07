@@ -1,4 +1,5 @@
 export type {
+  EvaluationModule,
   EvaluationModuleRenderContext,
   EvaluationModuleUI,
   CatalogEvaluation,
@@ -11,7 +12,8 @@ export {
   getCatalogEvaluation,
 } from "./catalog";
 export {
-  EVALUATION_MODULE_UI_REGISTRY,
+  EVALUATION_MODULE_REGISTRY,
+  getEvaluationModule,
   getEvaluationModuleUI,
-  isEvaluationModuleUIRegistered,
+  listEvaluationModules,
 } from "./registry";

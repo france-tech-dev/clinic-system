@@ -1,28 +1,33 @@
-import { fisioterapiaEvaluationModuleUIs } from "./fisioterapia";
-import { terapiaOcupacionalEvaluationModuleUIs } from "./terapia-ocupacional";
-import type { EvaluationModuleUI } from "./types";
+import { fisioterapiaEvaluationModules } from "./fisioterapia";
+import type { EvaluationModule, EvaluationModuleUI } from "./types";
 
 /**
- * Registry de UIs de avaliação, agrupado por pasta de profissão e avaliação.
+ * Instrumentos com UI em `protocol`.
+ * Para adicionar: `evaluation-modules/<profissão>/<id>/module.tsx` e incluir na lista da profissão.
  *
- * Para adicionar uma avaliação:
- * 1. `assessments/<profissão>/<id>/` — catalog, ui, template, scoring, components
- * 2. Incluir no `catalog.ts` e `index.ts` da profissão
+ * Roteiros T.O. (UI em `patient`) compostam-se em
+ * `app/(authenticated)/avaliacoes/_lib/resolve-evaluation-module-ui.ts`.
  */
-const EVALUATION_MODULE_UI_MODULES: EvaluationModuleUI[] = [
-  ...fisioterapiaEvaluationModuleUIs,
-  ...terapiaOcupacionalEvaluationModuleUIs,
+const EVALUATION_MODULES: EvaluationModule[] = [
+  ...fisioterapiaEvaluationModules,
 ];
 
-export const EVALUATION_MODULE_UI_REGISTRY: ReadonlyMap<string, EvaluationModuleUI> =
-  new Map(EVALUATION_MODULE_UI_MODULES.map((mod) => [mod.id, mod]));
+export const EVALUATION_MODULE_REGISTRY: ReadonlyMap<string, EvaluationModule> =
+  new Map(EVALUATION_MODULES.map((mod) => [mod.id, mod]));
 
+export function getEvaluationModule(
+  avaliacaoId: string,
+): EvaluationModule | undefined {
+  return EVALUATION_MODULE_REGISTRY.get(avaliacaoId);
+}
+
+/** Compatível com o contrato partilhado (`EvaluationModuleUI`). */
 export function getEvaluationModuleUI(
   avaliacaoId: string,
 ): EvaluationModuleUI | undefined {
-  return EVALUATION_MODULE_UI_REGISTRY.get(avaliacaoId);
+  return getEvaluationModule(avaliacaoId);
 }
 
-export function isEvaluationModuleUIRegistered(avaliacaoId: string): boolean {
-  return EVALUATION_MODULE_UI_REGISTRY.has(avaliacaoId);
+export function listEvaluationModules(): EvaluationModule[] {
+  return EVALUATION_MODULES;
 }

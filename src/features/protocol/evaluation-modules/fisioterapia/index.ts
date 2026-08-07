@@ -1,11 +1,8 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
-import { fisioterapiaCatalogEvaluations } from "./catalog";
-import { gmfm88EvaluationModuleUI } from "./gmfm-88";
-import type { EvaluationModuleUI } from "../types";
+import { gmfm88Module } from "./gmfm-88";
+import type { EvaluationModule } from "../types";
 
 export const FISIOTERAPIA_PROFESSION_ID =
   "fisioterapeuta" satisfies HealthProfessionId;
 
-export const fisioterapiaEvaluationModuleUIs: EvaluationModuleUI[] = [gmfm88EvaluationModuleUI];
-
-export { fisioterapiaCatalogEvaluations };
+export const fisioterapiaEvaluationModules: EvaluationModule[] = [gmfm88Module];

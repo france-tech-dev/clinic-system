@@ -1,4 +1,5 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
+import type { EvaluationModuleUI } from "@/shared/types/evaluation-module-ui";
 
 export type {
   EvaluationModuleRenderContext,
@@ -10,6 +11,9 @@ export type CatalogEvaluationDef = {
   name: string;
   description: string;
 };
+
+/** Instrumento nativo de `protocol`: metadados de hub + render (como anamnese). */
+export type EvaluationModule = EvaluationModuleUI & CatalogEvaluationDef;
 
 export type CatalogEvaluation = CatalogEvaluationDef & {
   href: string;
