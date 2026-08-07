@@ -69,7 +69,7 @@ export function ClinicalWorkspaceShell({
       <div className="flex min-w-0 flex-col gap-4">
         {children}
         {footer ? (
-          <div className="no-print sticky bottom-0 flex flex-wrap gap-2 border-t border-border bg-background/80 py-3 backdrop-blur">
+          <div className="no-print sticky bottom-0 flex flex-wrap gap-2 border-t border-border bg-background/80 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur">
             {footer}
           </div>
         ) : null}

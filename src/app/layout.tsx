@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "../components/ui/tooltip";
@@ -30,6 +30,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,7 +50,7 @@ export default function RootLayout({
       >
         <Provider>
           <TooltipProvider>
-            <div className="fixed bottom-3 right-3 z-50">
+            <div className="fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] z-50">
               <ThemeSwitcher />
             </div>
             {children}

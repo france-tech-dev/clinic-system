@@ -203,45 +203,49 @@ export function AgendaCalendar({
   );
 
   return (
-    <div className="agenda-calendar rounded-md border border-border bg-card p-3 lg:p-4">
-      <p className="mb-3 hidden text-sm text-muted-foreground md:block">
+    <div className="agenda-calendar flex min-h-0 flex-1 flex-col rounded-md border border-border bg-card p-3 lg:p-4">
+      <p className="mb-3 hidden shrink-0 text-sm text-muted-foreground md:block">
         Use o ícone à direita do agendamento para arrastar. Clique para editar.
       </p>
-      <p className="mb-3 text-sm text-muted-foreground md:hidden">
+      <p className="mb-3 shrink-0 text-sm text-muted-foreground md:hidden">
         Vista do dia. Toque num agendamento para editar.
       </p>
-      <DnDCalendar
-        localizer={localizer}
-        events={localEvents}
-        startAccessor="start"
-        endAccessor="end"
-        titleAccessor="title"
-        date={viewDate}
-        onNavigate={onNavigate}
-        view={displayView}
-        onView={onView}
-        views={availableViews}
-        step={30}
-        timeslots={2}
-        min={set(new Date(), { hours: 7, minutes: 0, seconds: 0 })}
-        max={set(new Date(), { hours: 21, minutes: 0, seconds: 0 })}
-        scrollToTime={set(new Date(), { hours: 8, minutes: 0, seconds: 0 })}
-        popup
-        culture="pt-BR"
-        style={{ height: "70dvh", minHeight: "420px" }}
-        eventPropGetter={eventPropGetter}
-        components={{ event: CalendarEventLabel }}
-        onEventDrop={isMobile ? undefined : moveEvent}
-        draggableAccessor={(event) =>
-          !isMobile &&
-          !isPending &&
-          (event as CalendarEvent).status === "scheduled"
-        }
-        resizable={false}
-        selectable={false}
-        messages={CALENDAR_MESSAGES}
-        onSelectEvent={(event) => onSelectEvent?.(event.id)}
-      />
+      <div className="relative min-h-70 flex-1 md:min-h-105">
+        <div className="absolute inset-0">
+          <DnDCalendar
+            localizer={localizer}
+            events={localEvents}
+            startAccessor="start"
+            endAccessor="end"
+            titleAccessor="title"
+            date={viewDate}
+            onNavigate={onNavigate}
+            view={displayView}
+            onView={onView}
+            views={availableViews}
+            step={30}
+            timeslots={2}
+            min={set(new Date(), { hours: 7, minutes: 0, seconds: 0 })}
+            max={set(new Date(), { hours: 21, minutes: 0, seconds: 0 })}
+            scrollToTime={set(new Date(), { hours: 8, minutes: 0, seconds: 0 })}
+            popup
+            culture="pt-BR"
+            style={{ height: "100%" }}
+            eventPropGetter={eventPropGetter}
+            components={{ event: CalendarEventLabel }}
+            onEventDrop={isMobile ? undefined : moveEvent}
+            draggableAccessor={(event) =>
+              !isMobile &&
+              !isPending &&
+              (event as CalendarEvent).status === "scheduled"
+            }
+            resizable={false}
+            selectable={false}
+            messages={CALENDAR_MESSAGES}
+            onSelectEvent={(event) => onSelectEvent?.(event.id)}
+          />
+        </div>
+      </div>
     </div>
   );
 }
