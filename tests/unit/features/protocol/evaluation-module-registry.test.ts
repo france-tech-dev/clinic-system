@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { resolveEvaluationModuleUI } from "@/app/(authenticated)/avaliacoes/_lib/resolve-evaluation-module-ui";
 import {
-  EVALUATION_MODULE_UI_REGISTRY,
+  EVALUATION_MODULE_REGISTRY,
   PROFESSION_EVALUATION_CATALOG,
 } from "@/features/protocol/evaluation-modules";
 import { roteiroEvaluationModuleUIs } from "@/features/patient/roteiro-evaluation-module-ui";
 
 const ALL_UI_MODULES = [
-  ...EVALUATION_MODULE_UI_REGISTRY.values(),
+  ...EVALUATION_MODULE_REGISTRY.values(),
   ...roteiroEvaluationModuleUIs,
 ];
 
