@@ -7,7 +7,7 @@ import type { ClinicalEvaluationReportOptions } from "../clinical-evaluation-rep
 import type { ClinicalEvaluationReportSectionId } from "../clinical-evaluation-report-options";
 import {
   getClinicalEvaluationReportDomains,
-  isClinicalClinicalEvaluationSectionEnabled,
+  isClinicalEvaluationSectionEnabled,
 } from "../clinical-evaluation-report-options";
 
 function hasSectionContent(value: string): boolean {
@@ -20,7 +20,8 @@ function showSection(
   value: string,
 ): boolean {
   return (
-    isClinicalClinicalEvaluationSectionEnabled(options, sectionId) && hasSectionContent(value)
+    isClinicalEvaluationSectionEnabled(options, sectionId) &&
+    hasSectionContent(value)
   );
 }
 

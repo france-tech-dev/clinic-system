@@ -1,5 +1,5 @@
+import { amountToBrlInput } from "@/shared/lib/money-utils";
 import type { PatientDraftInput } from "@/features/patient/patient.schema";
-import { formatPatientPriceInput } from "@/features/patient/_lib/patient-price-input";
 import type {
   PatientPricingType,
   PatientSex,
@@ -28,6 +28,9 @@ export function patientDtoToDraft(patient: {
     sex: patient.sex,
     notes: patient.notes,
     pricingType: patient.pricingType,
-    priceInput: formatPatientPriceInput(patient.price),
+    priceInput:
+      patient.price === null || patient.price <= 0
+        ? ""
+        : amountToBrlInput(patient.price),
   };
 }
