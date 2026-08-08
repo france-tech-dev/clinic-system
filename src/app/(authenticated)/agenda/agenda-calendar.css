@@ -68,6 +68,11 @@
   background-color: var(--card);
 }
 
+/* Sem eventos all-day na clínica — esconde a faixa vazia acima dos horários */
+.agenda-calendar .rbc-time-view .rbc-allday-cell {
+  display: none;
+}
+
 .agenda-calendar .rbc-header,
 .agenda-calendar .rbc-time-header-content,
 .agenda-calendar .rbc-time-header.rbc-overflowing,

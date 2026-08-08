@@ -210,7 +210,7 @@ export function AgendaCalendar({
       <p className="mb-3 shrink-0 text-sm text-muted-foreground md:hidden">
         Vista do dia. Toque num agendamento para editar.
       </p>
-      <div className="relative min-h-70 flex-1 md:min-h-105">
+      <div className="relative min-h-[80dvh] flex-1 md:min-h-105">
         <div className="absolute inset-0">
           <DnDCalendar
             localizer={localizer}
