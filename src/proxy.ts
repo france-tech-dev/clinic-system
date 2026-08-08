@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
 import { canAccessClinicPanel } from "@/shared/lib/member-role";
-import { db } from "@/shared/lib/prisma";
+import { findProxyMember } from "@/server/auth/proxy-member";
 
 function isAuthRoute(pathname: string) {
   return (
@@ -36,30 +36,17 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const user = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      mustChangePassword: true,
-      members: {
-        select: { role: true, organizationId: true, status: true },
-        orderBy: { createdAt: "asc" },
-      },
-    },
-  });
-
-  // Senha temporária: só permite /auth/alterar-senha
-  if (user?.mustChangePassword) {
+  if (session.user.mustChangePassword) {
     if (pathname === paths.auth.changePassword) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL(paths.auth.changePassword, req.url));
   }
 
-  const activeOrgId = session.session.activeOrganizationId;
-  const member =
-    user?.members.find((m) => m.organizationId === activeOrgId) ??
-    user?.members[0] ??
-    null;
+  const member = await findProxyMember(
+    session.user.id,
+    session.session.activeOrganizationId,
+  );
 
   if (member?.status === "inactive") {
     const logoutUrl = new URL(paths.auth.logout, req.url);

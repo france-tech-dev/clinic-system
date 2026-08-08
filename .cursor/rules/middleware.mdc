@@ -14,8 +14,10 @@ alwaysApply: false
 ## Neste projeto
 
 - Lógica em `src/proxy.ts` com `auth.api.getSession()` (Better Auth).
-- `matcher` restrito a `/panel/:path*` — evitar static assets.
-- `/dev` não está no matcher; a página valida `NODE_ENV=development`.
+- `session.cookieCache` activo (`maxAge` 5 min) — `getSession` costuma evitar DB.
+- Gates de membership: `findProxyMember` em `src/server/auth/proxy-member.ts` (1 query leve: `role` + `status`).
+- `mustChangePassword` vem de `session.user` (additionalField) — sem query extra.
+- `matcher` exclui `logout`, `api`, static e ficheiros com extensão.
 
 ## Padrão
 
@@ -23,11 +25,21 @@ alwaysApply: false
 export async function proxy(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
   if (!session) {
-    return NextResponse.redirect(new URL(PATHS.AUTH.LOGIN, req.url));
+    return NextResponse.redirect(new URL(paths.auth.login, req.url));
   }
-  // acesso via Member.role da org activa (OWNER | ADMIN | MANAGER | MEMBER)
+  if (session.user.mustChangePassword) {
+    // redirect para change-password
+  }
+  const member = await findProxyMember(
+    session.user.id,
+    session.session.activeOrganizationId,
+  );
+  // acesso via Member.role (OWNER | ADMIN | MANAGER | MEMBER | CLIENT)
   return NextResponse.next();
 }
 ```
 
-Ajustar roles/rotas conforme `PATHS` e regras do produto.
+## Cookie cache
+
+- Após mutações que alterem o que o proxy lê do user/sessão (ex. `mustChangePassword`), refrescar com `getSession({ query: { disableCookieCache: true } })` para o `nextCookies` gravar o cookie novo.
+- Status `inactive` do membro pode atrasar até `maxAge` do cookie cache — aceitável para o painel clínico.

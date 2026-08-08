@@ -123,6 +123,10 @@ export async function changeForcedPasswordAction(
     }
 
     await changeForcedPassword(session.user.id, parsed.data.newPassword);
+    await auth.api.getSession({
+      headers: await headers(),
+      query: { disableCookieCache: true },
+    });
     return ok(undefined);
   } catch (error) {
     return handleError(error);
