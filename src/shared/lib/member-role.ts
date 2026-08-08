@@ -1,23 +1,22 @@
 import { Role } from "../../../prisma/generated/prisma/enums";
 
-/** Papéis que podem aceder à área autenticada da clínica. */
-const PANEL_ROLES = new Set<string>([
+const PANEL_ROLES: readonly Role[] = [
   Role.OWNER,
   Role.ADMIN,
   Role.MANAGER,
   Role.MEMBER,
-]);
+];
 
-export function normalizeMemberRole(
-  role: string | Role | null | undefined,
-): string | null {
-  if (role == null || role === "") return null;
-  return String(role).trim().toUpperCase();
+export const LEADERSHIP_ROLES: readonly Role[] = [
+  Role.OWNER,
+  Role.ADMIN,
+  Role.MANAGER,
+];
+
+export function canAccessClinicPanel(role: Role | null): boolean {
+  return role != null && PANEL_ROLES.includes(role);
 }
 
-export function canAccessClinicPanel(
-  role: string | Role | null | undefined,
-): boolean {
-  const normalized = normalizeMemberRole(role);
-  return normalized != null && PANEL_ROLES.has(normalized);
+export function isLeadershipRole(role: Role | null): boolean {
+  return role != null && LEADERSHIP_ROLES.includes(role);
 }

@@ -2,24 +2,33 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
-import { canAccessClinicPanel } from "@/shared/lib/member-role";
+import {
+  canAccessClinicPanel,
+  isLeadershipRole,
+} from "@/shared/lib/member-role";
 import { findProxyMember } from "@/server/auth/proxy-member";
 
+const leadershipPaths = [
+  paths.painel,
+  paths.caixa,
+  paths.profissionais,
+  paths.configuracoes,
+] as const;
+
 function isAuthRoute(pathname: string) {
-  return (
-    pathname === paths.auth.root || pathname.startsWith(`${paths.auth.root}/`)
-  );
+  return pathname === paths.auth.root;
 }
 
 function isOrgSetupRoute(pathname: string) {
-  return (
-    pathname === paths.organizacao ||
-    pathname.startsWith(`${paths.organizacao}/`)
-  );
+  return pathname === paths.organizacao;
 }
 
 function isPortalRoute(pathname: string) {
-  return pathname === paths.portal || pathname.startsWith(`${paths.portal}/`);
+  return pathname === paths.portal;
+}
+
+function isLeadershipPath(pathname: string) {
+  return leadershipPaths.some((path) => pathname === path);
 }
 
 export async function proxy(req: NextRequest) {
@@ -54,7 +63,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(logoutUrl);
   }
 
-  const hasPanel = canAccessClinicPanel(member?.role);
+  const hasPanel = canAccessClinicPanel(member?.role ?? null);
   const hasMembership = member != null;
 
   // Logado nas páginas de auth → manda para o sítio certo
@@ -89,6 +98,10 @@ export async function proxy(req: NextRequest) {
   }
 
   if (pathname === paths.root) {
+    return NextResponse.redirect(new URL(paths.agenda, req.url));
+  }
+
+  if (isLeadershipPath(pathname) && !isLeadershipRole(member?.role ?? null)) {
     return NextResponse.redirect(new URL(paths.agenda, req.url));
   }
 

@@ -1,7 +1,8 @@
 import { db } from "@/shared/lib/prisma";
+import type { Role } from "../../../prisma/generated/prisma/enums";
 
 export type ProxyMemberGate = {
-  role: string;
+  role: Role;
   status: string;
 };
 
