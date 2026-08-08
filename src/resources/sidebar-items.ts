@@ -17,12 +17,8 @@ export type SidebarItem = {
   name: string;
   url: string;
   icon: React.ElementType;
+  /** Só quando restringe (ex. leadership). Sem campo = visível a todo o staff do painel. */
   canAccess?: readonly Role[];
-};
-
-export type SidebarSection = {
-  name: string;
-  items: SidebarItem[];
 };
 
 export type SidebarUser = {
@@ -32,57 +28,54 @@ export type SidebarUser = {
   role: Role | null;
 };
 
-export const sidebarItems = {
-  navMain: [
-    {
-      name: "Painel",
-      url: paths.painel,
-      icon: IconLayoutDashboard,
-      canAccess: LEADERSHIP_ROLES,
-    },
-    {
-      name: "Agenda",
-      url: paths.agenda,
-      icon: IconCalendar,
-    },
-    {
-      name: "Caixa",
-      url: paths.caixa,
-      icon: IconCash,
-      canAccess: LEADERSHIP_ROLES,
-    },
-    {
-      name: "Pacientes",
-      url: paths.pacientes,
-      icon: IconUsers,
-    },
-    {
-      name: "Profissionais",
-      url: paths.profissionais,
-      icon: IconUserPlus,
-      canAccess: LEADERSHIP_ROLES,
-    },
-    {
-      name: "Avaliações",
-      url: paths.avaliacoes.root,
-      icon: IconClipboardList,
-    },
-    {
-      name: "Anamnese",
-      url: paths.anamnese.root,
-      icon: IconFileText,
-    },
-    {
-      name: "Buscar",
-      url: paths.buscar,
-      icon: IconSearch,
-    },
-    {
-      name: "Configurações",
-      url: paths.configuracoes,
-      icon: IconSettings,
-      canAccess: LEADERSHIP_ROLES,
-    },
-  ] satisfies SidebarItem[],
-  sections: [] as SidebarSection[],
-};
+export const sidebarItems: SidebarItem[] = [
+  {
+    name: "Painel",
+    url: paths.painel,
+    icon: IconLayoutDashboard,
+    canAccess: LEADERSHIP_ROLES,
+  },
+  {
+    name: "Agenda",
+    url: paths.agenda,
+    icon: IconCalendar,
+  },
+  {
+    name: "Caixa",
+    url: paths.caixa,
+    icon: IconCash,
+    canAccess: LEADERSHIP_ROLES,
+  },
+  {
+    name: "Pacientes",
+    url: paths.pacientes,
+    icon: IconUsers,
+  },
+  {
+    name: "Profissionais",
+    url: paths.profissionais,
+    icon: IconUserPlus,
+    canAccess: LEADERSHIP_ROLES,
+  },
+  {
+    name: "Avaliações",
+    url: paths.avaliacoes.root,
+    icon: IconClipboardList,
+  },
+  {
+    name: "Anamnese",
+    url: paths.anamnese.root,
+    icon: IconFileText,
+  },
+  {
+    name: "Buscar",
+    url: paths.buscar,
+    icon: IconSearch,
+  },
+  {
+    name: "Configurações",
+    url: paths.configuracoes,
+    icon: IconSettings,
+    canAccess: LEADERSHIP_ROLES,
+  },
+];

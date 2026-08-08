@@ -116,8 +116,7 @@ export function AgendaClient({
     [patients],
   );
 
-  const hasActiveFilters =
-    memberFilter.length > 0 || patientFilter.length > 0;
+  const hasActiveFilters = memberFilter.length > 0 || patientFilter.length > 0;
 
   const filteredDayAppointments = useMemo(
     () => applyAgendaFilters(dayAppointments, memberFilter, patientFilter),
@@ -198,24 +197,12 @@ export function AgendaClient({
 
   function changeMemberFilter(next: string[]) {
     setMemberFilter(next);
-    syncUrl(
-      activeView,
-      selectedDate,
-      calendarViewDateIso,
-      next,
-      patientFilter,
-    );
+    syncUrl(activeView, selectedDate, calendarViewDateIso, next, patientFilter);
   }
 
   function changePatientFilter(next: string[]) {
     setPatientFilter(next);
-    syncUrl(
-      activeView,
-      selectedDate,
-      calendarViewDateIso,
-      memberFilter,
-      next,
-    );
+    syncUrl(activeView, selectedDate, calendarViewDateIso, memberFilter, next);
   }
 
   function openCreate() {
