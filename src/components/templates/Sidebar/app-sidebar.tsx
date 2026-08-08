@@ -12,14 +12,24 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { sidebarItems, type SidebarUser } from "@/resources/sidebar-items";
+import {
+  sidebarItems,
+  type SidebarItem,
+  type SidebarUser,
+} from "@/resources/sidebar-items";
 import { ThemeLogo } from "../ThemeSwitcher/theme-logo";
 
 const defaultUser: SidebarUser = {
   name: "Usuário",
   email: "",
   avatar: "/logo_dark.png",
+  role: null,
 };
+
+function canSeeItem(role: SidebarUser["role"], item: SidebarItem) {
+  if (!item.canAccess?.length) return true;
+  return role != null && item.canAccess.includes(role);
+}
 
 export function AppSidebar({
   user,
@@ -32,6 +42,9 @@ export function AppSidebar({
   activeOrganizationId?: string | null;
 }) {
   const sidebarUser = user ?? defaultUser;
+  const main = sidebarItems.navMain.filter((item) =>
+    canSeeItem(sidebarUser.role, item),
+  );
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -49,12 +62,14 @@ export function AppSidebar({
         </div>
       </SidebarHeader>
       <SidebarContent className="px-2">
-        <NavMain items={sidebarItems.navMain} />
+        <NavMain items={main} />
         {sidebarItems.sections.map((section) => (
           <NavSection
             key={section.name}
             title={section.name}
-            items={section.items}
+            items={section.items.filter((item) =>
+              canSeeItem(sidebarUser.role, item),
+            )}
           />
         ))}
       </SidebarContent>
