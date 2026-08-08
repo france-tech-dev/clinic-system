@@ -33,10 +33,14 @@ Antes de criar abstração nova:
 3. Não espelhar outro domínio “por simetria” se o problema for mais simples.
 4. Evitar 2–3 registries (catalog + ui + schema) quando **um módulo** basta (`id`, metadados, schema, `render`).
 5. Evitar listagens duplicadas no service que fazem a mesma query.
+6. “Fonte única” entre 2 call sites estáveis ≠ obrigatória — ver `reuse-before-create.mdc` (≥3 consumidores ou regra volátil).
 
 ```ts
 // ❌ catalog.ts + ui.tsx + schema.ts de registo para o mesmo id
 // ✅ Um AnamneseFormModule / EvaluationModule (module.tsx) registado uma vez
+
+// ❌ nav-access.ts só para sidebar + proxy
+// ✅ canAccess no sidebarItems + leadershipPaths no proxy
 ```
 
 ## Catálogos por especialidade (anamnese / avaliações)

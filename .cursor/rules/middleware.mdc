@@ -18,6 +18,8 @@ alwaysApply: false
 - Gates de membership: `findProxyMember` em `src/server/auth/proxy-member.ts` (1 query leve: `role` + `status`).
 - `mustChangePassword` vem de `session.user` (additionalField) — sem query extra.
 - `matcher` exclui `logout`, `api`, static e ficheiros com extensão.
+- Gate grosso por role: lista curta `leadershipPaths` + `isLeadershipRole` (`member-role.ts`). Sidebar filtra com `canAccess` em `sidebarItems` — **sem** registry partilhado.
+- Autorização fina (CRUD) continua em `requirePermission` nas actions — o proxy não substitui RBAC.
 
 ## Padrão
 

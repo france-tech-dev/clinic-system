@@ -13,6 +13,7 @@ Antes de criar uma função, helper, hook ou abstração nova, **procurar primei
 2. **Ler o utilitário relevante por completo** antes de adicionar (ex.: `shared/lib/*-utils.ts`) — a função pode já lá estar.
 3. **Preferir estender/compor** o que existe a criar um caminho paralelo.
 4. Só criar nova abstração quando houver **≥2 usos reais** ou uma responsabilidade claramente nova.
+5. Registry / “fonte única” partilhada: só com **≥3 consumidores** **ou** regra que muda com frequência. Com 2 sítios e regra estável, **duplicação pequena** (ex. 4 paths) é preferível a um módulo extra.
 
 ## Sinais de overengineering (evitar)
 
@@ -20,6 +21,9 @@ Antes de criar uma função, helper, hook ou abstração nova, **procurar primei
 - Wrapper de 1 linha sobre algo que já é claro (inline é melhor).
 - Abstração criada para um único uso hipotético ("talvez precise").
 - Função com retorno `A | B | null` a misturar responsabilidades — provavelmente deviam ser duas.
+- Normalizar / parsear o que o domínio já garante (ex. `Role` do Prisma) — usar o enum directo.
+- `T | null | undefined` na API pública — escolher **um** (`null` neste projeto, via `?? null` na fronteira).
+- Scaffolding “para o futuro” (secções vazias, mapas genéricos, helpers sem 2.º uso).
 
 ## Exemplo (deste projeto)
 
@@ -33,3 +37,5 @@ const s = `${zoned.getFullYear()}-...`;
 // ✅ Reutilizar o utilitário partilhado
 formatAppZonedDateParam(date);
 ```
+
+Acesso por role no menu/proxy: `canAccess` só onde restringe; gate no `proxy` com lista curta de paths + `isLeadershipRole` — **sem** registry `nav-access` partilhado.
