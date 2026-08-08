@@ -1,3 +1,4 @@
+import ThemeSwitcher from "@/components/templates/ThemeSwitcher/ThemeSwitcher";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -16,11 +17,10 @@ export function SiteHeader({ title, rightContent }: SiteHeaderProps) {
           className="mx-2 data-[orientation=vertical]:h-4"
         />
         <h1 className="min-w-0 truncate text-base font-medium">{title}</h1>
-        {rightContent ? (
-          <div className="ml-auto flex shrink-0 items-center justify-end gap-2">
-            {rightContent}
-          </div>
-        ) : null}
+        <div className="ml-auto flex shrink-0 items-center justify-end gap-2">
+          {rightContent}
+          <ThemeSwitcher />
+        </div>
       </div>
     </header>
   );

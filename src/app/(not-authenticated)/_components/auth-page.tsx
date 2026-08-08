@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import ThemeSwitcher from "@/components/templates/ThemeSwitcher/ThemeSwitcher";
 import { paths } from "@/shared/constants/paths";
 
 type AuthPageProps = {
@@ -10,7 +11,7 @@ export function AuthPage({ children }: AuthPageProps) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
+        <div className="flex items-center justify-between gap-2">
           <Link
             href={paths.root}
             className="flex items-center gap-2 font-medium"
@@ -27,6 +28,7 @@ export function AuthPage({ children }: AuthPageProps) {
             </div>
             Movi Clinicas
           </Link>
+          <ThemeSwitcher />
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">{children}</div>

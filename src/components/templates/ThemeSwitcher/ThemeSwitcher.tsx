@@ -18,12 +18,13 @@ const ThemeSwitcher = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Button onClick={() => setTheme(isDark ? "light" : "dark")} size="icon">
-      {isDark ? (
-        <Sun className="w-4 h-4" key="sun" />
-      ) : (
-        <Moon className="w-4 h-4" key="moon" />
-      )}
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
+    >
+      {isDark ? <Sun key="sun" /> : <Moon key="moon" />}
     </Button>
   );
 };

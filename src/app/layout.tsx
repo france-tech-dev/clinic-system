@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "../components/ui/tooltip";
 import { Toaster } from "sonner";
-import ThemeSwitcher from "@/components/templates/ThemeSwitcher/ThemeSwitcher";
 import Provider from "./providers/Provider";
 import { cn } from "@/shared/lib/utils";
 
@@ -49,12 +48,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Provider>
-          <TooltipProvider>
-            <div className="fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] z-50">
-              <ThemeSwitcher />
-            </div>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </Provider>
         <Toaster />
       </body>
