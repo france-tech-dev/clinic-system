@@ -16,7 +16,7 @@ const leadershipPaths = [
 ] as const;
 
 function isAuthRoute(pathname: string) {
-  return pathname === paths.auth.root;
+  return pathname.startsWith(paths.auth.root);
 }
 
 function isOrgSetupRoute(pathname: string) {
@@ -24,7 +24,7 @@ function isOrgSetupRoute(pathname: string) {
 }
 
 function isPortalRoute(pathname: string) {
-  return pathname === paths.portal;
+  return pathname.startsWith(paths.portal);
 }
 
 function isLeadershipPath(pathname: string) {
