@@ -2,6 +2,8 @@
 
 Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupacional e equipas multi-profissionais): prontuário, agenda, anamnese, avaliações estruturadas, caixa e painel — com isolamento por organização.
 
+**Em produção:** [https://movi-clinicas.francetech.com.br](https://movi-clinicas.francetech.com.br) — já em uso por profissionais.
+
 ## Stack
 
 | Tecnologia              | Uso                                         |
@@ -126,18 +128,18 @@ Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · road
 
 ## Scripts
 
-| Comando                   | Descrição                                     |
-| ------------------------- | --------------------------------------------- |
-| `pnpm dev`                | Servidor de desenvolvimento                   |
-| `pnpm build`              | `prisma generate` + build Next.js             |
-| `pnpm start`              | Servidor de produção                          |
-| `pnpm lint`               | ESLint + verificação de arquitectura (`arch`) |
-| `pnpm arch`               | Fronteiras de import (dependency-cruiser)     |
-| `pnpm test`               | Testes unitários (Vitest)                     |
-| `pnpm test:watch`         | Vitest em modo watch                          |
-| `pnpm db:migrate`         | Aplica migrations (`prisma migrate deploy`)   |
-| `pnpm db:seed`            | Seed (paciente de demonstração)               |
-| `pnpm validate:rate-limit`| Probe de rate limit (auth / réplicas)         |
+| Comando                    | Descrição                                     |
+| -------------------------- | --------------------------------------------- |
+| `pnpm dev`                 | Servidor de desenvolvimento                   |
+| `pnpm build`               | `prisma generate` + build Next.js             |
+| `pnpm start`               | Servidor de produção                          |
+| `pnpm lint`                | ESLint + verificação de arquitectura (`arch`) |
+| `pnpm arch`                | Fronteiras de import (dependency-cruiser)     |
+| `pnpm test`                | Testes unitários (Vitest)                     |
+| `pnpm test:watch`          | Vitest em modo watch                          |
+| `pnpm db:migrate`          | Aplica migrations (`prisma migrate deploy`)   |
+| `pnpm db:seed`             | Seed (paciente de demonstração)               |
+| `pnpm validate:rate-limit` | Probe de rate limit (auth / réplicas)         |
 
 ## Deploy (Dokploy)
 
