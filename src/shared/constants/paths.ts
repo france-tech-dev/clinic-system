@@ -7,6 +7,8 @@ export const paths = Object.freeze({
   profissionais: "/profissionais",
   caixa: "/caixa",
   organizacao: "/organizacao",
+  planos: "/planos",
+  plataforma: "/plataforma",
   buscar: "/buscar",
   configuracoes: "/configuracoes",
   /** Portal do responsável (Role.CLIENT) — em evolução. */
@@ -38,5 +40,6 @@ export const paths = Object.freeze({
   api: {
     acceptInvitation: (invitationId: string) =>
       `/api/accept-invitation/${invitationId}`,
+    stripeWebhook: "/api/stripe/webhook",
   },
 });

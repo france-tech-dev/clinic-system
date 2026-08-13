@@ -25,18 +25,22 @@ export function AppSidebar({
   user,
   organizations = [],
   activeOrganizationId = null,
+  isPlatformAdmin = false,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user?: SidebarUser | null;
   organizations?: { id: string; name: string }[];
   activeOrganizationId?: string | null;
+  isPlatformAdmin?: boolean;
 }) {
   const sidebarUser = user ?? defaultUser;
-  const items = sidebarItems.filter(
-    (item) =>
+  const items = sidebarItems.filter((item) => {
+    if (item.platformAdminOnly) return isPlatformAdmin;
+    return (
       !item.canAccess?.length ||
-      (sidebarUser.role != null && item.canAccess.includes(sidebarUser.role)),
-  );
+      (sidebarUser.role != null && item.canAccess.includes(sidebarUser.role))
+    );
+  });
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>

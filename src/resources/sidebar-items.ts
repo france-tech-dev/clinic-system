@@ -4,10 +4,12 @@ import {
   IconCalendar,
   IconCash,
   IconClipboardList,
+  IconCreditCard,
   IconFileText,
   IconLayoutDashboard,
   IconSearch,
   IconSettings,
+  IconShield,
   IconUsers,
   IconUserPlus,
 } from "@tabler/icons-react";
@@ -17,8 +19,8 @@ export type SidebarItem = {
   name: string;
   url: string;
   icon: React.ElementType;
-  /** Só quando restringe (ex. leadership). Sem campo = visível a todo o staff do painel. */
   canAccess?: readonly Role[];
+  platformAdminOnly?: boolean;
 };
 
 export type SidebarUser = {
@@ -29,6 +31,12 @@ export type SidebarUser = {
 };
 
 export const sidebarItems: SidebarItem[] = [
+  {
+    name: "Plataforma",
+    url: paths.plataforma,
+    icon: IconShield,
+    platformAdminOnly: true,
+  },
   {
     name: "Painel",
     url: paths.painel,
@@ -71,6 +79,12 @@ export const sidebarItems: SidebarItem[] = [
     name: "Buscar",
     url: paths.buscar,
     icon: IconSearch,
+  },
+  {
+    name: "Planos",
+    url: paths.planos,
+    icon: IconCreditCard,
+    canAccess: LEADERSHIP_ROLES,
   },
   {
     name: "Configurações",
