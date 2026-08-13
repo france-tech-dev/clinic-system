@@ -10,6 +10,7 @@ Documentos relacionados:
 
 - Checklist de refactors: [`architecture-audit.md`](./architecture-audit.md)
 - Roadmap funcional: [`ToDo.md`](./ToDo.md)
+- Mensalidade Stripe: [`billing.md`](./billing.md)
 - Regras para o Cursor (agente): [`.cursor/rules/`](../.cursor/rules/)
 
 ---
@@ -74,6 +75,7 @@ clinic-system/
     │   │   └── _lib/                 # Helpers puros do domínio
     │   ├── schedule/
     │   ├── finance/
+    │   ├── billing/           # mensalidade Stripe (trial + planos)
     │   ├── settings/
     │   └── dashboard/
     │
@@ -305,17 +307,17 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 
 ## 11. Domínios actuais (`features/`)
 
-| Feature     | Responsabilidade                                    |
-| ----------- | --------------------------------------------------- |
+| Feature     | Responsabilidade                                        |
+| ----------- | ------------------------------------------------------- |
 | `patient`   | Pacientes, ClinicalEvaluation, evoluções, PDF, roteiros |
-| `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)  |
-| `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User    |
-| `schedule`  | Agenda, agendamentos, calendário, repetição semanal |
-| `finance`   | Fluxo de caixa, lançamentos                         |
-| `settings`  | Perfil profissional, branding da clínica            |
-| `team`      | Profissionais da clínica                            |
-| `dashboard` | Painel, estatísticas, alertas, busca global         |
-| `protocol`  | ProtocolEvaluation (ex.: GMFM-88) + EvaluationModuleUI |
+| `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)      |
+| `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User        |
+| `schedule`  | Agenda, agendamentos, calendário, repetição semanal     |
+| `finance`   | Fluxo de caixa, lançamentos                             |
+| `settings`  | Perfil profissional, branding da clínica                |
+| `team`      | Profissionais da clínica                                |
+| `dashboard` | Painel, estatísticas, alertas, busca global             |
+| `protocol`  | ProtocolEvaluation (ex.: GMFM-88) + EvaluationModuleUI  |
 
 ---
 

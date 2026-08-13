@@ -139,6 +139,20 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ---
 
+## Billing — mensalidade Stripe
+
+**Status:** schema + trial + webhook + gates no código · preços e keys Stripe pendentes
+
+- [x] Plano em [`billing.md`](./billing.md)
+- [x] `OrganizationBilling` + trial 7 dias na criação da org
+- [x] Checkout (setup no trial / subscription após cancel) + webhook
+- [x] `/plataforma` — isentar clínicas (`billingExempt` + `PLATFORM_ADMIN_USER_IDS`)
+- [x] `/planos` — plano actual + Customer Portal (cartão / cancelar)
+- [ ] Preços e `STRIPE_PRICE_*` / `STRIPE_SECRET_KEY` em produção (live)
+- [ ] Activar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
+
+---
+
 ## Notas
 
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
