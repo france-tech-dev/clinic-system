@@ -3,17 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
+import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
-import {
-  anamneseSaveSchema,
-  getAnamneseSchema,
-} from "./anamnese.schema";
-import {
-  getAnamnese,
-  saveAnamnese,
-} from "./anamnese.service";
+import { anamneseSaveSchema, getAnamneseSchema } from "./anamnese.schema";
+import { getAnamnese, saveAnamnese } from "./anamnese.service";
 import type { AnamneseDTO } from "./anamnese.types";
 
 function handleError(error: unknown): ActionResult<never> {
@@ -55,7 +50,7 @@ export async function saveAnamneseAction(
     await requirePermission({ project: ["create"] });
     const parsed = anamneseSaveSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("anamnese");
     const saved = await saveAnamnese(
       organizationId,
       parsed.data.patientId,

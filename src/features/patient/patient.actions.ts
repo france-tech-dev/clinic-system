@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/server/auth/permissions";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
@@ -94,7 +95,7 @@ export async function createPatientAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await createPatient(organizationId, parsed.data);
     revalidatePatient();
     return ok(data);
@@ -112,7 +113,7 @@ export async function updatePatientAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const { id, ...rest } = parsed.data;
     const data = await updatePatient(organizationId, id, rest);
     if (!data) return fail("Paciente não encontrado");
@@ -130,7 +131,7 @@ export async function setPatientStatusAction(
     await requirePermission({ project: ["update"] });
     const parsed = patientStatusSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await setPatientStatus(
       organizationId,
       parsed.data.id,
@@ -151,7 +152,7 @@ export async function deletePatientAction(
     await requirePermission({ project: ["delete"] });
     const parsed = patientIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await deletePatient(organizationId, parsed.data.id);
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient();
@@ -170,9 +171,13 @@ export async function createClinicalEvaluationAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgWrite();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
-    const data = await createClinicalEvaluation(organizationId, parsed.data, memberId);
+    const data = await createClinicalEvaluation(
+      organizationId,
+      parsed.data,
+      memberId,
+    );
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
     return ok(data);
@@ -190,7 +195,7 @@ export async function updateClinicalEvaluationAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const { id, ...rest } = parsed.data;
     const data = await updateClinicalEvaluation(organizationId, id, rest);
     if (!data) return fail("Avaliação não encontrada");
@@ -208,8 +213,11 @@ export async function deleteClinicalEvaluationAction(
     await requirePermission({ project: ["delete"] });
     const parsed = clinicalEvaluationIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
-    const { organizationId } = await requireOrgId();
-    const removed = await deleteClinicalEvaluation(organizationId, parsed.data.id);
+    const { organizationId } = await requireOrgWrite();
+    const removed = await deleteClinicalEvaluation(
+      organizationId,
+      parsed.data.id,
+    );
     if (!removed) return fail("Avaliação não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });
@@ -227,7 +235,7 @@ export async function createSessionAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgWrite();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
     const data = await createSessionNote(organizationId, parsed.data, memberId);
     if (!data) {
@@ -249,7 +257,7 @@ export async function updateSessionAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const { id, ...rest } = parsed.data;
     const data = await updateSessionNote(organizationId, id, rest);
     if (!data) {
@@ -269,7 +277,7 @@ export async function deleteSessionAction(
     await requirePermission({ project: ["delete"] });
     const parsed = sessionIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const removed = await deleteSessionNote(organizationId, parsed.data.id);
     if (!removed) return fail("Evolução não encontrada");
     revalidatePatient(removed.patientId);
@@ -303,7 +311,7 @@ export async function saveRoteiroNoteAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await saveRoteiroNote(organizationId, parsed.data);
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);

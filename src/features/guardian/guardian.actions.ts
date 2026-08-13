@@ -3,8 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
+import {
+  requireOrgFeatureWrite,
+  requireOrgWrite,
+} from "@/server/billing/require-billing";
 import { firstZodMessage, zodFieldErrors } from "@/shared/lib/zod-field-errors";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { OrgContextError } from "@/shared/lib/org-context";
 import {
   fail,
   ok,
@@ -56,12 +60,9 @@ export async function createGuardianAction(
     await requirePermission({ project: ["create"] });
     const parsed = createGuardianSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(
-        firstZodMessage(parsed.error),
-        zodFieldErrors(parsed.error),
-      );
+      return fail(firstZodMessage(parsed.error), zodFieldErrors(parsed.error));
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await createGuardian(organizationId, parsed.data);
     revalidateGuardianPaths();
     return ok(data);
@@ -77,12 +78,9 @@ export async function updateGuardianAction(
     await requirePermission({ project: ["update"] });
     const parsed = updateGuardianSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(
-        firstZodMessage(parsed.error),
-        zodFieldErrors(parsed.error),
-      );
+      return fail(firstZodMessage(parsed.error), zodFieldErrors(parsed.error));
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await updateGuardian(organizationId, parsed.data);
     if (!data) return fail("Responsável não encontrado");
     revalidateGuardianPaths();
@@ -99,12 +97,9 @@ export async function enableGuardianPortalAccessAction(
     await requirePermission({ project: ["update"] });
     const parsed = enableGuardianPortalSchema.safeParse(input);
     if (!parsed.success) {
-      return fail(
-        firstZodMessage(parsed.error),
-        zodFieldErrors(parsed.error),
-      );
+      return fail(firstZodMessage(parsed.error), zodFieldErrors(parsed.error));
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("portal");
     const data = await enableGuardianPortalAccess(organizationId, parsed.data);
     revalidateGuardianPaths();
     return ok(data);

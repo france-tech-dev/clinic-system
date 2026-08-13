@@ -18,6 +18,7 @@ import { sendEmail } from "@/shared/lib/email";
 import { getActiveOrganization } from "@/server/organizations/active-organization";
 import { paths } from "@/shared/constants/paths";
 import { Role } from "../../../prisma/generated/prisma/enums";
+import { startOrganizationTrial } from "@/server/billing/start-trial";
 
 const baseUrl = process.env.BETTER_AUTH_URL as string;
 const invitationAcceptUrl = (invitationId: string) =>
@@ -146,6 +147,16 @@ export const auth = betterAuth({
       },
       allowUserToCreateOrganization: true,
       creatorRole: Role.OWNER,
+      organizationHooks: {
+        afterCreateOrganization: async ({ organization, user }) => {
+          if (!user.email) return;
+          try {
+            await startOrganizationTrial(organization.id, user.email);
+          } catch (error) {
+            console.error("[billing] falha ao iniciar trial", error);
+          }
+        },
+      },
       async sendInvitationEmail(data) {
         const inviteUrl = invitationAcceptUrl(data.id);
         await sendEmail({

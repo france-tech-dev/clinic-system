@@ -9,6 +9,10 @@ import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
 import { requirePermission } from "@/server/auth/permissions";
 import {
+  requireOrgWrite,
+  requireSeatAvailable,
+} from "@/server/billing/require-billing";
+import {
   changeForcedPasswordSchema,
   createProfessionalSchema,
   deleteProfessionalSchema,
@@ -54,7 +58,8 @@ export async function createProfessionalAction(
       return failZod(parsed.error);
     }
 
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
+    await requireSeatAvailable(organizationId);
     const data = await createProfessional(organizationId, parsed.data);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
@@ -75,7 +80,7 @@ export async function updateProfessionalAction(
       return failZod(parsed.error);
     }
 
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgWrite();
     await updateProfessional(organizationId, userId, parsed.data);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
@@ -96,7 +101,7 @@ export async function deleteProfessionalAction(
       return failZod(parsed.error);
     }
 
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgWrite();
     await deleteProfessional(organizationId, userId, parsed.data.memberId);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);

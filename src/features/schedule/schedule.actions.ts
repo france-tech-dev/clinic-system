@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import type { AppointmentStatusId } from "@/shared/constants/appointment";
 import { requirePermission } from "@/server/auth/permissions";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -41,7 +42,10 @@ export async function getAgendaDataAction(
   selectedDate: string,
   today: string,
 ): Promise<
-  ActionResult<{ dayAppointments: AppointmentDTO[]; upcoming: AppointmentDTO[] }>
+  ActionResult<{
+    dayAppointments: AppointmentDTO[];
+    upcoming: AppointmentDTO[];
+  }>
 > {
   try {
     await requirePermission({ project: ["read"] });
@@ -59,7 +63,7 @@ export async function createAppointmentAction(
     await requirePermission({ project: ["create"] });
     const parsed = appointmentFormSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgWrite();
     const memberId =
       parsed.data.memberId ||
       (await getCurrentMemberId(organizationId, userId));
@@ -88,7 +92,7 @@ export async function updateAppointmentAction(
     await requirePermission({ project: ["update"] });
     const parsed = updateAppointmentSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await updateAppointment(organizationId, {
       ...parsed.data,
       status: parsed.data.status as AppointmentStatusId,
@@ -115,7 +119,7 @@ export async function rescheduleAppointmentAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const result = await rescheduleAppointment(
       organizationId,
       parsed.data.id,
@@ -140,7 +144,7 @@ export async function setAppointmentStatusAction(
     await requirePermission({ project: ["update"] });
     const parsed = appointmentStatusSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await setAppointmentStatus(
       organizationId,
       parsed.data.id,
@@ -161,7 +165,7 @@ export async function deleteAppointmentAction(
     await requirePermission({ project: ["delete"] });
     const parsed = appointmentIdSchema.safeParse(input);
     if (!parsed.success) return fail("ID inválido");
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const removed = await deleteAppointment(organizationId, parsed.data.id);
     if (!removed) return fail("Agendamento não encontrado");
     revalidateAgenda();

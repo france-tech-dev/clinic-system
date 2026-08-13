@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
+import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -49,7 +50,7 @@ export async function createCashTransactionAction(
     await requirePermission({ project: ["create"] });
     const parsed = cashTransactionFormSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("caixa");
     const data = await createCashTransaction(organizationId, parsed.data);
     revalidateCashflow();
     return ok(data);
@@ -65,7 +66,7 @@ export async function updateCashTransactionAction(
     await requirePermission({ project: ["update"] });
     const parsed = updateCashTransactionSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("caixa");
     const data = await updateCashTransaction(organizationId, parsed.data);
     if (!data) return fail("Lançamento não encontrado");
     revalidateCashflow();
@@ -84,7 +85,7 @@ export async function deleteCashTransactionAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("caixa");
     const data = await deleteCashTransaction(organizationId, parsed.data.id);
     if (!data) return fail("Lançamento não encontrado");
     revalidateCashflow();

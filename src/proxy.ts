@@ -6,6 +6,7 @@ import {
   canAccessClinicPanel,
   isLeadershipRole,
 } from "@/shared/lib/member-role";
+import { isPlatformAdminUserId } from "@/shared/lib/platform-admin";
 import { findProxyMember } from "@/server/auth/proxy-member";
 
 const leadershipPaths = [
@@ -25,6 +26,10 @@ function isOrgSetupRoute(pathname: string) {
 
 function isPortalRoute(pathname: string) {
   return pathname.startsWith(paths.portal);
+}
+
+function isPlatformRoute(pathname: string) {
+  return pathname.startsWith(paths.plataforma);
 }
 
 function isLeadershipPath(pathname: string) {
@@ -50,6 +55,14 @@ export async function proxy(req: NextRequest) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL(paths.auth.changePassword, req.url));
+  }
+
+  // Painel interno Movi — antes dos gates de membership/role da clínica
+  if (isPlatformRoute(pathname)) {
+    if (!isPlatformAdminUserId(session.user.id)) {
+      return NextResponse.redirect(new URL(paths.agenda, req.url));
+    }
+    return NextResponse.next();
   }
 
   const member = await findProxyMember(

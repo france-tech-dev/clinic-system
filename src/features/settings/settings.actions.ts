@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -68,7 +69,7 @@ export async function saveProfessionalAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await saveProfessionalProfile(organizationId, parsed.data);
     revalidatePath(paths.painel);
     revalidatePath(paths.configuracoes);
@@ -101,7 +102,7 @@ export async function saveCurrentMemberProfessionalAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } = await requireOrgWrite();
     const data = await saveCurrentMemberProfessionalProfile(
       organizationId,
       userId,
@@ -124,7 +125,7 @@ export async function saveOrganizationBrandingAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await saveOrganizationBranding(
       organizationId,
       parsed.data.clinicName,
@@ -146,7 +147,7 @@ export async function uploadOrganizationLogoAction(
       return fail("Selecione uma imagem");
     }
 
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await saveOrganizationLogo(organizationId, file);
     revalidateBrandingPaths();
     return ok(data);
@@ -160,7 +161,7 @@ export async function removeOrganizationLogoAction(): Promise<
 > {
   try {
     await requirePermission({ project: ["update"] });
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgWrite();
     const data = await removeOrganizationLogo(organizationId);
     revalidateBrandingPaths();
     return ok(data);

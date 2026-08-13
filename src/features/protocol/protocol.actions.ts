@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
+import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -67,7 +68,8 @@ export async function createProtocolEvaluationAction(
     const parsed = protocolEvaluationFormSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
 
-    const { organizationId, userId } = await requireOrgId();
+    const { organizationId, userId } =
+      await requireOrgFeatureWrite("avaliacoes");
     const memberId = await resolveProtocolAuthorMemberId(
       organizationId,
       userId,
@@ -94,7 +96,7 @@ export async function updateProtocolEvaluationAction(
     const parsed = updateProtocolEvaluationSchema.safeParse(input);
     if (!parsed.success) return failZod(parsed.error);
 
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
     const data = await updateProtocolEvaluation(organizationId, parsed.data);
     if (!data) return fail("Avaliação não encontrada");
 
@@ -113,7 +115,7 @@ export async function deleteProtocolEvaluationAction(
     const parsed = protocolEvaluationIdSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
 
-    const { organizationId } = await requireOrgId();
+    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
     const existing = await getProtocolEvaluation(
       organizationId,
       parsed.data.id,
