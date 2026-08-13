@@ -67,6 +67,16 @@ GOOGLE_CLIENT_SECRET=""
 
 # Pool Postgres (opcional; default 10)
 # DATABASE_POOL_MAX="10"
+
+# Stripe Billing (produção — restricted key)
+# STRIPE_SECRET_KEY="rk_..."
+# STRIPE_WEBHOOK_SECRET="whsec_..."
+# STRIPE_PRICE_STARTER="price_..."
+# STRIPE_PRICE_PRO="price_..."
+# STRIPE_PRICE_ENTERPRISE="price_..."
+
+# Staff de plataforma — acesso a /plataforma (user ids separados por vírgula)
+# PLATFORM_ADMIN_USER_IDS="user_id_1,user_id_2"
 ```
 
 ```bash
