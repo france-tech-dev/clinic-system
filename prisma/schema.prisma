@@ -70,6 +70,20 @@ enum PatientSex {
   not_informed
 }
 
+enum BillingPlan {
+  starter
+  pro
+  enterprise
+}
+
+enum BillingStatus {
+  trialing
+  active
+  past_due
+  canceled
+  unpaid
+}
+
 model User {
   id                 String    @id @default(cuid())
   name               String?
@@ -165,9 +179,29 @@ model Organization {
   cashTransactions    CashTransaction[]
   protocolEvaluations ProtocolEvaluation[]
   anamneses           Anamnese[]
+  billing             OrganizationBilling?
+  /** Acesso completo sem cobrança — gerido em /plataforma. */
+  billingExempt       Boolean              @default(false) @map("billing_exempt")
 
   @@unique([slug])
   @@map("organization")
+}
+
+model OrganizationBilling {
+  id                   String        @id @default(cuid())
+  organizationId       String        @unique
+  organization         Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String        @unique
+  stripeSubscriptionId String        @unique
+  status               BillingStatus
+  plan                 BillingPlan?
+  trialEndsAt          DateTime?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  @@index([stripeCustomerId])
+  @@map("organization_billing")
 }
 
 // Responsáveis
