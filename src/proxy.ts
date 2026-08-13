@@ -14,6 +14,7 @@ const leadershipPaths = [
   paths.caixa,
   paths.profissionais,
   paths.configuracoes,
+  paths.planos,
 ] as const;
 
 function isAuthRoute(pathname: string) {

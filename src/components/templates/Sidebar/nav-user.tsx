@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -15,17 +16,19 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import type { SidebarUser } from "@/resources/sidebar-items";
 import { paths } from "@/shared/constants/paths";
-import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
+import { isLeadershipRole } from "@/shared/lib/member-role";
+import {
+  IconCreditCard,
+  IconDotsVertical,
+  IconLogout,
+  IconSettings,
+} from "@tabler/icons-react";
 
-interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
-
-export function NavUser({ user }: { user: User }) {
+export function NavUser({ user }: { user: SidebarUser }) {
   const { isMobile } = useSidebar();
+  const showOrgSettings = isLeadershipRole(user.role);
 
   return (
     <SidebarMenu>
@@ -38,7 +41,9 @@ export function NavUser({ user }: { user: User }) {
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -59,7 +64,9 @@ export function NavUser({ user }: { user: User }) {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -69,30 +76,29 @@ export function NavUser({ user }: { user: User }) {
                 </div>
               </div>
             </DropdownMenuLabel>
+            {showOrgSettings ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href={paths.planos}>
+                    <IconCreditCard />
+                    Planos
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={paths.configuracoes}>
+                    <IconSettings />
+                    Configurações
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            ) : null}
             <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup> 
-            <DropdownMenuSeparator /> */}
-            <DropdownMenuItem>
-              <a
-                href={paths.auth.logout}
-                className="w-full flex items-center gap-2"
-              >
+            <DropdownMenuItem asChild>
+              <Link href={paths.auth.logout}>
                 <IconLogout />
-                Log out
-              </a>
+                Sair
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
