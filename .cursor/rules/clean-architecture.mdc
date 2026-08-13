@@ -15,7 +15,7 @@ app/  →  features/  →  shared/
 ```
 
 - **`features/` não importam entre si** — orquestrar em `app/`
-- **`shared/`** sem *regras* de negócio (services/actions) — catálogos de referência estática partilhados por ≥2 features (ex. `ROTEIROS`, `HEALTH_PROFESSIONS`) podem viver em `shared/constants/`
+- **`shared/`** sem _regras_ de negócio (services/actions) — catálogos de referência estática partilhados por ≥2 features (ex. `ROTEIROS`, `HEALTH_PROFESSIONS`) podem viver em `shared/constants/`
 - UI de **uma** rota → `app/.../_components/`; ≥2 rotas → `features/[domínio]/` ou `src/components/`
 - Workspaces clínicos densos → `ClinicalWorkspaceShell` (`clinical-workspace.mdc`)
 
@@ -34,6 +34,10 @@ Antes de criar abstração nova:
 4. Evitar 2–3 registries (catalog + ui + schema) quando **um módulo** basta (`id`, metadados, schema, `render`).
 5. Evitar listagens duplicadas no service que fazem a mesma query.
 6. “Fonte única” entre 2 call sites estáveis ≠ obrigatória — ver `reuse-before-create.mdc` (≥3 consumidores ou regra volátil).
+7. Catálogos / enums: listar **só o que varia ou restringe** — não espelhar o mapa inteiro da app “por completude”.
+8. Não duplicar o mesmo gate em proxy **e** actions. Proxy = grosso (auth, role, membership); fino (plano, feature, CRUD) = actions.
+9. Wrapper de 1 linha (`hasX(access, id)` → `access.x.includes(id)`) — preferir inline.
+10. Query pesada ou regra de domínio no proxy “porque é conveniente” — não; o proxy deve ficar leve.
 
 ```ts
 // ❌ catalog.ts + ui.tsx + schema.ts de registo para o mesmo id
@@ -41,6 +45,12 @@ Antes de criar abstração nova:
 
 // ❌ nav-access.ts só para sidebar + proxy
 // ✅ canAccess no sidebarItems + leadershipPaths no proxy
+
+// ❌ BILLING_FEATURES = agenda|pacientes|…|anamnese (tudo o que a app tem)
+// ✅ GATED_FEATURES = anamnese|caixa|avaliacoes|portal (só o que o plano corta)
+
+// ❌ getBillingAccess() em cada request no proxy + requireOrgFeatureWrite nas actions
+// ✅ Gate de plano só nas actions (e UI); proxy sem query de billing
 ```
 
 ## Catálogos por especialidade (anamnese / avaliações)

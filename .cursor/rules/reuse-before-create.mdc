@@ -24,6 +24,9 @@ Antes de criar uma função, helper, hook ou abstração nova, **procurar primei
 - Normalizar / parsear o que o domínio já garante (ex. `Role` do Prisma) — usar o enum directo.
 - `T | null | undefined` na API pública — escolher **um** (`null` neste projeto, via `?? null` na fronteira).
 - Scaffolding “para o futuro” (secções vazias, mapas genéricos, helpers sem 2.º uso).
+- Catálogo / enum que lista **tudo** o domínio em vez de só o que a regra distingue (ex. features de plano = só as gated).
+- Mesma regra de autorização em proxy **e** actions — proxy grosso; actions finas.
+- DTO / snapshot com campos que nenhum consumidor lê.
 
 ## Exemplo (deste projeto)
 
@@ -39,3 +42,5 @@ formatAppZonedDateParam(date);
 ```
 
 Acesso por role no menu/proxy: `canAccess` só onde restringe; gate no `proxy` com lista curta de paths + `isLeadershipRole` — **sem** registry `nav-access` partilhado.
+
+Billing: `GATED_FEATURES` só com o que o plano corta; mutações gated em `requireOrgFeatureWrite` nas actions — **sem** `getBillingAccess` no proxy.

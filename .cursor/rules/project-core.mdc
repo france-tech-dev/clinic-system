@@ -72,7 +72,7 @@ Documento completo: [`docs/architecture.md`](../../docs/architecture.md)
 - **`shared/`** — prisma, auth, guards, constants, types
 - **`server/`** — Better Auth (sessão, org, convites) — **não** é domínio clínico
 - **`app/`** orquestra; **`components/`** usa `shared/`; **features não importam entre si**
-- Anti-overengineering: ver `clean-architecture.mdc`
+- Anti-overengineering: ver `clean-architecture.mdc` e `reuse-before-create.mdc` (catálogos só do que restringe; proxy grosso; actions finas; sem wrappers de 1 linha).
 
 ## Regras opcionais (`.cursor/rules/`)
 

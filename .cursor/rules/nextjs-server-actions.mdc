@@ -27,6 +27,7 @@ Ver lista completa em [`docs/architecture.md`](../../docs/architecture.md).
 | `patient/`   | CRUD paciente, avaliações, evoluções, anamnese, PDF |
 | `schedule/`  | Agenda, agendamentos, calendário, repetição semanal |
 | `finance/`   | Fluxo de caixa, lançamentos                         |
+| `billing/`   | Mensalidade Stripe (trial, planos, webhook)         |
 | `settings/`  | Perfil profissional, branding                       |
 | `dashboard/` | Painel, stats, alertas, busca global                |
 
