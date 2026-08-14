@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
@@ -402,6 +403,7 @@ export function CashTransactionFormDialog({
               form="cash-transaction-form"
               disabled={pending}
             >
+              {pending ? <Spinner data-icon="inline-start" /> : null}
               Salvar
             </Button>
           </div>

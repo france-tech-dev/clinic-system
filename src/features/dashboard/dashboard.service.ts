@@ -1,9 +1,12 @@
+import {
+  activitySeriesStartDate,
+  buildActivityMonthSeries,
+} from "./_lib/build-activity-month-series";
 import { buildDashboardAlerts } from "./_lib/build-dashboard-alerts";
 import { dashboardRepository } from "./dashboard.repository";
 import type {
   DashboardActivity,
   DashboardData,
-  DashboardTodayAppointment,
 } from "./dashboard.types";
 
 function startOfWeekIso() {
@@ -16,8 +19,15 @@ function startOfWeekIso() {
   return monday.toISOString().slice(0, 10);
 }
 
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+function sessionActivityLabel(status: string) {
+  switch (status) {
+    case "absent":
+      return "Evolução · Faltou";
+    case "cancelled":
+      return "Evolução · Cancelada";
+    default:
+      return "Evolução";
+  }
 }
 
 function buildRecentActivity(
@@ -43,32 +53,19 @@ function buildRecentActivity(
       patientId: s.patient.id,
       patientName: s.patient.name,
       date: s.date,
-      label: `Evolução (${s.status})`,
+      label: sessionActivityLabel(s.status),
     })),
   ]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 10);
 }
 
-function mapTodayAppointments(
-  rows: Awaited<ReturnType<typeof dashboardRepository.findTodayAppointments>>,
-): DashboardTodayAppointment[] {
-  return rows.map((a) => ({
-    id: a.id,
-    patientId: a.patient.id,
-    patientName: a.patient.name,
-    time: a.time,
-    duration: a.duration,
-    status: a.status,
-    notes: a.notes,
-  }));
-}
-
 export async function getDashboardData(
   organizationId: string,
 ): Promise<DashboardData> {
   const weekStart = startOfWeekIso();
-  const today = todayIso();
+  const activityStart = activitySeriesStartDate(6);
+  const activitySince = new Date(`${activityStart}T00:00:00`);
 
   const [
     totalPatients,
@@ -78,16 +75,28 @@ export async function getDashboardData(
     patients,
     recentEvals,
     recentSessions,
-    todayAppts,
+    patientCreated,
+    sessionDates,
+    evaluationDates,
   ] = await Promise.all([
     dashboardRepository.countPatients(organizationId),
     dashboardRepository.countActivePatients(organizationId),
     dashboardRepository.countClinicalEvaluations(organizationId),
     dashboardRepository.countSessionsSince(organizationId, weekStart),
-    dashboardRepository.findActivePatientsWithLastClinicalEvaluation(organizationId),
+    dashboardRepository.findActivePatientsWithLastClinicalEvaluation(
+      organizationId,
+    ),
     dashboardRepository.findRecentClinicalEvaluations(organizationId),
     dashboardRepository.findRecentSessions(organizationId),
-    dashboardRepository.findTodayAppointments(organizationId, today),
+    dashboardRepository.findPatientCreatedAtsSince(
+      organizationId,
+      activitySince,
+    ),
+    dashboardRepository.findSessionDatesSince(organizationId, activityStart),
+    dashboardRepository.findEvaluationDatesSince(
+      organizationId,
+      activityStart,
+    ),
   ]);
 
   return {
@@ -99,6 +108,10 @@ export async function getDashboardData(
     },
     alerts: buildDashboardAlerts(patients),
     recentActivity: buildRecentActivity(recentEvals, recentSessions),
-    todayAppointments: mapTodayAppointments(todayAppts),
+    activitySeries: buildActivityMonthSeries({
+      patientCreatedAts: patientCreated.map((p) => p.createdAt),
+      sessionDates: sessionDates.map((s) => s.date),
+      evaluationDates: evaluationDates.map((e) => e.date),
+    }),
   };
 }

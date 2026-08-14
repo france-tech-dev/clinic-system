@@ -10,7 +10,7 @@ import { isPlatformAdminUserId } from "@/shared/lib/platform-admin";
 import { findProxyMember } from "@/server/auth/proxy-member";
 
 const leadershipPaths = [
-  paths.painel,
+  paths.dashboard,
   paths.caixa,
   paths.profissionais,
   paths.configuracoes,

@@ -34,7 +34,7 @@ export const STARTER_HIGHLIGHTS = [
   "Pacientes, prontuário, evoluções e PDF",
   "Roteiros clínicos",
   "Profissionais da equipe",
-  "Painel e busca",
+  "Dashboard e busca",
   "Configurações da clínica",
 ] as const;
 

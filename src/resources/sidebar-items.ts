@@ -36,8 +36,8 @@ export const sidebarItems: SidebarItem[] = [
     platformAdminOnly: true,
   },
   {
-    name: "Painel",
-    url: paths.painel,
+    name: "Dashboard",
+    url: paths.dashboard,
     icon: IconLayoutDashboard,
     canAccess: LEADERSHIP_ROLES,
   },

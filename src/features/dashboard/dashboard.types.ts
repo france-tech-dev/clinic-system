@@ -23,24 +23,30 @@ export type DashboardActivity = {
   label: string;
 };
 
-export type DashboardTodayAppointment = {
-  id: string;
-  patientId: string;
-  patientName: string;
-  time: string;
-  duration: number;
-  status: string;
-  notes: string;
+export type CashDayPoint = {
+  date: string;
+  label: string;
+  income: number;
+  expense: number;
+};
+
+export type ActivityMonthPoint = {
+  month: string;
+  label: string;
+  patients: number;
+  sessions: number;
+  evaluations: number;
 };
 
 export type DashboardData = {
   stats: DashboardStats;
   alerts: DashboardAlert[];
   recentActivity: DashboardActivity[];
-  todayAppointments: DashboardTodayAppointment[];
+  activitySeries: ActivityMonthPoint[];
 };
 
 export type DashboardPageData = DashboardData & {
   financeSummary: CashflowSummary;
   financeMonthLabel: string;
+  cashSeries: CashDayPoint[];
 };

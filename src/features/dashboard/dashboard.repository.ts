@@ -57,11 +57,30 @@ export const dashboardRepository = {
     });
   },
 
-  findTodayAppointments(organizationId: string, today: string) {
-    return db.appointment.findMany({
-      where: { organizationId, date: today },
-      include: { patient: { select: { id: true, name: true } } },
-      orderBy: [{ time: "asc" }],
+  findPatientCreatedAtsSince(organizationId: string, since: Date) {
+    return db.patient.findMany({
+      where: { organizationId, createdAt: { gte: since } },
+      select: { createdAt: true },
+    });
+  },
+
+  findSessionDatesSince(organizationId: string, startDate: string) {
+    return db.sessionNote.findMany({
+      where: {
+        patient: { organizationId },
+        date: { gte: startDate },
+      },
+      select: { date: true },
+    });
+  },
+
+  findEvaluationDatesSince(organizationId: string, startDate: string) {
+    return db.clinicalEvaluation.findMany({
+      where: {
+        patient: { organizationId },
+        date: { gte: startDate },
+      },
+      select: { date: true },
     });
   },
 };

@@ -35,7 +35,7 @@ function handleError(error: unknown): ActionResult<never> {
 
 function revalidateAgenda() {
   revalidatePath(paths.agenda);
-  revalidatePath(paths.painel);
+  revalidatePath(paths.dashboard);
 }
 
 export async function getAgendaDataAction(

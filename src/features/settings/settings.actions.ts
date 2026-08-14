@@ -71,7 +71,7 @@ export async function saveProfessionalAction(
     }
     const { organizationId } = await requireOrgWrite();
     const data = await saveProfessionalProfile(organizationId, parsed.data);
-    revalidatePath(paths.painel);
+    revalidatePath(paths.dashboard);
     revalidatePath(paths.configuracoes);
     return ok(data);
   } catch (error) {

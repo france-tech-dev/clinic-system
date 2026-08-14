@@ -1,6 +1,6 @@
 export const paths = Object.freeze({
   root: "/",
-  painel: "/painel",
+  dashboard: "/dashboard",
   agenda: "/agenda",
   pacientes: "/pacientes",
   paciente: (id: string) => `/pacientes/${id}`,
