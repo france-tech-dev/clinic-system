@@ -29,35 +29,48 @@ export type BillingPlanDef = {
   highlights: readonly string[];
 };
 
+export const STARTER_HIGHLIGHTS = [
+  "Agenda e agendamentos",
+  "Pacientes, prontuário, evoluções e PDF",
+  "Roteiros clínicos",
+  "Profissionais da equipe",
+  "Painel e busca",
+  "Configurações da clínica",
+] as const;
+
+const PRO_HIGHLIGHTS = [
+  ...STARTER_HIGHLIGHTS,
+  "Anamnese por especialidade",
+  "Fluxo de caixa",
+] as const;
+
+const ENTERPRISE_HIGHLIGHTS = [
+  ...PRO_HIGHLIGHTS,
+  "Avaliações estruturadas (GMFM-88 e protocolos)",
+  "Portal do responsável",
+] as const;
+
 export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
   {
     id: "starter",
     name: "Starter",
     maxProfessionals: 3,
     features: [],
-    highlights: [
-      "Até 3 profissionais",
-      "Agenda, pacientes e equipa",
-      "Painel, busca e configurações",
-    ],
+    highlights: STARTER_HIGHLIGHTS,
   },
   {
     id: "pro",
     name: "Pro",
     maxProfessionals: 9,
     features: ["anamnese", "caixa"],
-    highlights: ["Até 9 profissionais", "Tudo do Starter", "Anamnese e caixa"],
+    highlights: PRO_HIGHLIGHTS,
   },
   {
     id: "enterprise",
     name: "Enterprise",
     maxProfessionals: null,
     features: ["anamnese", "caixa", "avaliacoes", "portal"],
-    highlights: [
-      "Profissionais ilimitados",
-      "Tudo do Pro",
-      "Avaliações e portal dos pais",
-    ],
+    highlights: ENTERPRISE_HIGHLIGHTS,
   },
 ];
 

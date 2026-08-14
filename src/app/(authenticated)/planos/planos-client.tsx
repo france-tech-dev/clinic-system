@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { IconCheck } from "@tabler/icons-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   BILLING_PLAN_DEFS,
+  STARTER_HIGHLIGHTS,
   type BillingPlanId,
   type BillingStatusId,
 } from "@/shared/constants/billing-plans";
@@ -30,6 +34,8 @@ const STATUS_LABEL: Record<BillingStatusId, string> = {
   canceled: "Cancelado",
   unpaid: "Não pago",
 };
+
+const STARTER_HIGHLIGHT_SET = new Set<string>(STARTER_HIGHLIGHTS);
 
 function planName(plan: BillingPlanId | null): string {
   if (!plan) return "Nenhum plano escolhido";
@@ -53,12 +59,63 @@ function isCurrentPlan(
   return snapshot.status === "active" || snapshot.status === "trialing";
 }
 
+function canChangePlan(snapshot: BillingSnapshotDTO): boolean {
+  return snapshot.status === "active" || snapshot.status === "past_due";
+}
+
+function subscriptionDescription(snapshot: BillingSnapshotDTO): string {
+  if (snapshot.billingExempt) {
+    return "Esta clínica não é cobrada pela plataforma.";
+  }
+  if (snapshot.isLegacy) {
+    return "Esta clínica não usa cobrança automática.";
+  }
+  if (snapshot.status === "trialing") {
+    return "Todos os recursos estão liberados durante o teste.";
+  }
+  if (snapshot.status === "past_due") {
+    return "Não conseguimos cobrar a mensalidade.";
+  }
+  if (snapshot.status === "unpaid") {
+    return "A mensalidade não foi paga.";
+  }
+  if (snapshot.status === "canceled") {
+    return "A assinatura desta clínica foi encerrada.";
+  }
+  if (snapshot.status === "active") {
+    return "Mensalidade em dia.";
+  }
+  return "Ainda não há plano escolhido.";
+}
+
+function subscriptionHint(snapshot: BillingSnapshotDTO): string | null {
+  if (snapshot.status === "past_due") {
+    return "Atualize o pagamento para manter a edição dos dados.";
+  }
+  if (snapshot.status === "canceled" || snapshot.status === "unpaid") {
+    return "Os dados continuam visíveis. Escolha um plano para voltar a editar.";
+  }
+  return null;
+}
+
+function subscribeLabel(
+  snapshot: BillingSnapshotDTO,
+  current: boolean,
+): string {
+  if (current) return "Plano atual";
+  if (snapshot.status === "trialing") return "Escolher este plano";
+  if (canChangePlan(snapshot)) return "Mudar para este plano";
+  return "Assinar agora";
+}
+
 export function PlanosClient({
   snapshot,
   stripeReady,
+  checkoutSuccess,
 }: {
   snapshot: BillingSnapshotDTO;
   stripeReady: boolean;
+  checkoutSuccess: boolean;
 }) {
   const [pendingPlan, setPendingPlan] = useState<string | null>(null);
   const [portalPending, setPortalPending] = useState(false);
@@ -91,19 +148,34 @@ export function PlanosClient({
   }
 
   const trialEndLabel = formatTrialEnd(snapshot.trialEndsAt);
+  const hint = subscriptionHint(snapshot);
+  const canSubscribe =
+    stripeReady && !snapshot.billingExempt && !snapshot.isLegacy;
 
   return (
     <div className="flex flex-col gap-6">
+      {checkoutSuccess ? (
+        <Alert>
+          <AlertTitle>Plano confirmado</AlertTitle>
+          <AlertDescription>
+            Confira a assinatura atual abaixo.
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
+      {!stripeReady && !snapshot.billingExempt && !snapshot.isLegacy ? (
+        <Alert>
+          <AlertTitle>Pagamentos indisponíveis</AlertTitle>
+          <AlertDescription>
+            Não é possível assinar ou alterar o plano agora. Tente mais tarde.
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Assinatura atual</CardTitle>
-          <CardDescription>
-            {snapshot.billingExempt
-              ? "Esta clínica está isenta de cobrança na plataforma."
-              : snapshot.isLegacy
-                ? "Clínica sem faturação Stripe (legado)."
-                : "Estado da mensalidade desta clínica."}
-          </CardDescription>
+          <CardDescription>{subscriptionDescription(snapshot)}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
@@ -120,11 +192,8 @@ export function PlanosClient({
               desta data, se houver cartão.
             </p>
           ) : null}
-          {snapshot.status === "canceled" ? (
-            <p className="text-sm text-muted-foreground">
-              Assinatura cancelada. Escolha um plano abaixo para voltar a
-              assinar.
-            </p>
+          {hint ? (
+            <p className="text-sm text-muted-foreground">{hint}</p>
           ) : null}
         </CardContent>
         {snapshot.canManageBilling ? (
@@ -134,7 +203,8 @@ export function PlanosClient({
               disabled={!stripeReady || isPending}
               onClick={handleManageBilling}
             >
-              {portalPending ? "A abrir…" : "Gerir pagamento e cancelar"}
+              {portalPending ? <Spinner data-icon="inline-start" /> : null}
+              Gerenciar pagamento ou cancelar
             </Button>
           </CardFooter>
         ) : null}
@@ -143,8 +213,13 @@ export function PlanosClient({
       <div className="grid items-start gap-4 md:grid-cols-3">
         {BILLING_PLAN_DEFS.map((plan) => {
           const current = isCurrentPlan(snapshot, plan.id);
+          const pending = pendingPlan === plan.id;
           return (
-            <Card key={plan.id}>
+            <Card
+              key={plan.id}
+              className={current ? "ring-primary" : undefined}
+              aria-current={current ? "true" : undefined}
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   {plan.name}
@@ -157,27 +232,39 @@ export function PlanosClient({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="flex flex-col gap-1.5 text-muted-foreground">
-                  {plan.highlights.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
+                <ul className="flex flex-col gap-2">
+                  {plan.highlights.map((item) => {
+                    const isExtra =
+                      plan.id !== "starter" && !STARTER_HIGHLIGHT_SET.has(item);
+                    return (
+                      <li key={item} className="flex items-start gap-2">
+                        <IconCheck className="mt-0.5 size-4 shrink-0" />
+                        <span
+                          className={
+                            isExtra
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {item}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button
-                  className="w-full"
-                  disabled={!stripeReady || isPending || current}
-                  onClick={() => handleSubscribe(plan.id)}
-                >
-                  {current
-                    ? "Plano atual"
-                    : pendingPlan === plan.id
-                      ? "A redirecionar…"
-                      : snapshot.status === "trialing"
-                        ? "Escolher este plano"
-                        : "Assinar agora"}
-                </Button>
-              </CardFooter>
+              {snapshot.billingExempt || snapshot.isLegacy ? null : (
+                <CardFooter>
+                  <Button
+                    className="w-full"
+                    disabled={!canSubscribe || isPending || current}
+                    onClick={() => handleSubscribe(plan.id)}
+                  >
+                    {pending ? <Spinner data-icon="inline-start" /> : null}
+                    {subscribeLabel(snapshot, current)}
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
           );
         })}
