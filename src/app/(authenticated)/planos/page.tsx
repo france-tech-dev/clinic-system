@@ -20,12 +20,10 @@ export default async function PlanosPage({ searchParams }: PlanosPageProps) {
 
   return (
     <AppPage title="Planos">
-      <div className="flex max-w-5xl flex-col gap-2">
+      <div className="flex max-w-5xl flex-col gap-6">
         <h2 className="font-serif text-2xl font-semibold tracking-tight">
           Compare os planos
         </h2>
-      </div>
-      <div className="max-w-5xl">
         <PlanosClient
           snapshot={snapshot}
           stripeReady={stripeReady}

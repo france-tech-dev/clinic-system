@@ -8,12 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import {
   BILLING_PLAN_DEFS,
@@ -26,6 +28,7 @@ import {
   createSubscribeCheckoutAction,
 } from "@/features/billing/billing.actions";
 import type { BillingSnapshotDTO } from "@/features/billing/billing.types";
+import { cn } from "@/shared/lib/utils";
 
 const STATUS_LABEL: Record<BillingStatusId, string> = {
   trialing: "Em período de teste",
@@ -61,6 +64,10 @@ function isCurrentPlan(
 
 function canChangePlan(snapshot: BillingSnapshotDTO): boolean {
   return snapshot.status === "active" || snapshot.status === "past_due";
+}
+
+function isPaymentProblem(status: BillingStatusId | null): boolean {
+  return status === "past_due" || status === "unpaid";
 }
 
 function subscriptionDescription(snapshot: BillingSnapshotDTO): string {
@@ -108,6 +115,66 @@ function subscribeLabel(
   return "Assinar agora";
 }
 
+function FeatureItem({ item, emphasis }: { item: string; emphasis: boolean }) {
+  return (
+    <li className="flex items-start gap-2">
+      <IconCheck
+        aria-hidden
+        className={cn(
+          "mt-0.5 size-4 shrink-0",
+          emphasis ? "text-foreground" : "text-muted-foreground",
+        )}
+      />
+      <span className={emphasis ? "text-foreground" : "text-muted-foreground"}>
+        {item}
+      </span>
+    </li>
+  );
+}
+
+function PlanHighlights({
+  planId,
+  highlights,
+}: {
+  planId: BillingPlanId;
+  highlights: readonly string[];
+}) {
+  if (planId === "starter") {
+    return (
+      <ul className="flex flex-col gap-2">
+        {highlights.map((item) => (
+          <FeatureItem key={item} item={item} emphasis={false} />
+        ))}
+      </ul>
+    );
+  }
+
+  const inherited = highlights.filter((item) =>
+    STARTER_HIGHLIGHT_SET.has(item),
+  );
+  const extras = highlights.filter((item) => !STARTER_HIGHLIGHT_SET.has(item));
+
+  return (
+    <div className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2">
+        {inherited.map((item) => (
+          <FeatureItem key={item} item={item} emphasis={false} />
+        ))}
+      </ul>
+      {extras.length > 0 ? (
+        <>
+          <Separator />
+          <ul className="flex flex-col gap-2">
+            {extras.map((item) => (
+              <FeatureItem key={item} item={item} emphasis />
+            ))}
+          </ul>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 export function PlanosClient({
   snapshot,
   stripeReady,
@@ -151,6 +218,7 @@ export function PlanosClient({
   const hint = subscriptionHint(snapshot);
   const canSubscribe =
     stripeReady && !snapshot.billingExempt && !snapshot.isLegacy;
+  const showSubscribe = !snapshot.billingExempt && !snapshot.isLegacy;
 
   return (
     <div className="flex flex-col gap-6">
@@ -163,7 +231,7 @@ export function PlanosClient({
         </Alert>
       ) : null}
 
-      {!stripeReady && !snapshot.billingExempt && !snapshot.isLegacy ? (
+      {!stripeReady && showSubscribe ? (
         <Alert>
           <AlertTitle>Pagamentos indisponíveis</AlertTitle>
           <AlertDescription>
@@ -172,18 +240,26 @@ export function PlanosClient({
         </Alert>
       ) : null}
 
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Assinatura atual</CardTitle>
           <CardDescription>{subscriptionDescription(snapshot)}</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-3">
+        <CardContent className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-lg font-medium">{planName(snapshot.plan)}</p>
+            <p className="font-medium">{planName(snapshot.plan)}</p>
             {snapshot.billingExempt ? (
               <Badge variant="secondary">Isenta</Badge>
             ) : snapshot.status ? (
-              <Badge variant="secondary">{STATUS_LABEL[snapshot.status]}</Badge>
+              <Badge
+                variant={
+                  isPaymentProblem(snapshot.status)
+                    ? "destructive"
+                    : "secondary"
+                }
+              >
+                {STATUS_LABEL[snapshot.status]}
+              </Badge>
             ) : null}
           </div>
           {snapshot.status === "trialing" && trialEndLabel ? (
@@ -200,6 +276,7 @@ export function PlanosClient({
           <CardFooter>
             <Button
               variant="outline"
+              size="sm"
               disabled={!stripeReady || isPending}
               onClick={handleManageBilling}
             >
@@ -210,53 +287,39 @@ export function PlanosClient({
         ) : null}
       </Card>
 
-      <div className="grid items-start gap-4 md:grid-cols-3">
+      <div className="grid items-stretch gap-4 lg:grid-cols-3">
         {BILLING_PLAN_DEFS.map((plan) => {
           const current = isCurrentPlan(snapshot, plan.id);
           const pending = pendingPlan === plan.id;
           return (
             <Card
               key={plan.id}
-              className={current ? "ring-primary" : undefined}
+              className={cn("h-full", current && "ring-2 ring-primary")}
               aria-current={current ? "true" : undefined}
             >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="border-b">
+                <CardTitle className="font-serif text-lg">
                   {plan.name}
-                  {current ? <Badge>Atual</Badge> : null}
                 </CardTitle>
+                {current ? (
+                  <CardAction>
+                    <Badge>Atual</Badge>
+                  </CardAction>
+                ) : null}
                 <CardDescription>
                   {plan.maxProfessionals
                     ? `Até ${plan.maxProfessionals} profissionais`
                     : "Profissionais ilimitados"}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="flex flex-col gap-2">
-                  {plan.highlights.map((item) => {
-                    const isExtra =
-                      plan.id !== "starter" && !STARTER_HIGHLIGHT_SET.has(item);
-                    return (
-                      <li key={item} className="flex items-start gap-2">
-                        <IconCheck className="mt-0.5 size-4 shrink-0" />
-                        <span
-                          className={
-                            isExtra
-                              ? "text-foreground"
-                              : "text-muted-foreground"
-                          }
-                        >
-                          {item}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
+              <CardContent className="flex-1 pt-(--card-spacing)">
+                <PlanHighlights planId={plan.id} highlights={plan.highlights} />
               </CardContent>
-              {snapshot.billingExempt || snapshot.isLegacy ? null : (
-                <CardFooter>
+              {showSubscribe ? (
+                <CardFooter className="mt-auto">
                   <Button
                     className="w-full"
+                    variant={current ? "outline" : "default"}
                     disabled={!canSubscribe || isPending || current}
                     onClick={() => handleSubscribe(plan.id)}
                   >
@@ -264,7 +327,7 @@ export function PlanosClient({
                     {subscribeLabel(snapshot, current)}
                   </Button>
                 </CardFooter>
-              )}
+              ) : null}
             </Card>
           );
         })}

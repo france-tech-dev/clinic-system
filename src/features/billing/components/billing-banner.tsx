@@ -31,7 +31,7 @@ export function BillingBanner({ snapshot }: { snapshot: BillingSnapshotDTO }) {
         <AlertTitle>Período de teste</AlertTitle>
         <AlertDescription>
           {days == null
-            ? "Está a usar o teste grátis com tudo libertado."
+            ? "O teste grátis está ativo com todos os recursos liberados."
             : days === 1
               ? "Falta 1 dia de teste grátis."
               : `Faltam ${days} dias de teste grátis.`}{" "}
@@ -58,7 +58,7 @@ export function BillingBanner({ snapshot }: { snapshot: BillingSnapshotDTO }) {
       <Alert variant="destructive">
         <AlertTitle>Pagamento pendente</AlertTitle>
         <AlertDescription>
-          Não conseguimos cobrar a mensalidade. Actualize o pagamento em{" "}
+          Não conseguimos cobrar a mensalidade. Atualize o pagamento em{" "}
           <Link href={paths.planos}>planos</Link>.
         </AlertDescription>
       </Alert>
