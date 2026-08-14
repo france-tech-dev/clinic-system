@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import z from "zod";
 import {
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/shared/lib/auth-client";
 import { paths } from "@/shared/constants/paths";
+import { Spinner } from "../ui/spinner";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").trim(),
@@ -43,12 +43,11 @@ function slugFromName(name: string) {
 }
 
 type CreateOrganizationFormProps = {
-  /** Após criar, redireciona para este path (default: painel). */
   redirectTo?: string;
 };
 
 export function CreateOrganizationForm({
-  redirectTo = paths.painel,
+  redirectTo = paths.dashboard,
 }: CreateOrganizationFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -152,14 +151,8 @@ export function CreateOrganizationForm({
           )}
         />
         <Button disabled={isLoading} type="submit" className="w-full sm:w-auto">
-          {isLoading ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              A criar…
-            </>
-          ) : (
-            "Criar clínica"
-          )}
+          {isLoading ? <Spinner data-icon="inline-start" /> : null}
+          Criar clínica
         </Button>
       </form>
     </Form>

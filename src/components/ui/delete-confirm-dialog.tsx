@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 
 type DeleteConfirmDialogProps = {
   title?: string;
@@ -54,6 +55,7 @@ function DeleteConfirmDialog({
               disabled={disabled}
               onClick={onConfirm}
             >
+              {disabled ? <Spinner data-icon="inline-start" /> : null}
               {confirmLabel}
             </Button>
           </DialogClose>

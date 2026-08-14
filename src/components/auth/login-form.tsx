@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore, useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/shared/lib/auth-client";
 import { Badge } from "../ui/badge";
 import { IconBrandGoogle } from "@tabler/icons-react";
@@ -154,7 +154,8 @@ export function LoginForm({
             </Link>
           </div>
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : "Login"}
+            {isPending ? <Spinner data-icon="inline-start" /> : null}
+            Login
           </Button>
           <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
             <span className="relative z-10 bg-background px-2 text-muted-foreground">

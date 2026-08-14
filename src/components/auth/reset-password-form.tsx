@@ -18,7 +18,7 @@ import {
 } from "../ui/form"
 import { toast } from "sonner"
 import { useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { useRouter, useSearchParams } from "next/navigation"
 import { authClient } from "@/shared/lib/auth-client"
 
@@ -128,11 +128,8 @@ export function ResetPasswordForm({
         </div>
         <div className="grid gap-2">
           <Button type="submit" disabled={isPending}>
-            {isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              "Redefinir senha"
-            )}
+            {isPending ? <Spinner data-icon="inline-start" /> : null}
+            Redefinir senha
           </Button>
         </div>
         <div className="text-center text-sm">

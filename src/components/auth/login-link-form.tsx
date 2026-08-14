@@ -2,6 +2,7 @@
 
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { paths } from "@/shared/constants/paths";
 import Link from "next/link";
@@ -48,6 +49,8 @@ export function LoginLinkForm({
     toast.success("Link de acesso enviado com sucesso, verifique seu email");
   };
 
+  const isSubmitting = form.formState.isSubmitting;
+
   return (
     <Form {...form}>
       <form
@@ -79,7 +82,10 @@ export function LoginLinkForm({
               </FormItem>
             )}
           />
-          <Button type="submit">Enviar link de acesso</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? <Spinner data-icon="inline-start" /> : null}
+            Enviar link de acesso
+          </Button>
           <p className="text-center text-sm text-muted-foreground">
             Não tem uma conta?{" "}
             <Link

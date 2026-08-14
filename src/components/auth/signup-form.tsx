@@ -18,7 +18,7 @@ import {
 } from "../ui/form";
 import { toast } from "sonner";
 import { useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/shared/lib/auth-client";
 import { IconBrandGoogle } from "@tabler/icons-react";
@@ -188,11 +188,8 @@ export function SignupForm({
         </div>
         <div className="grid gap-2">
           <Button type="submit" disabled={isPending}>
-            {isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              "Criar Conta"
-            )}
+            {isPending ? <Spinner data-icon="inline-start" /> : null}
+            Criar Conta
           </Button>
         </div>
         <div className="grid gap-2">
