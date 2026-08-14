@@ -83,7 +83,11 @@ export function PatientPdfPreviewDialog({
             Fechar
           </Button>
           <Button disabled={!payload || pending} onClick={handleDownload}>
-            <Download className="size-4" />
+            {pending ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <Download data-icon="inline-start" />
+            )}
             Baixar PDF
           </Button>
         </DialogFooter>

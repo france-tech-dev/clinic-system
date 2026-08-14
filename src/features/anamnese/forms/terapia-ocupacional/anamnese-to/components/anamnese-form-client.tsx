@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ClinicalWorkspaceShell } from "@/components/clinical-workspace-shell";
 import { EntityCombobox } from "@/components/entity-combobox";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   getAnamneseAction,
   saveAnamneseAction,
@@ -141,6 +142,7 @@ export function AnamneseFormClient({
           footer={
             <>
               <Button disabled={pending} onClick={handleSave}>
+                {pending ? <Spinner data-icon="inline-start" /> : null}
                 Salvar anamnese
               </Button>
               <Button variant="outline" size="sm" onClick={handlePreview}>

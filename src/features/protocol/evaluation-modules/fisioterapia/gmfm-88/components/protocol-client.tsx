@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -388,6 +389,7 @@ export function GmfmProtocolClient({
                   onClick={runComparison}
                   disabled={pending}
                 >
+                  {pending ? <Spinner data-icon="inline-start" /> : null}
                   Gerar comparativo
                 </Button>
 
@@ -450,6 +452,7 @@ export function GmfmProtocolClient({
               form="gmfm-evaluation-form"
               disabled={pending}
             >
+              {pending ? <Spinner data-icon="inline-start" /> : null}
               Salvar
             </Button>
           </DialogFooter>

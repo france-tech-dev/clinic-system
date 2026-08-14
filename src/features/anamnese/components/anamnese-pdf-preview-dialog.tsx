@@ -95,7 +95,11 @@ export function AnamnesePdfPreviewDialog({
             Fechar
           </Button>
           <Button disabled={pending || !payload} onClick={handleDownload}>
-            <Download className="size-4" />
+            {pending ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <Download data-icon="inline-start" />
+            )}
             Baixar PDF
           </Button>
         </DialogFooter>

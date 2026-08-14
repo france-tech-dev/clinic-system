@@ -54,7 +54,7 @@ function handleError(error: unknown): ActionResult<never> {
 
 function revalidatePatient(id?: string) {
   revalidatePath(paths.pacientes);
-  revalidatePath(paths.painel);
+  revalidatePath(paths.dashboard);
   revalidatePath(paths.agenda);
   if (id) revalidatePath(paths.paciente(id));
 }

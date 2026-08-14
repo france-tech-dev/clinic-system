@@ -1,6 +1,7 @@
 import { FileText } from "lucide-react";
 import { ClinicalWorkspaceShell } from "@/components/clinical-workspace-shell";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { RoteiroNoteDTO } from "@/features/patient/patient.types";
@@ -39,6 +40,7 @@ export function RoteiroSection({
       footer={
         <>
           <Button disabled={pending} onClick={onSave}>
+            {pending ? <Spinner data-icon="inline-start" /> : null}
             Salvar notas
           </Button>
           {onPreviewReport ? (
