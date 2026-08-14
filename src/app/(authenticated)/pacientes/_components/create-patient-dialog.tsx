@@ -2,6 +2,7 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
   DialogContent,
@@ -143,6 +144,7 @@ export function CreatePatientDialog({
             Cancelar
           </Button>
           <Button type="submit" form="create-patient-form" disabled={pending}>
+            {pending ? <Spinner data-icon="inline-start" /> : null}
             Adicionar
           </Button>
         </DialogFooter>

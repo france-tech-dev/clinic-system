@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Check, ChevronDown } from "lucide-react";
 import type { AppointmentDTO } from "@/features/schedule/schedule.types";
 import {
   APPOINTMENT_STATUSES,
@@ -8,12 +9,14 @@ import {
   formatTime,
   type AppointmentStatusId,
 } from "@/shared/constants/appointment";
-import { appointmentDisplayColor } from "@/features/schedule/_lib/appointment-calendar-utils";
 import { paths } from "@/shared/constants/paths";
+import { Button } from "@/components/ui/button";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function AppointmentRow({
   appointment,
@@ -27,10 +30,8 @@ export function AppointmentRow({
   onStatus: (id: string, status: AppointmentStatusId) => void;
 }) {
   const st = appointmentStatusInfo(appointment.status);
-  const badgeColor = appointmentDisplayColor(
-    appointment.status,
-    appointment.hasSessionNote,
-  );
+  const isScheduled = appointment.status === "scheduled";
+
   return (
     <li className="flex flex-wrap items-center gap-3 rounded-md border border-border px-3 py-2.5">
       <button
@@ -49,13 +50,18 @@ export function AppointmentRow({
           )}
           <span
             className="rounded-full px-2 py-0.5 text-[0.65rem] font-medium text-white"
-            style={{ background: badgeColor }}
+            style={{ background: st.color }}
           >
-            {appointment.hasSessionNote ? "Com evolução" : st.label}
+            {st.label}
           </span>
+          {appointment.hasSessionNote ? (
+            <span className="rounded-full border border-[#3D6B8C]/40 bg-[#3D6B8C]/15 px-2 py-0.5 text-[0.65rem] font-medium text-[#3D6B8C]">
+              Com evolução
+            </span>
+          ) : null}
         </div>
         <p className="mt-0.5 font-medium">
-          <span className="text-muted-foreground font-normal">
+          <span className="font-normal text-muted-foreground">
             {appointment.professionalName}
             {" · "}
           </span>
@@ -67,25 +73,55 @@ export function AppointmentRow({
             {appointment.patientName}
           </Link>
         </p>
-        {appointment.notes && (
+        {appointment.notes ? (
           <p className="text-xs text-muted-foreground">{appointment.notes}</p>
-        )}
+        ) : null}
       </button>
-      <NativeSelect
-        size="sm"
-        className="text-xs"
-        value={appointment.status}
-        disabled={pending}
-        onChange={(e) =>
-          onStatus(appointment.id, e.target.value as AppointmentStatusId)
-        }
-      >
-        {APPOINTMENT_STATUSES.map((s) => (
-          <NativeSelectOption key={s.id} value={s.id}>
-            {s.label}
-          </NativeSelectOption>
-        ))}
-      </NativeSelect>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {isScheduled ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            disabled={pending}
+            onClick={() => onStatus(appointment.id, "completed")}
+          >
+            <Check data-icon="inline-start" />
+            Realizado
+          </Button>
+        ) : null}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={pending}
+              aria-label={`Alterar status de ${appointment.patientName}`}
+            >
+              Status
+              <ChevronDown data-icon="inline-end" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {APPOINTMENT_STATUSES.map((s) => (
+              <DropdownMenuItem
+                key={s.id}
+                disabled={s.id === appointment.status}
+                onClick={() => onStatus(appointment.id, s.id)}
+              >
+                <span
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{ background: s.color }}
+                  aria-hidden
+                />
+                {s.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </li>
   );
 }

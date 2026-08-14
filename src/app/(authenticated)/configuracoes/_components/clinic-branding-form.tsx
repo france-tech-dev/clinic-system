@@ -20,6 +20,7 @@ import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { isCustomOrganizationLogo } from "@/shared/lib/organization-logo";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Form,
   FormControl,
@@ -153,7 +154,11 @@ export function ClinicBrandingForm({
                     disabled={logoPending}
                     onClick={() => inputRef.current?.click()}
                   >
-                    <Upload className="size-4" />
+                    {logoPending ? (
+                      <Spinner data-icon="inline-start" />
+                    ) : (
+                      <Upload data-icon="inline-start" />
+                    )}
                     Enviar logo
                   </Button>
                   {hasCustomLogo ? (
@@ -164,7 +169,11 @@ export function ClinicBrandingForm({
                       disabled={logoPending}
                       onClick={removeLogo}
                     >
-                      <Trash2 className="size-4" />
+                      {logoPending ? (
+                        <Spinner data-icon="inline-start" />
+                      ) : (
+                        <Trash2 data-icon="inline-start" />
+                      )}
                       Remover
                     </Button>
                   ) : null}
@@ -191,6 +200,7 @@ export function ClinicBrandingForm({
           </div>
 
           <Button type="submit" disabled={savePending}>
+            {savePending ? <Spinner data-icon="inline-start" /> : null}
             Salvar nome
           </Button>
         </form>

@@ -18,7 +18,7 @@ export function buildCashDraftFromAppointment(
   };
 }
 
-export function useAgendaCashflow() {
+export function useAgendaCashflow(canSuggestCash: boolean) {
   const [cashDialogOpen, setCashDialogOpen] = useState(false);
   const [cashDraft, setCashDraft] = useState<CashTransactionDraft | null>(null);
 
@@ -34,11 +34,11 @@ export function useAgendaCashflow() {
 
   const onAppointmentStatusChanged = useCallback(
     (appointment: AppointmentDTO, status: AppointmentStatusId) => {
-      if (status === "completed") {
+      if (status === "completed" && canSuggestCash) {
         openCashDialogForAppointment(appointment);
       }
     },
-    [openCashDialogForAppointment],
+    [canSuggestCash, openCashDialogForAppointment],
   );
 
   return {

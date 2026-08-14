@@ -4,6 +4,7 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
   DialogContent,
@@ -158,6 +159,7 @@ export function ClinicalEvaluationFormDialog({
             Cancelar
           </Button>
           <Button type="submit" form="evaluation-form" disabled={pending}>
+            {pending ? <Spinner data-icon="inline-start" /> : null}
             Salvar
           </Button>
         </DialogFooter>

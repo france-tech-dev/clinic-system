@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -333,11 +333,8 @@ export function CreateProfessionalDialog({
             form="create-professional-form"
             disabled={pending}
           >
-            {pending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              "Cadastrar"
-            )}
+            {pending ? <Spinner data-icon="inline-start" /> : null}
+            Cadastrar
           </Button>
         </DialogFooter>
       </DialogContent>

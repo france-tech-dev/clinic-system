@@ -16,7 +16,9 @@ import type {
   AppointmentDTO,
   ScheduleMemberDTO,
 } from "@/features/schedule/schedule.types";
+import { findProxyMember } from "@/server/auth/proxy-member";
 import { todayIso } from "@/shared/constants/appointment";
+import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { AgendaClient } from "./agenda-client";
 
@@ -72,6 +74,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   let defaultMemberId = "";
   let initialMemberFilter: string[] = [];
   let initialPatientFilter: string[] = [];
+  let canSuggestCash = false;
 
   try {
     const { organizationId, userId } = await requireOrgId();
@@ -82,12 +85,14 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       rangeAppointments,
       orgMembers,
       currentMemberId,
+      memberGate,
     ] = await Promise.all([
       getAgendaPageData(organizationId, selectedDate, today),
       listPatients(organizationId),
       listAppointmentsByDateRange(organizationId, start, end),
       listOrganizationMembers(organizationId),
       getCurrentMemberId(organizationId, userId),
+      findProxyMember(userId, organizationId),
     ]);
     dayAppointments = agenda.dayAppointments;
     upcoming = agenda.upcoming;
@@ -95,6 +100,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     calendarAppointments = rangeAppointments;
     members = orgMembers;
     defaultMemberId = currentMemberId ?? orgMembers[0]?.id ?? "";
+    canSuggestCash = isLeadershipRole(memberGate?.role ?? null);
     initialMemberFilter = parseIdList(
       params.member,
       new Set(orgMembers.map((m) => m.id)),
@@ -116,28 +122,31 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     initialPatientFilter.join(","),
   ].join("|");
 
-  return (
-    <AppPage title="Agenda">
-      {error ? (
+  if (error) {
+    return (
+      <AppPage title="Agenda">
         <p className="text-sm text-destructive">{error}</p>
-      ) : (
-        <AgendaClient
-          key={`${selectedDate}-${view}-${viewDateIso}-${calView}-${filterKey}`}
-          initialView={view}
-          initialDate={selectedDate}
-          viewDateIso={viewDateIso}
-          initialCalView={calView}
-          initialDay={dayAppointments}
-          initialUpcoming={upcoming}
-          calendarEvents={calendarEvents}
-          calendarAppointments={calendarAppointments}
-          patients={patients}
-          members={members}
-          defaultMemberId={defaultMemberId}
-          initialMemberFilter={initialMemberFilter}
-          initialPatientFilter={initialPatientFilter}
-        />
-      )}
-    </AppPage>
+      </AppPage>
+    );
+  }
+
+  return (
+    <AgendaClient
+      key={`${selectedDate}-${view}-${viewDateIso}-${calView}-${filterKey}`}
+      initialView={view}
+      initialDate={selectedDate}
+      viewDateIso={viewDateIso}
+      initialCalView={calView}
+      initialDay={dayAppointments}
+      initialUpcoming={upcoming}
+      calendarEvents={calendarEvents}
+      calendarAppointments={calendarAppointments}
+      patients={patients}
+      members={members}
+      defaultMemberId={defaultMemberId}
+      initialMemberFilter={initialMemberFilter}
+      initialPatientFilter={initialPatientFilter}
+      canSuggestCash={canSuggestCash}
+    />
   );
 }

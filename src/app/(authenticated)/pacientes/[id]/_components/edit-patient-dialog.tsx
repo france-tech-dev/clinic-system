@@ -2,6 +2,7 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
   DialogContent,
@@ -103,6 +104,7 @@ export function EditPatientDialog({
                 disabled={pending || !guardianEmail.trim()}
                 onClick={onEnablePortal}
               >
+                {pending ? <Spinner data-icon="inline-start" /> : null}
                 Criar acesso ao portal
               </Button>
             </div>
@@ -122,6 +124,7 @@ export function EditPatientDialog({
             Cancelar
           </Button>
           <Button type="submit" form="edit-patient-form" disabled={pending}>
+            {pending ? <Spinner data-icon="inline-start" /> : null}
             Salvar
           </Button>
         </DialogFooter>

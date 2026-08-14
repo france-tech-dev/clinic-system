@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { NotebookPen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
@@ -110,10 +113,14 @@ export function AppointmentFormDialog({
     resolver: zodResolver(appointmentDialogSchema),
     defaultValues: defaults,
   });
+  const [repeatEnabled, setRepeatEnabled] = useState(
+    (defaults.repeatWeeks ?? 1) > 1,
+  );
 
   function handleOpenChange(next: boolean) {
     if (!next) {
       form.reset(defaults);
+      setRepeatEnabled((defaults.repeatWeeks ?? 1) > 1);
     }
     onOpenChange(next);
   }
@@ -302,32 +309,55 @@ export function AppointmentFormDialog({
                 )}
               />
             ) : (
-              <FormField
-                control={form.control}
-                name="repeatWeeks"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Repetir semanalmente *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={1}
-                        max={52}
-                        value={field.value}
-                        onChange={(e) =>
-                          field.onChange(
-                            Math.max(1, Number(e.target.value) || 1),
-                          )
-                        }
-                      />
-                    </FormControl>
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2.5">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">Repetir semanalmente</p>
                     <p className="text-xs text-muted-foreground">
-                      Número de semanas (1 = sem repetição)
+                      Cria o mesmo horário nas semanas seguintes
                     </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  </div>
+                  <Switch
+                    checked={repeatEnabled}
+                    onCheckedChange={(checked) => {
+                      setRepeatEnabled(checked);
+                      form.setValue("repeatWeeks", checked ? 4 : 1, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    aria-label="Repetir semanalmente"
+                  />
+                </div>
+                {repeatEnabled ? (
+                  <FormField
+                    control={form.control}
+                    name="repeatWeeks"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Criar nas próximas N semanas *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={2}
+                            max={52}
+                            value={field.value}
+                            onChange={(e) =>
+                              field.onChange(
+                                Math.max(2, Number(e.target.value) || 2),
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">
+                          Inclui a semana desta data (ex.: 4 = hoje + 3
+                          seguintes)
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : null}
+              </div>
             )}
 
             <FormField
@@ -391,6 +421,7 @@ export function AppointmentFormDialog({
                 className="flex-1 sm:flex-none"
                 disabled={pending}
               >
+                {pending ? <Spinner data-icon="inline-start" /> : null}
                 Salvar
               </Button>
             </div>
