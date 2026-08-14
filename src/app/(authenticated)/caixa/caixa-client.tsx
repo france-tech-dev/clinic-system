@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { CashflowSummaryCards } from "./_components/cashflow-summary-cards";
+import { CashflowSummaryCards } from "@/features/finance/components/cashflow-summary-cards";
 import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
 import type {
   CashflowPageData,

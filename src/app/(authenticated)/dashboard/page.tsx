@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
+import { Button } from "@/components/ui/button";
+import { buildCashDaySeries } from "@/features/dashboard/_lib/build-cash-day-series";
 import { getDashboardData } from "@/features/dashboard/dashboard.service";
 import type { DashboardPageData } from "@/features/dashboard/dashboard.types";
 import { getCashflowPageData } from "@/features/finance/finance.service";
+import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { PainelContent } from "./_components/painel-content";
+import { DashboardContent } from "./_components/dashboard-content";
 
-export default async function PainelPage() {
+export default async function DashboardPage() {
   let data: DashboardPageData | null = null;
   let error: string | null = null;
 
@@ -19,17 +23,25 @@ export default async function PainelPage() {
       ...dashboard,
       financeSummary: cashflow.summary,
       financeMonthLabel: cashflow.monthLabel,
+      cashSeries: buildCashDaySeries(cashflow.transactions, cashflow.month),
     };
   } catch (e) {
     error =
       e instanceof OrgContextError
         ? e.message
-        : "Não foi possível carregar o painel.";
+        : "Não foi possível carregar o dashboard.";
   }
 
   return (
-    <AppPage title="Painel">
-      <PainelContent data={data} error={error} />
+    <AppPage
+      title="Dashboard"
+      rightContent={
+        <Button asChild size="sm">
+          <Link href={`${paths.pacientes}?novo=1`}>Novo paciente</Link>
+        </Button>
+      }
+    >
+      <DashboardContent data={data} error={error} />
     </AppPage>
   );
 }

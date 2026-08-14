@@ -29,8 +29,8 @@ export default async function OrganizacaoPage() {
         {hasOrgs && (
           <p className="text-sm text-muted-foreground">
             Já tem clínicas?{" "}
-            <Link href={paths.painel} className="text-primary hover:underline">
-              Voltar ao painel
+            <Link href={paths.dashboard} className="text-primary hover:underline">
+              Voltar ao dashboard
             </Link>{" "}
             e escolha no seletor da barra lateral.
           </p>
