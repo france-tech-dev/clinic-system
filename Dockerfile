@@ -17,10 +17,6 @@ COPY . .
 ENV HUSKY=0
 ENV NEXT_TELEMETRY_DISABLED=1
 
-ARG BETTER_AUTH_URL="http://localhost:3000"
-ARG BETTER_AUTH_SECRET="build-time-only-not-used-at-runtime"
-ENV BETTER_AUTH_URL=$BETTER_AUTH_URL
-ENV BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET
 RUN pnpm run build
 
 # Imagem final sem pnpm/corepack — só o necessário para runtime + migrate
