@@ -52,3 +52,7 @@ dev.db
 
 # uploads locais (logos por organização)
 /public/uploads
+.agents/
+.codex
+.cursor
+.impeccable
