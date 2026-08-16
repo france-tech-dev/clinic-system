@@ -55,7 +55,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Futuro
 
-- [ ] **Logo em produção:** migrar de `public/uploads` local para storage externo (S3/R2) — necessário em deploy serverless
+- [ ] **Logo / media em produção:** pipeline pronto em `shared/lib/media` (WebP + local). Migrar driver para R2 — ver [`docs/media-storage.md`](media-storage.md)
 
 ---
 
@@ -156,6 +156,6 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 ## Notas
 
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
-- **Logo em produção:** anotado em P2 — implementar antes de deploy em Vercel/similar (Dokploy com volume local pode adiar).
+- **Logo / media em produção:** pipeline em `shared/lib/media`; R2 — [`docs/media-storage.md`](media-storage.md). Dokploy com volume local pode adiar.
 - **Conflito de horário:** explicitamente fora de escopo.
 - **Rate limit:** contadores na BD para réplicas Docker; ver README · secção Segurança.
