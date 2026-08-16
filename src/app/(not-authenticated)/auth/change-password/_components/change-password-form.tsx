@@ -96,7 +96,7 @@ export function ChangePasswordForm({
 
         <Button type="submit" className="w-full" disabled={pending}>
           {pending ? <Spinner data-icon="inline-start" /> : null}
-          Guardar e continuar
+          Confirmar
         </Button>
       </form>
     </Form>
