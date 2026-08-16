@@ -256,6 +256,8 @@ model Patient {
   roteiroNotes        RoteiroNote[]
   cashTransactions    CashTransaction[]
   protocolEvaluations ProtocolEvaluation[]
+  /** Membros da equipa responsáveis por este paciente. */
+  members             Member[]             @relation("PatientMembers")
 
   @@index([organizationId])
   @@index([organizationId, status])
@@ -444,6 +446,7 @@ model Member {
   clinicalEvaluations ClinicalEvaluation[]
   sessionNotes        SessionNote[]
   protocolEvaluations ProtocolEvaluation[]
+  patients            Patient[]            @relation("PatientMembers")
 
   @@index([organizationId])
   @@index([organizationId, status])
