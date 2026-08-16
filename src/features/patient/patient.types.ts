@@ -24,6 +24,12 @@ export type PatientGuardianEmbed = {
   updatedAt: string;
 };
 
+export type PatientMemberEmbed = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+};
+
 export type PatientDTO = {
   id: string;
   name: string;
@@ -36,6 +42,7 @@ export type PatientDTO = {
   price: number | null;
   guardianId: string;
   guardian?: PatientGuardianEmbed;
+  members: PatientMemberEmbed[];
   createdAt: string;
   updatedAt: string;
   clinicalEvaluationsCount?: number;

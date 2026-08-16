@@ -21,7 +21,9 @@ export function parseDomains(raw: string): ClinicalEvaluationDomain[] {
   }
 }
 
-export function formatBirthDateParam(value: Date | null | undefined): string | null {
+export function formatBirthDateParam(
+  value: Date | null | undefined,
+): string | null {
   if (!value) return null;
   const y = value.getUTCFullYear();
   const m = String(value.getUTCMonth() + 1).padStart(2, "0");
@@ -29,7 +31,9 @@ export function formatBirthDateParam(value: Date | null | undefined): string | n
   return `${y}-${m}-${d}`;
 }
 
-export function parseBirthDateParam(value: string | null | undefined): Date | null {
+export function parseBirthDateParam(
+  value: string | null | undefined,
+): Date | null {
   if (!value) return null;
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return null;
@@ -90,6 +94,10 @@ export function toPatientDTO(row: {
   price: { toString(): string } | number | null;
   guardianId: string;
   guardian?: Parameters<typeof toPatientGuardianEmbed>[0];
+  members?: {
+    id: string;
+    user: { name: string | null; image?: string | null };
+  }[];
   createdAt: Date;
   updatedAt: Date;
   _count?: { clinicalEvaluations: number; sessionNotes: number };
@@ -107,6 +115,11 @@ export function toPatientDTO(row: {
     price: row.price == null ? null : Number(row.price),
     guardianId: row.guardianId,
     guardian: row.guardian ? toPatientGuardianEmbed(row.guardian) : undefined,
+    members: (row.members ?? []).map((member) => ({
+      id: member.id,
+      name: member.user.name?.trim() || "Membro",
+      imageUrl: member.user.image?.trim() || null,
+    })),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
     clinicalEvaluationsCount: row._count?.clinicalEvaluations,

@@ -1,4 +1,5 @@
 import { db } from "@/shared/lib/prisma";
+import { Role } from "../../../prisma/generated/prisma/enums";
 import type {
   ClinicalEvaluationFormInput,
   PatientFormInput,
@@ -38,28 +39,46 @@ const guardianSelect = {
   updatedAt: true,
 } as const;
 
+const membersInclude = {
+  members: {
+    select: {
+      id: true,
+      user: { select: { name: true, image: true } },
+    },
+    orderBy: { createdAt: "asc" as const },
+  },
+} as const;
+
+const patientListInclude = {
+  guardian: { select: guardianSelect },
+  ...membersInclude,
+  _count: {
+    select: { clinicalEvaluations: true, sessionNotes: true },
+  },
+  clinicalEvaluations: {
+    orderBy: { date: "desc" as const },
+    take: 1,
+    select: { date: true },
+  },
+} as const;
+
 export const patientRepository = {
   async findMany(
     organizationId: string,
-    opts?: { status?: PatientStatus | null; search?: string },
+    opts?: {
+      status?: PatientStatus | null;
+      search?: string;
+      memberId?: string | null;
+    },
   ) {
     return db.patient.findMany({
       where: {
         organizationId,
         ...(opts?.status ? { status: opts.status } : {}),
         ...(opts?.search ? { name: { contains: opts.search } } : {}),
+        ...(opts?.memberId ? { members: { some: { id: opts.memberId } } } : {}),
       },
-      include: {
-        guardian: { select: guardianSelect },
-        _count: {
-          select: { clinicalEvaluations: true, sessionNotes: true },
-        },
-        clinicalEvaluations: {
-          orderBy: { date: "desc" },
-          take: 1,
-          select: { date: true },
-        },
-      },
+      include: patientListInclude,
       orderBy: { name: "asc" },
     });
   },
@@ -69,6 +88,7 @@ export const patientRepository = {
       where: { id, organizationId },
       include: {
         guardian: { select: guardianSelect },
+        ...membersInclude,
         clinicalEvaluations: {
           include: memberAuthorInclude,
           orderBy: { date: "desc" },
@@ -91,12 +111,34 @@ export const patientRepository = {
     });
   },
 
+  async findListById(organizationId: string, id: string) {
+    return db.patient.findFirst({
+      where: { id, organizationId },
+      include: patientListInclude,
+    });
+  },
+
   async create(organizationId: string, data: PatientFormInput) {
     const guardian = await db.guardian.findFirst({
       where: { id: data.guardianId, organizationId },
       select: { id: true },
     });
     if (!guardian) return null;
+
+    const uniqueMemberIds = [...new Set(data.memberIds ?? [])];
+    if (uniqueMemberIds.length > 0) {
+      const members = await db.member.findMany({
+        where: {
+          organizationId,
+          id: { in: uniqueMemberIds },
+          role: { not: Role.CLIENT },
+        },
+        select: { id: true },
+      });
+      if (members.length !== uniqueMemberIds.length) {
+        throw new Error("Profissional inválido para esta clínica.");
+      }
+    }
 
     return db.patient.create({
       data: {
@@ -109,8 +151,11 @@ export const patientRepository = {
         notes: data.notes ?? "",
         pricingType: data.pricingType ?? "session",
         price: data.price ?? null,
+        ...(uniqueMemberIds.length > 0
+          ? { members: { connect: uniqueMemberIds.map((id) => ({ id })) } }
+          : {}),
       },
-      include: { guardian: { select: guardianSelect } },
+      include: patientListInclude,
     });
   },
 
@@ -143,7 +188,7 @@ export const patientRepository = {
         pricingType: data.pricingType ?? "session",
         price: data.price ?? null,
       },
-      include: { guardian: { select: guardianSelect } },
+      include: patientListInclude,
     });
   },
 
@@ -154,19 +199,58 @@ export const patientRepository = {
   ) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
+      select: { id: true },
     });
     if (!existing) return null;
     return db.patient.update({
       where: { id },
       data: { status },
-      include: { guardian: { select: guardianSelect } },
+      include: patientListInclude,
     });
+  },
+
+  async setMembers(
+    organizationId: string,
+    patientId: string,
+    memberIds: string[],
+  ) {
+    const patient = await db.patient.findFirst({
+      where: { id: patientId, organizationId },
+      select: { id: true },
+    });
+    if (!patient) return null;
+
+    const uniqueIds = [...new Set(memberIds)];
+    if (uniqueIds.length > 0) {
+      const members = await db.member.findMany({
+        where: {
+          organizationId,
+          id: { in: uniqueIds },
+          role: { not: Role.CLIENT },
+        },
+        select: { id: true },
+      });
+      if (members.length !== uniqueIds.length) {
+        throw new Error("Profissional inválido para esta clínica.");
+      }
+    }
+
+    await db.patient.update({
+      where: { id: patientId },
+      data: {
+        members: {
+          set: uniqueIds.map((id) => ({ id })),
+        },
+      },
+    });
+
+    return this.findListById(organizationId, patientId);
   },
 
   async delete(organizationId: string, id: string) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
-      include: { guardian: { select: guardianSelect } },
+      include: patientListInclude,
     });
     if (!existing) return null;
     await db.patient.delete({ where: { id } });

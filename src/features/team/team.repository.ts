@@ -1,7 +1,7 @@
 import { hashPassword } from "better-auth/crypto";
 import { createCredentialUser } from "@/shared/lib/create-credential-user";
 import { db } from "@/shared/lib/prisma";
-import type { Role } from "../../../prisma/generated/prisma/enums";
+import { Role } from "../../../prisma/generated/prisma/enums";
 import type { CreateProfessionalInput } from "./team.schema";
 import type { TeamMemberStatus } from "./team.types";
 
@@ -15,7 +15,10 @@ function parseOptionalBirthDate(value: string | null | undefined): Date | null {
 export const teamRepository = {
   async listMembers(organizationId: string) {
     return db.member.findMany({
-      where: { organizationId },
+      where: {
+        organizationId,
+        role: { not: Role.CLIENT },
+      },
       include: {
         user: {
           select: {

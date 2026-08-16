@@ -1,5 +1,6 @@
 import { db } from "@/shared/lib/prisma";
 import { addDaysIso } from "@/shared/constants/appointment";
+import { Role } from "../../../prisma/generated/prisma/enums";
 import type {
   AppointmentFormInput,
   UpdateAppointmentInput,
@@ -38,15 +39,17 @@ export const scheduleRepository = {
       select: { appointmentId: true },
     });
     return new Set(
-      notes
-        .map((n) => n.appointmentId)
-        .filter((id): id is string => !!id),
+      notes.map((n) => n.appointmentId).filter((id): id is string => !!id),
     );
   },
 
   async findOrgMembers(organizationId: string) {
     return db.member.findMany({
-      where: { organizationId, status: "active" },
+      where: {
+        organizationId,
+        status: "active",
+        role: { not: Role.CLIENT },
+      },
       include: { user: { select: { id: true, name: true } } },
       orderBy: { createdAt: "asc" },
     });

@@ -47,7 +47,9 @@ const patientFieldsSchema = z.object({
   guardianId: z.string().min(1, "Informe o responsável"),
 });
 
-export const patientFormSchema = patientFieldsSchema;
+export const patientFormSchema = patientFieldsSchema.extend({
+  memberIds: z.array(z.string().min(1)).max(50).optional().default([]),
+});
 
 export const updatePatientSchema = patientFieldsSchema.extend({
   id: z.string().min(1),
@@ -75,6 +77,11 @@ export const patientIdSchema = z.object({
 export const patientStatusSchema = z.object({
   id: z.string().min(1),
   status: z.enum(PATIENT_STATUSES),
+});
+
+export const patientMembersSchema = z.object({
+  patientId: z.string().min(1),
+  memberIds: z.array(z.string().min(1)).max(50),
 });
 
 const domainSchema = z.object({
@@ -109,9 +116,10 @@ export const clinicalEvaluationFormSchema = z.object({
   dischargeCriteria: z.string().trim().default(""),
 });
 
-export const updateClinicalEvaluationSchema = clinicalEvaluationFormSchema.extend({
-  id: z.string().min(1),
-});
+export const updateClinicalEvaluationSchema =
+  clinicalEvaluationFormSchema.extend({
+    id: z.string().min(1),
+  });
 
 export const clinicalEvaluationIdSchema = z.object({
   id: z.string().min(1),
@@ -138,8 +146,9 @@ function refineSessionActivities(
   }
 }
 
-export const sessionFormSchema =
-  sessionFormBaseSchema.superRefine(refineSessionActivities);
+export const sessionFormSchema = sessionFormBaseSchema.superRefine(
+  refineSessionActivities,
+);
 
 export const updateSessionNoteSchema = sessionFormBaseSchema
   .extend({ id: z.string().min(1) })
@@ -151,7 +160,11 @@ export const sessionIdSchema = z.object({
 
 export const roteiroNoteSaveSchema = z.object({
   patientId: z.string().min(1),
-  roteiroId: z.enum(["sensory-integration", "fine-motor", "feeding-selectivity"]),
+  roteiroId: z.enum([
+    "sensory-integration",
+    "fine-motor",
+    "feeding-selectivity",
+  ]),
   categoryTick: z.string().min(1),
   notes: z.string().default(""),
 });
@@ -159,6 +172,8 @@ export const roteiroNoteSaveSchema = z.object({
 export type PatientFormInput = z.infer<typeof patientFormSchema>;
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;
 export type PatientDraftInput = z.infer<typeof patientDraftSchema>;
-export type ClinicalEvaluationFormInput = z.infer<typeof clinicalEvaluationFormSchema>;
+export type ClinicalEvaluationFormInput = z.infer<
+  typeof clinicalEvaluationFormSchema
+>;
 export type SessionFormInput = z.infer<typeof sessionFormSchema>;
 export type RoteiroNoteSaveInput = z.infer<typeof roteiroNoteSaveSchema>;

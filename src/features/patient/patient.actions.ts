@@ -2,8 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/server/auth/permissions";
+import { findProxyMember } from "@/server/auth/proxy-member";
 import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
+import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -12,6 +14,7 @@ import {
   clinicalEvaluationIdSchema,
   patientFormSchema,
   patientIdSchema,
+  patientMembersSchema,
   patientStatusSchema,
   roteiroNoteSaveSchema,
   sessionFormSchema,
@@ -32,6 +35,7 @@ import {
   listPatients,
   listRoteiroNotes,
   saveRoteiroNote,
+  setPatientMembers,
   setPatientStatus,
   updateClinicalEvaluation,
   updatePatient,
@@ -95,8 +99,15 @@ export async function createPatientAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgWrite();
-    const data = await createPatient(organizationId, parsed.data);
+    const { organizationId, userId } = await requireOrgWrite();
+    const member = await findProxyMember(userId, organizationId);
+    const memberIds = isLeadershipRole(member?.role ?? null)
+      ? (parsed.data.memberIds ?? [])
+      : [];
+    const data = await createPatient(organizationId, {
+      ...parsed.data,
+      memberIds,
+    });
     revalidatePatient();
     return ok(data);
   } catch (error) {
@@ -131,7 +142,11 @@ export async function setPatientStatusAction(
     await requirePermission({ project: ["update"] });
     const parsed = patientStatusSchema.safeParse(input);
     if (!parsed.success) return fail("Dados inválidos");
-    const { organizationId } = await requireOrgWrite();
+    const { organizationId, userId } = await requireOrgWrite();
+    const member = await findProxyMember(userId, organizationId);
+    if (!isLeadershipRole(member?.role ?? null)) {
+      throw new Error("Sem permissão.");
+    }
     const data = await setPatientStatus(
       organizationId,
       parsed.data.id,
@@ -139,6 +154,31 @@ export async function setPatientStatusAction(
     );
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.id);
+    return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function setPatientMembersAction(
+  input: unknown,
+): Promise<ActionResult<PatientDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const parsed = patientMembersSchema.safeParse(input);
+    if (!parsed.success) return failZod(parsed.error);
+    const { organizationId, userId } = await requireOrgWrite();
+    const member = await findProxyMember(userId, organizationId);
+    if (!isLeadershipRole(member?.role ?? null)) {
+      throw new Error("Sem permissão.");
+    }
+    const data = await setPatientMembers(
+      organizationId,
+      parsed.data.patientId,
+      parsed.data.memberIds,
+    );
+    if (!data) return fail("Paciente não encontrado");
+    revalidatePatient(parsed.data.patientId);
     return ok(data);
   } catch (error) {
     return handleError(error);

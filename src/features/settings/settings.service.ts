@@ -3,9 +3,9 @@ import {
   DEFAULT_PRINT_LOGO,
 } from "@/shared/constants/brand";
 import {
-  deleteOrganizationLogoFile,
-  saveOrganizationLogoFile,
-} from "@/shared/lib/organization-logo-storage";
+  deleteManagedImage,
+  saveOrganizationLogoImage,
+} from "@/shared/lib/media";
 import {
   isCustomOrganizationLogo,
   isOrganizationLogoMimeType,
@@ -169,12 +169,7 @@ export async function saveOrganizationLogo(
   const org = await settingsRepository.findOrganizationBranding(organizationId);
   if (!org) throw new Error("Organização não encontrada");
 
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const logoUrl = await saveOrganizationLogoFile(
-    organizationId,
-    bytes,
-    file.type,
-  );
+  const logoUrl = await saveOrganizationLogoImage(organizationId, file);
 
   const previousLogo = org.logo?.trim() ?? "";
   const updated = await settingsRepository.updateOrganizationLogo(
@@ -183,7 +178,7 @@ export async function saveOrganizationLogo(
   );
 
   if (isCustomOrganizationLogo(previousLogo) && previousLogo !== logoUrl) {
-    await deleteOrganizationLogoFile(previousLogo);
+    await deleteManagedImage(previousLogo);
   }
 
   return buildPrintBranding(updated);
@@ -202,7 +197,7 @@ export async function removeOrganizationLogo(
   );
 
   if (isCustomOrganizationLogo(previousLogo)) {
-    await deleteOrganizationLogoFile(previousLogo);
+    await deleteManagedImage(previousLogo);
   }
 
   return buildPrintBranding(updated);

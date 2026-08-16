@@ -68,6 +68,19 @@ export async function setPatientStatus(
   return row ? toPatientDTO(row) : null;
 }
 
+export async function setPatientMembers(
+  organizationId: string,
+  patientId: string,
+  memberIds: string[],
+) {
+  const row = await patientRepository.setMembers(
+    organizationId,
+    patientId,
+    memberIds,
+  );
+  return row ? toPatientDTO(row) : null;
+}
+
 export async function deletePatient(organizationId: string, id: string) {
   const row = await patientRepository.delete(organizationId, id);
   return row ? toPatientDTO(row) : null;
@@ -110,7 +123,10 @@ export async function updateClinicalEvaluation(
   return row ? toClinicalEvaluationDTO(row) : null;
 }
 
-export async function deleteClinicalEvaluation(organizationId: string, id: string) {
+export async function deleteClinicalEvaluation(
+  organizationId: string,
+  id: string,
+) {
   return patientRepository.deleteClinicalEvaluation(organizationId, id);
 }
 
