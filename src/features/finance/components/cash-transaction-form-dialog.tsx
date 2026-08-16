@@ -75,11 +75,9 @@ function buildDefaults(
     date: initial?.date ?? draft?.date ?? defaultDate,
     description: initial?.description ?? draft?.description ?? "",
     amountInput: amount ? amountToBrlInput(amount) : "",
-    paymentMethod:
-      initial?.paymentMethod ?? draft?.paymentMethod ?? "cash",
+    paymentMethod: initial?.paymentMethod ?? draft?.paymentMethod ?? "cash",
     patientId: initial?.patientId ?? draft?.patientId ?? "none",
-    memberId:
-      initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "none",
+    memberId: initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "none",
   };
 }
 
@@ -93,6 +91,7 @@ export function CashTransactionFormDialog({
   defaultDate,
   defaultType,
   defaultMemberId,
+  lockType = false,
   pending,
   startTransition,
   onSaved,
@@ -106,6 +105,8 @@ export function CashTransactionFormDialog({
   defaultDate: string;
   defaultType?: CashTransactionTypeId;
   defaultMemberId?: string;
+  /** Quando true e criação, o tipo fica fixo (ex.: veio do botão Entrada/Saída). */
+  lockType?: boolean;
   pending: boolean;
   startTransition: (fn: () => void) => void;
   onSaved: () => void;
@@ -191,12 +192,16 @@ export function CashTransactionFormDialog({
     });
   }
 
+  const typeLocked = lockType && !initial;
+  const createTitle =
+    defaults.type === "expense" ? "Nova saída" : "Nova entrada";
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif">
-            {initial ? "Editar lançamento" : "Novo lançamento"}
+            {initial ? "Editar lançamento" : createTitle}
           </DialogTitle>
         </DialogHeader>
 
@@ -206,35 +211,37 @@ export function CashTransactionFormDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid gap-4"
           >
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo *</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => {
-                      if (v) field.onChange(v);
-                    }}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {CASH_TRANSACTION_TYPES.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!typeLocked ? (
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo *</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CASH_TRANSACTION_TYPES.map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
 
             <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
@@ -373,10 +380,7 @@ export function CashTransactionFormDialog({
 
         <DialogFooter className="gap-2 sm:justify-between">
           {initial ? (
-            <DeleteConfirmDialog
-              onConfirm={handleDelete}
-              disabled={pending}
-            >
+            <DeleteConfirmDialog onConfirm={handleDelete} disabled={pending}>
               <Button
                 type="button"
                 variant="ghost"

@@ -6,10 +6,7 @@ import type {
 } from "@/features/finance/finance.types";
 import { parseMonthParam } from "@/features/finance/_lib/month-utils";
 import { listPatients } from "@/features/patient/patient.service";
-import {
-  getCurrentMemberId,
-  listOrganizationMembers,
-} from "@/features/schedule/schedule.service";
+import { listOrganizationMembers } from "@/features/schedule/schedule.service";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { CaixaClient } from "./caixa-client";
 
@@ -35,17 +32,12 @@ export default async function CaixaPage({
   let pageData: CashflowPageData | null = null;
   let patients: Awaited<ReturnType<typeof listPatients>> = [];
   let members: CashMemberOption[] = [];
-  let defaultMemberId = "";
   let memberFilter = MEMBER_FILTER_ALL;
 
   try {
-    const { organizationId, userId } = await requireOrgId();
-    const [orgMembers, currentMemberId] = await Promise.all([
-      listOrganizationMembers(organizationId),
-      getCurrentMemberId(organizationId, userId),
-    ]);
+    const { organizationId } = await requireOrgId();
+    const orgMembers = await listOrganizationMembers(organizationId);
     members = orgMembers.map((m) => ({ id: m.id, name: m.name }));
-    defaultMemberId = currentMemberId ?? members[0]?.id ?? "";
     const filterId = parseMemberFilter(params.member, members);
     memberFilter = filterId ?? MEMBER_FILTER_ALL;
 
@@ -70,7 +62,6 @@ export default async function CaixaPage({
           initial={pageData}
           patients={patients}
           members={members}
-          defaultMemberId={defaultMemberId}
           memberFilter={memberFilter}
         />
       ) : null}

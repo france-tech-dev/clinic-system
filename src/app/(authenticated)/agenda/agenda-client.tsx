@@ -494,10 +494,7 @@ export function AgendaClient({
                   {upcomingGroups.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
                       Nenhum agendamento futuro
-                      {hasActiveFilters
-                        ? " com estes filtros"
-                        : " registrado"}
-                      .
+                      {hasActiveFilters ? " com estes filtros" : " registrado"}.
                       {hasActiveFilters ? (
                         <>
                           {" "}
@@ -679,6 +676,7 @@ export function AgendaClient({
             draft={cashflow.cashDraft}
             defaultDate={todayIso()}
             defaultType="income"
+            lockType
             defaultMemberId={defaultMemberId}
             pending={pending}
             startTransition={startTransition}

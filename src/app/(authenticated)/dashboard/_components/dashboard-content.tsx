@@ -96,7 +96,11 @@ export function DashboardContent({
                 Abrir caixa
               </Link>
             </div>
-            <CashflowSummaryCards summary={data.financeSummary} />
+            <CashflowSummaryCards
+              summary={data.financeSummary}
+              monthLabel={data.financeMonthLabel}
+              variant="hero"
+            />
           </section>
 
           <div className="grid items-start gap-6 lg:grid-cols-2">
@@ -104,10 +108,7 @@ export function DashboardContent({
               className="flex flex-col gap-3"
               aria-labelledby="dash-alertas"
             >
-              <h2
-                id="dash-alertas"
-                className="font-serif text-lg font-medium"
-              >
+              <h2 id="dash-alertas" className="font-serif text-lg font-medium">
                 Alertas clínicos
               </h2>
               {data.alerts.length === 0 ? (
@@ -134,7 +135,9 @@ export function DashboardContent({
                             {alertKindLabel(a.kind)}
                           </Badge>
                         </div>
-                        <span className="text-muted-foreground">{a.detail}</span>
+                        <span className="text-muted-foreground">
+                          {a.detail}
+                        </span>
                       </Link>
                     </li>
                   ))}
