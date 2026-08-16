@@ -39,7 +39,8 @@ export async function listPlatformOrganizations(): Promise<
     createdAt: row.createdAt,
     billingExempt: row.billingExempt,
     billingStatus: (row.billing?.status as BillingStatusId | undefined) ?? null,
-    billingPlan: (row.billing?.plan as BillingPlanId | null | undefined) ?? null,
+    billingPlan:
+      (row.billing?.plan as BillingPlanId | null | undefined) ?? null,
     trialEndsAt: row.billing?.trialEndsAt ?? null,
   }));
 }
@@ -52,4 +53,52 @@ export async function setOrganizationBillingExempt(
     where: { id: organizationId },
     data: { billingExempt },
   });
+}
+
+export async function getPlatformOrganizationSlug(
+  organizationId: string,
+): Promise<string | null> {
+  const org = await db.organization.findUnique({
+    where: { id: organizationId },
+    select: { slug: true },
+  });
+  return org?.slug ?? null;
+}
+
+export type DeletedPlatformOrganization = {
+  id: string;
+  name: string;
+  logo: string | null;
+  stripeCustomerId: string | null;
+};
+
+export async function deletePlatformOrganization(
+  organizationId: string,
+): Promise<DeletedPlatformOrganization | null> {
+  const org = await db.organization.findUnique({
+    where: { id: organizationId },
+    select: {
+      id: true,
+      name: true,
+      logo: true,
+      billing: { select: { stripeCustomerId: true } },
+    },
+  });
+  if (!org) return null;
+
+  await db.$transaction(async (tx) => {
+    await tx.patient.deleteMany({ where: { organizationId } });
+    await tx.organization.delete({ where: { id: organizationId } });
+    await tx.session.updateMany({
+      where: { activeOrganizationId: organizationId },
+      data: { activeOrganizationId: null },
+    });
+  });
+
+  return {
+    id: org.id,
+    name: org.name,
+    logo: org.logo,
+    stripeCustomerId: org.billing?.stripeCustomerId ?? null,
+  };
 }
