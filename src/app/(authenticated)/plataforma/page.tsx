@@ -16,16 +16,16 @@ export default async function PlataformaPage() {
 
   return (
     <AppPage title="Plataforma">
-      <div className="flex max-w-3xl flex-col gap-2">
+      <div className="flex max-w-4xl flex-col gap-2">
         <h2 className="font-serif text-2xl font-semibold tracking-tight">
           Administração da plataforma
         </h2>
         <p className="text-sm text-muted-foreground">
-          Marque clínicas a dedo para acesso completo sem cobrança. O billing
-          Stripe (se existir) fica ignorado enquanto a isenção estiver activa.
+          Console interno: isente clínicas da faturação a dedo. Enquanto a
+          isenção estiver ativa, o Stripe fica ignorado.
         </p>
       </div>
-      <div className="max-w-3xl">
+      <div className="max-w-4xl">
         <PlataformaClient
           organizations={organizations.map((row) => ({
             id: row.id,
