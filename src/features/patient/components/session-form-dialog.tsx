@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SESSION_NOTE_STATUS_LABEL } from "@/features/patient/_lib/session-note-status-label";
 import {
   createSessionAction,
   updateSessionAction,
@@ -228,9 +229,15 @@ export function SessionFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="attended">Compareceu</SelectItem>
-                      <SelectItem value="absent">Faltou</SelectItem>
-                      <SelectItem value="cancelled">Cancelado</SelectItem>
+                      <SelectItem value="attended">
+                        {SESSION_NOTE_STATUS_LABEL.attended}
+                      </SelectItem>
+                      <SelectItem value="absent">
+                        {SESSION_NOTE_STATUS_LABEL.absent}
+                      </SelectItem>
+                      <SelectItem value="cancelled">
+                        {SESSION_NOTE_STATUS_LABEL.cancelled}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
