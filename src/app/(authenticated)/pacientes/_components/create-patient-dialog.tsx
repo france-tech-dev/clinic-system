@@ -31,9 +31,16 @@ import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
 import type { PatientDraftInput } from "@/features/patient/patient.schema";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { TeamMemberDTO } from "@/features/team/team.types";
 
 function guardianOptionLabel(g: GuardianDTO) {
-  return [g.name, g.cpf || null, g.hasPortalAccess ? "portal" : null]
+  return [
+    g.name,
+    g.cpf || null,
+    g.hasPortalAccess ? "com acesso ao portal" : null,
+  ]
     .filter(Boolean)
     .join(" · ");
 }
@@ -48,6 +55,10 @@ export function CreatePatientDialog({
   onSelectedGuardianIdChange,
   guardians,
   guardianForm,
+  members,
+  selectedMemberIds,
+  onSelectedMemberIdsChange,
+  canAssignMembers,
   pending,
   onSubmit,
 }: {
@@ -60,9 +71,23 @@ export function CreatePatientDialog({
   onSelectedGuardianIdChange: (id: string) => void;
   guardians: GuardianDTO[];
   guardianForm: UseFormReturn<GuardianDraftInput>;
+  members: TeamMemberDTO[];
+  selectedMemberIds: string[];
+  onSelectedMemberIdsChange: (ids: string[]) => void;
+  canAssignMembers: boolean;
   pending: boolean;
   onSubmit: () => void;
 }) {
+  const activeMembers = members.filter((m) => m.status === "active");
+
+  function toggleMember(id: string, checked: boolean) {
+    onSelectedMemberIdsChange(
+      checked
+        ? [...selectedMemberIds, id]
+        : selectedMemberIds.filter((x) => x !== id),
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
@@ -85,11 +110,13 @@ export function CreatePatientDialog({
             </Form>
           </FieldSet>
 
+          <Separator />
+
           <FieldSet>
             <FieldLegend>Vínculo do responsável</FieldLegend>
             <FieldGroup>
               <Field>
-                <FieldLabel>Modo</FieldLabel>
+                <FieldLabel>Como vincular o responsável?</FieldLabel>
                 <Select
                   value={guardianMode}
                   onValueChange={(v) =>
@@ -100,12 +127,14 @@ export function CreatePatientDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="new">Novo responsável</SelectItem>
+                    <SelectItem value="new">
+                      Cadastrar novo responsável
+                    </SelectItem>
                     <SelectItem
                       value="existing"
                       disabled={guardians.length === 0}
                     >
-                      Responsável existente
+                      Usar responsável já cadastrado
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -132,6 +161,44 @@ export function CreatePatientDialog({
             <Form {...guardianForm}>
               <GuardianFormFields showPortalAccess />
             </Form>
+          ) : null}
+
+          {canAssignMembers && activeMembers.length > 0 ? (
+            <>
+              <Separator />
+              <FieldSet>
+                <FieldLegend>Profissionais que atendem</FieldLegend>
+                <FieldGroup>
+                  <ul className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+                    {activeMembers.map((m) => {
+                      const checked = selectedMemberIds.includes(m.id);
+                      return (
+                        <li key={m.id}>
+                          <Field
+                            orientation="horizontal"
+                            className="items-center gap-3"
+                          >
+                            <Checkbox
+                              checked={checked}
+                              onCheckedChange={(v) =>
+                                toggleMember(m.id, v === true)
+                              }
+                              id={`create-member-${m.id}`}
+                            />
+                            <FieldLabel
+                              htmlFor={`create-member-${m.id}`}
+                              className="font-normal"
+                            >
+                              {m.name}
+                            </FieldLabel>
+                          </Field>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </FieldGroup>
+              </FieldSet>
+            </>
           ) : null}
         </form>
 
