@@ -2,7 +2,7 @@
   "name": "clinic-system",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@11.20.0",
+  "packageManager": "pnpm@11.22.0",
   "engines": {
     "node": ">=20"
   },
@@ -51,6 +51,7 @@
     "react-hook-form": "^7.83.0",
     "recharts": "3.10.1",
     "server-only": "^0.0.1",
+    "sharp": "^0.35.3",
     "sonner": "^2.0.7",
     "stripe": "^22.5.0",
     "tailwind-merge": "^3.6.0",
