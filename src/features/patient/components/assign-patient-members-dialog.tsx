@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { IconSearch } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -11,6 +12,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import type { TeamMemberDTO } from "@/features/team/team.types";
 import { getHealthProfession } from "@/shared/constants/professions";
@@ -33,8 +39,17 @@ export function AssignPatientMembersDialog({
   onSave: (memberIds: string[]) => void;
 }) {
   const [selectedIds, setSelectedIds] = useState(initialMemberIds);
+  const [query, setQuery] = useState("");
 
-  const activeMembers = members.filter((m) => m.status === "active");
+  const activeMembers = useMemo(
+    () => members.filter((m) => m.status === "active"),
+    [members],
+  );
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return activeMembers;
+    return activeMembers.filter((m) => m.name.toLowerCase().includes(q));
+  }, [activeMembers, query]);
 
   function toggle(id: string, checked: boolean) {
     setSelectedIds((prev) =>
@@ -46,7 +61,10 @@ export function AssignPatientMembersDialog({
     <Dialog
       open={open}
       onOpenChange={(next) => {
-        if (next) setSelectedIds(initialMemberIds);
+        if (next) {
+          setSelectedIds(initialMemberIds);
+          setQuery("");
+        }
         onOpenChange(next);
       }}
     >
@@ -65,39 +83,59 @@ export function AssignPatientMembersDialog({
             Nenhum profissional activo nesta clínica.
           </p>
         ) : (
-          <ul className="flex max-h-72 flex-col gap-2 overflow-y-auto">
-            {activeMembers.map((m) => {
-              const checked = selectedIds.includes(m.id);
-              const profession =
-                getHealthProfession(m.profession)?.label ?? m.profession;
-              return (
-                <li key={m.id}>
-                  <Field
-                    orientation="horizontal"
-                    className="items-center gap-3"
-                  >
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(v) => toggle(m.id, v === true)}
-                      id={`assign-member-${m.id}`}
-                    />
-                    <FieldLabel
-                      htmlFor={`assign-member-${m.id}`}
-                      className="font-normal"
-                    >
-                      {m.name}
-                      {profession ? (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          · {profession}
-                        </span>
-                      ) : null}
-                    </FieldLabel>
-                  </Field>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="flex flex-col gap-3">
+            <InputGroup>
+              <InputGroupAddon>
+                <IconSearch data-icon="inline-start" />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder="Buscar por nome…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Buscar profissional por nome"
+              />
+            </InputGroup>
+
+            {filtered.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhum profissional encontrado.
+              </p>
+            ) : (
+              <ul className="flex max-h-72 flex-col gap-2 overflow-y-auto">
+                {filtered.map((m) => {
+                  const checked = selectedIds.includes(m.id);
+                  const profession =
+                    getHealthProfession(m.profession)?.label ?? m.profession;
+                  return (
+                    <li key={m.id}>
+                      <Field
+                        orientation="horizontal"
+                        className="items-center gap-3"
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(v) => toggle(m.id, v === true)}
+                          id={`assign-member-${m.id}`}
+                        />
+                        <FieldLabel
+                          htmlFor={`assign-member-${m.id}`}
+                          className="min-w-0 flex-1 font-normal"
+                        >
+                          <span className="truncate">{m.name}</span>
+                          {profession ? (
+                            <span className="text-muted-foreground">
+                              {" "}
+                              · {profession}
+                            </span>
+                          ) : null}
+                        </FieldLabel>
+                      </Field>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
         )}
 
         <DialogFooter>

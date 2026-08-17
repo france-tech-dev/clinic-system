@@ -37,10 +37,11 @@ import {
 } from "@/components/ui/select";
 import {
   Item,
-  ItemActions,
   ItemContent,
   ItemDescription,
+  ItemFooter,
   ItemGroup,
+  ItemHeader,
   ItemTitle,
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
@@ -303,10 +304,10 @@ export function PacientesClient({
     </Badge>
   );
 
-  const rowActions = (p: PatientDTO, busy: boolean) => (
-    <div className="flex items-center justify-end gap-1">
-      {busy ? <Spinner className="size-3.5" /> : null}
-      {isLeadership ? (
+  const rowActions = (p: PatientDTO, busy: boolean) =>
+    isLeadership ? (
+      <div className="flex items-center justify-end gap-1">
+        {busy ? <Spinner className="size-3.5" /> : null}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -332,9 +333,41 @@ export function PacientesClient({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      ) : null}
-    </div>
-  );
+      </div>
+    ) : busy ? (
+      <Spinner className="size-3.5" />
+    ) : null;
+
+  const mobileStatusControl = (p: PatientDTO, busy: boolean) =>
+    isLeadership ? (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={busy}
+            aria-label={`Alterar status de ${p.name}`}
+          >
+            {PATIENT_STATUS_LABEL[p.status]}
+            <ChevronDown data-icon="inline-end" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {PATIENT_STATUS_OPTIONS.map((status) => (
+            <DropdownMenuItem
+              key={status}
+              disabled={status === p.status}
+              onClick={() => requestStatusChange(p, status)}
+            >
+              {PATIENT_STATUS_LABEL[status]}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ) : (
+      statusBadge(p.status)
+    );
 
   function professionalsCell(patient: PatientDTO, busy: boolean) {
     return (
@@ -531,25 +564,32 @@ export function PacientesClient({
                     key={p.id}
                     variant="outline"
                     role="listitem"
-                    className={cn("bg-card", busy && "opacity-70")}
+                    className={cn(
+                      "flex-col items-stretch bg-card",
+                      busy && "opacity-70",
+                    )}
                     aria-busy={busy}
                   >
-                    <ItemContent className="min-w-0">
-                      <Link
-                        href={paths.paciente(p.id)}
-                        className="min-w-0 hover:underline"
-                      >
-                        <ItemTitle>{p.name}</ItemTitle>
-                        <ItemDescription>
-                          {formatPatientListMeta(p)}
-                        </ItemDescription>
-                      </Link>
-                    </ItemContent>
-                    <ItemActions className="shrink-0">
-                      {professionalsCell(p, busy)}
-                      {statusBadge(p.status)}
-                      {rowActions(p, busy)}
-                    </ItemActions>
+                    <ItemHeader>
+                      <ItemContent className="min-w-0">
+                        <Link
+                          href={paths.paciente(p.id)}
+                          className="min-w-0 hover:underline"
+                        >
+                          <ItemTitle>{p.name}</ItemTitle>
+                          <ItemDescription>
+                            {formatPatientListMeta(p)}
+                          </ItemDescription>
+                        </Link>
+                      </ItemContent>
+                      {busy ? <Spinner className="size-3.5" /> : null}
+                    </ItemHeader>
+                    <ItemFooter className="border-t border-border pt-2">
+                      <div className="flex w-full items-center justify-between gap-2">
+                        {professionalsCell(p, busy)}
+                        {mobileStatusControl(p, busy)}
+                      </div>
+                    </ItemFooter>
                   </Item>
                 );
               })}

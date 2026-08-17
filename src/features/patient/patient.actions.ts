@@ -179,6 +179,7 @@ export async function setPatientMembersAction(
     );
     if (!data) return fail("Paciente não encontrado");
     revalidatePatient(parsed.data.patientId);
+    revalidatePath(paths.profissionais);
     return ok(data);
   } catch (error) {
     return handleError(error);
