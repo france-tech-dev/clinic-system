@@ -1,39 +1,32 @@
-export const ORGANIZATION_LOGO_UPLOAD_DIR = "uploads/organizations";
+/**
+ * Helpers de logo da clínica (seguros para client).
+ * Persistência/processamento: `shared/lib/media`.
+ */
+import {
+  MEDIA_KIND,
+  MEDIA_UPLOAD_MIME_TYPES,
+  MEDIA_UPLOADS_PREFIX,
+  type MediaUploadMimeType,
+} from "@/shared/lib/media/media.constants";
 
-export const ORGANIZATION_LOGO_MAX_BYTES = 2 * 1024 * 1024;
+export const ORGANIZATION_LOGO_UPLOAD_DIR = `${MEDIA_UPLOADS_PREFIX}/organizations`;
 
-export const ORGANIZATION_LOGO_MIME_TYPES = [
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-] as const;
+export const ORGANIZATION_LOGO_MAX_BYTES = MEDIA_KIND.logo.maxUploadBytes;
 
-export type OrganizationLogoMimeType =
-  (typeof ORGANIZATION_LOGO_MIME_TYPES)[number];
+export const ORGANIZATION_LOGO_MIME_TYPES = MEDIA_UPLOAD_MIME_TYPES;
+
+export type OrganizationLogoMimeType = MediaUploadMimeType;
 
 export function isOrganizationLogoMimeType(
   mime: string,
 ): mime is OrganizationLogoMimeType {
-  return ORGANIZATION_LOGO_MIME_TYPES.includes(
-    mime as OrganizationLogoMimeType,
-  );
+  return MEDIA_UPLOAD_MIME_TYPES.includes(mime as MediaUploadMimeType);
 }
 
+/** Logo enviada pela clínica (path local ou URL R2 com o mesmo key prefix). */
 export function isCustomOrganizationLogo(
   logoUrl: string | null | undefined,
 ): boolean {
-  return Boolean(logoUrl?.includes(`/${ORGANIZATION_LOGO_UPLOAD_DIR}/`));
-}
-
-export function organizationLogoMimeToExtension(
-  mime: OrganizationLogoMimeType,
-): string {
-  switch (mime) {
-    case "image/png":
-      return ".png";
-    case "image/jpeg":
-      return ".jpg";
-    case "image/webp":
-      return ".webp";
-  }
+  if (!logoUrl) return false;
+  return logoUrl.includes(`/${MEDIA_UPLOADS_PREFIX}/organizations/`);
 }

@@ -13,7 +13,7 @@ import {
   setOrganizationBillingExempt,
   type PlatformOrganizationRow,
 } from "@/server/platform/platform-organizations";
-import { deleteOrganizationLogoFile } from "@/shared/lib/organization-logo-storage";
+import { deleteManagedImage } from "@/shared/lib/media";
 import { getStripe } from "@/shared/lib/stripe";
 
 const setExemptSchema = z.object({
@@ -107,7 +107,7 @@ export async function deletePlatformOrganizationAction(
     if (!deleted) return fail("Clínica não encontrada.");
 
     if (deleted.logo) {
-      await deleteOrganizationLogoFile(deleted.logo).catch(() => undefined);
+      await deleteManagedImage(deleted.logo).catch(() => undefined);
     }
 
     const stripe = getStripe();
