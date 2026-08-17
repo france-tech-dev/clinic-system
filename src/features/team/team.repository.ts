@@ -5,6 +5,23 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 import type { CreateProfessionalInput } from "./team.schema";
 import type { TeamMemberStatus } from "./team.types";
 
+const memberListInclude = {
+  user: {
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      email: true,
+      phone: true,
+      birthDate: true,
+    },
+  },
+  patients: {
+    select: { id: true, name: true, photoUrl: true },
+    orderBy: { name: "asc" as const },
+  },
+} as const;
+
 function parseOptionalBirthDate(value: string | null | undefined): Date | null {
   if (!value?.trim()) return null;
   const [year, month, day] = value.split("-").map(Number);
@@ -19,19 +36,61 @@ export const teamRepository = {
         organizationId,
         role: { not: Role.CLIENT },
       },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            birthDate: true,
-          },
-        },
-      },
+      include: memberListInclude,
       orderBy: { createdAt: "asc" },
     });
+  },
+
+  async findById(organizationId: string, memberId: string) {
+    return db.member.findFirst({
+      where: {
+        id: memberId,
+        organizationId,
+        role: { not: Role.CLIENT },
+      },
+      include: memberListInclude,
+    });
+  },
+
+  async setPatients(
+    organizationId: string,
+    memberId: string,
+    patientIds: string[],
+  ) {
+    const member = await db.member.findFirst({
+      where: {
+        id: memberId,
+        organizationId,
+        role: { not: Role.CLIENT },
+      },
+      select: { id: true },
+    });
+    if (!member) return null;
+
+    const uniqueIds = [...new Set(patientIds)];
+    if (uniqueIds.length > 0) {
+      const patients = await db.patient.findMany({
+        where: {
+          organizationId,
+          id: { in: uniqueIds },
+        },
+        select: { id: true },
+      });
+      if (patients.length !== uniqueIds.length) {
+        throw new Error("Paciente inválido para esta clínica.");
+      }
+    }
+
+    await db.member.update({
+      where: { id: memberId },
+      data: {
+        patients: {
+          set: uniqueIds.map((id) => ({ id })),
+        },
+      },
+    });
+
+    return this.findById(organizationId, memberId);
   },
 
   async findUserByEmail(email: string) {

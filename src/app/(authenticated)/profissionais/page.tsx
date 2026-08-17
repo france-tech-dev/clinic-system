@@ -1,19 +1,40 @@
 import { Suspense } from "react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
+import { listPatients } from "@/features/patient/patient.service";
+import { PATIENT_STATUS_LABEL } from "@/features/patient/_lib/patient-status-label";
 import { listTeamMembers } from "@/features/team/team.service";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+import type {
+  AssignablePatientOption,
+  TeamMemberDTO,
+} from "@/features/team/team.types";
+import { findProxyMember } from "@/server/auth/proxy-member";
+import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { ProfissionaisClient } from "./profissionais-client";
 
 export default async function ProfissionaisPage() {
   let members: TeamMemberDTO[] = [];
+  let assignablePatients: AssignablePatientOption[] = [];
   let currentUserId = "";
+  let isLeadership = false;
   let error: string | null = null;
 
   try {
     const { organizationId, userId } = await requireOrgId();
     currentUserId = userId;
-    members = await listTeamMembers(organizationId);
+    const [memberList, patientList, memberGate] = await Promise.all([
+      listTeamMembers(organizationId),
+      listPatients(organizationId),
+      findProxyMember(userId, organizationId),
+    ]);
+    members = memberList;
+    assignablePatients = patientList.map((patient) => ({
+      id: patient.id,
+      name: patient.name,
+      photoUrl: patient.photoUrl,
+      statusLabel: PATIENT_STATUS_LABEL[patient.status],
+    }));
+    isLeadership = isLeadershipRole(memberGate?.role ?? null);
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -21,18 +42,22 @@ export default async function ProfissionaisPage() {
         : "Não foi possível carregar os profissionais.";
   }
 
-  return (
-    <AppPage title="Profissionais">
-      {error ? (
+  if (error) {
+    return (
+      <AppPage title="Profissionais">
         <p className="text-sm text-destructive">{error}</p>
-      ) : (
-        <Suspense fallback={<p className="text-sm">A carregar…</p>}>
-          <ProfissionaisClient
-            initialMembers={members}
-            currentUserId={currentUserId}
-          />
-        </Suspense>
-      )}
-    </AppPage>
+      </AppPage>
+    );
+  }
+
+  return (
+    <Suspense fallback={<p className="text-sm">A carregar…</p>}>
+      <ProfissionaisClient
+        initialMembers={members}
+        assignablePatients={assignablePatients}
+        currentUserId={currentUserId}
+        isLeadership={isLeadership}
+      />
+    </Suspense>
   );
 }

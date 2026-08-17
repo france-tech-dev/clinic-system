@@ -13,6 +13,10 @@ import type {
   TeamMemberStatus,
 } from "./team.types";
 
+type MemberListRow = Awaited<
+  ReturnType<typeof teamRepository.listMembers>
+>[number];
+
 function toMemberRole(role: CreateProfessionalInput["role"]): Role {
   switch (role) {
     case "ADMIN":
@@ -36,11 +40,8 @@ function toTeamMemberStatus(status: string): TeamMemberStatus {
   return status === "inactive" ? "inactive" : "active";
 }
 
-export async function listTeamMembers(
-  organizationId: string,
-): Promise<TeamMemberDTO[]> {
-  const rows = await teamRepository.listMembers(organizationId);
-  return rows.map((row) => ({
+function toTeamMemberDTO(row: MemberListRow): TeamMemberDTO {
+  return {
     id: row.id,
     userId: row.userId,
     role: row.role,
@@ -48,11 +49,37 @@ export async function listTeamMembers(
     profession: row.profession,
     registration: row.registration,
     name: row.user.name?.trim() || "Sem nome",
+    imageUrl: row.user.image?.trim() || null,
     email: row.user.email?.trim() || "",
     phone: row.user.phone,
     birthDate: formatBirthDate(row.user.birthDate),
     createdAt: row.createdAt.toISOString(),
-  }));
+    patients: (row.patients ?? []).map((patient) => ({
+      id: patient.id,
+      name: patient.name,
+      photoUrl: patient.photoUrl?.trim() || null,
+    })),
+  };
+}
+
+export async function listTeamMembers(
+  organizationId: string,
+): Promise<TeamMemberDTO[]> {
+  const rows = await teamRepository.listMembers(organizationId);
+  return rows.map(toTeamMemberDTO);
+}
+
+export async function setMemberPatients(
+  organizationId: string,
+  memberId: string,
+  patientIds: string[],
+): Promise<TeamMemberDTO | null> {
+  const row = await teamRepository.setPatients(
+    organizationId,
+    memberId,
+    patientIds,
+  );
+  return row ? toTeamMemberDTO(row) : null;
 }
 
 export async function createProfessional(

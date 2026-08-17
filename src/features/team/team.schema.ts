@@ -42,6 +42,11 @@ export const deleteProfessionalSchema = z.object({
   memberId: z.string().trim().min(1, "Profissional inválido"),
 });
 
+export const memberPatientsSchema = z.object({
+  memberId: z.string().trim().min(1, "Profissional inválido"),
+  patientIds: z.array(z.string().min(1)).max(500),
+});
+
 export type DeleteProfessionalInput = z.infer<typeof deleteProfessionalSchema>;
 
 export const changeForcedPasswordSchema = z
