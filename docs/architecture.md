@@ -11,6 +11,8 @@ Documentos relacionados:
 - Checklist de refactors: [`architecture-audit.md`](./architecture-audit.md)
 - Roadmap funcional: [`ToDo.md`](./ToDo.md)
 - Mensalidade Stripe: [`billing.md`](./billing.md)
+- Media / R2: [`media-storage.md`](./media-storage.md)
+- Jobs e filas (futuro): [`jobs-queues.md`](./jobs-queues.md)
 - Regras para o Cursor (agente): [`.cursor/rules/`](../.cursor/rules/)
 
 ---

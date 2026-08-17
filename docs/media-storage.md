@@ -40,3 +40,7 @@ R2_PUBLIC_BASE_URL=https://seu-dominio-ou-r2-dev
 ## PDF + WebP
 
 Validar `@react-pdf/renderer` com logo WebP. Se falhar, gerar PNG derivado só para PDF (mantém WebP na UI).
+
+## Filas (quando o sync deixar de chegar)
+
+Ver [`jobs-queues.md`](./jobs-queues.md) — decisão: Redis + BullMQ; media pode continuar síncrona até doer.
