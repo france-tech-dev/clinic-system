@@ -1,4 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// O resolver puxa `render` → actions → auth → email (`server-only`).
+vi.mock("server-only", () => ({}));
+
 import { resolveEvaluationModuleUI } from "@/app/(authenticated)/avaliacoes/_lib/resolve-evaluation-module-ui";
 import {
   EVALUATION_MODULE_REGISTRY,
