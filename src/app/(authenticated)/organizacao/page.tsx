@@ -18,7 +18,7 @@ export default async function OrganizacaoPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             {hasOrgs
               ? "Cada clínica tem pacientes e agenda próprios."
-              : "Para usar o Fichário, precisa de uma clínica (organização). Os dados ficam isolados por clínica."}
+              : "Para usar o Sistema, precisa de uma clínica (organização). Os dados ficam isolados por clínica."}
           </p>
         </div>
 
@@ -29,7 +29,10 @@ export default async function OrganizacaoPage() {
         {hasOrgs && (
           <p className="text-sm text-muted-foreground">
             Já tem clínicas?{" "}
-            <Link href={paths.dashboard} className="text-primary hover:underline">
+            <Link
+              href={paths.dashboard}
+              className="text-primary hover:underline"
+            >
               Voltar ao dashboard
             </Link>{" "}
             e escolha no seletor da barra lateral.
