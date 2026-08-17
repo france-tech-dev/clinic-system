@@ -21,9 +21,18 @@ export function AvaliacaoLista({
         </Button>
       </div>
       {clinicalEvaluations.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Nenhuma avaliação registrada.
-        </p>
+        <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Ainda não há avaliações clínicas neste paciente.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Comece pela avaliação inicial do prontuário.
+          </p>
+          <Button size="sm" className="mt-4" onClick={onNewEvaluation}>
+            <Plus className="size-4" />
+            Nova avaliação
+          </Button>
+        </div>
       ) : (
         <ul className="space-y-2">
           {clinicalEvaluations.map((ev) => (

@@ -8,6 +8,7 @@ import { buildAnamnesePdfBlocks } from "@/features/anamnese/_lib/pdf/build-block
 import { getCatalogAnamnese } from "@/features/anamnese/forms";
 import { getPatientDetail } from "@/features/patient/patient.service";
 import { listTeamMembers } from "@/features/team/team.service";
+import type { TeamMemberDTO } from "@/features/team/team.types";
 import { listGuardians } from "@/features/guardian/guardian.service";
 import type { GuardianDTO } from "@/features/guardian/guardian.types";
 import type { PatientDetailDTO } from "@/features/patient/patient.types";
@@ -21,6 +22,8 @@ import type {
   ProfessionalProfile,
 } from "@/features/settings/settings.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
+import { findProxyMember } from "@/server/auth/proxy-member";
+import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { PacienteDetailClient } from "./paciente-detail-client";
 
@@ -35,6 +38,8 @@ export default async function PacienteDetailPage({
   let guardians: GuardianDTO[] = [];
   let anamneses: AnamneseSummaryDTO[] = [];
   let anamneseSections: PdfKeyValueSection[] = [];
+  let orgMembers: TeamMemberDTO[] = [];
+  let isLeadership = false;
   let professional: ProfessionalProfile = {
     name: "",
     registration: "",
@@ -48,8 +53,8 @@ export default async function PacienteDetailPage({
   let showRoteiros = false;
 
   try {
-    const { organizationId } = await requireOrgId();
-    const [d, g, prof, printBranding, anamneseRecords, members] =
+    const { organizationId, userId } = await requireOrgId();
+    const [d, g, prof, printBranding, anamneseRecords, members, memberGate] =
       await Promise.all([
         getPatientDetail(organizationId, id),
         listGuardians(organizationId),
@@ -57,11 +62,14 @@ export default async function PacienteDetailPage({
         getPrintBranding(organizationId),
         listPatientAnamneses(organizationId, id),
         listTeamMembers(organizationId),
+        findProxyMember(userId, organizationId),
       ]);
     detail = d;
     guardians = g;
     professional = prof;
     branding = printBranding;
+    orgMembers = members;
+    isLeadership = isLeadershipRole(memberGate?.role ?? null);
     showRoteiros = members.some(
       (member) =>
         member.status === "active" &&
@@ -107,6 +115,8 @@ export default async function PacienteDetailPage({
         professional={professional}
         branding={branding}
         showRoteiros={showRoteiros}
+        orgMembers={orgMembers}
+        isLeadership={isLeadership}
       />
     </AppPage>
   );

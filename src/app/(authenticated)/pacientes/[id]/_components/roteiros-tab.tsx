@@ -34,7 +34,12 @@ export function RoteirosTab({
   onPreviewRoteiro: () => void;
 }) {
   return (
-    <section className="flex flex-col gap-4">
+    <section
+      role="tabpanel"
+      id="patient-tabpanel-roteiros"
+      aria-labelledby="patient-tab-roteiros"
+      className="flex flex-col gap-3"
+    >
       <div className="flex flex-col gap-1.5">
         <p className="text-sm text-muted-foreground">
           Roteiros clínicos de Terapia Ocupacional para observação estruturada.

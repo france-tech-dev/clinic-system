@@ -13,7 +13,12 @@ export function AnamneseTab({
   anamneses: AnamneseSummaryDTO[];
 }) {
   return (
-    <>
+    <section
+      role="tabpanel"
+      id="patient-tabpanel-anamnese"
+      aria-labelledby="patient-tab-anamnese"
+      className="space-y-3"
+    >
       <div className="no-print flex justify-end">
         <Button asChild size="sm">
           <Link href={paths.anamnese.root}>
@@ -24,9 +29,20 @@ export function AnamneseTab({
       </div>
 
       {anamneses.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Nenhuma anamnese registrada.
-        </p>
+        <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Ainda não há anamneses neste paciente.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Escolha o formulário adequado à especialidade na área de Anamnese.
+          </p>
+          <Button asChild size="sm" className="mt-4">
+            <Link href={paths.anamnese.root}>
+              <Plus className="size-4" />
+              Nova anamnese
+            </Link>
+          </Button>
+        </div>
       ) : (
         <ul className="flex flex-col gap-2">
           {anamneses.map((item) => (
@@ -51,6 +67,6 @@ export function AnamneseTab({
           ))}
         </ul>
       )}
-    </>
+    </section>
   );
 }

@@ -18,22 +18,34 @@ export function PatientDetailTabs({
   );
 
   return (
-    <div className="no-print flex gap-4 overflow-x-auto border-b border-border">
-      {tabs.map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onTabChange(id)}
-          className={cn(
-            "shrink-0 border-b-2 pb-2 text-sm font-medium",
-            tab === id
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground",
-          )}
-        >
-          {label}
-        </button>
-      ))}
+    <div
+      role="tablist"
+      aria-label="Secções do paciente"
+      className="no-print flex gap-4 overflow-x-auto border-b border-border"
+    >
+      {tabs.map(([id, label]) => {
+        const selected = tab === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`patient-tab-${id}`}
+            aria-selected={selected}
+            aria-controls={`patient-tabpanel-${id}`}
+            tabIndex={selected ? 0 : -1}
+            onClick={() => onTabChange(id)}
+            className={cn(
+              "shrink-0 border-b-2 pb-2 text-sm font-medium",
+              selected
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground",
+            )}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 }

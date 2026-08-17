@@ -52,6 +52,10 @@ export function usePatientDetail({
   const [previewPayload, setPreviewPayload] =
     useState<PatientReportPayload | null>(null);
 
+  function setPatient(patient: PatientDetailDTO["patient"]) {
+    setDetail((prev) => ({ ...prev, patient }));
+  }
+
   const pdfReport = {
     previewPayload,
     openPreview: (payload: PatientReportPayload) => setPreviewPayload(payload),
@@ -150,6 +154,7 @@ export function usePatientDetail({
 
   return {
     detail,
+    setPatient,
     tab,
     setTab,
     pending,

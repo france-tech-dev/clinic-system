@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SESSION_NOTE_STATUS_LABEL } from "@/features/patient/_lib/session-note-status-label";
 import type { SessionNoteDTO } from "@/features/patient/patient.types";
 import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
@@ -14,7 +15,12 @@ export function EvolucoesTab({
   onViewSession: (note: SessionNoteDTO) => void;
 }) {
   return (
-    <section className="space-y-3">
+    <section
+      role="tabpanel"
+      id="patient-tabpanel-evolucoes"
+      aria-labelledby="patient-tab-evolucoes"
+      className="space-y-3"
+    >
       <div className="no-print flex justify-end">
         <Button size="sm" onClick={onNewSession}>
           <Plus className="size-4" />
@@ -22,9 +28,18 @@ export function EvolucoesTab({
         </Button>
       </div>
       {sessionNotes.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Nenhuma evolução registrada.
-        </p>
+        <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Ainda não há evoluções neste paciente.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Registe a primeira após uma sessão na agenda.
+          </p>
+          <Button size="sm" className="mt-4" onClick={onNewSession}>
+            <Plus className="size-4" />
+            Nova evolução
+          </Button>
+        </div>
       ) : (
         <ul className="space-y-2">
           {sessionNotes.map((s) => (
@@ -35,7 +50,9 @@ export function EvolucoesTab({
                 className="w-full rounded-md border border-border bg-card px-3 py-3 text-left hover:border-primary/40"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium capitalize">{s.status}</span>
+                  <span className="font-medium">
+                    {SESSION_NOTE_STATUS_LABEL[s.status]}
+                  </span>
                   <span className="font-mono text-xs text-muted-foreground">
                     {formatDateBR(s.date)}
                     {s.time ? ` · ${formatTime(s.time)}` : ""}

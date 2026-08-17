@@ -83,17 +83,13 @@ import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { cn } from "@/shared/lib/utils";
-import { AssignPatientMembersDialog } from "./_components/assign-patient-members-dialog";
+import { AssignPatientMembersDialog } from "@/features/patient/components/assign-patient-members-dialog";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
-import { PatientProfessionalsIndicator } from "./_components/patient-professionals-indicator";
-
-const STATUS_LABEL: Record<PatientStatus, string> = {
-  active: "Ativo",
-  discharged: "Alta",
-  paused: "Pausado",
-};
-
-const STATUS_OPTIONS: PatientStatus[] = ["active", "paused", "discharged"];
+import { PatientProfessionalsIndicator } from "@/features/patient/components/patient-professionals-indicator";
+import {
+  PATIENT_STATUS_LABEL,
+  PATIENT_STATUS_OPTIONS,
+} from "@/features/patient/_lib/patient-status-label";
 
 type PendingStatusChange = {
   patient: PatientDTO;
@@ -303,7 +299,7 @@ export function PacientesClient({
         status === "paused" && "border-fichario-patient text-fichario-patient",
       )}
     >
-      {STATUS_LABEL[status]}
+      {PATIENT_STATUS_LABEL[status]}
     </Badge>
   );
 
@@ -325,13 +321,13 @@ export function PacientesClient({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {STATUS_OPTIONS.map((status) => (
+            {PATIENT_STATUS_OPTIONS.map((status) => (
               <DropdownMenuItem
                 key={status}
                 disabled={status === p.status}
                 onClick={() => requestStatusChange(p, status)}
               >
-                {STATUS_LABEL[status]}
+                {PATIENT_STATUS_LABEL[status]}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

@@ -11,7 +11,12 @@ export function AvaliacaoTab({
   onViewEvaluation: (evaluation: ClinicalEvaluationDTO) => void;
 }) {
   return (
-    <section className="space-y-4">
+    <section
+      role="tabpanel"
+      id="patient-tabpanel-avaliacao"
+      aria-labelledby="patient-tab-avaliacao"
+      className="space-y-3"
+    >
       <AvaliacaoLista
         clinicalEvaluations={clinicalEvaluations}
         onNewEvaluation={onNewEvaluation}
