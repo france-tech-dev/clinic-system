@@ -123,7 +123,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Pendente
 
-- [ ] **Hub `/relatorio`** — página dedicada para gerar PDF (prontuário, anamnese, avaliação, roteiro) num só sítio
+- [ ] **Hub `/relatorio`** — página dedicada para gerar PDF (prontuário, anamnese, avaliação) num só sítio
 - [ ] **GMFM-88 PDF** — exportar/visualizar o comparativo / ficha preenchida em PDF
 - [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos (`/portal` ainda é stub)
 - [ ] **Ficha de avaliação** — ficha com todos os domínios e subdomínios, itens, respostas e resultado final

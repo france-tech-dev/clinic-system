@@ -311,7 +311,7 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 
 | Feature     | Responsabilidade                                        |
 | ----------- | ------------------------------------------------------- |
-| `patient`   | Pacientes, ClinicalEvaluation, evoluções, PDF, roteiros |
+| `patient`   | Pacientes, ClinicalEvaluation, evoluções, PDF              |
 | `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)      |
 | `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User        |
 | `schedule`  | Agenda, agendamentos, calendário, repetição semanal     |
