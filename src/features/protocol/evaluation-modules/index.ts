@@ -14,6 +14,5 @@ export {
 export {
   EVALUATION_MODULE_REGISTRY,
   getEvaluationModule,
-  getEvaluationModuleUI,
   listEvaluationModules,
 } from "./registry";

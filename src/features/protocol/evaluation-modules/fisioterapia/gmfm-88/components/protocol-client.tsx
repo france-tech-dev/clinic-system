@@ -5,6 +5,10 @@ import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import {
+  ClinicalWorkspaceActions,
+  ClinicalWorkspaceFooter,
+} from "@/components/clinical-workspace-shell";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -18,7 +22,6 @@ import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -49,9 +52,7 @@ import {
   listProtocolEvaluationsAction,
   updateProtocolEvaluationAction,
 } from "@/features/protocol/protocol.actions";
-import {
-  protocolEvaluationFormSchema,
-} from "@/features/protocol/protocol.schema";
+import { protocolEvaluationFormSchema } from "@/features/protocol/protocol.schema";
 import type {
   ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
@@ -90,19 +91,21 @@ export function GmfmProtocolClient({
   patients,
   initialPatientId,
   initialProtocolEvaluations,
+  canWrite,
 }: {
   patients: EvaluationModulePatientOption[];
   initialPatientId: string | null;
   initialProtocolEvaluations: ProtocolEvaluationDTO[];
+  canWrite: boolean;
 }) {
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
-  const [assessments, setAssessments] =
-    useState<ProtocolEvaluationDTO[]>(initialProtocolEvaluations);
+  const [assessments, setAssessments] = useState<ProtocolEvaluationDTO[]>(
+    initialProtocolEvaluations,
+  );
   const [baselineId, setBaselineId] = useState("");
   const [followUpId, setFollowUpId] = useState("");
-  const [comparison, setComparison] = useState<ProtocolEvaluationComparisonDTO | null>(
-    null,
-  );
+  const [comparison, setComparison] =
+    useState<ProtocolEvaluationComparisonDTO | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ProtocolEvaluationDTO | null>(null);
   const [pending, startTransition] = useTransition();
@@ -116,8 +119,7 @@ export function GmfmProtocolClient({
 
   const scores =
     (useWatch({ control: form.control, name: "scores" }) as
-      | Gmfm88Scores
-      | undefined) ?? emptyGmfm88Scores();
+      Gmfm88Scores | undefined) ?? emptyGmfm88Scores();
   const liveSummary = useMemo(() => summarizeGmfm88(scores), [scores]);
 
   const activePatients = useMemo(
@@ -246,18 +248,17 @@ export function GmfmProtocolClient({
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
       <p className="text-sm text-muted-foreground">
-        Avaliação GMFM-88 — Gross Motor Function Measure. Registe resultados
-        estruturados (0–3 por item), acompanhe percentuais por domínio e compare
-        avaliação vs. reavaliação.
+        {canWrite
+          ? "GMFM-88 mede a função motora grossa em 5 domínios. Escolha o paciente, registre a pontuação (0–3 por item) e compare avaliação com reavaliação."
+          : "GMFM-88 mede a função motora grossa em 5 domínios. Escolha o paciente para consultar o histórico e o comparativo."}
       </p>
 
       <Card>
         <CardHeader>
           <CardTitle className="font-serif text-lg">Paciente</CardTitle>
           <CardDescription>
-            Baseado no modelo{" "}
-            <span className="font-medium">GMFM88 - DANIEL.xlsx</span> (5
-            domínios, 88 itens).
+            5 domínios, 88 itens. Os resultados ficam no histórico deste
+            protocolo.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -272,7 +273,7 @@ export function GmfmProtocolClient({
             emptyText="Nenhum paciente encontrado"
           />
 
-          {patientId ? (
+          {patientId && canWrite ? (
             <div className="flex flex-wrap gap-2">
               <Button size="sm" onClick={openCreate} disabled={pending}>
                 <Plus className="size-4" />
@@ -312,27 +313,31 @@ export function GmfmProtocolClient({
                     ) : null}
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openEdit(a)}
-                      disabled={pending}
-                    >
-                      Editar
-                    </Button>
-                    <DeleteConfirmDialog
-                      onConfirm={() => removeAssessment(a.id)}
-                      disabled={pending}
-                    >
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-destructive hover:text-destructive"
-                        disabled={pending}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    </DeleteConfirmDialog>
+                    {canWrite ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEdit(a)}
+                          disabled={pending}
+                        >
+                          Editar
+                        </Button>
+                        <DeleteConfirmDialog
+                          onConfirm={() => removeAssessment(a.id)}
+                          disabled={pending}
+                        >
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive"
+                            disabled={pending}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </DeleteConfirmDialog>
+                      </>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -418,44 +423,39 @@ export function GmfmProtocolClient({
       ) : null}
 
       <Dialog open={formOpen} onOpenChange={handleFormOpenChange}>
-        <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-5xl">
+        <DialogContent className="flex max-h-[92dvh] flex-col overflow-hidden sm:max-w-5xl">
           <DialogHeader>
             <DialogTitle className="font-serif">
               {editing ? "Editar GMFM-88" : "Nova GMFM-88"}
             </DialogTitle>
           </DialogHeader>
 
-          <Form {...form}>
-            <form
-              id="gmfm-evaluation-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4"
-            >
-              <GmfmEvaluationForm />
-            </form>
-          </Form>
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 overflow-y-auto pb-4">
+              <Form {...form}>
+                <form
+                  id="gmfm-evaluation-form"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="grid gap-4"
+                >
+                  <GmfmEvaluationForm />
+                </form>
+              </Form>
 
-          <div className="rounded-md border border-border bg-muted/40 p-3 text-sm">
-            Prévia: {liveSummary.totalScore}/{liveSummary.maxScore} (
-            {liveSummary.percent.toFixed(1)}%)
+              <div className="mt-4 rounded-md border border-border bg-muted/40 p-3 text-sm">
+                Prévia: {liveSummary.totalScore}/{liveSummary.maxScore} (
+                {liveSummary.percent.toFixed(1)}%)
+              </div>
+            </div>
+            <ClinicalWorkspaceFooter>
+              <ClinicalWorkspaceActions
+                onCancel={() => handleFormOpenChange(false)}
+                saveType="submit"
+                saveForm="gmfm-evaluation-form"
+                pending={pending}
+              />
+            </ClinicalWorkspaceFooter>
           </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => handleFormOpenChange(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              form="gmfm-evaluation-form"
-              disabled={pending}
-            >
-              {pending ? <Spinner data-icon="inline-start" /> : null}
-              Salvar
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

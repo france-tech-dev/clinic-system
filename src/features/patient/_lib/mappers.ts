@@ -7,7 +7,6 @@ import type {
   PatientPricingType,
   PatientSex,
   PatientStatus,
-  RoteiroNoteDTO,
   SessionLinkableAppointmentDTO,
   SessionNoteDTO,
   SessionNoteStatus,
@@ -234,23 +233,5 @@ export function toLinkableAppointmentDTO(row: {
     status: row.status,
     professionalName: row.member?.user.name?.trim() || null,
     sessionNoteId: row.sessionNote?.id ?? null,
-  };
-}
-
-export function toRoteiroNoteDTO(row: {
-  id: string;
-  patientId: string;
-  roteiroId: string;
-  categoryTick: string;
-  notes: string;
-  updatedAt: Date;
-}): RoteiroNoteDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    roteiroId: row.roteiroId,
-    categoryTick: row.categoryTick,
-    notes: row.notes,
-    updatedAt: row.updatedAt.toISOString(),
   };
 }

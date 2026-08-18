@@ -13,10 +13,6 @@ export async function downloadPatientReport(
 
   await downloadPdfBlob(
     blob,
-    buildPatientReportFilename(
-      payload.patientName,
-      payload.mode,
-      payload.roteiro?.label,
-    ),
+    buildPatientReportFilename(payload.patientName, payload.mode),
   );
 }

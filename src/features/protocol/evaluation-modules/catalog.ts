@@ -2,10 +2,6 @@ import type { HealthProfessionId } from "@/shared/constants/professions";
 import { HEALTH_PROFESSIONS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
 import { listEvaluationModules } from "./registry";
-import {
-  TERAPIA_OCUPACIONAL_PROFESSION_ID,
-  terapiaOcupacionalCatalogEvaluations,
-} from "./terapia-ocupacional";
 import type {
   CatalogEvaluation,
   CatalogEvaluationDef,
@@ -14,21 +10,14 @@ import type {
 
 /**
  * Catálogo do hub `/avaliacoes`.
- * - Instrumentos nativos: derivados do registry único (metadados + render).
- * - Roteiros T.O.: só metadados aqui; UI em `patient` (composição em `app/`).
+ * Instrumentos nativos: derivados do registry único (metadados + render).
  */
 function catalogDefsByProfession(
   professionId: HealthProfessionId,
 ): CatalogEvaluationDef[] {
-  const fromModules = listEvaluationModules()
+  return listEvaluationModules()
     .filter((mod) => mod.professionId === professionId)
     .map(({ id, name, description }) => ({ id, name, description }));
-
-  if (professionId === TERAPIA_OCUPACIONAL_PROFESSION_ID) {
-    return [...fromModules, ...terapiaOcupacionalCatalogEvaluations];
-  }
-
-  return fromModules;
 }
 
 function withHref(assessment: CatalogEvaluationDef): CatalogEvaluation {

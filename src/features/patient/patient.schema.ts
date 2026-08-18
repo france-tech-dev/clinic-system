@@ -158,17 +158,6 @@ export const sessionIdSchema = z.object({
   id: z.string().min(1),
 });
 
-export const roteiroNoteSaveSchema = z.object({
-  patientId: z.string().min(1),
-  roteiroId: z.enum([
-    "sensory-integration",
-    "fine-motor",
-    "feeding-selectivity",
-  ]),
-  categoryTick: z.string().min(1),
-  notes: z.string().default(""),
-});
-
 export type PatientFormInput = z.infer<typeof patientFormSchema>;
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;
 export type PatientDraftInput = z.infer<typeof patientDraftSchema>;
@@ -176,4 +165,3 @@ export type ClinicalEvaluationFormInput = z.infer<
   typeof clinicalEvaluationFormSchema
 >;
 export type SessionFormInput = z.infer<typeof sessionFormSchema>;
-export type RoteiroNoteSaveInput = z.infer<typeof roteiroNoteSaveSchema>;

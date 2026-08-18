@@ -1,14 +1,9 @@
 import type { PatientReportMode } from "./types";
 
-export function getPatientReportTitle(
-  mode: PatientReportMode,
-  roteiroLabel?: string,
-): string {
+export function getPatientReportTitle(mode: PatientReportMode): string {
   switch (mode) {
     case "evaluation":
       return "Relatório de Avaliação Ocupacional";
-    case "roteiro":
-      return roteiroLabel ? `Roteiro — ${roteiroLabel}` : "Roteiro clínico";
     case "full":
     default:
       return "Prontuário Completo";
@@ -18,9 +13,8 @@ export function getPatientReportTitle(
 export function buildPatientReportFilename(
   patientName: string,
   mode: PatientReportMode,
-  roteiroLabel?: string,
 ): string {
-  const title = getPatientReportTitle(mode, roteiroLabel);
+  const title = getPatientReportTitle(mode);
   const slug = `${patientName}-${title}`
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")

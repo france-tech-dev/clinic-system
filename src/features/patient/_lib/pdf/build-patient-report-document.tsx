@@ -1,7 +1,6 @@
 import type { PatientReportPayload } from "./types";
 import { ClinicalEvaluationDocument } from "./documents/clinical-evaluation-document";
 import { FullRecordDocument } from "./documents/full-record-document";
-import { RoteiroDocument } from "./documents/roteiro-document";
 
 type PatientReportDocumentProps = {
   payload: PatientReportPayload;
@@ -15,8 +14,6 @@ export function PatientReportDocument({
   switch (payload.mode) {
     case "evaluation":
       return <ClinicalEvaluationDocument payload={payload} logoOrigin={logoOrigin} />;
-    case "roteiro":
-      return <RoteiroDocument payload={payload} logoOrigin={logoOrigin} />;
     case "full":
     default:
       return <FullRecordDocument payload={payload} logoOrigin={logoOrigin} />;

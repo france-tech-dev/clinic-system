@@ -1,12 +1,15 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
-import { ClinicalWorkspaceShell } from "@/components/clinical-workspace-shell";
+import {
+  ClinicalWorkspaceActions,
+  ClinicalWorkspaceShell,
+} from "@/components/clinical-workspace-shell";
 import { EntityCombobox } from "@/components/entity-combobox";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import {
   getAnamneseAction,
   saveAnamneseAction,
@@ -14,6 +17,7 @@ import {
 import type { AnamneseDTO } from "@/features/anamnese/anamnese.types";
 import { AnamnesePdfPreviewDialog } from "@/features/anamnese/components/anamnese-pdf-preview-dialog";
 import type { AnamneseReportPayload } from "@/features/anamnese/_lib/pdf/types";
+import { paths } from "@/shared/constants/paths";
 import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import type {
   PrintBranding,
@@ -43,6 +47,7 @@ export function AnamneseFormClient({
   branding: PrintBranding;
   professional: ProfessionalProfile;
 }) {
+  const router = useRouter();
   const activePatients = useMemo(
     () => patients.filter((p) => p.status !== "discharged"),
     [patients],
@@ -114,8 +119,8 @@ export function AnamneseFormClient({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2 sm:max-w-md">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex shrink-0 flex-col gap-2 sm:max-w-md">
         <label className="text-sm font-medium">Paciente</label>
         <EntityCombobox
           options={activePatients}
@@ -140,16 +145,18 @@ export function AnamneseFormClient({
           activeId={activeSection.id}
           onSelect={setActiveSectionId}
           footer={
-            <>
-              <Button disabled={pending} onClick={handleSave}>
-                {pending ? <Spinner data-icon="inline-start" /> : null}
-                Salvar anamnese
-              </Button>
-              <Button variant="outline" size="sm" onClick={handlePreview}>
-                <FileText className="size-4" />
-                Relatório PDF
-              </Button>
-            </>
+            <ClinicalWorkspaceActions
+              onCancel={() => router.push(paths.anamnese.root)}
+              onSave={handleSave}
+              saveLabel="Salvar anamnese"
+              pending={pending}
+              extra={
+                <Button variant="outline" onClick={handlePreview}>
+                  <FileText className="size-4" />
+                  Relatório PDF
+                </Button>
+              }
+            />
           }
         >
           <div>

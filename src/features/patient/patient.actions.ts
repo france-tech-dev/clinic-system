@@ -16,7 +16,6 @@ import {
   patientIdSchema,
   patientMembersSchema,
   patientStatusSchema,
-  roteiroNoteSaveSchema,
   sessionFormSchema,
   sessionIdSchema,
   updateClinicalEvaluationSchema,
@@ -33,8 +32,6 @@ import {
   resolveAuthorMemberId,
   getPatientDetail,
   listPatients,
-  listRoteiroNotes,
-  saveRoteiroNote,
   setPatientMembers,
   setPatientStatus,
   updateClinicalEvaluation,
@@ -45,7 +42,6 @@ import type {
   ClinicalEvaluationDTO,
   PatientDetailDTO,
   PatientDTO,
-  RoteiroNoteDTO,
   SessionNoteDTO,
 } from "./patient.types";
 
@@ -323,40 +319,6 @@ export async function deleteSessionAction(
     if (!removed) return fail("Evolução não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
-export async function listRoteiroNotesAction(
-  patientId: string,
-): Promise<ActionResult<RoteiroNoteDTO[]>> {
-  try {
-    await requirePermission({ project: ["read"] });
-    if (!patientId) return fail("Paciente não informado");
-    const { organizationId } = await requireOrgId();
-    const data = await listRoteiroNotes(organizationId, patientId);
-    if (!data) return fail("Paciente não encontrado");
-    return ok(data);
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
-export async function saveRoteiroNoteAction(
-  input: unknown,
-): Promise<ActionResult<RoteiroNoteDTO>> {
-  try {
-    await requirePermission({ project: ["update"] });
-    const parsed = roteiroNoteSaveSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
-    const { organizationId } = await requireOrgWrite();
-    const data = await saveRoteiroNote(organizationId, parsed.data);
-    if (!data) return fail("Paciente não encontrado");
-    revalidatePatient(parsed.data.patientId);
-    return ok(data);
   } catch (error) {
     return handleError(error);
   }

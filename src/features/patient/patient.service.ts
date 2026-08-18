@@ -2,7 +2,6 @@ import { patientRepository } from "./patient.repository";
 import type {
   ClinicalEvaluationFormInput,
   PatientFormInput,
-  RoteiroNoteSaveInput,
   SessionFormInput,
   UpdatePatientInput,
 } from "./patient.schema";
@@ -11,7 +10,6 @@ import {
   toClinicalEvaluationDTO,
   toLinkableAppointmentDTO,
   toPatientDTO,
-  toRoteiroNoteDTO,
   toSessionDTO,
 } from "./_lib/mappers";
 
@@ -35,7 +33,6 @@ export async function getPatientDetail(
     clinicalEvaluations: row.clinicalEvaluations.map(toClinicalEvaluationDTO),
     sessionNotes: row.sessionNotes.map(toSessionDTO),
     appointments: row.appointments.map(toLinkableAppointmentDTO),
-    roteiroNotes: row.roteiroNotes.map(toRoteiroNoteDTO),
   };
 }
 
@@ -154,23 +151,4 @@ export async function updateSessionNote(
 
 export async function deleteSessionNote(organizationId: string, id: string) {
   return patientRepository.deleteSession(organizationId, id);
-}
-
-export async function listRoteiroNotes(
-  organizationId: string,
-  patientId: string,
-) {
-  const rows = await patientRepository.listRoteiroNotes(
-    organizationId,
-    patientId,
-  );
-  return rows ? rows.map(toRoteiroNoteDTO) : null;
-}
-
-export async function saveRoteiroNote(
-  organizationId: string,
-  data: RoteiroNoteSaveInput,
-) {
-  const row = await patientRepository.upsertRoteiroNote(organizationId, data);
-  return row ? toRoteiroNoteDTO(row) : null;
 }

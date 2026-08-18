@@ -113,19 +113,9 @@ export type SessionLinkableAppointmentDTO = {
   sessionNoteId: string | null;
 };
 
-export type RoteiroNoteDTO = {
-  id: string;
-  patientId: string;
-  roteiroId: string;
-  categoryTick: string;
-  notes: string;
-  updatedAt: string;
-};
-
 export type PatientDetailDTO = {
   patient: PatientDTO;
   clinicalEvaluations: ClinicalEvaluationDTO[];
   sessionNotes: SessionNoteDTO[];
   appointments: SessionLinkableAppointmentDTO[];
-  roteiroNotes: RoteiroNoteDTO[];
 };

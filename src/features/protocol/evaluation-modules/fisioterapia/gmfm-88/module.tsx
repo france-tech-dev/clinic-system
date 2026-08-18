@@ -8,12 +8,13 @@ import { GMFM88_PROTOCOL_ID } from "./template";
 
 const MODULE_NAME = "GMFM-88";
 const MODULE_DESCRIPTION =
-  "Gross Motor Function Measure — avaliação da função motora grossa em 5 domínios.";
+  "Avalia a função motora grossa em 5 domínios (88 itens).";
 
 async function renderGmfm88({
   organizationId,
   patients,
   initialPatientId,
+  canWrite,
 }: EvaluationModuleRenderContext) {
   const initialProtocolEvaluations = initialPatientId
     ? await listProtocolEvaluations(
@@ -28,6 +29,7 @@ async function renderGmfm88({
       patients={patients}
       initialPatientId={initialPatientId}
       initialProtocolEvaluations={initialProtocolEvaluations}
+      canWrite={canWrite}
     />
   );
 }

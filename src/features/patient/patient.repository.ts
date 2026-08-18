@@ -106,7 +106,6 @@ export const patientRepository = {
           },
           orderBy: [{ date: "desc" }, { time: "desc" }],
         },
-        roteiroNotes: true,
       },
     });
   },
@@ -386,47 +385,5 @@ export const patientRepository = {
     if (!existing) return null;
     await db.sessionNote.delete({ where: { id } });
     return existing;
-  },
-
-  async listRoteiroNotes(organizationId: string, patientId: string) {
-    const patient = await db.patient.findFirst({
-      where: { id: patientId, organizationId },
-    });
-    if (!patient) return null;
-    return db.roteiroNote.findMany({
-      where: { patientId },
-      orderBy: { updatedAt: "desc" },
-    });
-  },
-
-  async upsertRoteiroNote(
-    organizationId: string,
-    data: {
-      patientId: string;
-      roteiroId: string;
-      categoryTick: string;
-      notes: string;
-    },
-  ) {
-    const patient = await db.patient.findFirst({
-      where: { id: data.patientId, organizationId },
-    });
-    if (!patient) return null;
-    return db.roteiroNote.upsert({
-      where: {
-        patientId_roteiroId_categoryTick: {
-          patientId: data.patientId,
-          roteiroId: data.roteiroId,
-          categoryTick: data.categoryTick,
-        },
-      },
-      create: {
-        patientId: data.patientId,
-        roteiroId: data.roteiroId,
-        categoryTick: data.categoryTick,
-        notes: data.notes,
-      },
-      update: { notes: data.notes },
-    });
   },
 };
