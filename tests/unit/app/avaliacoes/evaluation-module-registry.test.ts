@@ -1,19 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
-// O resolver puxa `render` → actions → auth → email (`server-only`).
+// O registry puxa `render` → actions → auth → email (`server-only`).
 vi.mock("server-only", () => ({}));
 
-import { resolveEvaluationModuleUI } from "@/app/(authenticated)/avaliacoes/_lib/resolve-evaluation-module-ui";
 import {
   EVALUATION_MODULE_REGISTRY,
   PROFESSION_EVALUATION_CATALOG,
+  getEvaluationModule,
 } from "@/features/protocol/evaluation-modules";
-import { roteiroEvaluationModuleUIs } from "@/features/patient/roteiro-evaluation-module-ui";
 
-const ALL_UI_MODULES = [
-  ...EVALUATION_MODULE_REGISTRY.values(),
-  ...roteiroEvaluationModuleUIs,
-];
+const ALL_UI_MODULES = [...EVALUATION_MODULE_REGISTRY.values()];
 
 describe("assessment catalog ↔ UI registry", () => {
   it("every catalog assessment id has a registered UI module", () => {
@@ -21,9 +17,11 @@ describe("assessment catalog ↔ UI registry", () => {
       item.assessments.map((a) => a.id),
     );
 
+    expect(catalogIds.length).toBeGreaterThan(0);
+
     for (const id of catalogIds) {
       expect(
-        resolveEvaluationModuleUI(id),
+        getEvaluationModule(id),
         `Missing UI registry entry for catalog id "${id}"`,
       ).toBeDefined();
     }
@@ -43,5 +41,13 @@ describe("assessment catalog ↔ UI registry", () => {
         `Registry id "${mod.id}" is not listed under "${mod.professionId}" in the hub catalog`,
       ).toBe(true);
     }
+  });
+
+  it("keeps professions without instruments so the hub can show an empty card", () => {
+    const to = PROFESSION_EVALUATION_CATALOG.find(
+      (item) => item.professionId === "terapeuta_ocupacional",
+    );
+    expect(to).toBeDefined();
+    expect(to?.assessments).toEqual([]);
   });
 });
