@@ -30,6 +30,14 @@ export type PatientMemberEmbed = {
   imageUrl: string | null;
 };
 
+/** Profissional da clínica para atribuir a um paciente (sem importar features/team). */
+export type AssignableMemberOption = {
+  id: string;
+  name: string;
+  status: "active" | "inactive";
+  profession: string | null;
+};
+
 export type PatientDTO = {
   id: string;
   name: string;

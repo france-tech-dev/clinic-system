@@ -18,7 +18,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+import type { AssignableMemberOption } from "@/features/patient/patient.types";
 import { getHealthProfession } from "@/shared/constants/professions";
 
 export function AssignPatientMembersDialog({
@@ -33,7 +33,7 @@ export function AssignPatientMembersDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   patientName: string;
-  members: TeamMemberDTO[];
+  members: AssignableMemberOption[];
   initialMemberIds: string[];
   pending: boolean;
   onSave: (memberIds: string[]) => void;
