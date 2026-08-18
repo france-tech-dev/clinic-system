@@ -56,12 +56,14 @@ export function ProfessionCatalogCard({
   council,
   items,
   labels,
+  highlightLabel,
 }: {
   professionId: HealthProfessionId;
   label: string;
   council: string;
   items: ProfessionCatalogLink[];
   labels: ProfessionCatalogCardLabels;
+  highlightLabel?: string;
 }) {
   const Icon = PROFESSION_ICONS[professionId];
   const hasItems = items.length > 0;
@@ -86,6 +88,9 @@ export function ProfessionCatalogCard({
             <div className="flex flex-wrap items-center gap-2">
               <CardTitle className="font-serif text-lg">{label}</CardTitle>
               <Badge variant="outline">{council}</Badge>
+              {highlightLabel ? (
+                <Badge variant="secondary">{highlightLabel}</Badge>
+              ) : null}
             </div>
             <CardDescription className="mt-1">
               {hasItems
