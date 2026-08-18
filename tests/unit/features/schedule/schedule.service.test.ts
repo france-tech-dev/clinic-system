@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Prisma } from "../../../../../prisma/generated/prisma/client";
 import { scheduleRepository } from "@/features/schedule/schedule.repository";
 import { rescheduleAppointment } from "@/features/schedule/schedule.service";
 
@@ -29,7 +30,7 @@ const baseRow = {
     id: "patient-1",
     name: "Ana",
     pricingType: "session" as const,
-    price: 150,
+    price: new Prisma.Decimal(150),
   },
   member: {
     id: "member-1",
