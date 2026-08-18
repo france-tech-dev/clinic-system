@@ -253,7 +253,6 @@ model Patient {
   anamneses           Anamnese[]
   sessionNotes        SessionNote[]
   appointments        Appointment[]
-  roteiroNotes        RoteiroNote[]
   cashTransactions    CashTransaction[]
   protocolEvaluations ProtocolEvaluation[]
   /** Membros da equipa responsáveis por este paciente. */
@@ -385,23 +384,6 @@ model CashTransaction {
   @@index([patientId])
   @@index([memberId])
   @@map("cash_transactions")
-}
-
-// Notas do roteiro de avaliações
-model RoteiroNote {
-  id           String   @id @default(cuid())
-  patientId    String
-  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  roteiroId    String
-  categoryTick String
-  notes        String   @default("")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@unique([patientId, roteiroId, categoryTick])
-  @@index([patientId])
-  @@index([patientId, roteiroId])
-  @@map("roteiro_notes")
 }
 
 // Avaliações de protocolo (instrumentos pontuados, ex. GMFM-88)
