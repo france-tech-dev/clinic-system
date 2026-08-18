@@ -32,7 +32,6 @@ export type BillingPlanDef = {
 export const STARTER_HIGHLIGHTS = [
   "Agenda e agendamentos",
   "Pacientes, prontuário, evoluções e PDF",
-  "Roteiros clínicos",
   "Profissionais da equipe",
   "Dashboard e busca",
   "Configurações da clínica",

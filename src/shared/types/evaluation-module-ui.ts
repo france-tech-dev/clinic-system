@@ -7,12 +7,12 @@ export type EvaluationModuleRenderContext = {
   organizationId: string;
   patients: EvaluationModulePatientOption[];
   initialPatientId: string | null;
+  canWrite: boolean;
 };
 
 /**
  * Módulo de UI de avaliação (workspace).
- * Implementações vivem em features/; se cruzarem features, a composição
- * final do registry faz-se em `app/` (features não se importam).
+ * Implementações vivem em `features/protocol`; a rota resolve pelo registry.
  */
 export type EvaluationModuleUI = {
   id: string;
