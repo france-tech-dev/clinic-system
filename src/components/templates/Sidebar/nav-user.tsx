@@ -27,8 +27,12 @@ import {
 } from "@tabler/icons-react";
 
 export function NavUser({ user }: { user: SidebarUser }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const showOrgSettings = isLeadershipRole(user.role);
+
+  function closeMobileSidebar() {
+    if (isMobile) setOpenMobile(false);
+  }
 
   return (
     <SidebarMenu>
@@ -80,13 +84,13 @@ export function NavUser({ user }: { user: SidebarUser }) {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href={paths.planos}>
+                  <Link href={paths.planos} onClick={closeMobileSidebar}>
                     <IconCreditCard />
                     Planos
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={paths.configuracoes}>
+                  <Link href={paths.configuracoes} onClick={closeMobileSidebar}>
                     <IconSettings />
                     Configurações
                   </Link>
@@ -95,7 +99,7 @@ export function NavUser({ user }: { user: SidebarUser }) {
             ) : null}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href={paths.auth.logout}>
+              <Link href={paths.auth.logout} onClick={closeMobileSidebar}>
                 <IconLogout />
                 Sair
               </Link>
