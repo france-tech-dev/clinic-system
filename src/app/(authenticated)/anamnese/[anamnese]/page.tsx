@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import {
-  getAnamneseForm,
-  getCatalogAnamnese,
-} from "@/features/anamnese/forms";
+import { getAnamneseForm, getCatalogAnamnese } from "@/features/anamnese/forms";
 import { listPatients } from "@/features/patient/patient.service";
 import {
   getPrintBranding,
@@ -52,7 +49,7 @@ export default async function AnamneseWorkspacePage({
   }
 
   return (
-    <AppPage title={catalogEntry.name}>
+    <AppPage title={catalogEntry.name} fillViewport>
       {error ? <p className="text-sm text-destructive">{error}</p> : content}
     </AppPage>
   );

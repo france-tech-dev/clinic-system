@@ -100,8 +100,8 @@ export function ClinicBrandingForm({
         Identidade da clínica
       </p>
       <p className="text-sm text-muted-foreground">
-        Aparece no cabeçalho dos relatórios PDF (prontuário, anamnese, avaliação
-        e roteiro).
+        Aparece no cabeçalho dos relatórios PDF (prontuário, anamnese e
+        avaliação).
       </p>
 
       <Form {...form}>

@@ -25,7 +25,6 @@ import { useRouter } from "next/navigation";
 import type { PatientDetailTab } from "../patient-detail-types";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientClinicalEvaluations } from "./use-patient-clinical-evaluations";
-import { useRoteiroNotes } from "@/features/patient/hooks/use-roteiro-notes";
 import { usePatientSessions } from "./use-patient-sessions";
 
 export function usePatientDetail({
@@ -61,12 +60,6 @@ export function usePatientDetail({
     openPreview: (payload: PatientReportPayload) => setPreviewPayload(payload),
     closePreview: () => setPreviewPayload(null),
   };
-  const roteiro = useRoteiroNotes({
-    patientId: detail.patient.id,
-    initialNotes: initial.roteiroNotes,
-    pending,
-    startTransition,
-  });
   const patientEdit = usePatientEdit({
     detail,
     setDetail,
@@ -100,43 +93,15 @@ export function usePatientDetail({
             ? (evaluation?.authorProfessional ?? null)
             : null,
         evaluation,
-        roteiro:
-          reportMode === "roteiro"
-            ? {
-                roteiroId: roteiro.roteiroId,
-                categoryTick: roteiro.currentCategory.tick,
-              }
-            : null,
         anamneseSections: initialAnamneseSections,
       }),
-    [
-      branding,
-      detail,
-      initialAnamneseSections,
-      professional,
-      roteiro.currentCategory.tick,
-      roteiro.roteiroId,
-    ],
+    [branding, detail, initialAnamneseSections, professional],
   );
 
   function previewReport(
     mode: PatientReportMode,
     evaluation?: ClinicalEvaluationDTO,
   ) {
-    if (mode === "roteiro") {
-      pdfReport.openPreview({
-        ...buildReportPayload(mode, evaluation),
-        roteiro: {
-          label: roteiro.currentRoteiro.label,
-          category: roteiro.currentCategory,
-          notes:
-            roteiro.roteiroDraft.trim() ||
-            roteiro.currentRoteiroNote?.notes ||
-            "",
-        },
-      });
-      return;
-    }
     pdfReport.openPreview(buildReportPayload(mode, evaluation));
   }
 
@@ -164,7 +129,6 @@ export function usePatientDetail({
     pdfReport,
     previewReport,
     anamneses,
-    roteiro,
     patientEdit,
     evaluations,
     sessions,

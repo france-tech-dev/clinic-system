@@ -1,10 +1,22 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { resolveEvaluationModuleUI } from "@/app/(authenticated)/avaliacoes/_lib/resolve-evaluation-module-ui";
-import { getCatalogEvaluation } from "@/features/protocol/evaluation-modules";
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  getCatalogEvaluation,
+  getEvaluationModule,
+} from "@/features/protocol/evaluation-modules";
 import { listPatients } from "@/features/patient/patient.service";
+import { getBillingAccess } from "@/server/billing/access";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { paths } from "@/shared/constants/paths";
 
 export default async function AvaliacaoPage({
   params,
@@ -15,7 +27,7 @@ export default async function AvaliacaoPage({
 }) {
   const { avaliacao: avaliacaoId } = await params;
   const assessment = getCatalogEvaluation(avaliacaoId);
-  const ui = resolveEvaluationModuleUI(avaliacaoId);
+  const ui = getEvaluationModule(avaliacaoId);
   if (!assessment || !ui) notFound();
 
   const query = await searchParams;
@@ -23,25 +35,56 @@ export default async function AvaliacaoPage({
 
   let error: string | null = null;
   let content: ReactNode = null;
+  let canWrite = true;
 
   try {
     const { organizationId } = await requireOrgId();
-    const patients = await listPatients(organizationId);
+    const [patients, access] = await Promise.all([
+      listPatients(organizationId),
+      getBillingAccess(organizationId),
+    ]);
+    canWrite = access.mode === "full" && access.features.includes("avaliacoes");
     content = await ui.render({
       organizationId,
       patients,
       initialPatientId,
+      canWrite,
     });
   } catch (e) {
     error =
       e instanceof OrgContextError
         ? e.message
-        : `Não foi possível carregar a avaliação ${assessment.name}.`;
+        : `Não foi possível carregar ${assessment.name}.`;
   }
 
   return (
     <AppPage title={assessment.name}>
-      {error ? <p className="text-sm text-destructive">{error}</p> : content}
+      {error ? (
+        <Alert variant="destructive">
+          <AlertTitle>Não foi possível carregar</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+          <AlertAction>
+            <Button asChild size="sm" variant="outline">
+              <Link href={paths.avaliacoes.byId(avaliacaoId)}>
+                Tentar de novo
+              </Link>
+            </Button>
+          </AlertAction>
+        </Alert>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {canWrite ? null : (
+            <Alert>
+              <AlertTitle>Fora do plano atual</AlertTitle>
+              <AlertDescription>
+                Pode consultar o histórico. Para registrar ou editar,{" "}
+                <Link href={paths.planos}>mude de plano</Link>.
+              </AlertDescription>
+            </Alert>
+          )}
+          {content}
+        </div>
+      )}
     </AppPage>
   );
 }

@@ -50,7 +50,6 @@ export default async function PacienteDetailPage({
     clinicName: "Clinic System",
     logoUrl: "/logo_dark.png",
   };
-  let showRoteiros = false;
 
   try {
     const { organizationId, userId } = await requireOrgId();
@@ -70,11 +69,6 @@ export default async function PacienteDetailPage({
     branding = printBranding;
     orgMembers = members;
     isLeadership = isLeadershipRole(memberGate?.role ?? null);
-    showRoteiros = members.some(
-      (member) =>
-        member.status === "active" &&
-        member.profession === "terapeuta_ocupacional",
-    );
     anamneses = anamneseRecords.map((row) =>
       toAnamneseSummary(
         row,
@@ -114,7 +108,6 @@ export default async function PacienteDetailPage({
         initialAnamneseSections={anamneseSections}
         professional={professional}
         branding={branding}
-        showRoteiros={showRoteiros}
         orgMembers={orgMembers}
         isLeadership={isLeadership}
       />

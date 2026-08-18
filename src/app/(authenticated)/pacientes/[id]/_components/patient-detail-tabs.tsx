@@ -7,23 +7,17 @@ import {
 export function PatientDetailTabs({
   tab,
   onTabChange,
-  showRoteiros,
 }: {
   tab: PatientDetailTab;
   onTabChange: (tab: PatientDetailTab) => void;
-  showRoteiros: boolean;
 }) {
-  const tabs = PATIENT_DETAIL_TABS.filter(
-    ([id]) => id !== "roteiros" || showRoteiros,
-  );
-
   return (
     <div
       role="tablist"
       aria-label="Secções do paciente"
       className="no-print flex gap-4 overflow-x-auto border-b border-border"
     >
-      {tabs.map(([id, label]) => {
+      {PATIENT_DETAIL_TABS.map(([id, label]) => {
         const selected = tab === id;
         return (
           <button
