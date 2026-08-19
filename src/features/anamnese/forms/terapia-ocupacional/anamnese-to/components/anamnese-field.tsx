@@ -16,10 +16,12 @@ export function AnamneseField({
   field,
   data,
   onChange,
+  disabled = false,
 }: {
   field: AnamneseField;
   data: Record<string, unknown>;
   onChange: (next: Record<string, unknown>) => void;
+  disabled?: boolean;
 }) {
   const value = String(data[field.id] ?? "");
   const wide =
@@ -40,6 +42,7 @@ export function AnamneseField({
         <Textarea
           rows={textareaRows}
           value={value}
+          disabled={disabled}
           onChange={(e) => onChange({ ...data, [field.id]: e.target.value })}
         />
       ) : field.type === "rating-grid" && field.items ? (
@@ -59,6 +62,7 @@ export function AnamneseField({
                   max={10}
                   className="w-20"
                   value={itemVal}
+                  disabled={disabled}
                   onChange={(e) => onChange({ ...data, [key]: e.target.value })}
                 />
               </div>
@@ -80,6 +84,7 @@ export function AnamneseField({
                   size="sm"
                   className="w-full text-xs"
                   value={rowVal}
+                  disabled={disabled}
                   onChange={(e) => onChange({ ...data, [key]: e.target.value })}
                 >
                   <NativeSelectOption value="">—</NativeSelectOption>
@@ -106,6 +111,7 @@ export function AnamneseField({
                 <Checkbox
                   id={id}
                   checked={checked}
+                  disabled={disabled}
                   onCheckedChange={(next) => {
                     const isChecked = next === true;
                     const values = isChecked
@@ -124,6 +130,7 @@ export function AnamneseField({
       ) : field.type === "radio" && field.options ? (
         <RadioGroup
           value={value}
+          disabled={disabled}
           onValueChange={(next) => onChange({ ...data, [field.id]: next })}
           className="flex flex-wrap gap-3"
         >
@@ -143,6 +150,7 @@ export function AnamneseField({
         <Input
           placeholder={field.placeholder}
           value={value}
+          disabled={disabled}
           onChange={(e) => onChange({ ...data, [field.id]: e.target.value })}
         />
       )}

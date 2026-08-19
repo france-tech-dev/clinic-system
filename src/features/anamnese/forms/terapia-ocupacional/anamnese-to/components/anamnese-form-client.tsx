@@ -37,6 +37,7 @@ export function AnamneseFormClient({
   initialAnamnese,
   branding,
   professional,
+  canWrite,
 }: {
   formId: string;
   formTitle: string;
@@ -46,6 +47,7 @@ export function AnamneseFormClient({
   initialAnamnese: AnamneseDTO | null;
   branding: PrintBranding;
   professional: ProfessionalProfile;
+  canWrite: boolean;
 }) {
   const router = useRouter();
   const activePatients = useMemo(
@@ -133,7 +135,9 @@ export function AnamneseFormClient({
 
       {!patientId ? (
         <p className="text-sm text-muted-foreground">
-          Escolha um paciente para preencher a anamnese.
+          {canWrite
+            ? "Escolha um paciente para preencher a anamnese."
+            : "Escolha um paciente para consultar a anamnese."}
         </p>
       ) : activeSection ? (
         <ClinicalWorkspaceShell
@@ -150,6 +154,7 @@ export function AnamneseFormClient({
               onSave={handleSave}
               saveLabel="Salvar anamnese"
               pending={pending}
+              showSave={canWrite}
               extra={
                 <Button variant="outline" onClick={handlePreview}>
                   <FileText className="size-4" />
@@ -175,6 +180,7 @@ export function AnamneseFormClient({
                 field={field}
                 data={data}
                 onChange={setData}
+                disabled={!canWrite}
               />
             ))}
           </div>

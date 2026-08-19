@@ -15,6 +15,7 @@ async function renderAnamneseTo({
   initialPatientId,
   branding,
   professional,
+  canWrite,
 }: AnamneseRenderContext) {
   const initialAnamnese = initialPatientId
     ? await getAnamnese(organizationId, initialPatientId, ANAMNESE_TO_FORM_ID)
@@ -30,6 +31,7 @@ async function renderAnamneseTo({
       initialAnamnese={initialAnamnese}
       branding={branding}
       professional={professional}
+      canWrite={canWrite}
     />
   );
 }

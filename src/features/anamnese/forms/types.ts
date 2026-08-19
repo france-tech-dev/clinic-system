@@ -13,6 +13,7 @@ export type AnamneseRenderContext = {
   initialPatientId: string | null;
   branding: PrintBranding;
   professional: ProfessionalProfile;
+  canWrite: boolean;
 };
 
 /** Um formulário = metadados + schema + UI (único registo a manter). */
