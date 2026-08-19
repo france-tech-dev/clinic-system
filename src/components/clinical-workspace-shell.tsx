@@ -23,6 +23,7 @@ export function ClinicalWorkspaceActions({
   saveType = "button",
   saveForm,
   extra,
+  showSave = true,
 }: {
   onCancel: () => void;
   onSave?: () => void;
@@ -33,6 +34,7 @@ export function ClinicalWorkspaceActions({
   saveType?: "button" | "submit";
   saveForm?: string;
   extra?: ReactNode;
+  showSave?: boolean;
 }) {
   return (
     <>
@@ -45,15 +47,17 @@ export function ClinicalWorkspaceActions({
         {cancelLabel}
       </Button>
       {extra}
-      <Button
-        type={saveType}
-        form={saveForm}
-        onClick={saveType === "submit" ? undefined : onSave}
-        disabled={pending || saveDisabled}
-      >
-        {pending ? <Spinner data-icon="inline-start" /> : null}
-        {saveLabel}
-      </Button>
+      {showSave ? (
+        <Button
+          type={saveType}
+          form={saveForm}
+          onClick={saveType === "submit" ? undefined : onSave}
+          disabled={pending || saveDisabled}
+        >
+          {pending ? <Spinner data-icon="inline-start" /> : null}
+          {saveLabel}
+        </Button>
+      ) : null}
     </>
   );
 }
