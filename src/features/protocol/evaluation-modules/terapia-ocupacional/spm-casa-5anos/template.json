@@ -1,0 +1,353 @@
+{
+  "scale": "spm",
+  "sections": [
+    {
+      "id": "participacao-social",
+      "title": "participação social",
+      "items": [
+        {
+          "id": "participacao-social-01",
+          "label": "Brinca com amigos cooperativamente (sem muitos questionamentos)?"
+        },
+        {
+          "id": "participacao-social-02",
+          "label": "Interage apropriadamente com os pais e outros adultos próximos (comunica-se bem, segue instruções, mostra respeito, etc.)?"
+        },
+        {
+          "id": "participacao-social-03",
+          "label": "Compartilha coisas quando é solicitado?"
+        },
+        {
+          "id": "participacao-social-04",
+          "label": "Mantém uma conversa sem se levantar ou sentar muito próximo aos outros?"
+        },
+        {
+          "id": "participacao-social-05",
+          "label": "Mantém contato visual apropriadamente durante uma conversa?"
+        },
+        {
+          "id": "participacao-social-06",
+          "label": "Entra em jogos com outras pessoas sem interromper a atividade?"
+        },
+        {
+          "id": "participacao-social-07",
+          "label": "Participa e interage apropriadamente de uma conversa durante a refeição?"
+        },
+        {
+          "id": "participacao-social-08",
+          "label": "Participa apropriadamente nos passeios com familiares, como sair para jantar ou ir ao parque, museus ou cinema?"
+        },
+        {
+          "id": "participacao-social-09",
+          "label": "Participa apropriadamente em reuniões familiares, como férias, casamento e aniversário?"
+        },
+        {
+          "id": "participacao-social-10",
+          "label": "Participa apropriadamente em atividades com amigos, como festas, ir ao shopping, andar de bicicleta/skate/patinete?"
+        }
+      ]
+    },
+    {
+      "id": "visao",
+      "title": "visão",
+      "items": [
+        {
+          "id": "visao-01",
+          "label": "Parece incomodado com a luz, especialmente luz clara (pisca/desvia/fecha os olhos, lacrimeja etc)?"
+        },
+        {
+          "id": "visao-02",
+          "label": "Tem dificuldade para procurar objetos, quando este está junto de outras coisas?"
+        },
+        {
+          "id": "visao-03",
+          "label": "Fecha um dos olhos, ou vira a cabeça quando olha para algo ou alguém?"
+        },
+        {
+          "id": "visao-04",
+          "label": "Fica incomodado em locais com estímulos visuais incomuns , como um quarto claro ou colorido ou com baixa iluminação?"
+        },
+        {
+          "id": "visao-05",
+          "label": "Tem dificuldade em controlar o movimento dos olhos quando segue um objeto com os olhos, como uma bola?"
+        },
+        {
+          "id": "visao-06",
+          "label": "Tem dificuldade para identificar se os objetos são semelhantes ou diferentes, baseado nas cores, formato ou tamanho ?"
+        },
+        {
+          "id": "visao-07",
+          "label": "Gosta de observar objetos girando ou se movendo, mais do que outras crianças na sua idade?"
+        },
+        {
+          "id": "visao-08",
+          "label": "Anda entre objetos ou pessoas, como se eles não estivessem ali?"
+        },
+        {
+          "id": "visao-09",
+          "label": "Gosta de ligar e desligar o interruptor da luz repetidamente?"
+        },
+        {
+          "id": "visao-10",
+          "label": "Não gosta de certos tipos de luz, como o sol do meio dia, luz estroboscópica, luz piscante ou fluorescente?"
+        },
+        {
+          "id": "visao-11",
+          "label": "Gosta de olhar objetos em movimento com o canto dos olhos?"
+        }
+      ]
+    },
+    {
+      "id": "audicao",
+      "title": "audição",
+      "items": [
+        {
+          "id": "audicao-01",
+          "label": "Parece incomodado com os sons normais em uma casa, tais como o do aspirador de pó, secador de cabelo, barulho de descarga?"
+        },
+        {
+          "id": "audicao-02",
+          "label": "Responde negativamente aos barulhos altos, fugindo, chorando ou tapando os ouvidos com as mãos?"
+        },
+        {
+          "id": "audicao-03",
+          "label": "Parece não ouvir certos sons?"
+        },
+        {
+          "id": "audicao-04",
+          "label": "Parece perturbado ou interessado intensamente em sons que usualmente não são notados por outras pessoas?"
+        },
+        {
+          "id": "audicao-05",
+          "label": "Parece assustado com sons que usualmente não causam incômodo em crianças da mesma idade?"
+        },
+        {
+          "id": "audicao-06",
+          "label": "Parece se distrair facilmente com ruídos do ambiente, tais como cortador de grama, ar condicionado, geladeira ou luzes fluorescentes?"
+        },
+        {
+          "id": "audicao-07",
+          "label": "Gosta de fazer certos barulhos repetidamente, como apertar a descarga de banheiro muitas vezes?"
+        },
+        {
+          "id": "audicao-08",
+          "label": "Mostra incômodo à sons agudos ou estridentes, como apito, chocalho, flauta e trompete?"
+        }
+      ]
+    },
+    {
+      "id": "tato",
+      "title": "tato",
+      "items": [
+        {
+          "id": "tato-01",
+          "label": "Recua quando tocado levemente?"
+        },
+        {
+          "id": "tato-02",
+          "label": "Parece não perceber quando é tocado?"
+        },
+        {
+          "id": "tato-03",
+          "label": "Fica incomodado pelo contato com roupas novas?"
+        },
+        {
+          "id": "tato-04",
+          "label": "Prefere tocar a ser tocado?"
+        },
+        {
+          "id": "tato-05",
+          "label": "Fica incomodado ao cortarem suas unhas dos pés e das mãos?"
+        },
+        {
+          "id": "tato-06",
+          "label": "Parece incomodado quando alguém toca sua face?"
+        },
+        {
+          "id": "tato-07",
+          "label": "Evita tocar ou brincar com pintura a dedo, pasta, areia, barro, lama, cola ou outras coisas que sujem?"
+        },
+        {
+          "id": "tato-08",
+          "label": "Tem alta tolerância a dor?"
+        },
+        {
+          "id": "tato-09",
+          "label": "Não gosta de escovar os dentes, mais do que a maioria das crianças de sua idade?"
+        },
+        {
+          "id": "tato-10",
+          "label": "Parece gostar de sensações que podem ser doloridas, como cair no chão ou bater no próprio corpo?"
+        },
+        {
+          "id": "tato-11",
+          "label": "Tem problemas para encontrar coisas no bolso ou bolsa, mochila, usando somente o tato , sem olhar?"
+        }
+      ]
+    },
+    {
+      "id": "olfato-e-paladar",
+      "title": "olfato e paladar",
+      "items": [
+        {
+          "id": "olfato-e-paladar-01",
+          "label": "Gosta de experimentar itens não comestíveis, como cola ou tinta?"
+        },
+        {
+          "id": "olfato-e-paladar-02",
+          "label": "Tem ânsia quando pensa em comidas que o desagradam, como espinafre cozido?"
+        },
+        {
+          "id": "olfato-e-paladar-03",
+          "label": "Gosta de cheirar objetos não comestíveis e pessoas?"
+        },
+        {
+          "id": "olfato-e-paladar-04",
+          "label": "Mostra desconforto com os cheiros que outras crianças não notam?"
+        },
+        {
+          "id": "olfato-e-paladar-05",
+          "label": "Parece ignorar ou não notar odores fortes, que outra criança reagiria?"
+        }
+      ]
+    },
+    {
+      "id": "consciencia-corporal",
+      "title": "consciência corporal",
+      "items": [
+        {
+          "id": "consciencia-corporal-01",
+          "label": "Agarra objetos (como lápis ou colher) tão firmemente, que fica difícil utilizá-los?"
+        },
+        {
+          "id": "consciencia-corporal-02",
+          "label": "Parece buscar atividades como puxar, empurrar, arrastar, levantar e saltar?"
+        },
+        {
+          "id": "consciencia-corporal-03",
+          "label": "Parece inseguro sobre o quanto pode abaixar ou levantar o corpo durante o movimento como sentar-se ou ficar em pé em cima de um objeto?"
+        },
+        {
+          "id": "consciencia-corporal-04",
+          "label": "Agarra objetos (como lápis ou colher), tão frouxamente que fica difícil utilizar o objeto?"
+        },
+        {
+          "id": "consciencia-corporal-05",
+          "label": "Parece exercer muita pressão para tarefas, como andar pesadamente, fechar porta com força ou apertar fortemente o lápis ou giz de cera?"
+        },
+        {
+          "id": "consciencia-corporal-06",
+          "label": "Salta muito?"
+        },
+        {
+          "id": "consciencia-corporal-07",
+          "label": "Tende a acariciar os animais com muita força?"
+        },
+        {
+          "id": "consciencia-corporal-08",
+          "label": "Bate ou empurra outras crianças?"
+        },
+        {
+          "id": "consciencia-corporal-09",
+          "label": "Mastiga os brinquedos, roupas ou outros objetos, mais que outras crianças?"
+        },
+        {
+          "id": "consciencia-corporal-10",
+          "label": "Quebra coisas ao pressioná-las ou empurrá-las muito forte?"
+        }
+      ]
+    },
+    {
+      "id": "equilibrio-e-movimento",
+      "title": "equilíbrio e movimento",
+      "items": [
+        {
+          "id": "equilibrio-e-movimento-01",
+          "label": "Demonstra medo exagerado com movimento, como subir e descer escadas, subir na gangorra/balanço/escorregador ou outros equipamentos do parque?"
+        },
+        {
+          "id": "equilibrio-e-movimento-02",
+          "label": "Tem bom equilíbrio?"
+        },
+        {
+          "id": "equilibrio-e-movimento-03",
+          "label": "Evita atividade de equilíbrio, como andar em um piso desnivelado, meio fio?"
+        },
+        {
+          "id": "equilibrio-e-movimento-04",
+          "label": "Cai da cadeira quando muda o corpo de posição?"
+        },
+        {
+          "id": "equilibrio-e-movimento-05",
+          "label": "Falha ao controlar o próprio corpo quando cai?"
+        },
+        {
+          "id": "equilibrio-e-movimento-06",
+          "label": "Parece não ficar tonto quando outros normalmente ficariam?"
+        },
+        {
+          "id": "equilibrio-e-movimento-07",
+          "label": "Gira ou roda seu corpo mais do que outras crianças?"
+        },
+        {
+          "id": "equilibrio-e-movimento-08",
+          "label": "Mostra-se incomodado quando sua cabeça inclina, vira ou sai da posição vertical ereta?"
+        },
+        {
+          "id": "equilibrio-e-movimento-09",
+          "label": "Tem má coordenação motora e parece ser desajeitado?"
+        },
+        {
+          "id": "equilibrio-e-movimento-10",
+          "label": "Demonstra medo ao entrar em elevadores ou utilizar escada rolante?"
+        },
+        {
+          "id": "equilibrio-e-movimento-11",
+          "label": "Se apoia em outras pessoas ou móveis ao se sentar ou quando tenta se levantar?"
+        }
+      ]
+    },
+    {
+      "id": "planejamento-e-ideacao",
+      "title": "planejamento e ideação",
+      "items": [
+        {
+          "id": "planejamento-e-ideacao-01",
+          "label": "Executa de maneira inconsistente as tarefas diárias?"
+        },
+        {
+          "id": "planejamento-e-ideacao-02",
+          "label": "Tem dificuldade para planejar como carregar vários objetos ao mesmo tempo?"
+        },
+        {
+          "id": "planejamento-e-ideacao-03",
+          "label": "Parece confuso sobre como guardar os materiais ou objetos em seus lugares corretos?"
+        },
+        {
+          "id": "planejamento-e-ideacao-04",
+          "label": "Falha ao executar tarefas numa sequência apropriada, como vestir-se ou arrumar a mesa."
+        },
+        {
+          "id": "planejamento-e-ideacao-05",
+          "label": "Falha ao completar tarefas com várias etapas?"
+        },
+        {
+          "id": "planejamento-e-ideacao-06",
+          "label": "Tem dificuldade para imitar ações demonstradas, como jogos com movimentos e músicas com sequência de movimentos?"
+        },
+        {
+          "id": "planejamento-e-ideacao-07",
+          "label": "Tem dificuldade para construir a cópia de um modelo, como ao usar o lego ou blocos para construir algo que corresponda ao modelo?"
+        },
+        {
+          "id": "planejamento-e-ideacao-08",
+          "label": "Tem dificuldade em apresentar ideias para novos jogos e atividades."
+        },
+        {
+          "id": "planejamento-e-ideacao-09",
+          "label": "Tende a brincar com as mesmas atividades repetidamente, ao invés de mudar para novas atividades quando lhe é dada chance."
+        }
+      ]
+    }
+  ]
+}
