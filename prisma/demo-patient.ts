@@ -129,21 +129,21 @@ export function buildDemoAnamneseData() {
 export function buildDemoSessionNotes() {
   return [
     {
-      status: "attended" as const,
+      status: "ATTENDED" as const,
       activities:
         "Pinça de grãos com transferência entre potes; circuito com obstáculos baixos; rotina visual da manhã (cartões ilustrados).",
       observations:
         "Boa tolerância à pinça por 8 minutos. Precisou de pausa sensorial antes do circuito motor.",
     },
     {
-      status: "attended" as const,
+      status: "ATTENDED" as const,
       activities:
         "Treino de abotoamento em camisa adaptada; massinha com moldes; jogo da memória com 6 pares.",
       observations:
         "Conseguiu abotoar 2 botões grandes com mínima ajuda. Memória: 4 pares encontrados na segunda tentativa.",
     },
     {
-      status: "attended" as const,
+      status: "ATTENDED" as const,
       activities:
         "Caixa sensorial tátil com arroz e objetos escondidos; sequência da rotina matinal; alongamento bilateral.",
       observations:
@@ -158,7 +158,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, -21)),
       time: "09:00",
       duration: 50,
-      status: "completed" as const,
+      status: "COMPLETED" as const,
       notes: "Sessão inicial: pinça e circuito motor.",
       withEvolution: true,
     },
@@ -166,7 +166,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, -14)),
       time: "09:00",
       duration: 50,
-      status: "completed" as const,
+      status: "COMPLETED" as const,
       notes: "Treino de abotoamento e memória.",
       withEvolution: true,
     },
@@ -174,7 +174,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, -7)),
       time: "09:00",
       duration: 50,
-      status: "completed" as const,
+      status: "COMPLETED" as const,
       notes: "Sessão com foco sensorial e rotina matinal.",
       withEvolution: true,
     },
@@ -182,7 +182,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, 0)),
       time: "09:00",
       duration: 50,
-      status: "scheduled" as const,
+      status: "SCHEDULED" as const,
       notes: "Continuidade: pinça + AVD vestir.",
       withEvolution: false,
     },
@@ -190,7 +190,7 @@ export function buildDemoAppointments(baseDate: Date) {
       date: formatIsoDate(offsetDate(baseDate, 7)),
       time: "09:00",
       duration: 50,
-      status: "scheduled" as const,
+      status: "SCHEDULED" as const,
       notes: "Reavaliação parcial de objetivos.",
       withEvolution: false,
     },
@@ -199,11 +199,11 @@ export function buildDemoAppointments(baseDate: Date) {
 
 export function buildDemoCashTransaction(baseDate: Date) {
   return {
-    type: "income" as const,
+    type: "INCOME" as const,
     amount: 150,
     date: formatIsoDate(offsetDate(baseDate, -7)),
     description: "Sessão de TO — Miguel Oliveira",
-    paymentMethod: "pix" as const,
+    paymentMethod: "PIX" as const,
   };
 }
 

@@ -22,66 +22,66 @@ enum Role {
 }
 
 enum PatientStatus {
-  active
-  discharged
-  paused
+  ACTIVE
+  DISCHARGED
+  PAUSED
 }
 
 enum MemberStatus {
-  active
-  inactive
+  ACTIVE
+  INACTIVE
 }
 
 enum SessionNoteStatus {
-  attended
-  absent
-  cancelled
+  ATTENDED
+  ABSENT
+  CANCELLED
 }
 
 enum AppointmentStatus {
-  scheduled
-  completed
-  absent
-  cancelled
+  SCHEDULED
+  COMPLETED
+  ABSENT
+  CANCELLED
 }
 
 enum CashTransactionType {
-  income
-  expense
+  INCOME
+  EXPENSE
 }
 
 enum CashPaymentMethod {
-  cash
-  pix
-  card
-  transfer
-  other
+  CASH
+  PIX
+  CARD
+  TRANSFER
+  OTHER
 }
 
 enum PatientPricingType {
-  session
-  package
+  SESSION
+  PACKAGE
 }
 
 enum PatientSex {
-  female
-  male
-  other
-  not_informed
+  FEMALE
+  MALE
+  OTHER
+  NOT_INFORMED
 }
 
 enum BillingPlan {
-  starter
-  pro
-  enterprise
+  STARTER
+  PRO
+  ENTERPRISE
 }
 
 enum BillingStatus {
-  trialing
-  active
-  past_due
-  canceled
-  unpaid
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  UNPAID
 }
 
 model User {
@@ -241,11 +241,11 @@ model Patient {
   guardian            Guardian             @relation(fields: [guardianId], references: [id], onDelete: Restrict)
   name                String
   birthDate           DateTime?            @map("birth_date")
-  sex                 PatientSex           @default(not_informed)
+  sex                 PatientSex           @default(NOT_INFORMED)
   photoUrl            String?              @map("photo_url")
   notes               String               @default("")
-  status              PatientStatus        @default(active)
-  pricingType         PatientPricingType   @default(session)
+  status              PatientStatus        @default(ACTIVE)
+  pricingType         PatientPricingType   @default(SESSION)
   price               Decimal?             @db.Decimal(12, 2)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -325,7 +325,7 @@ model SessionNote {
   appointment   Appointment?      @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
   date          String
   time          String            @default("")
-  status        SessionNoteStatus @default(attended)
+  status        SessionNoteStatus @default(ATTENDED)
   activities    String            @default("")
   observations  String            @default("")
   createdAt     DateTime          @default(now())
@@ -350,7 +350,7 @@ model Appointment {
   time           String            @default("")
   duration       Int               @default(45)
   notes          String            @default("")
-  status         AppointmentStatus @default(scheduled)
+  status         AppointmentStatus @default(SCHEDULED)
   sessionNote    SessionNote?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -371,7 +371,7 @@ model CashTransaction {
   amount         Decimal             @db.Decimal(12, 2)
   date           String
   description    String              @default("")
-  paymentMethod  CashPaymentMethod   @default(cash)
+  paymentMethod  CashPaymentMethod   @default(CASH)
   patientId      String?
   patient        Patient?            @relation(fields: [patientId], references: [id], onDelete: SetNull)
   memberId       String?
@@ -418,7 +418,7 @@ model Member {
   userId              String
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   role                Role                 @default(MEMBER)
-  status              MemberStatus         @default(active)
+  status              MemberStatus         @default(ACTIVE)
   profession          String?
   registration        String?
   metadata            String?
@@ -443,7 +443,7 @@ model Invitation {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
-  status         String       @default("pending")
+  status         String       @default("PENDING")
   expiresAt      DateTime
   createdAt      DateTime     @default(now())
   inviterId      String

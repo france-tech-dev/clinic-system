@@ -72,10 +72,10 @@ export async function ensureDemoPatient(
         guardianId: guardian.id,
         name: DEMO_PATIENT_NAME,
         birthDate: new Date(Date.UTC(2018, 2, 15)),
-        sex: "male",
+        sex: "MALE",
         notes: `${DEMO_PATIENT_NOTES}\n${DEMO_PATIENT_SEED_MARKER}`,
-        status: "active",
-        pricingType: "session",
+        status: "ACTIVE",
+        pricingType: "SESSION",
         price: 150,
       },
     });
