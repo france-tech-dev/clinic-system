@@ -23,10 +23,12 @@ export type MemberProfessionalStored = {
 
 export function formatProfessionalSignature(p: ProfessionalProfile): string {
   if (!p.name.trim()) {
-    return "Assinatura e carimbo — Terapeuta Ocupacional";
+    return "Assinatura e carimbo do profissional";
   }
-  const reg = p.registration.trim() ? ` · ${p.registration.trim()}` : "";
-  return `${p.name.trim()}${reg} — Terapeuta Ocupacional`;
+  const parts = [p.name.trim()];
+  if (p.registration.trim()) parts.push(p.registration.trim());
+  if (p.clinic.trim()) parts.push(p.clinic.trim());
+  return parts.join(" · ");
 }
 
 export function parseMemberProfessionalMetadata(
