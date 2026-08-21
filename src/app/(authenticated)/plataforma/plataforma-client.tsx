@@ -20,8 +20,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import {
   BILLING_PLAN_DEFS,
-  type BillingPlanId,
-  type BillingStatusId,
 } from "@/shared/constants/billing-plans";
 import {
   deletePlatformOrganizationAction,
@@ -29,13 +27,17 @@ import {
 } from "@/server/platform/platform.actions";
 import type { PlatformOrganizationDTO } from "@/server/platform/platform.actions";
 import { cn } from "@/shared/lib/utils";
+import {
+  BillingPlan,
+  BillingStatus,
+} from "../../../../prisma/generated/prisma/enums";
 
-const STATUS_LABEL: Record<BillingStatusId, string> = {
-  trialing: "Em teste",
-  active: "Ativo",
-  past_due: "Pagamento pendente",
-  canceled: "Cancelado",
-  unpaid: "Não pago",
+const STATUS_LABEL: Record<BillingStatus, string> = {
+  [BillingStatus.TRIALING]: "Em teste",
+  [BillingStatus.ACTIVE]: "Ativo",
+  [BillingStatus.PAST_DUE]: "Pagamento pendente",
+  [BillingStatus.CANCELLED]: "Cancelado",
+  [BillingStatus.UNPAID]: "Não pago",
 };
 
 type FleetFilter = "all" | "exempt" | "trial" | "no_billing" | "active";
@@ -49,20 +51,20 @@ type ConfirmDelete = {
   org: PlatformOrganizationDTO;
 };
 
-function isBillingStatus(value: string | null): value is BillingStatusId {
+function isBillingStatus(value: string | null): value is BillingStatus {
   return (
-    value === "trialing" ||
-    value === "active" ||
-    value === "past_due" ||
-    value === "canceled" ||
-    value === "unpaid"
+    value === BillingStatus.TRIALING ||
+    value === BillingStatus.ACTIVE ||
+    value === BillingStatus.PAST_DUE ||
+    value === BillingStatus.CANCELLED ||
+    value === BillingStatus.UNPAID
   );
 }
 
 function planLabel(plan: string | null): string | null {
   if (!plan) return null;
   return (
-    BILLING_PLAN_DEFS.find((item) => item.id === (plan as BillingPlanId))
+    BILLING_PLAN_DEFS.find((item) => item.id === (plan as BillingPlan))
       ?.name ?? plan
   );
 }
@@ -95,11 +97,11 @@ function matchesFilter(org: PlatformOrganizationDTO, filter: FleetFilter) {
     case "exempt":
       return org.billingExempt;
     case "trial":
-      return !org.billingExempt && org.billingStatus === "trialing";
+      return !org.billingExempt && org.billingStatus === BillingStatus.TRIALING;
     case "no_billing":
       return !org.billingExempt && !org.billingStatus;
     case "active":
-      return !org.billingExempt && org.billingStatus === "active";
+      return !org.billingExempt && org.billingStatus === BillingStatus.ACTIVE;
     default:
       return true;
   }
@@ -152,9 +154,9 @@ export function PlataformaClient({
     let active = 0;
     for (const org of orgs) {
       if (org.billingExempt) exempt += 1;
-      else if (org.billingStatus === "trialing") trial += 1;
+      else if (org.billingStatus === BillingStatus.TRIALING) trial += 1;
       else if (!org.billingStatus) noBilling += 1;
-      else if (org.billingStatus === "active") active += 1;
+      else if (org.billingStatus === BillingStatus.ACTIVE) active += 1;
     }
     return {
       total: orgs.length,

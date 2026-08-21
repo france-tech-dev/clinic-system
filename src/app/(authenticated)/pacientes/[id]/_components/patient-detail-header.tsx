@@ -16,7 +16,7 @@ import { PatientProfessionalsIndicator } from "@/features/patient/components/pat
 import {
   PATIENT_STATUS_LABEL,
   PATIENT_STATUS_OPTIONS,
-} from "@/features/patient/_lib/patient-status-label";
+} from "@/shared/constants/patient-status";
 import type {
   PatientDTO,
   PatientStatus,
@@ -25,6 +25,7 @@ import type { TeamMemberDTO } from "@/features/team/team.types";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
+import { PatientStatus as PatientStatusEnum } from "../../../../../../prisma/generated/prisma/enums";
 
 export function PatientDetailHeader({
   patient,
@@ -67,9 +68,11 @@ export function PatientDetailHeader({
             <Badge
               variant="outline"
               className={cn(
-                patient.status === "active" && "border-primary text-primary",
-                patient.status === "discharged" && "border-muted-foreground",
-                patient.status === "paused" &&
+                patient.status === PatientStatusEnum.ACTIVE &&
+                  "border-primary text-primary",
+                patient.status === PatientStatusEnum.DISCHARGED &&
+                  "border-muted-foreground",
+                patient.status === PatientStatusEnum.PAUSED &&
                   "border-fichario-patient text-fichario-patient",
               )}
             >

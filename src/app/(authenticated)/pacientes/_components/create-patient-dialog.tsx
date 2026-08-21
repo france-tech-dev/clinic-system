@@ -34,6 +34,7 @@ import type { PatientDraftInput } from "@/features/patient/patient.schema";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { TeamMemberDTO } from "@/features/team/team.types";
+import { MemberStatus } from "../../../../../prisma/generated/prisma/enums";
 
 function guardianOptionLabel(g: GuardianDTO) {
   return [
@@ -78,7 +79,7 @@ export function CreatePatientDialog({
   pending: boolean;
   onSubmit: () => void;
 }) {
-  const activeMembers = members.filter((m) => m.status === "active");
+  const activeMembers = members.filter((m) => m.status === MemberStatus.ACTIVE);
 
   function toggleMember(id: string, checked: boolean) {
     onSelectedMemberIdsChange(

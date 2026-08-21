@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SESSION_NOTE_STATUS_LABEL } from "@/features/patient/_lib/session-note-status-label";
+import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
 import type { SessionNoteDTO } from "@/features/patient/patient.types";
 import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";

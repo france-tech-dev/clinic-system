@@ -42,8 +42,9 @@ import {
   addDaysIso,
   relativeDayLabel,
   todayIso,
-  type AppointmentStatusId,
 } from "@/shared/constants/appointment";
+import type { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
+import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
 import { paths } from "@/shared/constants/paths";
 import { replacePathAndQuery } from "@/shared/lib/replace-path-and-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -275,7 +276,7 @@ export function AgendaClient({
     setUpcoming(patch);
   }
 
-  function changeStatus(id: string, status: AppointmentStatusId) {
+  function changeStatus(id: string, status: AppointmentStatus) {
     startTransition(async () => {
       const result = await setAppointmentStatusAction({ id, status });
       if (!result.success) {
@@ -675,7 +676,7 @@ export function AgendaClient({
             initial={null}
             draft={cashflow.cashDraft}
             defaultDate={todayIso()}
-            defaultType="income"
+            defaultType={CashTransactionType.INCOME}
             lockType
             defaultMemberId={defaultMemberId}
             pending={pending}

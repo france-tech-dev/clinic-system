@@ -7,7 +7,6 @@ import {
   APPOINTMENT_STATUSES,
   appointmentStatusInfo,
   formatTime,
-  type AppointmentStatusId,
 } from "@/shared/constants/appointment";
 import { paths } from "@/shared/constants/paths";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AppointmentStatus } from "../../../../../prisma/generated/prisma/enums";
 
 export function AppointmentRow({
   appointment,
@@ -27,10 +27,10 @@ export function AppointmentRow({
   appointment: AppointmentDTO;
   pending: boolean;
   onEdit: (a: AppointmentDTO) => void;
-  onStatus: (id: string, status: AppointmentStatusId) => void;
+  onStatus: (id: string, status: AppointmentStatus) => void;
 }) {
   const st = appointmentStatusInfo(appointment.status);
-  const isScheduled = appointment.status === "scheduled";
+  const isScheduled = appointment.status === AppointmentStatus.SCHEDULED;
 
   return (
     <li className="flex flex-wrap items-center gap-3 rounded-md border border-border px-3 py-2.5">
@@ -85,7 +85,7 @@ export function AppointmentRow({
             size="sm"
             variant="secondary"
             disabled={pending}
-            onClick={() => onStatus(appointment.id, "completed")}
+            onClick={() => onStatus(appointment.id, AppointmentStatus.COMPLETED)}
           >
             <Check data-icon="inline-start" />
             Realizado

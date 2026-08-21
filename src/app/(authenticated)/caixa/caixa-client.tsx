@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntityCombobox } from "@/components/entity-combobox";
 import { Spinner } from "@/components/ui/spinner";
+import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
 
 const MEMBER_FILTER_ALL = "all";
 
@@ -44,8 +45,8 @@ export function CaixaClient({
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<CashTransactionDTO | null>(null);
-  const [defaultType, setDefaultType] = useState<"income" | "expense">(
-    "income",
+  const [defaultType, setDefaultType] = useState<CashTransactionType>(
+    CashTransactionType.INCOME,
   );
   const [pending, startTransition] = useTransition();
   const [navPending, startNavTransition] = useTransition();
@@ -87,7 +88,7 @@ export function CaixaClient({
     });
   }
 
-  function openCreate(type: "income" | "expense") {
+  function openCreate(type: CashTransactionType) {
     setEditing(null);
     setDefaultType(type);
     setDialogOpen(true);
@@ -181,12 +182,12 @@ export function CaixaClient({
             <Button
               variant="outline"
               disabled={navPending}
-              onClick={() => openCreate("expense")}
+              onClick={() => openCreate(CashTransactionType.EXPENSE)}
             >
               <Plus data-icon="inline-start" />
               Saída
             </Button>
-            <Button disabled={navPending} onClick={() => openCreate("income")}>
+            <Button disabled={navPending} onClick={() => openCreate(CashTransactionType.INCOME)}>
               <Plus data-icon="inline-start" />
               Entrada
             </Button>
@@ -219,12 +220,12 @@ export function CaixaClient({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => openCreate("expense")}
+                onClick={() => openCreate(CashTransactionType.EXPENSE)}
               >
                 <Plus data-icon="inline-start" />
                 Saída
               </Button>
-              <Button size="sm" onClick={() => openCreate("income")}>
+              <Button size="sm" onClick={() => openCreate(CashTransactionType.INCOME)}>
                 <Plus data-icon="inline-start" />
                 Entrada
               </Button>
@@ -244,7 +245,7 @@ export function CaixaClient({
                       <Badge
                         variant="outline"
                         className={cn(
-                          tx.type === "income"
+                          tx.type === CashTransactionType.INCOME
                             ? "border-emerald-700/30 text-emerald-800 dark:text-emerald-400"
                             : "border-destructive/30 text-destructive",
                         )}
@@ -265,15 +266,15 @@ export function CaixaClient({
                   <span
                     className={cn(
                       "shrink-0 font-medium tabular-nums",
-                      tx.type === "income"
+                      tx.type === CashTransactionType.INCOME
                         ? "text-emerald-700 dark:text-emerald-400"
                         : "text-destructive",
                     )}
                   >
                     <span className="sr-only">
-                      {tx.type === "income" ? "Entrada " : "Saída "}
+                      {tx.type === CashTransactionType.INCOME ? "Entrada " : "Saída "}
                     </span>
-                    {tx.type === "income" ? "+" : "−"}
+                    {tx.type === CashTransactionType.INCOME ? "+" : "−"}
                     {formatBrl(tx.amount)}
                   </span>
                 </button>

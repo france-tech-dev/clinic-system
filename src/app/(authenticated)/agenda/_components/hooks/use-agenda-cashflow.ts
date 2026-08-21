@@ -3,13 +3,16 @@
 import { useCallback, useState } from "react";
 import type { CashTransactionDraft } from "@/features/finance/components/cash-transaction-form-dialog";
 import type { AppointmentDTO } from "@/features/schedule/schedule.types";
-import type { AppointmentStatusId } from "@/shared/constants/appointment";
+import {
+  AppointmentStatus,
+  CashTransactionType,
+} from "../../../../../../prisma/generated/prisma/enums";
 
 export function buildCashDraftFromAppointment(
   appointment: AppointmentDTO,
 ): CashTransactionDraft {
   return {
-    type: "income",
+    type: CashTransactionType.INCOME,
     date: appointment.date,
     patientId: appointment.patientId,
     memberId: appointment.memberId,
@@ -22,10 +25,13 @@ export function useAgendaCashflow(canSuggestCash: boolean) {
   const [cashDialogOpen, setCashDialogOpen] = useState(false);
   const [cashDraft, setCashDraft] = useState<CashTransactionDraft | null>(null);
 
-  const openCashDialogForAppointment = useCallback((appointment: AppointmentDTO) => {
-    setCashDraft(buildCashDraftFromAppointment(appointment));
-    setCashDialogOpen(true);
-  }, []);
+  const openCashDialogForAppointment = useCallback(
+    (appointment: AppointmentDTO) => {
+      setCashDraft(buildCashDraftFromAppointment(appointment));
+      setCashDialogOpen(true);
+    },
+    [],
+  );
 
   const closeCashDialog = useCallback(() => {
     setCashDialogOpen(false);
@@ -33,8 +39,8 @@ export function useAgendaCashflow(canSuggestCash: boolean) {
   }, []);
 
   const onAppointmentStatusChanged = useCallback(
-    (appointment: AppointmentDTO, status: AppointmentStatusId) => {
-      if (status === "completed" && canSuggestCash) {
+    (appointment: AppointmentDTO, status: AppointmentStatus) => {
+      if (status === AppointmentStatus.COMPLETED && canSuggestCash) {
         openCashDialogForAppointment(appointment);
       }
     },

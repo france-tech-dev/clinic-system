@@ -35,8 +35,6 @@ import {
   updateProfessionalAction,
 } from "@/features/team/team.actions";
 import {
-  TEAM_MEMBER_ROLES,
-  TEAM_MEMBER_STATUSES,
   updateProfessionalSchema,
   type UpdateProfessionalInput,
 } from "@/features/team/team.schema";
@@ -46,34 +44,22 @@ import {
   HEALTH_PROFESSION_IDS,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
+import {
+  ASSIGNABLE_MEMBER_ROLE_OPTIONS,
+  MEMBER_ROLE_OPTIONS,
+} from "@/shared/constants/member-role";
+import { MEMBER_STATUS_OPTIONS } from "@/shared/constants/member-status";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
-
-const ROLE_OPTIONS: {
-  value: (typeof TEAM_MEMBER_ROLES)[number] | "OWNER";
-  label: string;
-}[] = [
-  { value: "MEMBER", label: "Membro" },
-  { value: "MANAGER", label: "Gestor" },
-  { value: "ADMIN", label: "Administrador" },
-  { value: "OWNER", label: "Proprietário" },
-];
-
-const STATUS_OPTIONS: {
-  value: (typeof TEAM_MEMBER_STATUSES)[number];
-  label: string;
-}[] = [
-  { value: "active", label: "Ativo" },
-  { value: "inactive", label: "Inativo" },
-];
+import { MemberStatus, Role } from "../../../../../prisma/generated/prisma/enums";
 
 function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
   const role =
-    member.role === "OWNER" ||
-    member.role === "ADMIN" ||
-    member.role === "MANAGER" ||
-    member.role === "MEMBER"
+    member.role === Role.OWNER ||
+    member.role === Role.ADMIN ||
+    member.role === Role.MANAGER ||
+    member.role === Role.MEMBER
       ? member.role
-      : "MEMBER";
+      : Role.MEMBER;
 
   const profession = HEALTH_PROFESSION_IDS.includes(
     member.profession as (typeof HEALTH_PROFESSION_IDS)[number],
@@ -106,7 +92,7 @@ export function EditProfessionalDialog({
   onUpdated: (members: TeamMemberDTO[]) => void;
 }) {
   const [pending, startTransition] = useTransition();
-  const isOwner = member?.role === "OWNER" || member?.role === "owner";
+  const isOwner = member?.role === Role.OWNER;
 
   const form = useForm<UpdateProfessionalInput>({
     resolver: zodResolver(updateProfessionalSchema),
@@ -120,7 +106,7 @@ export function EditProfessionalDialog({
       phone: "",
       birthDate: "",
       role: "MEMBER",
-      status: "active",
+      status: MemberStatus.ACTIVE,
     },
   });
 
@@ -305,8 +291,8 @@ export function EditProfessionalDialog({
                       </FormControl>
                       <SelectContent>
                         {(isOwner
-                          ? ROLE_OPTIONS
-                          : ROLE_OPTIONS.filter((r) => r.value !== "OWNER")
+                          ? MEMBER_ROLE_OPTIONS
+                          : ASSIGNABLE_MEMBER_ROLE_OPTIONS
                         ).map((r) => (
                           <SelectItem key={r.value} value={r.value}>
                             {r.label}
@@ -338,7 +324,7 @@ export function EditProfessionalDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {STATUS_OPTIONS.map((s) => (
+                        {MEMBER_STATUS_OPTIONS.map((s) => (
                           <SelectItem key={s.value} value={s.value}>
                             {s.label}
                           </SelectItem>

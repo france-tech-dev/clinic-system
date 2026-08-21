@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { listPatients } from "@/features/patient/patient.service";
-import { PATIENT_STATUS_LABEL } from "@/features/patient/_lib/patient-status-label";
+import { PATIENT_STATUS_LABEL } from "@/shared/constants/patient-status";
 import { listTeamMembers } from "@/features/team/team.service";
 import type {
   AssignablePatientOption,

@@ -37,23 +37,15 @@ import type {
   TeamMemberDTO,
 } from "@/features/team/team.types";
 import { getHealthProfession } from "@/shared/constants/professions";
+import { memberRoleLabel } from "@/shared/constants/member-role";
+import { memberStatusLabel } from "@/shared/constants/member-status";
 import { initialsFromName } from "@/shared/lib/initials-from-name";
+import { Role, MemberStatus } from "../../../../prisma/generated/prisma/enums";
 import { CreateProfessionalDialog } from "./_components/create-professional-dialog";
 import { EditProfessionalDialog } from "./_components/edit-professional-dialog";
 
-const ROLE_LABEL: Record<string, string> = {
-  OWNER: "Proprietário",
-  owner: "Proprietário",
-  ADMIN: "Administrador",
-  admin: "Administrador",
-  MANAGER: "Gestor",
-  manager: "Gestor",
-  MEMBER: "Membro",
-  member: "Membro",
-};
-
-function isOwnerRole(role: string) {
-  return role === "OWNER" || role === "owner";
+function isOwnerRole(role: Role) {
+  return role === Role.OWNER;
 }
 
 function MemberAvatar({ member }: { member: TeamMemberDTO }) {
@@ -216,7 +208,7 @@ export function ProfissionaisClient({
                 <TableBody>
                   {members.map((member) => {
                     const profession = getHealthProfession(member.profession);
-                    const inactive = member.status === "inactive";
+                    const inactive = member.status === MemberStatus.INACTIVE;
                     const canDelete =
                       !isOwnerRole(member.role) &&
                       member.userId !== currentUserId;
@@ -247,11 +239,11 @@ export function ProfissionaisClient({
                           {member.registration ?? "—"}
                         </TableCell>
                         <TableCell>
-                          {ROLE_LABEL[member.role] ?? member.role}
+                          {memberRoleLabel(member.role)}
                         </TableCell>
                         <TableCell>
                           <Badge variant={inactive ? "secondary" : "outline"}>
-                            {inactive ? "Inativo" : "Ativo"}
+                            {memberStatusLabel(member.status)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
@@ -276,7 +268,7 @@ export function ProfissionaisClient({
             <ItemGroup data-size="sm" className="md:hidden">
               {members.map((member) => {
                 const profession = getHealthProfession(member.profession);
-                const inactive = member.status === "inactive";
+                const inactive = member.status === MemberStatus.INACTIVE;
                 const canDelete =
                   !isOwnerRole(member.role) && member.userId !== currentUserId;
                 return (
@@ -295,7 +287,7 @@ export function ProfissionaisClient({
                         </ItemContent>
                       </div>
                       <Badge variant={inactive ? "secondary" : "outline"}>
-                        {inactive ? "Inativo" : "Ativo"}
+                        {memberStatusLabel(member.status)}
                       </Badge>
                     </ItemHeader>
                     <dl className="grid w-full gap-1.5 text-sm">
@@ -314,7 +306,7 @@ export function ProfissionaisClient({
                       <div className="flex justify-between gap-2">
                         <dt className="text-muted-foreground">Papel</dt>
                         <dd className="text-right">
-                          {ROLE_LABEL[member.role] ?? member.role}
+                          {memberRoleLabel(member.role)}
                         </dd>
                       </div>
                       <div className="flex justify-between gap-2">

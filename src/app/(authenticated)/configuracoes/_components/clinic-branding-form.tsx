@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useId, useRef, useState, useTransition } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageIcon, Trash2, Upload } from "lucide-react";
+import { IconPhoto, IconTrash, IconUpload } from "@tabler/icons-react";
 import { toast } from "sonner";
 import {
   removeOrganizationLogoAction,
@@ -30,7 +30,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export function ClinicBrandingForm({
   initial,
@@ -38,6 +37,7 @@ export function ClinicBrandingForm({
   initial: PrintBranding;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputId = useId();
   const [branding, setBranding] = useState(initial);
   const [logoVersion, setLogoVersion] = useState(0);
   const [savePending, startSaveTransition] = useTransition();
@@ -48,8 +48,11 @@ export function ClinicBrandingForm({
     defaultValues: { clinicName: initial.clinicName },
   });
 
+  const clinicNameWatch =
+    useWatch({ control: form.control, name: "clinicName" }) ?? "";
   const hasCustomLogo = isCustomOrganizationLogo(branding.logoUrl);
   const previewUrl = `${branding.logoUrl}?v=${logoVersion}`;
+  const isDirty = form.formState.isDirty;
 
   function onSubmit(data: OrganizationBrandingInput) {
     startSaveTransition(async () => {
@@ -95,14 +98,40 @@ export function ClinicBrandingForm({
   }
 
   return (
-    <div className="max-w-lg space-y-4 rounded-md border border-border bg-card p-4">
-      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        Identidade da clínica
-      </p>
-      <p className="text-sm text-muted-foreground">
-        Aparece no cabeçalho dos relatórios PDF (prontuário, anamnese e
-        avaliação).
-      </p>
+    <div className="flex flex-col gap-4 rounded-md border border-border bg-card p-4">
+      <div className="flex flex-col gap-1">
+        <h3 className="text-sm font-medium">Cabeçalho dos PDF</h3>
+        <p className="text-sm text-muted-foreground">
+          Nome e logo no topo dos relatórios (prontuário, anamnese e avaliação).
+        </p>
+      </div>
+
+      <div
+        className="flex items-center gap-3 rounded-md border border-border bg-background p-3"
+        aria-label="Pré-visualização do cabeçalho do PDF"
+      >
+        <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border">
+          {branding.logoUrl ? (
+            <Image
+              src={previewUrl}
+              alt=""
+              fill
+              className="object-contain p-1"
+              unoptimized
+            />
+          ) : (
+            <IconPhoto className="size-5 text-muted-foreground" />
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium">
+            {clinicNameWatch.trim() || "Nome da clínica"}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Assim aparece no cabeçalho dos PDF
+          </p>
+        </div>
+      </div>
 
       <Form {...form}>
         <form
@@ -127,7 +156,9 @@ export function ClinicBrandingForm({
           />
 
           <div className="grid gap-2">
-            <Label>Logo</Label>
+            <label htmlFor={fileInputId} className="text-sm font-medium">
+              Logo
+            </label>
             <div className="flex items-center gap-4 rounded-md border border-border bg-muted/20 p-3">
               <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-background">
                 {branding.logoUrl ? (
@@ -139,7 +170,7 @@ export function ClinicBrandingForm({
                     unoptimized
                   />
                 ) : (
-                  <ImageIcon className="size-6 text-muted-foreground" />
+                  <IconPhoto className="size-6 text-muted-foreground" />
                 )}
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -157,7 +188,7 @@ export function ClinicBrandingForm({
                     {logoPending ? (
                       <Spinner data-icon="inline-start" />
                     ) : (
-                      <Upload data-icon="inline-start" />
+                      <IconUpload data-icon="inline-start" />
                     )}
                     Enviar logo
                   </Button>
@@ -172,7 +203,7 @@ export function ClinicBrandingForm({
                       {logoPending ? (
                         <Spinner data-icon="inline-start" />
                       ) : (
-                        <Trash2 data-icon="inline-start" />
+                        <IconTrash data-icon="inline-start" />
                       )}
                       Remover
                     </Button>
@@ -187,10 +218,12 @@ export function ClinicBrandingForm({
               </p>
             ) : null}
             <input
+              id={fileInputId}
               ref={inputRef}
               type="file"
               accept="image/png,image/jpeg,image/webp"
-              className="hidden"
+              className="sr-only"
+              aria-label="Enviar logo da clínica"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 e.target.value = "";
@@ -199,10 +232,17 @@ export function ClinicBrandingForm({
             />
           </div>
 
-          <Button type="submit" disabled={savePending}>
-            {savePending ? <Spinner data-icon="inline-start" /> : null}
-            Salvar nome
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="submit" disabled={savePending || !isDirty}>
+              {savePending ? <Spinner data-icon="inline-start" /> : null}
+              Salvar nome
+            </Button>
+            {isDirty ? (
+              <p className="text-xs text-muted-foreground">
+                Alterações por guardar
+              </p>
+            ) : null}
+          </div>
         </form>
       </Form>
     </div>

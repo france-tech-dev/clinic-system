@@ -36,25 +36,16 @@ import {
 } from "@/features/team/team.actions";
 import {
   createProfessionalSchema,
-  TEAM_MEMBER_ROLES,
   type CreateProfessionalInput,
 } from "@/features/team/team.schema";
 import type { TeamMemberDTO } from "@/features/team/team.types";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
+import { ASSIGNABLE_MEMBER_ROLE_OPTIONS } from "@/shared/constants/member-role";
 import {
   getHealthProfession,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
-
-const ROLE_OPTIONS: {
-  value: (typeof TEAM_MEMBER_ROLES)[number];
-  label: string;
-}[] = [
-  { value: "MEMBER", label: "Membro" },
-  { value: "MANAGER", label: "Gestor" },
-  { value: "ADMIN", label: "Administrador" },
-];
 
 const DEFAULT_VALUES: CreateProfessionalInput = {
   name: "",
@@ -267,7 +258,7 @@ export function CreateProfessionalDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ROLE_OPTIONS.map((r) => (
+                      {ASSIGNABLE_MEMBER_ROLE_OPTIONS.map((r) => (
                         <SelectItem key={r.value} value={r.value}>
                           {r.label}
                         </SelectItem>

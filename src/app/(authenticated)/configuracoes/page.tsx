@@ -1,25 +1,33 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import {
-  getCurrentMemberProfessionalProfile,
   getPrintBranding,
   getProfessionalProfile,
 } from "@/features/settings/settings.service";
+import type {
+  PrintBranding,
+  ProfessionalProfile,
+} from "@/features/settings/settings.types";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import { EMPTY_PROFESSIONAL } from "@/shared/types/professional";
+import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import { ConfiguracoesClient } from "./configuracoes-client";
 
 export default async function ConfiguracoesPage() {
   let error: string | null = null;
-  let profile = { name: "", registration: "", clinic: "" };
-  let memberProfile = { name: "", registration: "", clinic: "" };
-  let branding = { clinicName: "Clinic System", logoUrl: "/logo_dark.png" };
+  let orgProfile: ProfessionalProfile = EMPTY_PROFESSIONAL;
+  let branding: PrintBranding = {
+    clinicName: "",
+    logoUrl: DEFAULT_PRINT_LOGO,
+  };
 
   try {
-    const { organizationId, userId } = await requireOrgId();
-    [profile, memberProfile, branding] = await Promise.all([
+    const { organizationId } = await requireOrgId();
+    const [org, print] = await Promise.all([
       getProfessionalProfile(organizationId),
-      getCurrentMemberProfessionalProfile(organizationId, userId),
       getPrintBranding(organizationId),
     ]);
+    orgProfile = org;
+    branding = print;
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -30,13 +38,11 @@ export default async function ConfiguracoesPage() {
   return (
     <AppPage title="Configurações">
       {error ? (
-        <p className="text-sm text-destructive">{error}</p>
+        <p className="text-sm text-destructive" role="alert">
+          {error}
+        </p>
       ) : (
-        <ConfiguracoesClient
-          initial={profile}
-          memberInitial={memberProfile}
-          branding={branding}
-        />
+        <ConfiguracoesClient orgInitial={orgProfile} branding={branding} />
       )}
     </AppPage>
   );

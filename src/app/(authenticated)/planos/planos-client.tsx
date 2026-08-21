@@ -20,8 +20,6 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   BILLING_PLAN_DEFS,
   STARTER_HIGHLIGHTS,
-  type BillingPlanId,
-  type BillingStatusId,
 } from "@/shared/constants/billing-plans";
 import {
   createBillingPortalSessionAction,
@@ -29,18 +27,22 @@ import {
 } from "@/features/billing/billing.actions";
 import type { BillingSnapshotDTO } from "@/features/billing/billing.types";
 import { cn } from "@/shared/lib/utils";
+import {
+  BillingPlan,
+  BillingStatus,
+} from "../../../../prisma/generated/prisma/enums";
 
-const STATUS_LABEL: Record<BillingStatusId, string> = {
-  trialing: "Em período de teste",
-  active: "Ativo",
-  past_due: "Pagamento pendente",
-  canceled: "Cancelado",
-  unpaid: "Não pago",
+const STATUS_LABEL: Record<BillingStatus, string> = {
+  [BillingStatus.TRIALING]: "Em período de teste",
+  [BillingStatus.ACTIVE]: "Ativo",
+  [BillingStatus.PAST_DUE]: "Pagamento pendente",
+  [BillingStatus.CANCELLED]: "Cancelado",
+  [BillingStatus.UNPAID]: "Não pago",
 };
 
 const STARTER_HIGHLIGHT_SET = new Set<string>(STARTER_HIGHLIGHTS);
 
-function planName(plan: BillingPlanId | null): string {
+function planName(plan: BillingPlan | null): string {
   if (!plan) return "Nenhum plano escolhido";
   return BILLING_PLAN_DEFS.find((item) => item.id === plan)?.name ?? plan;
 }
@@ -56,18 +58,26 @@ function formatTrialEnd(iso: string | null): string | null {
 
 function isCurrentPlan(
   snapshot: BillingSnapshotDTO,
-  planId: BillingPlanId,
+  planId: BillingPlan,
 ): boolean {
   if (snapshot.plan !== planId) return false;
-  return snapshot.status === "active" || snapshot.status === "trialing";
+  return (
+    snapshot.status === BillingStatus.ACTIVE ||
+    snapshot.status === BillingStatus.TRIALING
+  );
 }
 
 function canChangePlan(snapshot: BillingSnapshotDTO): boolean {
-  return snapshot.status === "active" || snapshot.status === "past_due";
+  return (
+    snapshot.status === BillingStatus.ACTIVE ||
+    snapshot.status === BillingStatus.PAST_DUE
+  );
 }
 
-function isPaymentProblem(status: BillingStatusId | null): boolean {
-  return status === "past_due" || status === "unpaid";
+function isPaymentProblem(status: BillingStatus | null): boolean {
+  return (
+    status === BillingStatus.PAST_DUE || status === BillingStatus.UNPAID
+  );
 }
 
 function subscriptionDescription(snapshot: BillingSnapshotDTO): string {
@@ -77,29 +87,32 @@ function subscriptionDescription(snapshot: BillingSnapshotDTO): string {
   if (snapshot.isLegacy) {
     return "Esta clínica não usa cobrança automática.";
   }
-  if (snapshot.status === "trialing") {
+  if (snapshot.status === BillingStatus.TRIALING) {
     return "Todos os recursos estão liberados durante o teste.";
   }
-  if (snapshot.status === "past_due") {
+  if (snapshot.status === BillingStatus.PAST_DUE) {
     return "Não conseguimos cobrar a mensalidade.";
   }
-  if (snapshot.status === "unpaid") {
+  if (snapshot.status === BillingStatus.UNPAID) {
     return "A mensalidade não foi paga.";
   }
-  if (snapshot.status === "canceled") {
+  if (snapshot.status === BillingStatus.CANCELLED) {
     return "A assinatura desta clínica foi encerrada.";
   }
-  if (snapshot.status === "active") {
+  if (snapshot.status === BillingStatus.ACTIVE) {
     return "Mensalidade em dia.";
   }
   return "Ainda não há plano escolhido.";
 }
 
 function subscriptionHint(snapshot: BillingSnapshotDTO): string | null {
-  if (snapshot.status === "past_due") {
+  if (snapshot.status === BillingStatus.PAST_DUE) {
     return "Atualize o pagamento para manter a edição dos dados.";
   }
-  if (snapshot.status === "canceled" || snapshot.status === "unpaid") {
+  if (
+    snapshot.status === BillingStatus.CANCELLED ||
+    snapshot.status === BillingStatus.UNPAID
+  ) {
     return "Os dados continuam visíveis. Escolha um plano para voltar a editar.";
   }
   return null;
@@ -110,7 +123,7 @@ function subscribeLabel(
   current: boolean,
 ): string {
   if (current) return "Plano atual";
-  if (snapshot.status === "trialing") return "Escolher este plano";
+  if (snapshot.status === BillingStatus.TRIALING) return "Escolher este plano";
   if (canChangePlan(snapshot)) return "Mudar para este plano";
   return "Assinar agora";
 }
@@ -136,10 +149,10 @@ function PlanHighlights({
   planId,
   highlights,
 }: {
-  planId: BillingPlanId;
+  planId: BillingPlan;
   highlights: readonly string[];
 }) {
-  if (planId === "starter") {
+  if (planId === BillingPlan.STARTER) {
     return (
       <ul className="flex flex-col gap-2">
         {highlights.map((item) => (
@@ -188,7 +201,7 @@ export function PlanosClient({
   const [portalPending, setPortalPending] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  function handleSubscribe(plan: BillingPlanId) {
+  function handleSubscribe(plan: BillingPlan) {
     startTransition(async () => {
       setPendingPlan(plan);
       const result = await createSubscribeCheckoutAction({ plan });
@@ -262,7 +275,7 @@ export function PlanosClient({
               </Badge>
             ) : null}
           </div>
-          {snapshot.status === "trialing" && trialEndLabel ? (
+          {snapshot.status === BillingStatus.TRIALING && trialEndLabel ? (
             <p className="text-sm text-muted-foreground">
               Teste gratuito até {trialEndLabel}. A cobrança só começa depois
               desta data, se houver cartão.

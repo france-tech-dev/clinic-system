@@ -21,6 +21,7 @@ import {
   filterEvaluationCatalogByProfessions,
   type ProfessionEvaluationCatalogItem,
 } from "@/features/protocol/evaluation-modules";
+import { MemberStatus } from "../../../../prisma/generated/prisma/enums";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -55,7 +56,7 @@ export default async function AvaliacoesPage() {
       members
         .filter(
           (member) =>
-            member.status === "active" &&
+            member.status === MemberStatus.ACTIVE &&
             member.profession &&
             professionIdSet.has(member.profession),
         )

@@ -90,7 +90,11 @@ import { PatientProfessionalsIndicator } from "@/features/patient/components/pat
 import {
   PATIENT_STATUS_LABEL,
   PATIENT_STATUS_OPTIONS,
-} from "@/features/patient/_lib/patient-status-label";
+} from "@/shared/constants/patient-status";
+import {
+  MemberStatus,
+  PatientStatus as PatientStatusEnum,
+} from "../../../../prisma/generated/prisma/enums";
 
 type PendingStatusChange = {
   patient: PatientDTO;
@@ -240,7 +244,10 @@ export function PacientesClient({
 
   function requestStatusChange(patient: PatientDTO, nextStatus: PatientStatus) {
     if (!isLeadership || patient.status === nextStatus) return;
-    if (nextStatus === "discharged" || nextStatus === "paused") {
+    if (
+      nextStatus === PatientStatusEnum.DISCHARGED ||
+      nextStatus === PatientStatusEnum.PAUSED
+    ) {
       setStatusConfirm({ patient, nextStatus });
       return;
     }
@@ -295,9 +302,10 @@ export function PacientesClient({
     <Badge
       variant="outline"
       className={cn(
-        status === "active" && "border-primary text-primary",
-        status === "discharged" && "border-muted-foreground",
-        status === "paused" && "border-fichario-patient text-fichario-patient",
+        status === PatientStatusEnum.ACTIVE && "border-primary text-primary",
+        status === PatientStatusEnum.DISCHARGED && "border-muted-foreground",
+        status === PatientStatusEnum.PAUSED &&
+          "border-fichario-patient text-fichario-patient",
       )}
     >
       {PATIENT_STATUS_LABEL[status]}
@@ -431,16 +439,20 @@ export function PacientesClient({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="active">Ativos</SelectItem>
-                <SelectItem value="paused">Pausados</SelectItem>
-                <SelectItem value="discharged">Alta</SelectItem>
+                <SelectItem value={PatientStatusEnum.ACTIVE}>Ativos</SelectItem>
+                <SelectItem value={PatientStatusEnum.PAUSED}>
+                  Pausados
+                </SelectItem>
+                <SelectItem value={PatientStatusEnum.DISCHARGED}>
+                  Alta
+                </SelectItem>
               </SelectContent>
             </Select>
 
             {initialMembers.length > 0 ? (
               <EntityCombobox
                 options={initialMembers
-                  .filter((m) => m.status === "active")
+                  .filter((m) => m.status === MemberStatus.ACTIVE)
                   .map((m) => ({ id: m.id, name: m.name }))}
                 value={memberFilter ?? "__all__"}
                 onValueChange={(id) =>
@@ -641,12 +653,12 @@ export function PacientesClient({
           <AlertDialogContent size="default">
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {statusConfirm?.nextStatus === "discharged"
+                {statusConfirm?.nextStatus === PatientStatusEnum.DISCHARGED
                   ? "Marcar alta?"
                   : "Pausar paciente?"}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                {statusConfirm?.nextStatus === "discharged"
+                {statusConfirm?.nextStatus === PatientStatusEnum.DISCHARGED
                   ? `«${statusConfirm.patient.name}» passa a Alta. Pode reativar depois se precisar.`
                   : `«${statusConfirm?.patient.name}» fica Pausado até voltar a Ativo.`}
               </AlertDialogDescription>

@@ -16,6 +16,7 @@ import withDragAndDrop, {
 } from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, set, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
 import { toast } from "sonner";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -61,7 +62,7 @@ function isSameCalendarMonth(a: Date, b: Date) {
 }
 
 function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
-  const canDrag = event.status === "scheduled";
+  const canDrag = event.status === AppointmentStatus.SCHEDULED;
 
   return (
     <div className="agenda-event-content">
@@ -237,7 +238,7 @@ export function AgendaCalendar({
             draggableAccessor={(event) =>
               !isMobile &&
               !isPending &&
-              (event as CalendarEvent).status === "scheduled"
+              (event as CalendarEvent).status === AppointmentStatus.SCHEDULED
             }
             resizable={false}
             selectable={false}

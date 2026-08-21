@@ -50,6 +50,7 @@ import type { PatientDTO } from "@/features/patient/patient.types";
 import { APPOINTMENT_STATUSES } from "@/shared/constants/appointment";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { cn } from "@/shared/lib/utils";
+import { AppointmentStatus } from "../../../../../prisma/generated/prisma/enums";
 
 function buildDefaults(
   initial: AppointmentDTO | null,
@@ -65,7 +66,7 @@ function buildDefaults(
     time: initial?.time ?? "",
     duration: initial?.duration ?? 45,
     notes: initial?.notes ?? "",
-    status: initial?.status ?? "scheduled",
+    status: initial?.status ?? AppointmentStatus.SCHEDULED,
     repeatWeeks: 1,
   };
 }

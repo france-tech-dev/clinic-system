@@ -18,17 +18,15 @@ import {
   setPatientMembersAction,
   setPatientStatusAction,
 } from "@/features/patient/patient.actions";
-import { PATIENT_STATUS_LABEL } from "@/features/patient/_lib/patient-status-label";
-import type {
-  PatientDetailDTO,
-  PatientStatus,
-} from "@/features/patient/patient.types";
+import { PATIENT_STATUS_LABEL } from "@/shared/constants/patient-status";
+import type { PatientDetailDTO } from "@/features/patient/patient.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
 } from "@/features/settings/settings.types";
 import type { TeamMemberDTO } from "@/features/team/team.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
+import { PatientStatus } from "../../../../../prisma/generated/prisma/enums";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";
@@ -77,7 +75,10 @@ export function PacienteDetailClient({
 
   function requestStatusChange(nextStatus: PatientStatus) {
     if (!isLeadership || vm.detail.patient.status === nextStatus) return;
-    if (nextStatus === "discharged" || nextStatus === "paused") {
+    if (
+      nextStatus === PatientStatus.DISCHARGED ||
+      nextStatus === PatientStatus.PAUSED
+    ) {
       setStatusConfirm({ nextStatus });
       return;
     }
@@ -167,14 +168,14 @@ export function PacienteDetailClient({
         <AlertDialogContent size="default">
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {statusConfirm?.nextStatus === "discharged"
+              {statusConfirm?.nextStatus === PatientStatus.DISCHARGED
                 ? "Marcar alta?"
                 : "Pausar paciente?"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {statusConfirm?.nextStatus === "discharged"
-                ? `«${vm.detail.patient.name}» passa a ${PATIENT_STATUS_LABEL.discharged}. Pode reativar depois se precisar.`
-                : `«${vm.detail.patient.name}» fica ${PATIENT_STATUS_LABEL.paused} até voltar a Ativo.`}
+              {statusConfirm?.nextStatus === PatientStatus.DISCHARGED
+                ? `«${vm.detail.patient.name}» passa a ${PATIENT_STATUS_LABEL.DISCHARGED}. Pode reativar depois se precisar.`
+                : `«${vm.detail.patient.name}» fica ${PATIENT_STATUS_LABEL.PAUSED} até voltar a Ativo.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
