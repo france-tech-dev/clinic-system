@@ -318,7 +318,7 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 | `finance`   | Fluxo de caixa, lançamentos                             |
 | `settings`  | Perfil profissional, branding da clínica                |
 | `team`      | Profissionais da clínica                                |
-| `dashboard` | Painel, estatísticas, alertas, busca global             |
+| `dashboard` | Painel, estatísticas, alertas                            |
 | `protocol`  | ProtocolEvaluation (ex.: GMFM-88) + EvaluationModuleUI  |
 
 ---

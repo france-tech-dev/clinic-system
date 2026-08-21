@@ -30,7 +30,6 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 - **Avaliações** (`/avaliacoes`) — protocolos estruturados (ex.: GMFM-88)
 - **Caixa** (`/caixa`) — entradas/saídas, resumo mensal, filtro por profissional; sugestão ao marcar agendamento como realizado
 - **Profissionais** (`/profissionais`) — equipa da clínica (profissão, status)
-- **Busca** (`/buscar`) — pesquisa rápida na clínica
 - **Configurações** (`/configuracoes`) — perfil e identidade da clínica (nome, logo)
 - **Organização** (`/organizacao`) — gestão da clínica e membros
 - **Portal do responsável** (`/portal`) — stub para `Role.CLIENT` (em evolução)
