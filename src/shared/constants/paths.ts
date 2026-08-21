@@ -31,6 +31,13 @@ export const paths = Object.freeze({
     byId: (avaliacaoId: string) => `/avaliacoes/${avaliacaoId}`,
   },
 
+  avaliacaoPublica: {
+    root: "/r",
+    byToken: (token: string) => `/r/${token}`,
+    byProtocol: (token: string, protocolId: string) =>
+      `/r/${token}/${protocolId}`,
+  },
+
   anamnese: {
     root: "/anamnese",
     /** Workspace: `/anamnese/anamnese-to` */

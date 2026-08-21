@@ -22,6 +22,13 @@ function isAuthRoute(pathname: string) {
   return pathname.startsWith(paths.auth.root);
 }
 
+function isPublicAvaliacaoRoute(pathname: string) {
+  return (
+    pathname === paths.avaliacaoPublica.root ||
+    pathname.startsWith(`${paths.avaliacaoPublica.root}/`)
+  );
+}
+
 function isOrgSetupRoute(pathname: string) {
   return pathname === paths.organizacao;
 }
@@ -44,9 +51,10 @@ export async function proxy(req: NextRequest) {
     headers: req.headers,
   });
 
-  // Sem sessão: só rotas de auth; resto → login
   if (!session) {
-    if (isAuthRoute(pathname)) return NextResponse.next();
+    if (isAuthRoute(pathname) || isPublicAvaliacaoRoute(pathname)) {
+      return NextResponse.next();
+    }
     const loginUrl = new URL(paths.auth.login, req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
@@ -90,6 +98,11 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(new URL(paths.portal, req.url));
     }
     return NextResponse.redirect(new URL(paths.organizacao, req.url));
+  }
+
+  // Preenchimento público de avaliações: qualquer visitante (mesmo autenticado)
+  if (isPublicAvaliacaoRoute(pathname)) {
+    return NextResponse.next();
   }
 
   // Portal: qualquer autenticado com membership

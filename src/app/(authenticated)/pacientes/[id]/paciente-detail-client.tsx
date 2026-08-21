@@ -26,6 +26,8 @@ import type {
 } from "@/features/settings/settings.types";
 import type { TeamMemberDTO } from "@/features/team/team.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
+import type { PublicInviteProtocolOption } from "@/features/protocol/components/create-protocol-invite-dialog";
+import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
 import { PatientStatus } from "../../../../../prisma/generated/prisma/enums";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
@@ -48,6 +50,9 @@ export function PacienteDetailClient({
   branding,
   orgMembers,
   isLeadership,
+  initialProtocolInvites,
+  inviteProtocols,
+  canWriteInvites,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
@@ -57,6 +62,9 @@ export function PacienteDetailClient({
   branding: PrintBranding;
   orgMembers: TeamMemberDTO[];
   isLeadership: boolean;
+  initialProtocolInvites: ProtocolInviteDTO[];
+  inviteProtocols: PublicInviteProtocolOption[];
+  canWriteInvites: boolean;
 }) {
   const vm = usePatientDetail({
     initial,
@@ -136,7 +144,11 @@ export function PacienteDetailClient({
 
       {vm.tab === "avaliacao" && (
         <AvaliacaoTab
+          patientId={vm.detail.patient.id}
           clinicalEvaluations={vm.detail.clinicalEvaluations}
+          initialInvites={initialProtocolInvites}
+          inviteProtocols={inviteProtocols}
+          canWriteInvites={canWriteInvites}
           onNewEvaluation={vm.evaluations.openNewEvaluation}
           onViewEvaluation={vm.evaluations.setViewEval}
         />

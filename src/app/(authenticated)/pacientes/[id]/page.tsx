@@ -25,6 +25,13 @@ import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
+import {
+  listProtocolInvites,
+  listPublicInviteProtocols,
+} from "@/features/protocol/invite/protocol-invite.service";
+import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+import { getBillingAccess } from "@/server/billing/access";
+import { headers } from "next/headers";
 import { PacienteDetailClient } from "./paciente-detail-client";
 
 export default async function PacienteDetailPage({
@@ -40,6 +47,9 @@ export default async function PacienteDetailPage({
   let anamneseSections: PdfKeyValueSection[] = [];
   let orgMembers: TeamMemberDTO[] = [];
   let isLeadership = false;
+  let protocolInvites: ProtocolInviteDTO[] = [];
+  let inviteProtocols = listPublicInviteProtocols();
+  let canWriteInvites = false;
   let professional: ProfessionalProfile = {
     name: "",
     registration: "",
@@ -53,22 +63,41 @@ export default async function PacienteDetailPage({
 
   try {
     const { organizationId, userId } = await requireOrgId();
-    const [d, g, prof, printBranding, anamneseRecords, members, memberGate] =
-      await Promise.all([
-        getPatientDetail(organizationId, id),
-        listGuardians(organizationId),
-        getProfessionalProfile(organizationId),
-        getPrintBranding(organizationId),
-        listPatientAnamneses(organizationId, id),
-        listTeamMembers(organizationId),
-        findProxyMember(userId, organizationId),
-      ]);
+    const h = await headers();
+    const host = h.get("x-forwarded-host") ?? h.get("host");
+    const proto = h.get("x-forwarded-proto") ?? "https";
+    const origin = host ? `${proto}://${host}` : undefined;
+
+    const [
+      d,
+      g,
+      prof,
+      printBranding,
+      anamneseRecords,
+      members,
+      memberGate,
+      invites,
+      billing,
+    ] = await Promise.all([
+      getPatientDetail(organizationId, id),
+      listGuardians(organizationId),
+      getProfessionalProfile(organizationId),
+      getPrintBranding(organizationId),
+      listPatientAnamneses(organizationId, id),
+      listTeamMembers(organizationId),
+      findProxyMember(userId, organizationId),
+      listProtocolInvites(organizationId, id, origin),
+      getBillingAccess(organizationId),
+    ]);
     detail = d;
     guardians = g;
     professional = prof;
     branding = printBranding;
     orgMembers = members;
     isLeadership = isLeadershipRole(memberGate?.role ?? null);
+    protocolInvites = invites;
+    canWriteInvites =
+      billing.mode === "full" && billing.features.includes("avaliacoes");
     anamneses = anamneseRecords.map((row) =>
       toAnamneseSummary(
         row,
@@ -110,7 +139,11 @@ export default async function PacienteDetailPage({
         branding={branding}
         orgMembers={orgMembers}
         isLeadership={isLeadership}
+        initialProtocolInvites={protocolInvites}
+        inviteProtocols={inviteProtocols}
+        canWriteInvites={canWriteInvites}
       />
     </AppPage>
   );
 }
+

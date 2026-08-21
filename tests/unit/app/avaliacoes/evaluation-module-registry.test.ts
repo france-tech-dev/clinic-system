@@ -43,11 +43,20 @@ describe("assessment catalog ↔ UI registry", () => {
     }
   });
 
-  it("keeps professions without instruments so the hub can show an empty card", () => {
+  it("lists TO instruments (PEDI + SPM) in the hub catalog", () => {
     const to = PROFESSION_EVALUATION_CATALOG.find(
       (item) => item.professionId === "terapeuta_ocupacional",
     );
     expect(to).toBeDefined();
-    expect(to?.assessments).toEqual([]);
+    expect(to?.assessments.map((a) => a.id).sort()).toEqual(
+      [
+        "pedi-autocuidado",
+        "pedi-funcao-social",
+        "pedi-mobilidade",
+        "spm-casa-2anos",
+        "spm-casa-3anos",
+        "spm-casa-5anos",
+      ].sort(),
+    );
   });
 });

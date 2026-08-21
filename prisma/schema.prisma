@@ -178,6 +178,7 @@ model Organization {
   appointments        Appointment[]
   cashTransactions    CashTransaction[]
   protocolEvaluations ProtocolEvaluation[]
+  protocolInvites     ProtocolInvite[]
   anamneses           Anamnese[]
   billing             OrganizationBilling?
   /** Acesso completo sem cobrança — gerido em /plataforma. */
@@ -255,6 +256,7 @@ model Patient {
   appointments        Appointment[]
   cashTransactions    CashTransaction[]
   protocolEvaluations ProtocolEvaluation[]
+  protocolInvites     ProtocolInvite[]
   /** Membros da equipa responsáveis por este paciente. */
   members             Member[]             @relation("PatientMembers")
 
@@ -388,26 +390,69 @@ model CashTransaction {
 
 // Avaliações de protocolo (instrumentos pontuados, ex. GMFM-88)
 model ProtocolEvaluation {
-  id             String       @id @default(cuid())
+  id             String              @id @default(cuid())
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   patientId      String
-  patient        Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient        Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
   memberId       String?
-  member         Member?      @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  member         Member?             @relation(fields: [memberId], references: [id], onDelete: SetNull)
   protocolId     String
-  label          String       @default("Evaluation")
+  label          String              @default("Evaluation")
   date           String
   scores         String
-  notes          String       @default("")
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  notes          String              @default("")
+  /** Origem pública; null = preenchido na clínica. */
+  inviteItemId   String?             @unique
+  inviteItem     ProtocolInviteItem? @relation(fields: [inviteItemId], references: [id], onDelete: SetNull)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
   @@index([organizationId])
   @@index([patientId])
   @@index([patientId, protocolId])
   @@index([memberId])
   @@map("protocol_evaluations")
+}
+
+// Convite público para preenchimento remoto de avaliações
+model ProtocolInvite {
+  id                String               @id @default(cuid())
+  token             String               @unique
+  organizationId    String
+  organization      Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  patientId         String
+  patient           Patient              @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  createdByMemberId String?
+  createdByMember   Member?              @relation(fields: [createdByMemberId], references: [id], onDelete: SetNull)
+  expiresAt         DateTime?
+  revokedAt         DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  items             ProtocolInviteItem[]
+
+  @@index([organizationId])
+  @@index([patientId])
+  @@index([createdByMemberId])
+  @@map("protocol_invites")
+}
+
+model ProtocolInviteItem {
+  id           String              @id @default(cuid())
+  inviteId     String
+  invite       ProtocolInvite      @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  protocolId   String
+  status       String              @default("pending")
+  responses    String              @default("{}")
+  submittedAt  DateTime?
+  evaluation   ProtocolEvaluation?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@unique([inviteId, protocolId])
+  @@index([inviteId])
+  @@index([protocolId])
+  @@map("protocol_invite_items")
 }
 
 // Profissionais
@@ -428,6 +473,7 @@ model Member {
   clinicalEvaluations ClinicalEvaluation[]
   sessionNotes        SessionNote[]
   protocolEvaluations ProtocolEvaluation[]
+  protocolInvites     ProtocolInvite[]
   patients            Patient[]            @relation("PatientMembers")
 
   @@index([organizationId])
