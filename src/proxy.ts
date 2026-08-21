@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { MemberStatus } from "../prisma/generated/prisma/enums";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
 import {
@@ -71,7 +72,7 @@ export async function proxy(req: NextRequest) {
     session.session.activeOrganizationId,
   );
 
-  if (member?.status === "inactive") {
+  if (member?.status === MemberStatus.INACTIVE) {
     const logoutUrl = new URL(paths.auth.logout, req.url);
     logoutUrl.searchParams.set("aviso", "inactive");
     return NextResponse.redirect(logoutUrl);
