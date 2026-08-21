@@ -8,6 +8,7 @@ import {
   appointmentDisplayColor,
   calendarEventStyle,
 } from "@/features/schedule/_lib/appointment-calendar-utils";
+import { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
 
 describe("appointmentDateTime", () => {
   it("combina data e hora", () => {
@@ -28,29 +29,29 @@ describe("appointmentDateTime", () => {
 
 describe("appointmentDisplayColor", () => {
   it("prioriza cor de evolução registada", () => {
-    expect(appointmentDisplayColor("scheduled", true)).toBe(
+    expect(appointmentDisplayColor(AppointmentStatus.SCHEDULED, true)).toBe(
       APPOINTMENT_WITH_EVOLUTION_COLOR,
     );
   });
 
   it("usa cor do status sem evolução", () => {
-    expect(appointmentDisplayColor("completed", false)).toBe(
-      appointmentStatusInfo("completed").color,
+    expect(appointmentDisplayColor(AppointmentStatus.COMPLETED, false)).toBe(
+      appointmentStatusInfo(AppointmentStatus.COMPLETED).color,
     );
   });
 });
 
 describe("calendarEventStyle", () => {
   it("aplica opacidade reduzida para cancelado", () => {
-    const style = calendarEventStyle("cancelled", false);
+    const style = calendarEventStyle(AppointmentStatus.CANCELLED, false);
     expect(style.opacity).toBe(0.55);
     expect(style.backgroundColor).toBe(
-      appointmentStatusInfo("cancelled").color,
+      appointmentStatusInfo(AppointmentStatus.CANCELLED).color,
     );
   });
 
   it("usa cor de evolução quando há session note", () => {
-    const style = calendarEventStyle("scheduled", true);
+    const style = calendarEventStyle(AppointmentStatus.SCHEDULED, true);
     expect(style.backgroundColor).toBe(APPOINTMENT_WITH_EVOLUTION_COLOR);
     expect(style.opacity).toBe(1);
   });

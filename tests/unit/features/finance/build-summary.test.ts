@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { buildSummary } from "@/features/finance/_lib/build-summary";
 import type { CashTransactionDTO } from "@/features/finance/finance.types";
+import {
+  CashPaymentMethod,
+  CashTransactionType,
+} from "../../../../prisma/generated/prisma/enums";
 
 function tx(
-  overrides: Partial<CashTransactionDTO> & Pick<CashTransactionDTO, "type" | "amount">,
+  overrides: Partial<CashTransactionDTO> &
+    Pick<CashTransactionDTO, "type" | "amount">,
 ): CashTransactionDTO {
   return {
     id: "tx-1",
     date: "2026-01-15",
     description: "",
-    paymentMethod: "pix",
+    paymentMethod: CashPaymentMethod.PIX,
     patientId: null,
     patientName: null,
     memberId: null,
@@ -31,9 +36,9 @@ describe("buildSummary", () => {
 
   it("soma entradas e saídas e calcula saldo", () => {
     const result = buildSummary([
-      tx({ id: "1", type: "income", amount: 150 }),
-      tx({ id: "2", type: "income", amount: 50 }),
-      tx({ id: "3", type: "expense", amount: 30 }),
+      tx({ id: "1", type: CashTransactionType.INCOME, amount: 150 }),
+      tx({ id: "2", type: CashTransactionType.INCOME, amount: 50 }),
+      tx({ id: "3", type: CashTransactionType.EXPENSE, amount: 30 }),
     ]);
 
     expect(result).toEqual({
@@ -45,7 +50,7 @@ describe("buildSummary", () => {
 
   it("trata só saídas com saldo negativo", () => {
     const result = buildSummary([
-      tx({ id: "1", type: "expense", amount: 12 }),
+      tx({ id: "1", type: CashTransactionType.EXPENSE, amount: 12 }),
     ]);
 
     expect(result).toEqual({

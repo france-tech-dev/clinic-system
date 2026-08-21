@@ -23,13 +23,13 @@ const baseRow = {
   time: "10:00",
   duration: 50,
   notes: "",
-  status: "scheduled" as const,
+  status: "SCHEDULED" as const,
   createdAt: new Date("2026-07-01T12:00:00"),
   updatedAt: new Date("2026-07-01T12:00:00"),
   patient: {
     id: "patient-1",
     name: "Ana",
-    pricingType: "session" as const,
+    pricingType: "SESSION" as const,
     price: new Decimal(150),
   },
   member: {
@@ -37,7 +37,7 @@ const baseRow = {
     organizationId: orgId,
     userId: "user-1",
     role: "OWNER" as const,
-    status: "active" as const,
+    status: "ACTIVE" as const,
     profession: null,
     registration: null,
     metadata: null,
@@ -66,7 +66,7 @@ describe("rescheduleAppointment", () => {
   it("retorna invalid_status quando status não é agendado", async () => {
     vi.mocked(scheduleRepository.findById).mockResolvedValue({
       ...baseRow,
-      status: "completed",
+      status: "COMPLETED",
     });
 
     await expect(

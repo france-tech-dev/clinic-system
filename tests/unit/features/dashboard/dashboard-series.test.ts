@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { buildActivityMonthSeries } from "@/features/dashboard/_lib/build-activity-month-series";
 import { buildCashDaySeries } from "@/features/dashboard/_lib/build-cash-day-series";
+import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
 
 describe("buildCashDaySeries", () => {
   it("agrega entradas e saídas por dia do mês", () => {
     const series = buildCashDaySeries(
       [
-        { date: "2026-03-01", type: "income", amount: 100 },
-        { date: "2026-03-01", type: "expense", amount: 40 },
-        { date: "2026-03-02", type: "income", amount: 50 },
+        { date: "2026-03-01", type: CashTransactionType.INCOME, amount: 100 },
+        { date: "2026-03-01", type: CashTransactionType.EXPENSE, amount: 40 },
+        { date: "2026-03-02", type: CashTransactionType.INCOME, amount: 50 },
       ],
       "2026-03",
     );

@@ -53,7 +53,7 @@ describe("patient mappers — autoria", () => {
       memberId: null,
       date: "2026-07-14",
       time: "09:00",
-      status: "attended",
+      status: "ATTENDED",
       activities: "jogo",
       observations: "",
       createdAt: new Date("2026-07-01T12:00:00Z"),
