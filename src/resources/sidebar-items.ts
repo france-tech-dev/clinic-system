@@ -6,7 +6,6 @@ import {
   IconClipboardList,
   IconFileText,
   IconLayoutDashboard,
-  IconSearch,
   IconShield,
   IconUsers,
   IconUserPlus,
@@ -72,10 +71,5 @@ export const sidebarItems: SidebarItem[] = [
     name: "Anamnese",
     url: paths.anamnese.root,
     icon: IconFileText,
-  },
-  {
-    name: "Buscar",
-    url: paths.buscar,
-    icon: IconSearch,
   },
 ];
