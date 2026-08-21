@@ -40,7 +40,7 @@ Tudo-em-um para clínicas multi-profissionais (com ênfase em TO), com funcional
 - Trial Stripe de **7 dias**; depois sem cartão a app passa a read-only conforme billing.
 - UI e copy em **português (BR)**.
 - Acessibilidade mínima: uso viável em **desktop e mobile**.
-- Superfícies: Dashboard (liderança: KPIs/gráficos), Agenda (turno clínico do dia), Pacientes, Anamnese, Avaliações, Caixa, Profissionais, Configurações, Organização, Planos; Portal do responsável em evolução.
+- Superfícies: Dashboard (liderança: KPIs/gráficos), Agenda (turno clínico do dia), Pacientes, Anamnese, Avaliações, Caixa, Profissionais, Perfil, Configurações, Organização, Planos; Portal do responsável em evolução.
 - Planos: Starter / Pro / Enterprise com features gated (anamnese, caixa, avaliações, portal).
 
 **Em evolução / não inventar como pronto**
