@@ -10,6 +10,7 @@ export const paths = Object.freeze({
   planos: "/planos",
   plataforma: "/plataforma",
   configuracoes: "/configuracoes",
+  perfil: "/perfil",
   /** Portal do responsável (Role.CLIENT) — em evolução. */
   portal: "/portal",
 

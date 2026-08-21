@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import type { BillingPlanId } from "@/shared/constants/billing-plans";
+import { BillingPlan, BillingStatus } from "../../../prisma/generated/prisma/enums";
 
 let client: Stripe | null | undefined;
 
@@ -22,18 +22,18 @@ export function getStripeWebhookSecret(): string | null {
   return process.env.STRIPE_WEBHOOK_SECRET ?? null;
 }
 
-const PRICE_ENV: Record<BillingPlanId, string> = {
-  starter: "STRIPE_PRICE_STARTER",
-  pro: "STRIPE_PRICE_PRO",
-  enterprise: "STRIPE_PRICE_ENTERPRISE",
+const PRICE_ENV: Record<BillingPlan, string> = {
+  [BillingPlan.STARTER]: "STRIPE_PRICE_STARTER",
+  [BillingPlan.PRO]: "STRIPE_PRICE_PRO",
+  [BillingPlan.ENTERPRISE]: "STRIPE_PRICE_ENTERPRISE",
 };
 
-export function getStripePriceId(plan: BillingPlanId): string | null {
+export function getStripePriceId(plan: BillingPlan): string | null {
   const value = process.env[PRICE_ENV[plan]];
   return value || null;
 }
 
-export function requireStripePriceId(plan: BillingPlanId): string {
+export function requireStripePriceId(plan: BillingPlan): string {
   const priceId = getStripePriceId(plan);
   if (!priceId) {
     throw new Error(`${PRICE_ENV[plan]} não está configurada.`);
@@ -41,9 +41,30 @@ export function requireStripePriceId(plan: BillingPlanId): string {
   return priceId;
 }
 
-export function planFromStripePriceId(priceId: string): BillingPlanId | null {
-  for (const plan of Object.keys(PRICE_ENV) as BillingPlanId[]) {
+export function planFromStripePriceId(priceId: string): BillingPlan | null {
+  for (const plan of Object.keys(PRICE_ENV) as BillingPlan[]) {
     if (getStripePriceId(plan) === priceId) return plan;
   }
   return null;
+}
+
+/**
+ * Stripe uses lowercase statuses and `canceled` (one L).
+ * App / Prisma use UPPERCASE and `CANCELLED` (two L).
+ */
+export function mapStripeSubscriptionStatus(
+  status: Stripe.Subscription.Status,
+): BillingStatus {
+  switch (status) {
+    case "trialing":
+      return BillingStatus.TRIALING;
+    case "active":
+      return BillingStatus.ACTIVE;
+    case "past_due":
+      return BillingStatus.PAST_DUE;
+    case "unpaid":
+      return BillingStatus.UNPAID;
+    default:
+      return BillingStatus.CANCELLED;
+  }
 }

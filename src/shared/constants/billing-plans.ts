@@ -1,14 +1,21 @@
-export const BILLING_PLANS = ["starter", "pro", "enterprise"] as const;
-export type BillingPlanId = (typeof BILLING_PLANS)[number];
+import {
+  BillingPlan,
+  BillingStatus,
+} from "../../../prisma/generated/prisma/enums";
+
+export const BILLING_PLANS = [
+  BillingPlan.STARTER,
+  BillingPlan.PRO,
+  BillingPlan.ENTERPRISE,
+] as const;
 
 export const BILLING_STATUSES = [
-  "trialing",
-  "active",
-  "past_due",
-  "canceled",
-  "unpaid",
+  BillingStatus.TRIALING,
+  BillingStatus.ACTIVE,
+  BillingStatus.PAST_DUE,
+  BillingStatus.CANCELLED,
+  BillingStatus.UNPAID,
 ] as const;
-export type BillingStatusId = (typeof BILLING_STATUSES)[number];
 
 /** Só o que o plano corta — módulos base da clínica não entram aqui. */
 export const GATED_FEATURES = [
@@ -22,7 +29,7 @@ export type GatedFeatureId = (typeof GATED_FEATURES)[number];
 export const TRIAL_DAYS = 7;
 
 export type BillingPlanDef = {
-  id: BillingPlanId;
+  id: BillingPlan;
   name: string;
   maxProfessionals: number | null;
   features: readonly GatedFeatureId[];
@@ -51,21 +58,21 @@ const ENTERPRISE_HIGHLIGHTS = [
 
 export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
   {
-    id: "starter",
+    id: BillingPlan.STARTER,
     name: "Starter",
     maxProfessionals: 3,
     features: [],
     highlights: STARTER_HIGHLIGHTS,
   },
   {
-    id: "pro",
+    id: BillingPlan.PRO,
     name: "Pro",
     maxProfessionals: 9,
     features: ["anamnese", "caixa"],
     highlights: PRO_HIGHLIGHTS,
   },
   {
-    id: "enterprise",
+    id: BillingPlan.ENTERPRISE,
     name: "Enterprise",
     maxProfessionals: null,
     features: ["anamnese", "caixa", "avaliacoes", "portal"],
@@ -77,8 +84,8 @@ export type BillingAccessMode = "full" | "read_only";
 
 export type BillingAccess = {
   mode: BillingAccessMode;
-  status: BillingStatusId | null;
-  plan: BillingPlanId | null;
+  status: BillingStatus | null;
+  plan: BillingPlan | null;
   trialEndsAt: Date | null;
   /** Features gated incluídas (trial/legado = todas). */
   features: readonly GatedFeatureId[];
@@ -86,7 +93,7 @@ export type BillingAccess = {
   isLegacy: boolean;
 };
 
-function planDef(plan: BillingPlanId): BillingPlanDef {
+function planDef(plan: BillingPlan): BillingPlanDef {
   const def = BILLING_PLAN_DEFS.find((item) => item.id === plan);
   if (!def) throw new Error(`Plano desconhecido: ${plan}`);
   return def;
@@ -94,8 +101,8 @@ function planDef(plan: BillingPlanId): BillingPlanDef {
 
 export function resolveBillingAccess(
   row: {
-    status: BillingStatusId;
-    plan: BillingPlanId | null;
+    status: BillingStatus;
+    plan: BillingPlan | null;
     trialEndsAt: Date | null;
   } | null,
 ): BillingAccess {
@@ -111,7 +118,7 @@ export function resolveBillingAccess(
     };
   }
 
-  if (row.status === "trialing") {
+  if (row.status === BillingStatus.TRIALING) {
     return {
       mode: "full",
       status: row.status,
@@ -127,7 +134,10 @@ export function resolveBillingAccess(
   const features = def?.features ?? GATED_FEATURES;
   const maxProfessionals = def?.maxProfessionals ?? null;
   const mode =
-    row.status === "canceled" || row.status === "unpaid" ? "read_only" : "full";
+    row.status === BillingStatus.CANCELLED ||
+    row.status === BillingStatus.UNPAID
+      ? "read_only"
+      : "full";
 
   return {
     mode,

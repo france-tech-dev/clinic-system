@@ -167,7 +167,7 @@ export const auth = betterAuth({
             inviterName: data.inviter.user.name,
             inviterEmail: data.inviter.user.email,
             organizationName: data.organization.name,
-            role: data.role,
+            role: data.role as Role,
           }),
         });
       },
