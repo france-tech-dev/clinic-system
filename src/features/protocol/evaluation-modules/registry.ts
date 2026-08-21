@@ -1,4 +1,5 @@
 import { fisioterapiaEvaluationModules } from "./fisioterapia";
+import { terapiaOcupacionalEvaluationModules } from "./terapia-ocupacional";
 import type { EvaluationModule } from "./types";
 
 /**
@@ -7,6 +8,7 @@ import type { EvaluationModule } from "./types";
  */
 const EVALUATION_MODULES: EvaluationModule[] = [
   ...fisioterapiaEvaluationModules,
+  ...terapiaOcupacionalEvaluationModules,
 ];
 
 export const EVALUATION_MODULE_REGISTRY: ReadonlyMap<string, EvaluationModule> =
