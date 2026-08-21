@@ -1,9 +1,11 @@
 import { hashPassword } from "better-auth/crypto";
 import { createCredentialUser } from "@/shared/lib/create-credential-user";
 import { db } from "@/shared/lib/prisma";
-import { Role } from "../../../prisma/generated/prisma/enums";
+import {
+  MemberStatus,
+  Role,
+} from "../../../prisma/generated/prisma/enums";
 import type { CreateProfessionalInput } from "./team.schema";
-import type { TeamMemberStatus } from "./team.types";
 
 const memberListInclude = {
   user: {
@@ -115,6 +117,17 @@ export const teamRepository = {
     });
   },
 
+  async findMemberProfileByUserId(organizationId: string, userId: string) {
+    return db.member.findFirst({
+      where: {
+        organizationId,
+        userId,
+        role: { not: Role.CLIENT },
+      },
+      include: memberListInclude,
+    });
+  },
+
   async findMemberForUpdate(organizationId: string, memberId: string) {
     return db.member.findFirst({
       where: { id: memberId, organizationId },
@@ -163,19 +176,23 @@ export const teamRepository = {
   async updateMemberProfile(
     memberId: string,
     data: {
-      profession: string;
-      registration: string;
-      metadata: string;
-      status?: TeamMemberStatus;
+      profession?: string;
+      registration?: string;
+      metadata?: string;
+      status?: MemberStatus;
       role?: Role;
     },
   ) {
     return db.member.update({
       where: { id: memberId },
       data: {
-        profession: data.profession,
-        registration: data.registration,
-        metadata: data.metadata,
+        ...(data.profession !== undefined
+          ? { profession: data.profession }
+          : {}),
+        ...(data.registration !== undefined
+          ? { registration: data.registration }
+          : {}),
+        ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),
       },

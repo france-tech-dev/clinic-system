@@ -1,4 +1,7 @@
-import type { AppointmentStatusId } from "@/shared/constants/appointment";
+import type {
+  AppointmentStatus,
+  PatientPricingType,
+} from "../../../prisma/generated/prisma/enums";
 
 export type ScheduleMemberDTO = {
   id: string;
@@ -17,9 +20,9 @@ export type AppointmentDTO = {
   time: string;
   duration: number;
   notes: string;
-  status: AppointmentStatusId;
+  status: AppointmentStatus;
   hasSessionNote: boolean;
-  patientPricingType: "session" | "package";
+  patientPricingType: PatientPricingType;
   patientPrice: number | null;
   createdAt: string;
   updatedAt: string;

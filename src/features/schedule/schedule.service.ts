@@ -1,4 +1,4 @@
-import type { AppointmentStatusId } from "@/shared/constants/appointment";
+import { AppointmentStatus } from "../../../prisma/generated/prisma/enums";
 import { scheduleRepository } from "./schedule.repository";
 import type {
   AppointmentFormInput,
@@ -156,7 +156,7 @@ export async function updateAppointment(
 export async function setAppointmentStatus(
   organizationId: string,
   id: string,
-  status: AppointmentStatusId,
+  status: AppointmentStatus,
 ) {
   const row = await scheduleRepository.setStatus(organizationId, id, status);
   if (!row) return null;
@@ -177,7 +177,7 @@ export async function rescheduleAppointment(
 ): Promise<AppointmentDTO | "not_found" | "invalid_status"> {
   const existing = await scheduleRepository.findById(organizationId, id);
   if (!existing) return "not_found";
-  if (existing.status !== "scheduled") return "invalid_status";
+  if (existing.status !== AppointmentStatus.SCHEDULED) return "invalid_status";
 
   const row = await scheduleRepository.reschedule(
     organizationId,

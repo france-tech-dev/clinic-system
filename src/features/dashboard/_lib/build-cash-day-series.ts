@@ -1,5 +1,6 @@
 import { eachDayOfInterval, format, parse } from "date-fns";
 import type { CashDayPoint } from "../dashboard.types";
+import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
 
 export type CashSeriesTx = {
   date: string;
@@ -31,7 +32,7 @@ export function buildCashDaySeries(
   for (const tx of transactions) {
     const bucket = byDate.get(tx.date);
     if (!bucket) continue;
-    if (tx.type === "income") bucket.income += tx.amount;
+    if (tx.type === CashTransactionType.INCOME) bucket.income += tx.amount;
     else bucket.expense += tx.amount;
   }
 

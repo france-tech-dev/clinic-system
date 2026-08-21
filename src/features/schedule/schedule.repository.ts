@@ -1,11 +1,15 @@
 import { db } from "@/shared/lib/prisma";
 import { addDaysIso } from "@/shared/constants/appointment";
-import { Role } from "../../../prisma/generated/prisma/enums";
+import {
+  AppointmentStatus,
+  MemberStatus,
+  Role,
+  SessionNoteStatus,
+} from "../../../prisma/generated/prisma/enums";
 import type {
   AppointmentFormInput,
   UpdateAppointmentInput,
 } from "./schedule.schema";
-import type { AppointmentStatusId } from "@/shared/constants/appointment";
 
 const patientSelect = {
   id: true,
@@ -33,7 +37,7 @@ export const scheduleRepository = {
       where: {
         patient: { organizationId },
         date: { gte: startDate, lte: endDate },
-        status: "attended",
+        status: SessionNoteStatus.ATTENDED,
         appointmentId: { not: null },
       },
       select: { appointmentId: true },
@@ -47,7 +51,7 @@ export const scheduleRepository = {
     return db.member.findMany({
       where: {
         organizationId,
-        status: "active",
+        status: MemberStatus.ACTIVE,
         role: { not: Role.CLIENT },
       },
       include: { user: { select: { id: true, name: true } } },
@@ -129,7 +133,7 @@ export const scheduleRepository = {
           time: data.time ?? "",
           duration: data.duration ?? 50,
           notes: data.notes ?? "",
-          status: "scheduled",
+          status: AppointmentStatus.SCHEDULED,
         },
         include: appointmentInclude,
       });
@@ -162,7 +166,7 @@ export const scheduleRepository = {
           time: data.time ?? "",
           duration: data.duration ?? 50,
           notes: data.notes ?? "",
-          status: data.status as AppointmentStatusId,
+          status: data.status as AppointmentStatus,
         },
         include: appointmentInclude,
       });
@@ -183,7 +187,7 @@ export const scheduleRepository = {
     const existing = await db.appointment.findFirst({
       where: { id, organizationId },
     });
-    if (!existing || existing.status !== "scheduled") return null;
+    if (!existing || existing.status !== AppointmentStatus.SCHEDULED) return null;
 
     return db.$transaction(async (tx) => {
       const row = await tx.appointment.update({
@@ -202,7 +206,7 @@ export const scheduleRepository = {
   async setStatus(
     organizationId: string,
     id: string,
-    status: AppointmentStatusId,
+    status: AppointmentStatus,
   ) {
     const existing = await db.appointment.findFirst({
       where: { id, organizationId },

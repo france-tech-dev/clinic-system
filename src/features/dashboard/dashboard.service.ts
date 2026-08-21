@@ -1,3 +1,4 @@
+import { SessionNoteStatus } from "../../../prisma/generated/prisma/enums";
 import {
   activitySeriesStartDate,
   buildActivityMonthSeries,
@@ -21,9 +22,9 @@ function startOfWeekIso() {
 
 function sessionActivityLabel(status: string) {
   switch (status) {
-    case "absent":
+    case SessionNoteStatus.ABSENT:
       return "Evolução · Faltou";
-    case "cancelled":
+    case SessionNoteStatus.CANCELLED:
       return "Evolução · Cancelada";
     default:
       return "Evolução";

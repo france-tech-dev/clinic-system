@@ -1,15 +1,15 @@
 import { db } from "@/shared/lib/prisma";
 import type {
-  BillingPlanId,
-  BillingStatusId,
-} from "@/shared/constants/billing-plans";
+  BillingPlan,
+  BillingStatus,
+} from "../../../prisma/generated/prisma/enums";
 
 export type BillingUpsertInput = {
   organizationId: string;
   stripeCustomerId: string;
   stripeSubscriptionId: string;
-  status: BillingStatusId;
-  plan: BillingPlanId | null;
+  status: BillingStatus;
+  plan: BillingPlan | null;
   trialEndsAt: Date | null;
   currentPeriodEnd: Date | null;
 };

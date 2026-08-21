@@ -1,5 +1,9 @@
 import { db } from "@/shared/lib/prisma";
-import { Role } from "../../../prisma/generated/prisma/enums";
+import {
+  PatientPricingType,
+  PatientSex,
+  Role,
+} from "../../../prisma/generated/prisma/enums";
 import type {
   ClinicalEvaluationFormInput,
   PatientFormInput,
@@ -145,10 +149,10 @@ export const patientRepository = {
         guardianId: data.guardianId,
         name: data.name,
         birthDate: parseBirthDateParam(data.birthDate),
-        sex: data.sex ?? "not_informed",
+        sex: data.sex ?? PatientSex.NOT_INFORMED,
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
-        pricingType: data.pricingType ?? "session",
+        pricingType: data.pricingType ?? PatientPricingType.SESSION,
         price: data.price ?? null,
         ...(uniqueMemberIds.length > 0
           ? { members: { connect: uniqueMemberIds.map((id) => ({ id })) } }
@@ -181,10 +185,10 @@ export const patientRepository = {
         guardianId: data.guardianId,
         name: data.name,
         birthDate: parseBirthDateParam(data.birthDate),
-        sex: data.sex ?? "not_informed",
+        sex: data.sex ?? PatientSex.NOT_INFORMED,
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
-        pricingType: data.pricingType ?? "session",
+        pricingType: data.pricingType ?? PatientPricingType.SESSION,
         price: data.price ?? null,
       },
       include: patientListInclude,

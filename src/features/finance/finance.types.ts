@@ -1,7 +1,7 @@
 import type {
-  CashPaymentMethodId,
-  CashTransactionTypeId,
-} from "@/shared/constants/cash";
+  CashPaymentMethod,
+  CashTransactionType,
+} from "../../../prisma/generated/prisma/enums";
 import type { CashflowSummary } from "@/shared/types/cashflow";
 
 export type { CashflowSummary } from "@/shared/types/cashflow";
@@ -14,11 +14,11 @@ export type CashMemberOption = {
 
 export type CashTransactionDTO = {
   id: string;
-  type: CashTransactionTypeId;
+  type: CashTransactionType;
   amount: number;
   date: string;
   description: string;
-  paymentMethod: CashPaymentMethodId;
+  paymentMethod: CashPaymentMethod;
   patientId: string | null;
   patientName: string | null;
   memberId: string | null;

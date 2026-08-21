@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
-import type { AppointmentStatusId } from "@/shared/constants/appointment";
+import type { AppointmentStatus } from "../../../prisma/generated/prisma/enums";
 import { requirePermission } from "@/server/auth/permissions";
 import { requireOrgWrite } from "@/server/billing/require-billing";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -95,7 +95,7 @@ export async function updateAppointmentAction(
     const { organizationId } = await requireOrgWrite();
     const data = await updateAppointment(organizationId, {
       ...parsed.data,
-      status: parsed.data.status as AppointmentStatusId,
+      status: parsed.data.status as AppointmentStatus,
     });
     if (data === "member_not_found") {
       return fail("Profissional inválido para esta organização");
@@ -148,7 +148,7 @@ export async function setAppointmentStatusAction(
     const data = await setAppointmentStatus(
       organizationId,
       parsed.data.id,
-      parsed.data.status as AppointmentStatusId,
+      parsed.data.status as AppointmentStatus,
     );
     if (!data) return fail("Agendamento não encontrado");
     revalidateAgenda();

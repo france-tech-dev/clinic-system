@@ -1,4 +1,5 @@
 import { db } from "@/shared/lib/prisma";
+import { PatientStatus } from "../../../prisma/generated/prisma/enums";
 
 export const dashboardRepository = {
   countPatients(organizationId: string) {
@@ -7,7 +8,7 @@ export const dashboardRepository = {
 
   countActivePatients(organizationId: string) {
     return db.patient.count({
-      where: { organizationId, status: "active" },
+      where: { organizationId, status: PatientStatus.ACTIVE },
     });
   },
 
@@ -28,7 +29,7 @@ export const dashboardRepository = {
 
   findActivePatientsWithLastClinicalEvaluation(organizationId: string) {
     return db.patient.findMany({
-      where: { organizationId, status: "active" },
+      where: { organizationId, status: PatientStatus.ACTIVE },
       include: {
         clinicalEvaluations: {
           orderBy: { date: "desc" },

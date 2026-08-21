@@ -1,21 +1,25 @@
 import { auth } from "@/shared/lib/auth";
 import { serializeMemberProfessionalMetadata } from "@/shared/types/professional";
 import { getHealthProfession } from "@/shared/constants/professions";
-import { Role } from "../../../prisma/generated/prisma/enums";
+import {
+  MemberStatus,
+  Role,
+} from "../../../prisma/generated/prisma/enums";
 import { teamRepository } from "./team.repository";
 import type {
   CreateProfessionalInput,
+  UpdateOwnProfileInput,
   UpdateProfessionalInput,
 } from "./team.schema";
-import type {
-  CreatedProfessionalDTO,
-  TeamMemberDTO,
-  TeamMemberStatus,
-} from "./team.types";
+import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
 
 type MemberListRow = Awaited<
   ReturnType<typeof teamRepository.listMembers>
 >[number];
+
+type MemberProfileRow = NonNullable<
+  Awaited<ReturnType<typeof teamRepository.findMemberProfileByUserId>>
+>;
 
 function toMemberRole(role: CreateProfessionalInput["role"]): Role {
   switch (role) {
@@ -36,16 +40,12 @@ function formatBirthDate(value: Date | null | undefined): string | null {
   return `${year}-${month}-${day}`;
 }
 
-function toTeamMemberStatus(status: string): TeamMemberStatus {
-  return status === "inactive" ? "inactive" : "active";
-}
-
-function toTeamMemberDTO(row: MemberListRow): TeamMemberDTO {
+function toTeamMemberDTO(row: MemberListRow | MemberProfileRow): TeamMemberDTO {
   return {
     id: row.id,
     userId: row.userId,
     role: row.role,
-    status: toTeamMemberStatus(row.status),
+    status: row.status,
     profession: row.profession,
     registration: row.registration,
     name: row.user.name?.trim() || "Sem nome",
@@ -67,6 +67,17 @@ export async function listTeamMembers(
 ): Promise<TeamMemberDTO[]> {
   const rows = await teamRepository.listMembers(organizationId);
   return rows.map(toTeamMemberDTO);
+}
+
+export async function getOwnTeamMember(
+  organizationId: string,
+  userId: string,
+): Promise<TeamMemberDTO | null> {
+  const row = await teamRepository.findMemberProfileByUserId(
+    organizationId,
+    userId,
+  );
+  return row ? toTeamMemberDTO(row) : null;
 }
 
 export async function setMemberPatients(
@@ -210,11 +221,11 @@ export async function updateProfessional(
   const isOwner = member.role === Role.OWNER;
   const isSelf = member.userId === actorUserId;
 
-  if (isSelf && input.status === "inactive") {
+  if (isSelf && input.status === MemberStatus.INACTIVE) {
     throw new Error("Não pode desativar o seu próprio acesso");
   }
 
-  if (isOwner && input.status === "inactive") {
+  if (isOwner && input.status === MemberStatus.INACTIVE) {
     throw new Error("Não é possível desativar o proprietário da clínica");
   }
 
@@ -264,6 +275,55 @@ export async function updateProfessional(
     status: input.status,
     ...(nextRole !== undefined ? { role: nextRole } : {}),
   });
+}
+
+export async function updateOwnProfile(
+  organizationId: string,
+  userId: string,
+  input: UpdateOwnProfileInput,
+): Promise<TeamMemberDTO> {
+  const member = await teamRepository.findMemberProfileByUserId(
+    organizationId,
+    userId,
+  );
+  if (!member) {
+    throw new Error("Membro não encontrado nesta clínica");
+  }
+
+  const email = input.email.trim().toLowerCase();
+  if (email !== (member.user.email?.trim().toLowerCase() ?? "")) {
+    const existing = await teamRepository.findUserByEmail(email);
+    if (existing && existing.id !== member.userId) {
+      throw new Error("Já existe um utilizador com este e-mail");
+    }
+  }
+
+  const name = input.name.trim();
+  const registration = input.registration?.trim() ?? "";
+
+  await teamRepository.updateUserProfile(member.userId, {
+    name,
+    email,
+    phone: input.phone?.trim() || null,
+    birthDate: input.birthDate,
+  });
+
+  await teamRepository.updateMemberProfile(member.id, {
+    registration,
+    metadata: serializeMemberProfessionalMetadata(
+      { name, registration },
+      member.metadata,
+    ),
+  });
+
+  const updated = await teamRepository.findMemberProfileByUserId(
+    organizationId,
+    userId,
+  );
+  if (!updated) {
+    throw new Error("Não foi possível atualizar o perfil");
+  }
+  return toTeamMemberDTO(updated);
 }
 
 export async function changeForcedPassword(

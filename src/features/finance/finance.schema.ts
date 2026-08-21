@@ -1,28 +1,24 @@
 import { z } from "zod";
-import {
-  CASH_PAYMENT_METHODS,
-  CASH_TRANSACTION_TYPES,
-} from "@/shared/constants/cash";
 import { parseBrl } from "@/shared/lib/money-utils";
+import {
+  CashPaymentMethod,
+  CashTransactionType,
+} from "../../../prisma/generated/prisma/enums";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida");
 
-const transactionType = z.enum(
-  CASH_TRANSACTION_TYPES.map((t) => t.id) as [
-    "income",
-    "expense",
-  ],
-);
+const transactionType = z.enum([
+  CashTransactionType.INCOME,
+  CashTransactionType.EXPENSE,
+]);
 
-const paymentMethod = z.enum(
-  CASH_PAYMENT_METHODS.map((m) => m.id) as [
-    "cash",
-    "pix",
-    "card",
-    "transfer",
-    "other",
-  ],
-);
+const paymentMethod = z.enum([
+  CashPaymentMethod.CASH,
+  CashPaymentMethod.PIX,
+  CashPaymentMethod.CARD,
+  CashPaymentMethod.TRANSFER,
+  CashPaymentMethod.OTHER,
+]);
 
 export const cashTransactionFormSchema = z.object({
   type: transactionType,

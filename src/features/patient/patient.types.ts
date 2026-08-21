@@ -1,7 +1,17 @@
-export type PatientStatus = "active" | "discharged" | "paused";
-export type SessionNoteStatus = "attended" | "absent" | "cancelled";
-export type PatientPricingType = "session" | "package";
-export type PatientSex = "female" | "male" | "other" | "not_informed";
+import type {
+  MemberStatus,
+  PatientPricingType,
+  PatientSex,
+  PatientStatus,
+  SessionNoteStatus,
+} from "../../../prisma/generated/prisma/enums";
+
+export type {
+  PatientPricingType,
+  PatientSex,
+  PatientStatus,
+  SessionNoteStatus,
+};
 
 /** Resumo do responsável embutido no PatientDTO (sem importar features/guardian). */
 export type PatientGuardianEmbed = {
@@ -34,7 +44,7 @@ export type PatientMemberEmbed = {
 export type AssignableMemberOption = {
   id: string;
   name: string;
-  status: "active" | "inactive";
+  status: MemberStatus;
   profession: string | null;
 };
 

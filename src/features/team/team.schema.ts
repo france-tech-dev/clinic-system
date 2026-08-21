@@ -1,8 +1,12 @@
 import { z } from "zod";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
+import { MemberStatus } from "../../../prisma/generated/prisma/enums";
 
 export const TEAM_MEMBER_ROLES = ["MEMBER", "MANAGER", "ADMIN"] as const;
-export const TEAM_MEMBER_STATUSES = ["active", "inactive"] as const;
+export const TEAM_MEMBER_STATUSES = [
+  MemberStatus.ACTIVE,
+  MemberStatus.INACTIVE,
+] as const;
 
 const professionalBaseSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome"),
@@ -37,6 +41,16 @@ export const updateProfessionalSchema = professionalBaseSchema
   });
 
 export type UpdateProfessionalInput = z.infer<typeof updateProfessionalSchema>;
+
+export const updateOwnProfileSchema = z.object({
+  name: z.string().trim().min(1, "Informe o nome"),
+  email: z.email("E-mail inválido"),
+  registration: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  birthDate: z.string().trim().optional(),
+});
+
+export type UpdateOwnProfileInput = z.infer<typeof updateOwnProfileSchema>;
 
 export const deleteProfessionalSchema = z.object({
   memberId: z.string().trim().min(1, "Profissional inválido"),

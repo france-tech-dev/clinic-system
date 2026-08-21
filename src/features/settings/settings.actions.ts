@@ -2,8 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { paths } from "@/shared/constants/paths";
+import { findProxyMember } from "@/server/auth/proxy-member";
 import { requirePermission } from "@/server/auth/permissions";
 import { requireOrgWrite } from "@/server/billing/require-billing";
+import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { failZod } from "@/shared/lib/zod-field-errors";
 import { fail, ok, type ActionResult } from "@/shared/types/action-result";
@@ -29,6 +31,15 @@ function handleError(error: unknown): ActionResult<never> {
   if (error instanceof Error) return fail(error.message);
   console.error(error);
   return fail("Algo deu errado. Tente novamente.");
+}
+
+async function requireLeadershipWrite() {
+  const { organizationId, userId } = await requireOrgWrite();
+  const member = await findProxyMember(userId, organizationId);
+  if (!isLeadershipRole(member?.role ?? null)) {
+    throw new Error("Sem permissão.");
+  }
+  return { organizationId, userId };
 }
 
 function revalidateBrandingPaths() {
@@ -69,7 +80,7 @@ export async function saveProfessionalAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgWrite();
+    const { organizationId } = await requireLeadershipWrite();
     const data = await saveProfessionalProfile(organizationId, parsed.data);
     revalidatePath(paths.dashboard);
     revalidatePath(paths.configuracoes);
@@ -108,7 +119,7 @@ export async function saveCurrentMemberProfessionalAction(
       userId,
       parsed.data,
     );
-    revalidatePath(paths.configuracoes);
+    revalidatePath(paths.perfil);
     revalidatePath(paths.pacientes, "layout");
     return ok(data);
   } catch (error) {
@@ -125,7 +136,7 @@ export async function saveOrganizationBrandingAction(
     if (!parsed.success) {
       return failZod(parsed.error);
     }
-    const { organizationId } = await requireOrgWrite();
+    const { organizationId } = await requireLeadershipWrite();
     const data = await saveOrganizationBranding(
       organizationId,
       parsed.data.clinicName,
@@ -147,7 +158,7 @@ export async function uploadOrganizationLogoAction(
       return fail("Selecione uma imagem");
     }
 
-    const { organizationId } = await requireOrgWrite();
+    const { organizationId } = await requireLeadershipWrite();
     const data = await saveOrganizationLogo(organizationId, file);
     revalidateBrandingPaths();
     return ok(data);
@@ -161,7 +172,7 @@ export async function removeOrganizationLogoAction(): Promise<
 > {
   try {
     await requirePermission({ project: ["update"] });
-    const { organizationId } = await requireOrgWrite();
+    const { organizationId } = await requireLeadershipWrite();
     const data = await removeOrganizationLogo(organizationId);
     revalidateBrandingPaths();
     return ok(data);

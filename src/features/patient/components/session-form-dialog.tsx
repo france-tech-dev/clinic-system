@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SESSION_NOTE_STATUS_LABEL } from "@/features/patient/_lib/session-note-status-label";
+import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
 import {
   createSessionAction,
   updateSessionAction,
@@ -47,12 +47,13 @@ import {
 } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { SessionNoteStatus } from "../../../../prisma/generated/prisma/enums";
 
 type SessionDialogValues = {
   id?: string;
   patientId: string;
   appointmentId: string;
-  status: "attended" | "absent" | "cancelled";
+  status: SessionNoteStatus;
   activities: string;
   observations: string;
 };
@@ -73,7 +74,7 @@ function buildDefaults(
     ...(initial ? { id: initial.id } : {}),
     patientId,
     appointmentId: initial?.appointmentId ?? defaultAppointmentId,
-    status: initial?.status ?? "attended",
+    status: initial?.status ?? SessionNoteStatus.ATTENDED,
     activities: initial?.activities ?? "",
     observations: initial?.observations ?? "",
   };
@@ -229,14 +230,14 @@ export function SessionFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="attended">
-                        {SESSION_NOTE_STATUS_LABEL.attended}
+                      <SelectItem value={SessionNoteStatus.ATTENDED}>
+                        {SESSION_NOTE_STATUS_LABEL.ATTENDED}
                       </SelectItem>
-                      <SelectItem value="absent">
-                        {SESSION_NOTE_STATUS_LABEL.absent}
+                      <SelectItem value={SessionNoteStatus.ABSENT}>
+                        {SESSION_NOTE_STATUS_LABEL.ABSENT}
                       </SelectItem>
-                      <SelectItem value="cancelled">
-                        {SESSION_NOTE_STATUS_LABEL.cancelled}
+                      <SelectItem value={SessionNoteStatus.CANCELLED}>
+                        {SESSION_NOTE_STATUS_LABEL.CANCELLED}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -251,7 +252,7 @@ export function SessionFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {status === "attended"
+                    {status === SessionNoteStatus.ATTENDED
                       ? "Atividades realizadas *"
                       : "Atividades realizadas"}
                   </FormLabel>

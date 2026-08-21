@@ -1,4 +1,5 @@
 import type { CashTransactionDTO, CashflowSummary } from "../finance.types";
+import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
 
 export function buildSummary(
   transactions: CashTransactionDTO[],
@@ -7,7 +8,7 @@ export function buildSummary(
   let expense = 0;
 
   for (const tx of transactions) {
-    if (tx.type === "income") income += tx.amount;
+    if (tx.type === CashTransactionType.INCOME) income += tx.amount;
     else expense += tx.amount;
   }
 

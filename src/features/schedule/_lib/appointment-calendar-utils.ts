@@ -3,6 +3,7 @@ import {
   APPOINTMENT_WITH_EVOLUTION_COLOR,
   appointmentStatusInfo,
 } from "@/shared/constants/appointment";
+import { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
 import type { AppointmentDTO } from "../schedule.types";
 
 export type CalendarEvent = {
@@ -68,7 +69,9 @@ export function calendarEventStyle(status: string, hasSessionNote = false) {
     };
   }
   const info = appointmentStatusInfo(status);
-  const isInactive = status === "cancelled" || status === "absent";
+  const isInactive =
+    status === AppointmentStatus.CANCELLED ||
+    status === AppointmentStatus.ABSENT;
   return {
     backgroundColor: info.color,
     borderColor: info.color,

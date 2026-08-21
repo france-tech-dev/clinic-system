@@ -1,11 +1,11 @@
 import { memberToProfessionalProfile } from "@/shared/types/professional";
+import { PatientSex } from "../../../../prisma/generated/prisma/enums";
 import type {
   ClinicalEvaluationDomain,
   ClinicalEvaluationDTO,
   PatientDTO,
   PatientGuardianEmbed,
   PatientPricingType,
-  PatientSex,
   PatientStatus,
   SessionLinkableAppointmentDTO,
   SessionNoteDTO,
@@ -106,7 +106,7 @@ export function toPatientDTO(row: {
     id: row.id,
     name: row.name,
     birthDate: formatBirthDateParam(row.birthDate),
-    sex: row.sex ?? "not_informed",
+    sex: row.sex ?? PatientSex.NOT_INFORMED,
     photoUrl: row.photoUrl ?? null,
     notes: row.notes,
     status: row.status,

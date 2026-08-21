@@ -19,14 +19,17 @@ import {
   createProfessionalSchema,
   deleteProfessionalSchema,
   memberPatientsSchema,
+  updateOwnProfileSchema,
   updateProfessionalSchema,
 } from "./team.schema";
 import {
   changeForcedPassword,
   createProfessional,
   deleteProfessional,
+  getOwnTeamMember,
   listTeamMembers,
   setMemberPatients,
+  updateOwnProfile,
   updateProfessional,
 } from "./team.service";
 import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
@@ -46,6 +49,40 @@ export async function listTeamMembersAction(): Promise<
 
     const { organizationId } = await requireOrgId();
     return ok(await listTeamMembers(organizationId));
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function getOwnTeamMemberAction(): Promise<
+  ActionResult<TeamMemberDTO>
+> {
+  try {
+    await requirePermission({ project: ["read"] });
+    const { organizationId, userId } = await requireOrgId();
+    const member = await getOwnTeamMember(organizationId, userId);
+    if (!member) return fail("Membro não encontrado nesta clínica");
+    return ok(member);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function updateOwnProfileAction(
+  input: unknown,
+): Promise<ActionResult<TeamMemberDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const parsed = updateOwnProfileSchema.safeParse(input);
+    if (!parsed.success) {
+      return failZod(parsed.error);
+    }
+    const { organizationId, userId } = await requireOrgWrite();
+    const data = await updateOwnProfile(organizationId, userId, parsed.data);
+    revalidatePath(paths.perfil);
+    revalidatePath(paths.profissionais);
+    revalidatePath(paths.pacientes, "layout");
+    return ok(data);
   } catch (error) {
     return handleError(error);
   }

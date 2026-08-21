@@ -22,22 +22,20 @@ import {
   PATIENT_SEXES,
   type PatientDraftInput,
 } from "@/features/patient/patient.schema";
-import type { PatientSex } from "@/features/patient/patient.types";
 import {
   PATIENT_PRICING_TYPES,
   patientPriceFieldLabel,
 } from "@/shared/constants/patient-pricing";
-
-const SEX_LABEL: Record<PatientSex, string> = {
-  female: "Feminino",
-  male: "Masculino",
-  other: "Outro",
-  not_informed: "Não informado",
-};
+import { PATIENT_SEX_LABEL } from "@/shared/constants/patient-sex";
+import {
+  PatientPricingType,
+  type PatientSex,
+} from "../../../../prisma/generated/prisma/enums";
 
 export function PatientFormFields() {
   const { control } = useFormContext<PatientDraftInput>();
-  const pricingType = useWatch({ control, name: "pricingType" }) ?? "session";
+  const pricingType =
+    useWatch({ control, name: "pricingType" }) ?? PatientPricingType.SESSION;
 
   return (
     <div className="flex flex-col gap-4">
@@ -91,7 +89,7 @@ export function PatientFormFields() {
                 <SelectContent>
                   {PATIENT_SEXES.map((id) => (
                     <SelectItem key={id} value={id}>
-                      {SEX_LABEL[id]}
+                      {PATIENT_SEX_LABEL[id]}
                     </SelectItem>
                   ))}
                 </SelectContent>

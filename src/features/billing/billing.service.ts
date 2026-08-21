@@ -7,37 +7,27 @@ import { getBillingAccess } from "@/server/billing/access";
 import {
   getStripe,
   getStripePriceId,
+  mapStripeSubscriptionStatus,
   planFromStripePriceId,
   requireStripe,
   requireStripePriceId,
 } from "@/shared/lib/stripe";
+import { BILLING_PLANS } from "@/shared/constants/billing-plans";
 import {
-  BILLING_PLANS,
-  type BillingPlanId,
-  type BillingStatusId,
-} from "@/shared/constants/billing-plans";
+  BillingPlan,
+  BillingStatus,
+} from "../../../prisma/generated/prisma/enums";
 
-const WRITABLE_STATUSES: BillingStatusId[] = ["trialing", "active", "past_due"];
+const WRITABLE_STATUSES: BillingStatus[] = [
+  BillingStatus.TRIALING,
+  BillingStatus.ACTIVE,
+  BillingStatus.PAST_DUE,
+];
 
 function appBaseUrl() {
   const url = process.env.BETTER_AUTH_URL;
   if (!url) throw new Error("BETTER_AUTH_URL não está configurada.");
   return url.replace(/\/$/, "");
-}
-
-function mapStatus(status: Stripe.Subscription.Status): BillingStatusId {
-  switch (status) {
-    case "trialing":
-      return "trialing";
-    case "active":
-      return "active";
-    case "past_due":
-      return "past_due";
-    case "unpaid":
-      return "unpaid";
-    default:
-      return "canceled";
-  }
 }
 
 function unixToDate(value: number | null | undefined): Date | null {
@@ -52,10 +42,11 @@ function subscriptionPeriodEnd(subscription: Stripe.Subscription): Date | null {
   return unixToDate(legacy);
 }
 
-function parsePlan(value: string | null | undefined): BillingPlanId | null {
+function parsePlan(value: string | null | undefined): BillingPlan | null {
   if (!value) return null;
-  return BILLING_PLANS.includes(value as BillingPlanId)
-    ? (value as BillingPlanId)
+  const normalized = value.toUpperCase() as BillingPlan;
+  return (BILLING_PLANS as readonly string[]).includes(normalized)
+    ? normalized
     : null;
 }
 
@@ -67,8 +58,8 @@ function customerIdOf(subscription: Stripe.Subscription): string {
 
 function resolvePlan(
   subscription: Stripe.Subscription,
-  previousPlan: BillingPlanId | null,
-): BillingPlanId | null {
+  previousPlan: BillingPlan | null,
+): BillingPlan | null {
   const metaPlan = parsePlan(subscription.metadata?.plan);
   if (metaPlan) return metaPlan;
   if (subscription.status === "trialing") return previousPlan;
@@ -102,8 +93,8 @@ export async function getBillingSnapshot(
 
   return {
     mode: access.mode,
-    status: (row?.status as BillingStatusId | undefined) ?? access.status,
-    plan: (row?.plan as BillingPlanId | null | undefined) ?? access.plan,
+    status: (row?.status as BillingStatus | undefined) ?? access.status,
+    plan: (row?.plan as BillingPlan | null | undefined) ?? access.plan,
     trialEndsAt:
       row?.trialEndsAt?.toISOString() ??
       access.trialEndsAt?.toISOString() ??
@@ -136,7 +127,7 @@ export async function createBillingPortalSession(
 
 export async function createSubscribeCheckout(
   organizationId: string,
-  plan: BillingPlanId,
+  plan: BillingPlan,
 ): Promise<CheckoutSessionDTO> {
   const stripe = requireStripe();
   const priceId = requireStripePriceId(plan);
@@ -150,13 +141,13 @@ export async function createSubscribeCheckout(
   if (
     row &&
     WRITABLE_STATUSES.includes(row.status) &&
-    row.status !== "trialing"
+    row.status !== BillingStatus.TRIALING
   ) {
     await updateSubscriptionPlan(row.stripeSubscriptionId, plan, priceId);
     return { url: successUrl };
   }
 
-  if (row?.status === "trialing") {
+  if (row?.status === BillingStatus.TRIALING) {
     const price = await stripe.prices.retrieve(priceId);
     const session = await stripe.checkout.sessions.create({
       mode: "setup",
@@ -201,7 +192,7 @@ export async function createSubscribeCheckout(
 
 async function updateSubscriptionPlan(
   subscriptionId: string,
-  plan: BillingPlanId,
+  plan: BillingPlan,
   priceId: string,
   paymentMethodId?: string,
 ) {
@@ -231,7 +222,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
     organizationId,
     stripeCustomerId: customerIdOf(subscription),
     stripeSubscriptionId: subscription.id,
-    status: mapStatus(subscription.status),
+    status: mapStripeSubscriptionStatus(subscription.status),
     plan: resolvePlan(subscription, existing?.plan ?? null),
     trialEndsAt: unixToDate(subscription.trial_end),
     currentPeriodEnd: subscriptionPeriodEnd(subscription),
@@ -330,8 +321,8 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
 export function isStripeConfigured(): boolean {
   return Boolean(
     getStripe() &&
-    getStripePriceId("starter") &&
-    getStripePriceId("pro") &&
-    getStripePriceId("enterprise"),
+    getStripePriceId(BillingPlan.STARTER) &&
+    getStripePriceId(BillingPlan.PRO) &&
+    getStripePriceId(BillingPlan.ENTERPRISE),
   );
 }

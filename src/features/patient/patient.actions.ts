@@ -42,6 +42,7 @@ import type {
   ClinicalEvaluationDTO,
   PatientDetailDTO,
   PatientDTO,
+  PatientStatus,
   SessionNoteDTO,
 } from "./patient.types";
 
@@ -60,7 +61,7 @@ function revalidatePatient(id?: string) {
 }
 
 export async function listPatientsAction(opts?: {
-  status?: "active" | "discharged" | "paused" | null;
+  status?: PatientStatus | null;
   search?: string;
 }): Promise<ActionResult<PatientDTO[]>> {
   try {

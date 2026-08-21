@@ -20,6 +20,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import type { AssignableMemberOption } from "@/features/patient/patient.types";
 import { getHealthProfession } from "@/shared/constants/professions";
+import { MemberStatus } from "../../../../prisma/generated/prisma/enums";
 
 export function AssignPatientMembersDialog({
   open,
@@ -42,7 +43,7 @@ export function AssignPatientMembersDialog({
   const [query, setQuery] = useState("");
 
   const activeMembers = useMemo(
-    () => members.filter((m) => m.status === "active"),
+    () => members.filter((m) => m.status === MemberStatus.ACTIVE),
     [members],
   );
   const filtered = useMemo(() => {

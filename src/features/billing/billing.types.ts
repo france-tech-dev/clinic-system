@@ -1,13 +1,13 @@
+import type { BillingAccessMode } from "@/shared/constants/billing-plans";
 import type {
-  BillingAccessMode,
-  BillingPlanId,
-  BillingStatusId,
-} from "@/shared/constants/billing-plans";
+  BillingPlan,
+  BillingStatus,
+} from "../../../prisma/generated/prisma/enums";
 
 export type BillingSnapshotDTO = {
   mode: BillingAccessMode;
-  status: BillingStatusId | null;
-  plan: BillingPlanId | null;
+  status: BillingStatus | null;
+  plan: BillingPlan | null;
   trialEndsAt: string | null;
   isLegacy: boolean;
   billingExempt: boolean;

@@ -24,6 +24,7 @@ import type {
   ProfessionalProfile,
 } from "@/shared/types/professional";
 import { formatProfessionalSignature } from "@/shared/types/professional";
+import { PatientStatus } from "../../../../../../../prisma/generated/prisma/enums";
 import type { AnamneseSection } from "../../../field-types";
 import { AnamneseField } from "./anamnese-field";
 import { flattenAnamneseForPdf } from "../../../flatten-for-pdf";
@@ -51,7 +52,7 @@ export function AnamneseFormClient({
 }) {
   const router = useRouter();
   const activePatients = useMemo(
-    () => patients.filter((p) => p.status !== "discharged"),
+    () => patients.filter((p) => p.status !== PatientStatus.DISCHARGED),
     [patients],
   );
   const [patientId, setPatientId] = useState(initialPatientId ?? "");

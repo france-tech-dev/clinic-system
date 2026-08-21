@@ -4,13 +4,17 @@ import type {
   PatientPricingType,
   PatientSex,
 } from "@/features/patient/patient.types";
+import {
+  PatientPricingType as PatientPricingTypeEnum,
+  PatientSex as PatientSexEnum,
+} from "../../../../prisma/generated/prisma/enums";
 
 export const EMPTY_PATIENT_DRAFT: PatientDraftInput = {
   name: "",
   birthDate: "",
-  sex: "not_informed",
+  sex: PatientSexEnum.NOT_INFORMED,
   notes: "",
-  pricingType: "session",
+  pricingType: PatientPricingTypeEnum.SESSION,
   priceInput: "",
 };
 

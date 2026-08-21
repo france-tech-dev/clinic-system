@@ -1,8 +1,8 @@
 import { db } from "@/shared/lib/prisma";
 import type {
-  CashPaymentMethodId,
-  CashTransactionTypeId,
-} from "@/shared/constants/cash";
+  CashPaymentMethod,
+  CashTransactionType,
+} from "../../../prisma/generated/prisma/enums";
 import type {
   CashTransactionFormInput,
   UpdateCashTransactionInput,
@@ -53,11 +53,11 @@ export const financeRepository = {
     return db.cashTransaction.create({
       data: {
         organizationId,
-        type: data.type as CashTransactionTypeId,
+        type: data.type as CashTransactionType,
         amount: data.amount,
         date: data.date,
         description: data.description,
-        paymentMethod: data.paymentMethod as CashPaymentMethodId,
+        paymentMethod: data.paymentMethod as CashPaymentMethod,
         patientId: data.patientId ?? null,
         memberId: data.memberId ?? null,
       },
@@ -75,11 +75,11 @@ export const financeRepository = {
     return db.cashTransaction.update({
       where: { id: data.id },
       data: {
-        type: data.type as CashTransactionTypeId,
+        type: data.type as CashTransactionType,
         amount: data.amount,
         date: data.date,
         description: data.description,
-        paymentMethod: data.paymentMethod as CashPaymentMethodId,
+        paymentMethod: data.paymentMethod as CashPaymentMethod,
         patientId: data.patientId ?? null,
         memberId: data.memberId ?? null,
       },

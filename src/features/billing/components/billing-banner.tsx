@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { paths } from "@/shared/constants/paths";
 import type { BillingSnapshotDTO } from "../billing.types";
+import { BillingStatus } from "../../../../prisma/generated/prisma/enums";
 
 function trialDaysLeft(trialEndsAt: string | null): number | null {
   if (!trialEndsAt) return null;
@@ -11,20 +12,21 @@ function trialDaysLeft(trialEndsAt: string | null): number | null {
 
 export function shouldShowBillingBanner(snapshot: BillingSnapshotDTO): boolean {
   if (snapshot.isLegacy || snapshot.billingExempt) return false;
-  if (snapshot.mode === "full" && snapshot.status === "active") return false;
+  if (snapshot.mode === "full" && snapshot.status === BillingStatus.ACTIVE)
+    return false;
   // Trial com plano já escolhido: não insistir em "Assinar agora".
-  if (snapshot.status === "trialing" && snapshot.plan) return false;
+  if (snapshot.status === BillingStatus.TRIALING && snapshot.plan) return false;
   return (
-    snapshot.status === "trialing" ||
+    snapshot.status === BillingStatus.TRIALING ||
     snapshot.mode === "read_only" ||
-    snapshot.status === "past_due"
+    snapshot.status === BillingStatus.PAST_DUE
   );
 }
 
 export function BillingBanner({ snapshot }: { snapshot: BillingSnapshotDTO }) {
   if (!shouldShowBillingBanner(snapshot)) return null;
 
-  if (snapshot.status === "trialing") {
+  if (snapshot.status === BillingStatus.TRIALING) {
     const days = trialDaysLeft(snapshot.trialEndsAt);
     return (
       <Alert>
@@ -53,7 +55,7 @@ export function BillingBanner({ snapshot }: { snapshot: BillingSnapshotDTO }) {
     );
   }
 
-  if (snapshot.status === "past_due") {
+  if (snapshot.status === BillingStatus.PAST_DUE) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Pagamento pendente</AlertTitle>

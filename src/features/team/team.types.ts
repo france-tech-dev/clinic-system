@@ -1,10 +1,11 @@
-export type TeamMemberStatus = "active" | "inactive";
+import type { Role } from "../../../prisma/generated/prisma/enums";
+import type { MemberStatus } from "../../../prisma/generated/prisma/enums";
 
 export type TeamMemberDTO = {
   id: string;
   userId: string;
-  role: string;
-  status: TeamMemberStatus;
+  role: Role;
+  status: MemberStatus;
   profession: string | null;
   registration: string | null;
   name: string;

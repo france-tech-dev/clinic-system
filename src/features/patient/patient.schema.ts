@@ -1,15 +1,16 @@
 import { z } from "zod";
 import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
+import { PATIENT_STATUSES } from "@/shared/constants/patient-status";
+import { PATIENT_SEXES } from "@/shared/constants/patient-sex";
+import { SESSION_STATUSES } from "@/shared/constants/session-note-status";
 import { parseBrl } from "@/shared/lib/money-utils";
+import {
+  PatientPricingType,
+  PatientSex,
+  SessionNoteStatus,
+} from "../../../prisma/generated/prisma/enums";
 
-export const PATIENT_STATUSES = ["active", "discharged", "paused"] as const;
-export const SESSION_STATUSES = ["attended", "absent", "cancelled"] as const;
-export const PATIENT_SEXES = [
-  "female",
-  "male",
-  "other",
-  "not_informed",
-] as const;
+export { PATIENT_STATUSES, SESSION_STATUSES, PATIENT_SEXES };
 
 const optionalDateParam = z
   .union([z.string(), z.null(), z.undefined()])
@@ -36,13 +37,15 @@ const emptyToNullUrl = z
 const patientFieldsSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome do paciente"),
   birthDate: optionalDateParam.optional().default(null),
-  sex: z.enum(PATIENT_SEXES).default("not_informed"),
+  sex: z.enum(PATIENT_SEXES).default(PatientSex.NOT_INFORMED),
   photoUrl: emptyToNullUrl.optional().default(null),
   notes: z
     .union([z.string(), z.null(), z.undefined()])
     .transform((v) => (v == null ? "" : v.trim()))
     .default(""),
-  pricingType: z.enum(["session", "package"]).default("session"),
+  pricingType: z
+    .enum([PatientPricingType.SESSION, PatientPricingType.PACKAGE])
+    .default(PatientPricingType.SESSION),
   price: z.number().positive().nullable().optional(),
   guardianId: z.string().min(1, "Informe o responsável"),
 });
@@ -61,7 +64,10 @@ export const patientDraftSchema = z.object({
   birthDate: z.string(),
   sex: z.enum(PATIENT_SEXES),
   notes: z.string(),
-  pricingType: z.enum(["session", "package"]),
+  pricingType: z.enum([
+    PatientPricingType.SESSION,
+    PatientPricingType.PACKAGE,
+  ]),
   priceInput: z
     .string()
     .refine(
@@ -137,7 +143,7 @@ function refineSessionActivities(
   val: { status: (typeof SESSION_STATUSES)[number]; activities: string },
   ctx: z.RefinementCtx,
 ) {
-  if (val.status === "attended" && !val.activities.trim()) {
+  if (val.status === SessionNoteStatus.ATTENDED && !val.activities.trim()) {
     ctx.addIssue({
       code: "custom",
       message: "Descreva ao menos as atividades realizadas",

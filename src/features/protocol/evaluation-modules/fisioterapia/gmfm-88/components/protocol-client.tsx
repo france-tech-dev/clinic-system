@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { EntityCombobox } from "@/components/entity-combobox";
+import { PatientStatus } from "../../../../../../../prisma/generated/prisma/enums";
 import {
   Select,
   SelectContent,
@@ -123,7 +124,7 @@ export function GmfmProtocolClient({
   const liveSummary = useMemo(() => summarizeGmfm88(scores), [scores]);
 
   const activePatients = useMemo(
-    () => patients.filter((p) => p.status !== "discharged"),
+    () => patients.filter((p) => p.status !== PatientStatus.DISCHARGED),
     [patients],
   );
 

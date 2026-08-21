@@ -46,18 +46,20 @@ import type { PatientOption } from "@/shared/types/patient-option";
 import {
   CASH_PAYMENT_METHODS,
   CASH_TRANSACTION_TYPES,
-  type CashPaymentMethodId,
-  type CashTransactionTypeId,
 } from "@/shared/constants/cash";
 import { amountToBrlInput, parseBrl } from "@/shared/lib/money-utils";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import {
+  CashPaymentMethod,
+  CashTransactionType,
+} from "../../../../prisma/generated/prisma/enums";
 
 export type CashTransactionDraft = {
-  type?: CashTransactionTypeId;
+  type?: CashTransactionType;
   date?: string;
   description?: string;
   amount?: number | null;
-  paymentMethod?: CashPaymentMethodId;
+  paymentMethod?: CashPaymentMethod;
   patientId?: string | null;
   memberId?: string | null;
 };
@@ -66,16 +68,23 @@ function buildDefaults(
   initial: CashTransactionDTO | null,
   draft: CashTransactionDraft | null | undefined,
   defaultDate: string,
-  defaultType: CashTransactionTypeId | undefined,
+  defaultType: CashTransactionType | undefined,
   defaultMemberId: string | undefined,
 ): CashTransactionDraftInput {
   const amount = initial?.amount ?? draft?.amount ?? null;
   return {
-    type: initial?.type ?? draft?.type ?? defaultType ?? "income",
+    type:
+      initial?.type ??
+      draft?.type ??
+      defaultType ??
+      CashTransactionType.INCOME,
     date: initial?.date ?? draft?.date ?? defaultDate,
     description: initial?.description ?? draft?.description ?? "",
     amountInput: amount ? amountToBrlInput(amount) : "",
-    paymentMethod: initial?.paymentMethod ?? draft?.paymentMethod ?? "cash",
+    paymentMethod:
+      initial?.paymentMethod ??
+      draft?.paymentMethod ??
+      CashPaymentMethod.CASH,
     patientId: initial?.patientId ?? draft?.patientId ?? "none",
     memberId: initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "none",
   };
@@ -103,7 +112,7 @@ export function CashTransactionFormDialog({
   initial: CashTransactionDTO | null;
   draft?: CashTransactionDraft | null;
   defaultDate: string;
-  defaultType?: CashTransactionTypeId;
+  defaultType?: CashTransactionType;
   defaultMemberId?: string;
   /** Quando true e criação, o tipo fica fixo (ex.: veio do botão Entrada/Saída). */
   lockType?: boolean;
@@ -194,7 +203,9 @@ export function CashTransactionFormDialog({
 
   const typeLocked = lockType && !initial;
   const createTitle =
-    defaults.type === "expense" ? "Nova saída" : "Nova entrada";
+    defaults.type === CashTransactionType.EXPENSE
+      ? "Nova saída"
+      : "Nova entrada";
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
