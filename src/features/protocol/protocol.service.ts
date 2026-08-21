@@ -13,9 +13,9 @@ import type {
   ProtocolEvaluationComparisonDTO,
 } from "./protocol.types";
 
-function parseScores(raw: string): Record<string, number | null> {
+function parseScores(raw: string): Record<string, number | string | null> {
   try {
-    return JSON.parse(raw) as Record<string, number | null>;
+    return JSON.parse(raw) as Record<string, number | string | null>;
   } catch {
     return {};
   }
