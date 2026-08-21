@@ -24,6 +24,7 @@ import {
   IconDotsVertical,
   IconLogout,
   IconSettings,
+  IconUser,
 } from "@tabler/icons-react";
 
 export function NavUser({ user }: { user: SidebarUser }) {
@@ -80,19 +81,25 @@ export function NavUser({ user }: { user: SidebarUser }) {
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={paths.perfil} onClick={closeMobileSidebar}>
+                <IconUser />
+                Perfil
+              </Link>
+            </DropdownMenuItem>
             {showOrgSettings ? (
               <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={paths.planos} onClick={closeMobileSidebar}>
-                    <IconCreditCard />
-                    Planos
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href={paths.configuracoes} onClick={closeMobileSidebar}>
                     <IconSettings />
                     Configurações
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={paths.planos} onClick={closeMobileSidebar}>
+                    <IconCreditCard />
+                    Planos
                   </Link>
                 </DropdownMenuItem>
               </>

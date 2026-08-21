@@ -10,26 +10,16 @@ import {
   Tailwind,
   Text,
 } from "react-email";
+import { memberRoleLabel } from "@/shared/constants/member-role";
+import type { Role } from "../../../prisma/generated/prisma/enums";
 
 type OrganizationInvitationEmailProps = {
   inviteUrl: string;
   inviterName: string;
   inviterEmail: string;
   organizationName: string;
-  role: string;
+  role: Role;
 };
-
-const ROLE_LABELS: Record<string, string> = {
-  owner: "Proprietário",
-  admin: "Administrador",
-  manager: "Gestor",
-  member: "Membro",
-  client: "Cliente",
-};
-
-function formatRole(role: string) {
-  return ROLE_LABELS[role.toLowerCase()] ?? role;
-}
 
 export function OrganizationInvitationEmail({
   inviteUrl,
@@ -37,6 +27,7 @@ export function OrganizationInvitationEmail({
   organizationName,
   role,
 }: OrganizationInvitationEmailProps) {
+  const roleLabel = memberRoleLabel(role);
   return (
     <Html lang="pt-BR" dir="ltr">
       <Head />
@@ -58,7 +49,7 @@ export function OrganizationInvitationEmail({
                 para entrar na organização{" "}
                 <span className="font-medium">{organizationName}</span> na
                 plataforma Boilerplate, com o papel de{" "}
-                <span className="font-medium">{formatRole(role)}</span>.
+                <span className="font-medium">{roleLabel}</span>.
               </Text>
 
               <Text className="mb-4 text-base text-gray-700">
