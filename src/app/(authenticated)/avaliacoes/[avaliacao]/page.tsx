@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import {
   Alert,
@@ -73,6 +74,13 @@ export default async function AvaliacaoPage({
         </Alert>
       ) : (
         <div className="flex flex-col gap-4">
+          <Link
+            href={paths.avaliacoes.root}
+            className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" />
+            Avaliações
+          </Link>
           {canWrite ? null : (
             <Alert>
               <AlertTitle>Fora do plano atual</AlertTitle>
