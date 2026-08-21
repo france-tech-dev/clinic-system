@@ -17,13 +17,3 @@ export function scoresToItemResponses(
   }
   return out;
 }
-
-export function itemResponsesToScores(
-  responses: Record<string, ItemResponseValue | null>,
-): Record<string, number | string | null> {
-  const out: Record<string, number | string | null> = {};
-  for (const [id, value] of Object.entries(responses)) {
-    out[id] = value;
-  }
-  return out;
-}

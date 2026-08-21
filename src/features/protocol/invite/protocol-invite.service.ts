@@ -3,8 +3,8 @@ import {
   listEvaluationModules,
 } from "@/features/protocol/evaluation-modules/registry";
 import {
-  countAnsweredResponses,
   createItemResponseSchema,
+  listItemProtocolItemIds,
   parseItemProtocolResponses,
   type ItemProtocolTemplate,
 } from "@/features/protocol/evaluation-modules/_shared/item-protocol-template";
@@ -14,13 +14,11 @@ import { createProtocolInviteToken } from "./_lib/token";
 import { computeInviteFlags } from "./_lib/invite-status";
 import type {
   CreateProtocolInviteInput,
-  SavePublicInviteDraftInput,
   SubmitPublicInviteInput,
 } from "./protocol-invite.schema";
 import type {
   ProtocolInviteDTO,
   ProtocolInviteItemDTO,
-  ProtocolInviteItemStatus,
   PublicProtocolInviteDTO,
   PublicProtocolInviteInstrumentDTO,
 } from "./protocol-invite.types";
@@ -71,18 +69,12 @@ function inviteFlags(row: InviteRow, now = new Date()) {
 
 function toItemDTO(item: InviteRow["items"][number]): ProtocolInviteItemDTO {
   const template = getItemTemplate(item.protocolId);
-  const responses = parseResponsesJson(item.responses);
-  const counts = template
-    ? countAnsweredResponses(template, responses)
-    : { answered: 0, total: 0 };
-  const status = item.status as ProtocolInviteItemStatus;
   return {
     id: item.id,
     protocolId: item.protocolId,
     protocolName: protocolName(item.protocolId),
-    status,
-    answeredCount: counts.answered,
-    totalCount: counts.total,
+    status: item.status === "submitted" ? "submitted" : "pending",
+    totalCount: template ? listItemProtocolItemIds(template).length : 0,
     submittedAt: item.submittedAt?.toISOString() ?? null,
   };
 }
@@ -109,7 +101,9 @@ function assertPublicInviteable(protocolIds: string[]) {
   for (const protocolId of protocolIds) {
     const mod = getEvaluationModule(protocolId);
     if (!mod?.supportsPublicInvite || !mod.template) {
-      throw new Error(`Instrumento não disponível para link público: ${protocolId}`);
+      throw new Error(
+        `Instrumento não disponível para link público: ${protocolId}`,
+      );
     }
   }
 }
@@ -215,40 +209,10 @@ export async function getPublicProtocolInviteInstrument(
     protocolName: protocolName(protocolId),
     patientFirstName: firstName(row.patient.name),
     clinicName: row.organization.name.trim() || "Clínica",
-    status: item.status as ProtocolInviteItemStatus,
+    status: item.status === "submitted" ? "submitted" : "pending",
     responses,
     submittedAt: item.submittedAt?.toISOString() ?? null,
-    scale: template.scale,
   };
-}
-
-export async function savePublicInviteDraft(input: SavePublicInviteDraftInput) {
-  const row = await protocolInviteRepository.findByToken(input.token);
-  if (!row) return { ok: false as const, error: "Link inválido" };
-  const flags = inviteFlags(row);
-  if (!flags.isActive) {
-    return { ok: false as const, error: "Este link expirou ou foi revogado" };
-  }
-
-  const item = row.items.find((i) => i.protocolId === input.protocolId);
-  if (!item) return { ok: false as const, error: "Instrumento não encontrado" };
-  if (item.status === "submitted") {
-    return { ok: false as const, error: "Esta avaliação já foi enviada" };
-  }
-
-  const template = getItemTemplate(input.protocolId);
-  if (!template) {
-    return { ok: false as const, error: "Instrumento inválido" };
-  }
-
-  const responses = parseItemProtocolResponses(template, input.responses);
-  await protocolInviteRepository.updateItemResponses(
-    item.id,
-    JSON.stringify(responses),
-    "in_progress",
-  );
-
-  return { ok: true as const };
 }
 
 export async function submitPublicInvite(input: SubmitPublicInviteInput) {

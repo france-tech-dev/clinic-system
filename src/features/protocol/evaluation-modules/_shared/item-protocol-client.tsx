@@ -58,10 +58,7 @@ import {
   type ItemProtocolTemplate,
 } from "./item-protocol-template";
 import { ITEM_SCALE_OPTIONS, type ItemResponseValue } from "./item-scale";
-import {
-  itemResponsesToScores,
-  scoresToItemResponses,
-} from "./parse-item-scores";
+import { scoresToItemResponses } from "./parse-item-scores";
 
 type FormValues = {
   id?: string;
@@ -218,7 +215,7 @@ export function ItemProtocolClient({
     startTransition(async () => {
       const payload = {
         ...values,
-        scores: itemResponsesToScores(values.scores),
+        scores: values.scores as Record<string, number | string | null>,
       };
       const result = editing
         ? await updateProtocolEvaluationAction({ ...payload, id: editing.id })

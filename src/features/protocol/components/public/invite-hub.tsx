@@ -127,7 +127,6 @@ export function InviteHub({ invite }: { invite: PublicProtocolInviteDTO }) {
                     item.protocolId,
                   );
                   const done = item.status === "submitted";
-                  const started = item.status === "in_progress";
                   const subtitle = protocolSubtitle(
                     item.protocolId,
                     item.protocolName,
@@ -173,13 +172,11 @@ export function InviteHub({ invite }: { invite: PublicProtocolInviteDTO }) {
                               {item.protocolName}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {started
-                                ? `${item.answeredCount}/${item.totalCount} respondidas`
-                                : subtitle ?? "Ainda não iniciada"}
+                              {subtitle ?? `${item.totalCount} questões`}
                             </p>
                           </div>
                           <span className="inline-flex shrink-0 items-center gap-0.5 text-sm font-medium text-primary">
-                            {started ? "Continuar" : "Responder"}
+                            Responder
                             <ChevronRight className="size-4" />
                           </span>
                         </Link>

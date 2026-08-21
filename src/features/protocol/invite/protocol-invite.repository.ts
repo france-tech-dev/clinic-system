@@ -94,13 +94,6 @@ export const protocolInviteRepository = {
     });
   },
 
-  async updateItemResponses(itemId: string, responses: string, status: string) {
-    return db.protocolInviteItem.update({
-      where: { id: itemId },
-      data: { responses, status },
-    });
-  },
-
   async submitItem(data: {
     itemId: string;
     organizationId: string;

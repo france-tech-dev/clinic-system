@@ -1,14 +1,10 @@
-export type ProtocolInviteItemStatus =
-  | "pending"
-  | "in_progress"
-  | "submitted";
+export type ProtocolInviteItemStatus = "pending" | "submitted";
 
 export type ProtocolInviteItemDTO = {
   id: string;
   protocolId: string;
   protocolName: string;
   status: ProtocolInviteItemStatus;
-  answeredCount: number;
   totalCount: number;
   submittedAt: string | null;
 };
@@ -50,5 +46,4 @@ export type PublicProtocolInviteInstrumentDTO = {
   status: ProtocolInviteItemStatus;
   responses: Record<string, number | string | null>;
   submittedAt: string | null;
-  scale: "pedi" | "spm";
 };

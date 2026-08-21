@@ -56,7 +56,7 @@ describe("item protocol responses", () => {
     expect(schema.safeParse({ "a-01": 1, "a-02": 0 }).success).toBe(true);
   });
 
-  it("ignora valores inválidos ao parsear rascunho", () => {
+  it("ignora valores inválidos ao parsear respostas", () => {
     const parsed = parseItemProtocolResponses(sampleTemplate, {
       "a-01": 1,
       "a-02": 9,
@@ -75,7 +75,7 @@ describe("computeInviteFlags", () => {
         {
           revokedAt: null,
           expiresAt: new Date("2026-09-21T12:00:00.000Z"),
-          itemStatuses: ["pending", "in_progress"],
+          itemStatuses: ["pending", "pending"],
         },
         now,
       ),
