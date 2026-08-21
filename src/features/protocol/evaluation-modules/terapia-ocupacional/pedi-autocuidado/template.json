@@ -1,0 +1,387 @@
+{
+  "scale": "pedi",
+  "sections": [
+    {
+      "id": "a",
+      "title": "TEXTURA DOS ALIMENTOS",
+      "items": [
+        {
+          "id": "a-01",
+          "label": "Come alimento batido/amassado/coado"
+        },
+        {
+          "id": "a-02",
+          "label": "Come alimento moído/granulado"
+        },
+        {
+          "id": "a-03",
+          "label": "Come alimento picado/em pedaços"
+        },
+        {
+          "id": "a-04",
+          "label": "Come comidas de texturas variadas"
+        }
+      ]
+    },
+    {
+      "id": "b",
+      "title": "UTILIZAÇÃO DE UTENSILIOS",
+      "items": [
+        {
+          "id": "b-01",
+          "label": "Alimenta-se com os dedos"
+        },
+        {
+          "id": "b-02",
+          "label": "Pega comida com colher e leva até a boca"
+        },
+        {
+          "id": "b-03",
+          "label": "Usa bem a colher"
+        },
+        {
+          "id": "b-04",
+          "label": "Usa bem o garfo"
+        },
+        {
+          "id": "b-05",
+          "label": "Usa faca para passar manteiga no pão, corta alimentos macios"
+        }
+      ]
+    },
+    {
+      "id": "c",
+      "title": "UTILIZAÇÃO DE RECIPIENTES DE BEBER",
+      "items": [
+        {
+          "id": "c-01",
+          "label": "Segura mamadeira ou copo com bico ou canudo"
+        },
+        {
+          "id": "c-02",
+          "label": "Levanta copo para beber, mas pode derramar"
+        },
+        {
+          "id": "c-03",
+          "label": "Levanta, c/ firmeza, copo sem tampa, usando as 2 mãos"
+        },
+        {
+          "id": "c-04",
+          "label": "Levanta, c/ firmeza, copo sem tampa, usando 1 das mãos"
+        },
+        {
+          "id": "c-05",
+          "label": "Serve-se de líquidos de uma jarra ou embalagem"
+        }
+      ]
+    },
+    {
+      "id": "d",
+      "title": "HIGIENE ORAL",
+      "items": [
+        {
+          "id": "d-01",
+          "label": "Abre a boca para a limpeza dos dentes"
+        },
+        {
+          "id": "d-02",
+          "label": "Segura escova de dente"
+        },
+        {
+          "id": "d-03",
+          "label": "Escova os dentes, porém sem escovação completa"
+        },
+        {
+          "id": "d-04",
+          "label": "Escova os dentes completamente"
+        },
+        {
+          "id": "d-05",
+          "label": "Coloca creme dental na escova"
+        }
+      ]
+    },
+    {
+      "id": "e",
+      "title": "CUIDADOS COM OS CABELOS",
+      "items": [
+        {
+          "id": "e-01",
+          "label": "Mantém a cabeça estável enquanto o cabelo é penteado"
+        },
+        {
+          "id": "e-02",
+          "label": "Leva pente ou escova até o cabelo"
+        },
+        {
+          "id": "e-03",
+          "label": "Escova ou penteia o cabelo"
+        },
+        {
+          "id": "e-04",
+          "label": "É capaz de desembaraçar e partir o cabelo"
+        }
+      ]
+    },
+    {
+      "id": "f",
+      "title": "CUIDADOS COM O NARIZ",
+      "items": [
+        {
+          "id": "f-01",
+          "label": "Permite que o nariz seja limpo"
+        },
+        {
+          "id": "f-02",
+          "label": "Assoa o nariz com lenço"
+        },
+        {
+          "id": "f-03",
+          "label": "Limpa nariz usando lenço ou papel quando solicitado"
+        },
+        {
+          "id": "f-04",
+          "label": "Limpa nariz usando lenço ou papel sem ser solicitado"
+        },
+        {
+          "id": "f-05",
+          "label": "Limpa e assoa o nariz sem ser solicitado"
+        }
+      ]
+    },
+    {
+      "id": "g",
+      "title": "LAVAR AS MÃOS",
+      "items": [
+        {
+          "id": "g-01",
+          "label": "Mantém as mãos elevadas para que as mesmas sejam lavadas"
+        },
+        {
+          "id": "g-02",
+          "label": "Esfrega as mãos uma na outra para limpá-las"
+        },
+        {
+          "id": "g-03",
+          "label": "Abre e fecha torneira e utiliza sabão"
+        },
+        {
+          "id": "g-04",
+          "label": "Lava as mãos completamente"
+        },
+        {
+          "id": "g-05",
+          "label": "Seca as mãos completamente"
+        }
+      ]
+    },
+    {
+      "id": "h",
+      "title": "LAVAR O CORPO E A FACE",
+      "items": [
+        {
+          "id": "h-01",
+          "label": "Tenta lavar partes do corpo"
+        },
+        {
+          "id": "h-02",
+          "label": "Lava o corpo completamente, não incluindo a face"
+        },
+        {
+          "id": "h-03",
+          "label": "Utiliza sabonete (e esponja, se for costume)"
+        },
+        {
+          "id": "h-04",
+          "label": "Seca o corpo completamente"
+        },
+        {
+          "id": "h-05",
+          "label": "Lava e seca a face completamente"
+        }
+      ]
+    },
+    {
+      "id": "i",
+      "title": "AGASALHO/ VESTIMENTAS ABERTAS NA FRENTE",
+      "items": [
+        {
+          "id": "i-01",
+          "label": "Auxilia empurrando os braços para vestir a manga da camisa"
+        },
+        {
+          "id": "i-02",
+          "label": "Retira camisetas, vestido ou agasalho sem fecho"
+        },
+        {
+          "id": "i-03",
+          "label": "Coloca camiseta, vestido ou agasalho sem fecho"
+        },
+        {
+          "id": "i-04",
+          "label": "Coloca e retira camisas abertas na frente, porém s/ fechar"
+        },
+        {
+          "id": "i-05",
+          "label": "Coloca e retira camisas abertas na frente, fechando-as"
+        }
+      ]
+    },
+    {
+      "id": "j",
+      "title": "FECHOS",
+      "items": [
+        {
+          "id": "j-01",
+          "label": "Tenta participar no fechamento de vestimentas"
+        },
+        {
+          "id": "j-02",
+          "label": "Abre e fecha fecho de correr, sem separá-lo ou fechar o botão"
+        },
+        {
+          "id": "j-03",
+          "label": "Abre e fecha colchete de pressão"
+        },
+        {
+          "id": "j-04",
+          "label": "Abotoa e desabotoa"
+        },
+        {
+          "id": "j-05",
+          "label": "Abre e fecha o fecho de correr (zíper), separando e fechando colchete/botão"
+        }
+      ]
+    },
+    {
+      "id": "k",
+      "title": "CALÇAS",
+      "items": [
+        {
+          "id": "k-01",
+          "label": "Auxilia colocando as pernas dentro da calça para vestir"
+        },
+        {
+          "id": "k-02",
+          "label": "Retira calças com elástico na cintura"
+        },
+        {
+          "id": "k-03",
+          "label": "Veste calças com elástico na cintura"
+        },
+        {
+          "id": "k-04",
+          "label": "Retira calças, incluindo abrir fechos"
+        },
+        {
+          "id": "k-05",
+          "label": "Veste calças, incluindo fechar fechos"
+        }
+      ]
+    },
+    {
+      "id": "l",
+      "title": "SAPATOS/ MEIAS",
+      "items": [
+        {
+          "id": "l-01",
+          "label": "Retira meias e abre os sapatos"
+        },
+        {
+          "id": "l-02",
+          "label": "Calça sapatos/sandálias"
+        },
+        {
+          "id": "l-03",
+          "label": "Calça meias"
+        },
+        {
+          "id": "l-04",
+          "label": "Coloca o sapato no pé correto; maneja fechos de velcro"
+        },
+        {
+          "id": "l-05",
+          "label": "Amarra sapatos (prepara cadarço)"
+        }
+      ]
+    },
+    {
+      "id": "m",
+      "title": "TAREFAS DE TOALETE (roupas, uso do banheiro e limpeza)",
+      "items": [
+        {
+          "id": "m-01",
+          "label": "Auxilia no manejo de roupas"
+        },
+        {
+          "id": "m-02",
+          "label": "Tenta limpar-se depois de utilizar o banheiro"
+        },
+        {
+          "id": "m-03",
+          "label": "Utiliza vaso sanitário, papel higiênico e dá descarga"
+        },
+        {
+          "id": "m-04",
+          "label": "Lida com roupas antes e depois de utilizar o banheiro"
+        },
+        {
+          "id": "m-05",
+          "label": "Limpa-se completamente depois de evacuar"
+        }
+      ]
+    },
+    {
+      "id": "n",
+      "title": "CONTROLE URINÁRIO (escore = 1 se a criança já é capaz)",
+      "items": [
+        {
+          "id": "n-01",
+          "label": "Indica quando molhou fralda ou calça"
+        },
+        {
+          "id": "n-02",
+          "label": "Ocasionalmente indica necessidade de urinar (durante o dia)"
+        },
+        {
+          "id": "n-03",
+          "label": "Indica, consistentemente, necessidade de urinar e com tempo de utilizar o banheiro (durante o dia)"
+        },
+        {
+          "id": "n-04",
+          "label": "Vai ao banheiro sozinho para urinar (durante o dia)"
+        },
+        {
+          "id": "n-05",
+          "label": "Mantém-se constantemente seco durante o dia e à noite"
+        }
+      ]
+    },
+    {
+      "id": "o",
+      "title": "CONTROLE INTESTINAL (escore = 1 se a criança é capaz)",
+      "items": [
+        {
+          "id": "o-01",
+          "label": "Indica necessidade de ser trocado"
+        },
+        {
+          "id": "o-02",
+          "label": "Ocasionalmente manifesta vontade de ir ao banheiro (durante o dia)"
+        },
+        {
+          "id": "o-03",
+          "label": "Indica, constantemente, necessidade de evacuar e com tempo de utilizar o banheiro (durante o dia)"
+        },
+        {
+          "id": "o-04",
+          "label": "Faz distinção entre urinar e evacuar"
+        },
+        {
+          "id": "o-05",
+          "label": "Vai ao banheiro sozinho para evacuar, não tem acidentes intestinais"
+        }
+      ]
+    }
+  ]
+}
