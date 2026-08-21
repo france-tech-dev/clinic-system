@@ -1,8 +1,8 @@
 import { db } from "@/shared/lib/prisma";
 import type {
-  BillingPlanId,
-  BillingStatusId,
-} from "@/shared/constants/billing-plans";
+  BillingPlan,
+  BillingStatus,
+} from "../../../prisma/generated/prisma/enums";
 
 export type PlatformOrganizationRow = {
   id: string;
@@ -10,8 +10,8 @@ export type PlatformOrganizationRow = {
   slug: string;
   createdAt: Date;
   billingExempt: boolean;
-  billingStatus: BillingStatusId | null;
-  billingPlan: BillingPlanId | null;
+  billingStatus: BillingStatus | null;
+  billingPlan: BillingPlan | null;
   trialEndsAt: Date | null;
 };
 
@@ -38,9 +38,9 @@ export async function listPlatformOrganizations(): Promise<
     slug: row.slug,
     createdAt: row.createdAt,
     billingExempt: row.billingExempt,
-    billingStatus: (row.billing?.status as BillingStatusId | undefined) ?? null,
+    billingStatus: (row.billing?.status as BillingStatus | undefined) ?? null,
     billingPlan:
-      (row.billing?.plan as BillingPlanId | null | undefined) ?? null,
+      (row.billing?.plan as BillingPlan | null | undefined) ?? null,
     trialEndsAt: row.billing?.trialEndsAt ?? null,
   }));
 }

@@ -2,6 +2,7 @@
 
 import { db } from "@/shared/lib/prisma";
 import { getCurrentUser } from "../auth/users";
+import { MemberStatus } from "../../../prisma/generated/prisma/enums";
 
 export async function getOrganizations() {
   const { user } = await getCurrentUser();
@@ -11,7 +12,7 @@ export async function getOrganizations() {
       members: {
         some: {
           userId: user.id,
-          status: "active",
+          status: MemberStatus.ACTIVE,
         },
       },
     },

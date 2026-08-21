@@ -3,11 +3,14 @@ import {
   GATED_FEATURES,
   resolveBillingAccess,
   type BillingAccess,
-  type BillingPlanId,
-  type BillingStatusId,
 } from "@/shared/constants/billing-plans";
 import { canAccessClinicPanel } from "@/shared/lib/member-role";
-import type { Role } from "../../../prisma/generated/prisma/enums";
+import {
+  BillingPlan,
+  BillingStatus,
+  MemberStatus,
+  type Role,
+} from "../../../prisma/generated/prisma/enums";
 
 const EXEMPT_ACCESS: BillingAccess = {
   mode: "full",
@@ -38,8 +41,8 @@ export async function getBillingAccess(
   return resolveBillingAccess(
     org.billing
       ? {
-          status: org.billing.status as BillingStatusId,
-          plan: org.billing.plan as BillingPlanId | null,
+          status: org.billing.status as BillingStatus,
+          plan: org.billing.plan as BillingPlan | null,
           trialEndsAt: org.billing.trialEndsAt,
         }
       : null,
@@ -50,7 +53,7 @@ export async function countBillableProfessionals(
   organizationId: string,
 ): Promise<number> {
   const members = await db.member.findMany({
-    where: { organizationId, status: "active" },
+    where: { organizationId, status: MemberStatus.ACTIVE },
     select: { role: true },
   });
 

@@ -1,9 +1,13 @@
 import {
   TRIAL_DAYS,
-  type BillingStatusId,
 } from "@/shared/constants/billing-plans";
 import { db } from "@/shared/lib/prisma";
-import { getStripe, getStripePriceId } from "@/shared/lib/stripe";
+import {
+  getStripe,
+  getStripePriceId,
+  mapStripeSubscriptionStatus,
+} from "@/shared/lib/stripe";
+import { BillingPlan } from "../../../prisma/generated/prisma/enums";
 
 export async function startOrganizationTrial(
   organizationId: string,
@@ -19,7 +23,7 @@ export async function startOrganizationTrial(
   if (!org || org.billingExempt || org.billing) return;
 
   const stripe = getStripe();
-  const starterPriceId = getStripePriceId("starter");
+  const starterPriceId = getStripePriceId(BillingPlan.STARTER);
   if (!stripe || !starterPriceId) {
     console.warn(
       "[billing] Stripe não configurado — trial não iniciado para",
@@ -43,7 +47,7 @@ export async function startOrganizationTrial(
     metadata: { organizationId },
   });
 
-  const status = subscription.status as BillingStatusId;
+  const status = mapStripeSubscriptionStatus(subscription.status);
   const trialEndsAt = subscription.trial_end
     ? new Date(subscription.trial_end * 1000)
     : null;
