@@ -1,12 +1,15 @@
 import Stripe from "stripe";
-import { BillingPlan, BillingStatus } from "../../../prisma/generated/prisma/enums";
+import { env } from "@/shared/env";
+import {
+  BillingPlan,
+  BillingStatus,
+} from "../../../prisma/generated/prisma/enums";
 
 let client: Stripe | null | undefined;
 
 export function getStripe(): Stripe | null {
   if (client !== undefined) return client;
-  const key = process.env.STRIPE_SECRET_KEY;
-  client = key ? new Stripe(key) : null;
+  client = env.STRIPE_SECRET_KEY ? new Stripe(env.STRIPE_SECRET_KEY) : null;
   return client;
 }
 
@@ -18,40 +21,32 @@ export function requireStripe(): Stripe {
   return stripe;
 }
 
-export function getStripeWebhookSecret(): string | null {
-  return process.env.STRIPE_WEBHOOK_SECRET ?? null;
-}
-
-const PRICE_ENV: Record<BillingPlan, string> = {
-  [BillingPlan.STARTER]: "STRIPE_PRICE_STARTER",
-  [BillingPlan.PRO]: "STRIPE_PRICE_PRO",
-  [BillingPlan.ENTERPRISE]: "STRIPE_PRICE_ENTERPRISE",
+const priceByPlan: Record<BillingPlan, string | undefined> = {
+  [BillingPlan.STARTER]: env.STRIPE_PRICE_STARTER,
+  [BillingPlan.PRO]: env.STRIPE_PRICE_PRO,
+  [BillingPlan.ENTERPRISE]: env.STRIPE_PRICE_ENTERPRISE,
 };
 
 export function getStripePriceId(plan: BillingPlan): string | null {
-  const value = process.env[PRICE_ENV[plan]];
-  return value || null;
+  return priceByPlan[plan] ?? null;
 }
 
 export function requireStripePriceId(plan: BillingPlan): string {
-  const priceId = getStripePriceId(plan);
+  const priceId = priceByPlan[plan];
   if (!priceId) {
-    throw new Error(`${PRICE_ENV[plan]} não está configurada.`);
+    throw new Error(`Preço Stripe em falta para o plano ${plan}.`);
   }
   return priceId;
 }
 
 export function planFromStripePriceId(priceId: string): BillingPlan | null {
-  for (const plan of Object.keys(PRICE_ENV) as BillingPlan[]) {
-    if (getStripePriceId(plan) === priceId) return plan;
-  }
-  return null;
+  const entry = (
+    Object.entries(priceByPlan) as [BillingPlan, string | undefined][]
+  ).find(([, id]) => id === priceId);
+  return entry?.[0] ?? null;
 }
 
-/**
- * Stripe uses lowercase statuses and `canceled` (one L).
- * App / Prisma use UPPERCASE and `CANCELLED` (two L).
- */
+/** Stripe: lowercase / `canceled`. App: UPPERCASE / `CANCELLED`. */
 export function mapStripeSubscriptionStatus(
   status: Stripe.Subscription.Status,
 ): BillingStatus {
