@@ -41,7 +41,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 - Node.js 20+
 - pnpm 11+
 - Conta [Brevo](https://www.brevo.com) (e-mails via SMTP)
-- Credenciais Google OAuth (opcional)
+- Credenciais Google OAuth
 
 ## Como rodar
 
@@ -49,7 +49,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 pnpm install
 ```
 
-Crie um ficheiro `.env` na raiz:
+Crie um ficheiro `.env` na raiz (validadas em `src/shared/env.ts` no boot):
 
 ```env
 BETTER_AUTH_URL="http://localhost:3000"
@@ -61,7 +61,7 @@ BREVO_SMTP_USER="o-login-smtp-do-brevo"
 BREVO_SMTP_KEY="a-chave-smtp-do-brevo"
 EMAIL_NO_REPLY="noreply@seudominio.com"
 
-# Google OAuth (opcional)
+# Google OAuth
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 
@@ -78,6 +78,9 @@ GOOGLE_CLIENT_SECRET=""
 # Staff de plataforma — acesso a /plataforma (user ids separados por vírgula)
 # PLATFORM_ADMIN_USER_IDS="user_id_1,user_id_2"
 ```
+
+Obrigatórias no boot: `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.  
+Brevo, Stripe e R2 são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2`).
 
 ```bash
 pnpm exec prisma generate
