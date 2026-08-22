@@ -97,7 +97,7 @@ pnpm db:seed
 
 - **Better Auth** — contadores em Postgres (`RateLimit`), para partilhar limites entre réplicas Docker. Defaults nos endpoints sensíveis (sign-in, reset, etc.); `/get-session` sem throttle.
 - **Accept invitation** — `assertRateLimit` na rota pública `/api/accept-invitation/[invitationId]`.
-- Em produção com proxy, configurar `ipAddress` no Better Auth quando o header de IP estiver definido.
+- Em produção (Traefik), Better Auth usa `X-Real-IP` via `advanced.ipAddress` (mesmo critério que `getRequestClientIp`).
 
 Validar localmente ou em staging:
 
