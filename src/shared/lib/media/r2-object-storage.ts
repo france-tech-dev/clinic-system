@@ -1,4 +1,5 @@
 import "server-only";
+import { env } from "@/shared/env";
 import { MEDIA_UPLOADS_PREFIX } from "./media.constants";
 import type { ObjectStorage, PutObjectInput } from "./object-storage.types";
 
@@ -13,44 +14,21 @@ export type R2ObjectStorageConfig = {
 
 /**
  * Lê env do R2. Só chamado quando OBJECT_STORAGE_DRIVER=r2.
- *
- * Variáveis:
- * - R2_ACCOUNT_ID
- * - R2_ACCESS_KEY_ID
- * - R2_SECRET_ACCESS_KEY
- * - R2_BUCKET
- * - R2_PUBLIC_BASE_URL
+ * A validação de completude já corre em `@/shared/env` no boot.
  */
 export function readR2ObjectStorageConfig(): R2ObjectStorageConfig {
-  const accountId = process.env.R2_ACCOUNT_ID?.trim() ?? "";
-  const accessKeyId = process.env.R2_ACCESS_KEY_ID?.trim() ?? "";
-  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY?.trim() ?? "";
-  const bucket = process.env.R2_BUCKET?.trim() ?? "";
-  const publicBaseUrl = (process.env.R2_PUBLIC_BASE_URL?.trim() ?? "").replace(
-    /\/$/,
-    "",
-  );
-
-  const missing = [
-    !accountId && "R2_ACCOUNT_ID",
-    !accessKeyId && "R2_ACCESS_KEY_ID",
-    !secretAccessKey && "R2_SECRET_ACCESS_KEY",
-    !bucket && "R2_BUCKET",
-    !publicBaseUrl && "R2_PUBLIC_BASE_URL",
-  ].filter(Boolean);
-
-  if (missing.length > 0) {
+  if (env.OBJECT_STORAGE_DRIVER !== "r2") {
     throw new Error(
-      `Object storage R2 incompleto. Define: ${missing.join(", ")}.`,
+      "readR2ObjectStorageConfig só deve ser chamado com OBJECT_STORAGE_DRIVER=r2.",
     );
   }
 
   return {
-    accountId,
-    accessKeyId,
-    secretAccessKey,
-    bucket,
-    publicBaseUrl,
+    accountId: env.R2_ACCOUNT_ID as string,
+    accessKeyId: env.R2_ACCESS_KEY_ID as string,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY as string,
+    bucket: env.R2_BUCKET as string,
+    publicBaseUrl: (env.R2_PUBLIC_BASE_URL as string).replace(/\/$/, ""),
   };
 }
 
@@ -63,7 +41,7 @@ export function readR2ObjectStorageConfig(): R2ObjectStorageConfig {
  * 3. Substituir o corpo de `put`/`deleteByUrl` pela implementação S3
  *    (PutObject / DeleteObject) — ver comentários abaixo.
  *
- * Mantido sem SDK até ligares o R2, para não pesar o bundle.
+ * Mantido sem SDK até ligarmos o R2, para não pesar o bundle.
  */
 export function createR2ObjectStorage(
   config: R2ObjectStorageConfig = readR2ObjectStorageConfig(),

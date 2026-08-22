@@ -19,8 +19,9 @@ import { getActiveOrganization } from "@/server/organizations/active-organizatio
 import { paths } from "@/shared/constants/paths";
 import { Role } from "../../../prisma/generated/prisma/enums";
 import { startOrganizationTrial } from "@/server/billing/start-trial";
+import { env } from "@/shared/env";
 
-const baseUrl = process.env.BETTER_AUTH_URL as string;
+const baseUrl = env.BETTER_AUTH_URL;
 const invitationAcceptUrl = (invitationId: string) =>
   `${baseUrl}${paths.api.acceptInvitation(invitationId)}`;
 
@@ -65,8 +66,8 @@ export const auth = betterAuth({
 
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
 

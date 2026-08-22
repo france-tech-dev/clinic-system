@@ -3,6 +3,7 @@ import "server-only";
 import { render } from "@react-email/render";
 import nodemailer from "nodemailer";
 import type { ReactElement } from "react";
+import { env } from "@/shared/env";
 
 type SendEmailInput = {
   to: string;
@@ -11,23 +12,23 @@ type SendEmailInput = {
 };
 
 function getTransporter() {
-  const user = process.env.BREVO_SMTP_USER;
-  const pass = process.env.BREVO_SMTP_KEY;
+  const user = env.BREVO_SMTP_USER;
+  const pass = env.BREVO_SMTP_KEY;
 
   if (!user || !pass) {
     throw new Error("BREVO_SMTP_USER and BREVO_SMTP_KEY must be set");
   }
 
   return nodemailer.createTransport({
-    host: process.env.BREVO_SMTP_HOST ?? "smtp-relay.brevo.com",
-    port: Number(process.env.BREVO_SMTP_PORT ?? 587),
+    host: env.BREVO_SMTP_HOST,
+    port: env.BREVO_SMTP_PORT,
     secure: false,
     auth: { user, pass },
   });
 }
 
 export async function sendEmail({ to, subject, react }: SendEmailInput) {
-  const from = process.env.EMAIL_NO_REPLY;
+  const from = env.EMAIL_NO_REPLY;
   if (!from) {
     throw new Error("EMAIL_NO_REPLY is not set");
   }

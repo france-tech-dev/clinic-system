@@ -17,6 +17,7 @@ import {
   BillingPlan,
   BillingStatus,
 } from "../../../prisma/generated/prisma/enums";
+import { env } from "@/shared/env";
 
 const WRITABLE_STATUSES: BillingStatus[] = [
   BillingStatus.TRIALING,
@@ -25,9 +26,7 @@ const WRITABLE_STATUSES: BillingStatus[] = [
 ];
 
 function appBaseUrl() {
-  const url = process.env.BETTER_AUTH_URL;
-  if (!url) throw new Error("BETTER_AUTH_URL não está configurada.");
-  return url.replace(/\/$/, "");
+  return env.BETTER_AUTH_URL.replace(/\/$/, "");
 }
 
 function unixToDate(value: number | null | undefined): Date | null {

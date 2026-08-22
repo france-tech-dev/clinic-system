@@ -2,6 +2,7 @@ import { PrismaClient } from "../../../prisma/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import "dotenv/config";
+import { env } from "@/shared/env";
 
 const globalForDb = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -9,12 +10,9 @@ const globalForDb = globalThis as unknown as {
 };
 
 function createPool() {
-  const connectionString = process.env.DATABASE_URL;
-  const max = Number(process.env.DATABASE_POOL_MAX ?? 10);
-
   return new Pool({
-    connectionString,
-    max,
+    connectionString: env.DATABASE_URL,
+    max: env.DATABASE_POOL_MAX,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 10_000,
   });
@@ -30,6 +28,6 @@ function createPrismaClient() {
 
 export const db = globalForDb.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
+if (env.NODE_ENV !== "production") {
   globalForDb.prisma = db;
 }
