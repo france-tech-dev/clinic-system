@@ -1,9 +1,7 @@
 import "server-only";
+import { env } from "@/shared/env";
 import { createLocalObjectStorage } from "./local-object-storage";
-import {
-  resolveObjectStorageDriver,
-  type ObjectStorage,
-} from "./object-storage.types";
+import type { ObjectStorage } from "./object-storage.types";
 import { createR2ObjectStorage } from "./r2-object-storage";
 
 const globalForStorage = globalThis as unknown as {
@@ -13,7 +11,7 @@ const globalForStorage = globalThis as unknown as {
 
 /** Singleton por processo; recria se o driver env mudar (dev). */
 export function getObjectStorage(): ObjectStorage {
-  const driver = resolveObjectStorageDriver();
+  const driver = env.OBJECT_STORAGE_DRIVER;
   if (
     globalForStorage.objectStorage &&
     globalForStorage.objectStorageDriver === driver

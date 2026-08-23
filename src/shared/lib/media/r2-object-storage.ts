@@ -8,14 +8,11 @@ export type R2ObjectStorageConfig = {
   accessKeyId: string;
   secretAccessKey: string;
   bucket: string;
-  /** Base pública sem barra final, ex. https://cdn.exemplo.com ou https://pub-xxx.r2.dev */
+  /** Base pública sem barra final, ex. https://cdn.exemplo.com */
   publicBaseUrl: string;
 };
 
-/**
- * Lê env do R2. Só chamado quando OBJECT_STORAGE_DRIVER=r2.
- * A validação de completude já corre em `@/shared/env` no boot.
- */
+/** Só chamar com OBJECT_STORAGE_DRIVER=r2 (já validado no boot via env). */
 export function readR2ObjectStorageConfig(): R2ObjectStorageConfig {
   if (env.OBJECT_STORAGE_DRIVER !== "r2") {
     throw new Error(
@@ -32,22 +29,10 @@ export function readR2ObjectStorageConfig(): R2ObjectStorageConfig {
   };
 }
 
-/**
- * Driver R2 (S3-compatible).
- *
- * Activação:
- * 1. `pnpm add @aws-sdk/client-s3`
- * 2. `OBJECT_STORAGE_DRIVER=r2` + variáveis R2_*
- * 3. Substituir o corpo de `put`/`deleteByUrl` pela implementação S3
- *    (PutObject / DeleteObject) — ver comentários abaixo.
- *
- * Mantido sem SDK até ligarmos o R2, para não pesar o bundle.
- */
+/** Stub até ligar `@aws-sdk/client-s3` + PutObject/DeleteObject. */
 export function createR2ObjectStorage(
   config: R2ObjectStorageConfig = readR2ObjectStorageConfig(),
 ): ObjectStorage {
-  const endpoint = `https://${config.accountId}.r2.cloudflarestorage.com`;
-
   function isR2ManagedUrl(url: string | null | undefined): boolean {
     if (!url) return false;
     return (
@@ -57,46 +42,16 @@ export function createR2ObjectStorage(
   }
 
   return {
-    async put(input: PutObjectInput) {
-      void endpoint;
-      void input;
-      /*
-        const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
-        const client = new S3Client({
-          region: "auto",
-          endpoint,
-          credentials: {
-            accessKeyId: config.accessKeyId,
-            secretAccessKey: config.secretAccessKey,
-          },
-        });
-        await client.send(
-          new PutObjectCommand({
-            Bucket: config.bucket,
-            Key: input.key,
-            Body: input.body,
-            ContentType: input.contentType,
-          }),
-        );
-        return { url: `${config.publicBaseUrl}/${input.key}` };
-      */
+    async put(_input: PutObjectInput) {
       throw new Error(
-        "R2 ainda não ligado. Instala `@aws-sdk/client-s3` e activa o código em `r2-object-storage.ts` (funções put/deleteByUrl).",
+        "R2 ainda não ligado. Instala `@aws-sdk/client-s3` e implementa put/deleteByUrl em r2-object-storage.ts.",
       );
     },
 
     async deleteByUrl(url: string) {
       if (!isR2ManagedUrl(url)) return;
-      void endpoint;
-      void url;
-      /*
-        const key = url.slice(config.publicBaseUrl.length + 1);
-        const { S3Client, DeleteObjectCommand } = await import("@aws-sdk/client-s3");
-        ...
-        await client.send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }));
-      */
       throw new Error(
-        "R2 ainda não ligado. Instala `@aws-sdk/client-s3` e activa o código em `r2-object-storage.ts`.",
+        "R2 ainda não ligado. Instala `@aws-sdk/client-s3` e implementa put/deleteByUrl em r2-object-storage.ts.",
       );
     },
 

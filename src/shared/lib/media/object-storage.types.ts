@@ -1,5 +1,4 @@
 import "server-only";
-import { env } from "@/shared/env";
 
 export type PutObjectInput = {
   /** Path relativo estável, ex. uploads/organizations/{id}/logo.webp */
@@ -20,7 +19,3 @@ export type ObjectStorage = {
 };
 
 export type ObjectStorageDriver = "local" | "r2";
-
-export function resolveObjectStorageDriver(): ObjectStorageDriver {
-  return env.OBJECT_STORAGE_DRIVER;
-}

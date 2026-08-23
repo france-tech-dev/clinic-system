@@ -12,7 +12,6 @@ export {
 } from "./media.constants";
 export { getObjectStorage } from "./object-storage";
 export {
-  resolveObjectStorageDriver,
   type ObjectStorage,
   type ObjectStorageDriver,
   type PutObjectInput,
