@@ -60,9 +60,11 @@ const envSchema = z
 
 export type Env = z.infer<typeof envSchema>;
 
+const skipValidation = process.env.SKIP_ENV_VALIDATION === "true";
+
 const parsed = envSchema.safeParse(process.env);
 
-if (!parsed.success) {
+if (!parsed.success && !skipValidation) {
   const lines = parsed.error.issues.map((issue) => {
     const path = issue.path.length > 0 ? issue.path.join(".") : "(root)";
     return `  - ${path}: ${issue.message}`;
@@ -70,4 +72,4 @@ if (!parsed.success) {
   throw new Error(`Variáveis de ambiente inválidas:\n${lines.join("\n")}`);
 }
 
-export const env = parsed.data;
+export const env = (parsed.success ? parsed.data : process.env) as Env;
