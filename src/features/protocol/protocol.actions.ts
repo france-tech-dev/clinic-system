@@ -19,6 +19,7 @@ import {
   createProtocolEvaluation,
   deleteProtocolEvaluation,
   getProtocolEvaluation,
+  getProtocolEvaluationPreview,
   listProtocolEvaluations,
   resolveProtocolAuthorMemberId,
   updateProtocolEvaluation,
@@ -26,6 +27,7 @@ import {
 import type {
   ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
+  ProtocolEvaluationPreviewDTO,
 } from "./protocol.types";
 
 function handleError(error: unknown): ActionResult<never> {
@@ -54,6 +56,43 @@ export async function listProtocolEvaluationsAction(
       parsed.data.patientId,
       parsed.data.protocolId,
     );
+    return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function getProtocolEvaluationAction(
+  input: unknown,
+): Promise<ActionResult<ProtocolEvaluationDTO>> {
+  try {
+    await requirePermission({ project: ["read"] });
+    const parsed = protocolEvaluationIdSchema.safeParse(input);
+    if (!parsed.success) return fail("Dados inválidos");
+
+    const { organizationId } = await requireOrgId();
+    const data = await getProtocolEvaluation(organizationId, parsed.data.id);
+    if (!data) return fail("Avaliação não encontrada");
+    return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function getProtocolEvaluationPreviewAction(
+  input: unknown,
+): Promise<ActionResult<ProtocolEvaluationPreviewDTO>> {
+  try {
+    await requirePermission({ project: ["read"] });
+    const parsed = protocolEvaluationIdSchema.safeParse(input);
+    if (!parsed.success) return fail("Dados inválidos");
+
+    const { organizationId } = await requireOrgId();
+    const data = await getProtocolEvaluationPreview(
+      organizationId,
+      parsed.data.id,
+    );
+    if (!data) return fail("Avaliação não encontrada");
     return ok(data);
   } catch (error) {
     return handleError(error);

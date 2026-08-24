@@ -30,3 +30,19 @@ export type ProtocolEvaluationComparisonDTO = {
   }[];
   overallDeltaPercent: number;
 };
+
+export type ProtocolEvaluationPreviewDTO = {
+  id: string;
+  protocolId: string;
+  protocolName: string;
+  date: string;
+  sections: Array<{
+    id: string;
+    title: string;
+    items: Array<{
+      id: string;
+      label: string;
+      valueLabel: string;
+    }>;
+  }>;
+};

@@ -3,6 +3,11 @@ import {
   summarizeGmfm88,
   type Gmfm88Scores,
 } from "./evaluation-modules/fisioterapia/gmfm-88/scoring";
+import { getEvaluationModule } from "./evaluation-modules/registry";
+import {
+  ITEM_SCALE_OPTIONS,
+  type ItemResponseValue,
+} from "./evaluation-modules/_shared/item-scale";
 import { protocolRepository } from "./protocol.repository";
 import type {
   ProtocolEvaluationFormInput,
@@ -11,6 +16,7 @@ import type {
 import type {
   ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
+  ProtocolEvaluationPreviewDTO,
 } from "./protocol.types";
 
 function parseScores(raw: string): Record<string, number | string | null> {
@@ -81,6 +87,49 @@ export async function getProtocolEvaluation(
   return row ? toDTO(row) : null;
 }
 
+export async function getProtocolEvaluationPreview(
+  organizationId: string,
+  id: string,
+): Promise<ProtocolEvaluationPreviewDTO | null> {
+  const row = await protocolRepository.findById(organizationId, id);
+  if (!row) return null;
+  const dto = toDTO(row);
+  const mod = getEvaluationModule(dto.protocolId);
+  const template = mod?.template;
+  if (!template) {
+    return {
+      id: dto.id,
+      protocolId: dto.protocolId,
+      protocolName: mod?.name ?? dto.label,
+      date: dto.date,
+      sections: [],
+    };
+  }
+
+  const options = ITEM_SCALE_OPTIONS[template.scale];
+  function valueLabel(raw: unknown): string {
+    if (raw === null || raw === undefined) return "—";
+    const opt = options.find((o) => String(o.value) === String(raw));
+    return opt ? `${opt.value} · ${opt.label}` : String(raw);
+  }
+
+  return {
+    id: dto.id,
+    protocolId: dto.protocolId,
+    protocolName: mod.name,
+    date: dto.date,
+    sections: template.sections.map((section) => ({
+      id: section.id,
+      title: section.title,
+      items: section.items.map((item) => ({
+        id: item.id,
+        label: item.label,
+        valueLabel: valueLabel(dto.scores[item.id] as ItemResponseValue | null),
+      })),
+    })),
+  };
+}
+
 export async function createProtocolEvaluation(
   organizationId: string,
   data: ProtocolEvaluationFormInput,
@@ -140,7 +189,6 @@ export async function compareProtocolEvaluations(
     baseline,
     followUp,
     domainDeltas,
-    overallDeltaPercent:
-      followUp.summary.percent - baseline.summary.percent,
+    overallDeltaPercent: followUp.summary.percent - baseline.summary.percent,
   };
 }
