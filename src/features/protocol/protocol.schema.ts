@@ -5,13 +5,7 @@ import {
 } from "./evaluation-modules/fisioterapia/gmfm-88/template";
 import { SPM_SCALE_VALUES } from "./evaluation-modules/_shared/item-scale";
 
-const gmfmScoreSchema = z
-  .number()
-  .int()
-  .min(0)
-  .max(3)
-  .nullable()
-  .optional();
+const gmfmScoreSchema = z.number().int().min(0).max(3).nullable().optional();
 
 const gmfmScoresSchema = z
   .record(z.string(), gmfmScoreSchema)
@@ -28,8 +22,9 @@ const gmfmScoresSchema = z
     }
   });
 
+/** PEDI (0–1) e Perfil Sensorial (0–5); SPM usa letras N/O/F/S. */
 const itemProtocolScoreSchema = z.union([
-  z.number().int().min(0).max(1),
+  z.number().int().min(0).max(5),
   z.enum(SPM_SCALE_VALUES),
   z.null(),
 ]);

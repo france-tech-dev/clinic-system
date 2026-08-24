@@ -1,0 +1,263 @@
+{
+  "scale": "perfil-sensorial",
+  "sections": [
+    {
+      "id": "processamento-geral",
+      "title": "Processamento GERAL",
+      "items": [
+        {
+          "id": "processamento-geral-01",
+          "label": "precisa de uma rotina para permanecer satisfeito(a) ou calmo(a)."
+        },
+        {
+          "id": "processamento-geral-02",
+          "label": "age de uma forma que interfere nas programações e planos da família."
+        },
+        {
+          "id": "processamento-geral-03",
+          "label": "resiste em brincar no meio de outras crianças."
+        },
+        {
+          "id": "processamento-geral-04",
+          "label": "leva mais tempo do que crianças da mesma idade para responder a perguntas ou ações."
+        },
+        {
+          "id": "processamento-geral-05",
+          "label": "se afasta de situações."
+        },
+        {
+          "id": "processamento-geral-06",
+          "label": "tem um padrão de sono imprevisível."
+        },
+        {
+          "id": "processamento-geral-07",
+          "label": "tem um padrão de alimentação imprevisível."
+        },
+        {
+          "id": "processamento-geral-08",
+          "label": "é despertado(a) facilmente."
+        },
+        {
+          "id": "processamento-geral-09",
+          "label": "não faz contato visual comigo durante interações no dia a dia."
+        },
+        {
+          "id": "processamento-geral-10",
+          "label": "fica ansioso(a) em situações novas."
+        }
+      ]
+    },
+    {
+      "id": "processamento-auditivo",
+      "title": "Processamento AUDITIVO",
+      "items": [
+        {
+          "id": "processamento-auditivo-01",
+          "label": "presta atenção apenas se eu falar alto."
+        },
+        {
+          "id": "processamento-auditivo-02",
+          "label": "presta atenção apenas quando eu o toco (e a audição é normal)."
+        },
+        {
+          "id": "processamento-auditivo-03",
+          "label": "se assusta facilmente com sons, em comparação com crianças da mesma idade (por exemplo, cachorro latindo, crianças gritando)."
+        },
+        {
+          "id": "processamento-auditivo-04",
+          "label": "se distrai em condições barulhentas."
+        },
+        {
+          "id": "processamento-auditivo-05",
+          "label": "ignora sons, incluindo a minha voz."
+        },
+        {
+          "id": "processamento-auditivo-06",
+          "label": "fica chateado(a) ou tenta escapar de condições barulhentas."
+        },
+        {
+          "id": "processamento-auditivo-07",
+          "label": "leva bastante tempo para responder ao próprio nome."
+        }
+      ]
+    },
+    {
+      "id": "processamento-visual",
+      "title": "Processamento VISUAL",
+      "items": [
+        {
+          "id": "processamento-visual-01",
+          "label": "gosta de olhar para objetos em movimento ou rotação (por exemplo, ventiladores de teto, brinquedos com rodas)."
+        },
+        {
+          "id": "processamento-visual-02",
+          "label": "gosta de olhar para objetos brilhantes."
+        },
+        {
+          "id": "processamento-visual-03",
+          "label": "é atraído(a) por telas de TV ou de computador com desenhos intensamente coloridos, em ritmo acelerado."
+        },
+        {
+          "id": "processamento-visual-04",
+          "label": "se assusta com luzes brilhantes ou imprevisíveis (por exemplo, ao se deslocar de um ambiente interno a um externo)."
+        },
+        {
+          "id": "processamento-visual-05",
+          "label": "se incomoda com luzes brilhantes (por exemplo, se esconde da luz solar que reluz através da janela do carro)."
+        },
+        {
+          "id": "processamento-visual-06",
+          "label": "se incomoda mais com luzes brilhantes do que outras crianças da mesma idade."
+        },
+        {
+          "id": "processamento-visual-07",
+          "label": "empurra brinquedos de coloração brilhante para longe de si."
+        },
+        {
+          "id": "processamento-visual-08",
+          "label": "não responde à sua imagem no espelho."
+        }
+      ]
+    },
+    {
+      "id": "processamento-do-tato",
+      "title": "Processamento do TATO",
+      "items": [
+        {
+          "id": "processamento-do-tato-01",
+          "label": "fica incomodado(a) quando suas unhas são aparadas."
+        },
+        {
+          "id": "processamento-do-tato-02",
+          "label": "resiste a ser abraçado."
+        },
+        {
+          "id": "processamento-do-tato-03",
+          "label": "se incomoda ao se deslocar entre espaços com temperaturas muito diferentes (por exemplo, mais frio, mais morno)."
+        },
+        {
+          "id": "processamento-do-tato-04",
+          "label": "se afasta após ter contato com superfícies ásperas, frias ou grudentas (por exemplo, carpete, bancadas)."
+        },
+        {
+          "id": "processamento-do-tato-05",
+          "label": "esbarra em coisas, sem conseguir notar objetos ou pessoas no caminho."
+        },
+        {
+          "id": "processamento-do-tato-06",
+          "label": "remove roupas ou resiste a vesti-las."
+        },
+        {
+          "id": "processamento-do-tato-07",
+          "label": "gosta de brincar de espirrar água durante o banho ou na natação."
+        },
+        {
+          "id": "processamento-do-tato-08",
+          "label": "se incomoda se suas próprias roupas, mãos ou rosto estão sujos."
+        },
+        {
+          "id": "processamento-do-tato-09",
+          "label": "demonstra ansiedade ao caminhar ou engatinhar em certas superfícies (por exemplo, grama, areia, carpete, azulejos)."
+        },
+        {
+          "id": "processamento-do-tato-10",
+          "label": "se afasta de toques inesperados."
+        }
+      ]
+    },
+    {
+      "id": "processamento-de-movimentos",
+      "title": "Processamento de MOVIMENTOS",
+      "items": [
+        {
+          "id": "processamento-de-movimentos-01",
+          "label": "gosta de atividade física (por exemplo, pular, ser erguido(a) bem alto)."
+        },
+        {
+          "id": "processamento-de-movimentos-02",
+          "label": "gosta de atividades rítmicas (por exemplo, balançar, ser embalado, passeios de carro)."
+        },
+        {
+          "id": "processamento-de-movimentos-03",
+          "label": "se arrisca ao se movimentar ou escalar."
+        },
+        {
+          "id": "processamento-de-movimentos-04",
+          "label": "se incomoda quando colocado(a) de barriga para cima (por exemplo, para ser trocado(a))."
+        },
+        {
+          "id": "processamento-de-movimentos-05",
+          "label": "parece ter propensão para acidentes ou ser desastrado(a)."
+        },
+        {
+          "id": "processamento-de-movimentos-06",
+          "label": "reclama quando é movimentado(a) (por exemplo, ao caminhar, ao ser entregue para outra pessoa)."
+        }
+      ]
+    },
+    {
+      "id": "processamento-de-sensibilidade-oral",
+      "title": "Processamento de SENSIBILIDADE ORAL",
+      "items": [
+        {
+          "id": "processamento-de-sensibilidade-oral-01",
+          "label": "mostra uma aversão evidente à maioria dos alimentos, com exceção de algumas opções."
+        },
+        {
+          "id": "processamento-de-sensibilidade-oral-02",
+          "label": "baba."
+        },
+        {
+          "id": "processamento-de-sensibilidade-oral-03",
+          "label": "prefere uma textura de alimentos (por exemplo, macio, crocante)."
+        },
+        {
+          "id": "processamento-de-sensibilidade-oral-04",
+          "label": "bebe para se acalmar."
+        },
+        {
+          "id": "processamento-de-sensibilidade-oral-05",
+          "label": "tem ânsia de vômito com alimentos ou bebidas."
+        },
+        {
+          "id": "processamento-de-sensibilidade-oral-06",
+          "label": "mantém a comida nas bochechas antes de engolir."
+        },
+        {
+          "id": "processamento-de-sensibilidade-oral-07",
+          "label": "apresenta dificuldade na transição do leite materno para a alimentação sólida."
+        }
+      ]
+    },
+    {
+      "id": "respostas-comportamentais-associadas-ao-processamento-sensorial",
+      "title": "Respostas COMPORTAMENTAIS associadas ao processamento sensorial",
+      "items": [
+        {
+          "id": "respostas-comportamentais-associadas-ao-processamento-sensorial-01",
+          "label": "faz birra."
+        },
+        {
+          "id": "respostas-comportamentais-associadas-ao-processamento-sensorial-02",
+          "label": "é muito apegado e dependente."
+        },
+        {
+          "id": "respostas-comportamentais-associadas-ao-processamento-sensorial-03",
+          "label": "se acalma somente quando é segurado(a) no colo."
+        },
+        {
+          "id": "respostas-comportamentais-associadas-ao-processamento-sensorial-04",
+          "label": "mostra inquietude ou irritabilidade."
+        },
+        {
+          "id": "respostas-comportamentais-associadas-ao-processamento-sensorial-05",
+          "label": "se incomoda com novos ambientes."
+        },
+        {
+          "id": "respostas-comportamentais-associadas-ao-processamento-sensorial-06",
+          "label": "fica tão incomodado(a) em novos ambientes que se torna difícil de acalmá-lo(a)."
+        }
+      ]
+    }
+  ]
+}

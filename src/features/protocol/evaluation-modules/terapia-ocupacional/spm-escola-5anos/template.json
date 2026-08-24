@@ -1,0 +1,301 @@
+{
+  "scale": "spm",
+  "sections": [
+    {
+      "id": "participacao-social",
+      "title": "participação social",
+      "items": [
+        {
+          "id": "participacao-social-01",
+          "label": "Sabe trabalhar em grupo; é solícito com outros."
+        },
+        {
+          "id": "participacao-social-02",
+          "label": "Resolve conflitos com colegas sem a intervenção do professor."
+        },
+        {
+          "id": "participacao-social-03",
+          "label": "Lida com frustrações sem explosões ou comportamento agressivo."
+        },
+        {
+          "id": "participacao-social-04",
+          "label": "Participa espontaneamente com colegas em uma variedade de jogos e atividades."
+        },
+        {
+          "id": "participacao-social-05",
+          "label": "Participa da brincadeira sem interromper seu andamento."
+        },
+        {
+          "id": "participacao-social-06",
+          "label": "Tem amigos e escolhe estar com eles quando possível."
+        },
+        {
+          "id": "participacao-social-07",
+          "label": "Compreende e usa de humor quando brinca com amigos."
+        },
+        {
+          "id": "participacao-social-08",
+          "label": "Mantém apropriadamente seu \"espaço pessoal\" (não fica muito próximo quando conversa)."
+        },
+        {
+          "id": "participacao-social-09",
+          "label": "Mantém contato visual apropriado durante a conversa."
+        },
+        {
+          "id": "participacao-social-10",
+          "label": "Muda os tópicos das conversas de acordo com o interesse dos colegas; não fica preso a um tópico só."
+        }
+      ]
+    },
+    {
+      "id": "visao",
+      "title": "visão",
+      "items": [
+        {
+          "id": "visao-01",
+          "label": "Aperta, cobre os olhos ou reclama da claridade da sala de aula ou o brilho do sol."
+        },
+        {
+          "id": "visao-02",
+          "label": "Fica incomodado com o movimento de objetos."
+        },
+        {
+          "id": "visao-03",
+          "label": "Se distrai com estímulo visual próximo (figuras, objetos em estantes, janelas, outras crianças)."
+        },
+        {
+          "id": "visao-04",
+          "label": "Durante a instrução ou um anúncio, olha ao redor ou para os colegas ao invés de olhar para a pessoa que fala ou para o quadro negro."
+        },
+        {
+          "id": "visao-05",
+          "label": "Gira ou movimenta subitamente objetos em frente aos olhos."
+        },
+        {
+          "id": "visao-06",
+          "label": "Olha fixamente para pessoas ou objetos."
+        },
+        {
+          "id": "visao-07",
+          "label": "Fica incomodado quando as luzes diminuem no cinema ou teatro."
+        }
+      ]
+    },
+    {
+      "id": "audicao",
+      "title": "audição",
+      "items": [
+        {
+          "id": "audicao-01",
+          "label": "Se incomoda com sons altos (batidas de portas, furadeiras, apontador elétrico)."
+        },
+        {
+          "id": "audicao-02",
+          "label": "Se incomoda com o som de música ou instrumentos musicais."
+        },
+        {
+          "id": "audicao-03",
+          "label": "Não responde a vozes ou novos sons."
+        },
+        {
+          "id": "audicao-04",
+          "label": "Não consegue determinar a localização de vozes ou sons."
+        },
+        {
+          "id": "audicao-05",
+          "label": "Faz barulhos, assobia, canta ou grita enquanto a classe está em silêncio."
+        },
+        {
+          "id": "audicao-06",
+          "label": "Fala muito alto ou faz muito barulho durante o recreio."
+        },
+        {
+          "id": "audicao-07",
+          "label": "Grita, berra ou produz barulhos incomuns sozinho."
+        }
+      ]
+    },
+    {
+      "id": "tato",
+      "title": "tato",
+      "items": [
+        {
+          "id": "tato-01",
+          "label": "Fica incomodado quando as mãos ou rosto estão sujos (com cola, pintura a dedo, comida, sujeira, etc)."
+        },
+        {
+          "id": "tato-02",
+          "label": "Não tolera sujeira nas mãos ou na roupa, mesmo que brevemente."
+        },
+        {
+          "id": "tato-03",
+          "label": "Demonstra desconforto ao tocar determinadas texturas (materiais escolares, utensílios, equipamentos esportivos, etc.)."
+        },
+        {
+          "id": "tato-04",
+          "label": "Fica incomodado com o contato acidental dos amigos (pode revidar ou sair de perto)."
+        },
+        {
+          "id": "tato-05",
+          "label": "Não responde ao toque de outra pessoa."
+        },
+        {
+          "id": "tato-06",
+          "label": "Procura pela temperatura quente ou fria ao tocar janela ou outras superfícies."
+        },
+        {
+          "id": "tato-07",
+          "label": "Toca inapropriadamente os colegas durante a aula ou em fila."
+        },
+        {
+          "id": "tato-08",
+          "label": "Não limpa a saliva ou o alimento do rosto."
+        }
+      ]
+    },
+    {
+      "id": "olfato-e-paladar",
+      "title": "olfato e paladar",
+      "items": [
+        {
+          "id": "olfato-e-paladar-01",
+          "label": "Se sente incomodado com o gosto e cheiro de comidas diferentes."
+        },
+        {
+          "id": "olfato-e-paladar-02",
+          "label": "Não percebe cheiros fortes ou diferentes (cola, tinta, marcadores de texto, etc.)."
+        },
+        {
+          "id": "olfato-e-paladar-03",
+          "label": "Não consegue distinguir entre odores; não prefere cheiros bons aos ruins."
+        },
+        {
+          "id": "olfato-e-paladar-04",
+          "label": "Tenta \"provar\" ou lamber objetos ou pessoas."
+        }
+      ]
+    },
+    {
+      "id": "consciencia-corporal",
+      "title": "consciência corporal",
+      "items": [
+        {
+          "id": "consciencia-corporal-01",
+          "label": "Derrama o conteúdo ao abrir um recipiente."
+        },
+        {
+          "id": "consciencia-corporal-02",
+          "label": "Mastiga ou morde roupas, lápis, giz de cera ou materiais escolares."
+        },
+        {
+          "id": "consciencia-corporal-03",
+          "label": "Move a cadeira bruscamente (empurra a cadeira para baixo da mesa ou puxa com muita força)."
+        },
+        {
+          "id": "consciencia-corporal-04",
+          "label": "Corre, pula ou salta ao invés de andar."
+        },
+        {
+          "id": "consciencia-corporal-05",
+          "label": "Pisa forte ou bate os pés quando caminha."
+        },
+        {
+          "id": "consciencia-corporal-06",
+          "label": "Pula ou pisa muito forte na escada."
+        },
+        {
+          "id": "consciencia-corporal-07",
+          "label": "Abre ou fecha portas com força excessiva."
+        }
+      ]
+    },
+    {
+      "id": "equilibrio-e-movimento",
+      "title": "equilíbrio e movimento",
+      "items": [
+        {
+          "id": "equilibrio-e-movimento-01",
+          "label": "Passa as mãos na parede quando está andando."
+        },
+        {
+          "id": "equilibrio-e-movimento-02",
+          "label": "Enrola as pernas nos pés da cadeira."
+        },
+        {
+          "id": "equilibrio-e-movimento-03",
+          "label": "Se balança na cadeira quando está sentado à mesa ou carteira."
+        },
+        {
+          "id": "equilibrio-e-movimento-04",
+          "label": "Fica inquieto quando está sentado à mesa ou carteira."
+        },
+        {
+          "id": "equilibrio-e-movimento-05",
+          "label": "Cai da cadeira quando sentado à mesa ou carteira."
+        },
+        {
+          "id": "equilibrio-e-movimento-06",
+          "label": "Se apoia em paredes, móveis ou em outras pessoas como suporte quando está em pé."
+        },
+        {
+          "id": "equilibrio-e-movimento-07",
+          "label": "Quando sentado no chão, não consegue se levantar sem suporte."
+        },
+        {
+          "id": "equilibrio-e-movimento-08",
+          "label": "Se afunda, se inclina na carteira, apoia a cabeça com as mãos quando está sentado à mesa."
+        },
+        {
+          "id": "equilibrio-e-movimento-09",
+          "label": "Tem pouca coordenação motora; parece desajeitado."
+        }
+      ]
+    },
+    {
+      "id": "planejamento-e-ideacao",
+      "title": "planejamento e ideação",
+      "items": [
+        {
+          "id": "planejamento-e-ideacao-01",
+          "label": "Não executa as tarefas diárias de forma consistente; a qualidade do trabalho varia muito."
+        },
+        {
+          "id": "planejamento-e-ideacao-02",
+          "label": "É incapaz de resolver problemas efetivamente."
+        },
+        {
+          "id": "planejamento-e-ideacao-03",
+          "label": "Se atrapalha ou deixa cair itens ao tentar transportar vários objetos."
+        },
+        {
+          "id": "planejamento-e-ideacao-04",
+          "label": "Não realiza tarefas na sequência apropriada."
+        },
+        {
+          "id": "planejamento-e-ideacao-05",
+          "label": "Falha ao completar tarefas que possuam várias etapas."
+        },
+        {
+          "id": "planejamento-e-ideacao-06",
+          "label": "Tem dificuldade ao imitar demonstrações corretamente (jogos com movimentos e músicas com sequência de movimentos)."
+        },
+        {
+          "id": "planejamento-e-ideacao-07",
+          "label": "Tem dificuldade em completar tarefas a partir de um modelo apresentado."
+        },
+        {
+          "id": "planejamento-e-ideacao-08",
+          "label": "Demonstra limitada imaginação e criatividade nas brincadeiras e no recreio (como se fosse incapaz de criar novos jogos)."
+        },
+        {
+          "id": "planejamento-e-ideacao-09",
+          "label": "Faz brincadeiras repetitivas durante o recreio; não expande ou altera sua atividade quando lhe é dada a oportunidade."
+        },
+        {
+          "id": "planejamento-e-ideacao-10",
+          "label": "Mostra pouca organização dos materiais na carteira, sobre ela ou em volta dela."
+        }
+      ]
+    }
+  ]
+}
