@@ -97,7 +97,7 @@ export function ProtocolInviteStatusList({
                 <Button
                   type="button"
                   size="sm"
-                  variant="ghost"
+                  variant="destructive"
                   disabled={pending}
                   onClick={() => revoke(invite.id)}
                 >

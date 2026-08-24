@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import {
   Activity,
   Apple,
   Brain,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Dumbbell,
   Ear,
   Hand,
@@ -13,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -21,6 +27,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { HealthProfessionId } from "@/shared/constants/professions";
+
+/** Itens visíveis antes de “Ver mais”. */
+const PREVIEW_COUNT = 4;
 
 const PROFESSION_ICONS: Record<HealthProfessionId, LucideIcon> = {
   medico: Stethoscope,
@@ -65,12 +74,17 @@ export function ProfessionCatalogCard({
   labels: ProfessionCatalogCardLabels;
   highlightLabel?: string;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const Icon = PROFESSION_ICONS[professionId];
   const hasItems = items.length > 0;
   const countLabel =
     items.length === 1
       ? `1 ${labels.singular} disponível`
       : `${items.length} ${labels.plural} disponíveis`;
+  const needsCollapse = items.length > PREVIEW_COUNT;
+  const visibleItems =
+    needsCollapse && !expanded ? items.slice(0, PREVIEW_COUNT) : items;
+  const hiddenCount = items.length - PREVIEW_COUNT;
 
   return (
     <Card
@@ -103,26 +117,50 @@ export function ProfessionCatalogCard({
 
       <CardContent className="pt-(--card-spacing)">
         {hasItems ? (
-          <ul className="flex flex-col gap-2">
-            {items.map((item) => (
-              <li key={item.id}>
-                <Link
-                  href={item.href}
-                  className="group flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-3 py-3 transition-colors hover:border-primary/40 hover:bg-primary/5"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-foreground group-hover:text-primary">
-                      {item.name}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {item.description}
-                    </p>
-                  </div>
-                  <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-2">
+              {visibleItems.map((item) => (
+                <li key={item.id}>
+                  <Link
+                    href={item.href}
+                    className="group flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-3 py-3 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-foreground group-hover:text-primary">
+                        {item.name}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </div>
+                    <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {needsCollapse ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="w-full text-muted-foreground"
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+              >
+                {expanded ? (
+                  <>
+                    Ver menos
+                    <ChevronUp data-icon="inline-end" />
+                  </>
+                ) : (
+                  <>
+                    Ver mais ({hiddenCount})
+                    <ChevronDown data-icon="inline-end" />
+                  </>
+                )}
+              </Button>
+            ) : null}
+          </div>
         ) : (
           <p className="text-sm text-muted-foreground">{labels.emptyDetail}</p>
         )}
