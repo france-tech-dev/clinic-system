@@ -3,10 +3,9 @@ import {
   countBillableProfessionals,
   getBillingAccess,
 } from "@/server/billing/access";
+import { requireOrgId } from "@/shared/lib/org-context";
 
-export async function requireWritableBilling(
-  organizationId: string,
-): Promise<void> {
+async function requireWritableBilling(organizationId: string): Promise<void> {
   const access = await getBillingAccess(organizationId);
   if (access.mode === "read_only") {
     throw new Error(
@@ -15,7 +14,7 @@ export async function requireWritableBilling(
   }
 }
 
-export async function requireBillingFeature(
+async function requireBillingFeature(
   organizationId: string,
   feature: GatedFeatureId,
 ): Promise<void> {
@@ -25,6 +24,7 @@ export async function requireBillingFeature(
   }
 }
 
+/** Gate de assentos do plano (ex.: criar profissional). */
 export async function requireSeatAvailable(
   organizationId: string,
 ): Promise<void> {
@@ -39,13 +39,14 @@ export async function requireSeatAvailable(
   }
 }
 
+/** Org activa + billing em modo escrita. Use nas actions sem feature gated. */
 export async function requireOrgWrite() {
-  const { requireOrgId } = await import("@/shared/lib/org-context");
   const ctx = await requireOrgId();
   await requireWritableBilling(ctx.organizationId);
   return ctx;
 }
 
+/** Como `requireOrgWrite`, mais feature do plano (anamnese, caixa, …). */
 export async function requireOrgFeatureWrite(feature: GatedFeatureId) {
   const ctx = await requireOrgWrite();
   await requireBillingFeature(ctx.organizationId, feature);
