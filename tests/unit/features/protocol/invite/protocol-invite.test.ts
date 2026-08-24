@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import { createProtocolInviteToken } from "@/features/protocol/invite/_lib/token";
 import { computeInviteFlags } from "@/features/protocol/invite/_lib/invite-status";
 import {
+  countInviteBuckets,
+  filterInvites,
+  inviteListBucket,
+} from "@/features/protocol/invite/_lib/invite-list-filter";
+import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+import {
   countAnsweredResponses,
   createItemResponseSchema,
   emptyItemProtocolResponses,
@@ -106,5 +112,49 @@ describe("computeInviteFlags", () => {
         now,
       ),
     ).toMatchObject({ isRevoked: true, isActive: false, allSubmitted: true });
+  });
+});
+
+describe("inviteListBucket", () => {
+  function invite(
+    partial: Partial<ProtocolInviteDTO> &
+      Pick<ProtocolInviteDTO, "allSubmitted" | "isExpired" | "isRevoked">,
+  ): ProtocolInviteDTO {
+    return {
+      id: "1",
+      token: "t",
+      publicUrl: "/r/t",
+      patientId: "p",
+      patientName: "Paciente",
+      organizationId: "o",
+      expiresAt: null,
+      revokedAt: null,
+      createdAt: "2026-08-21T12:00:00.000Z",
+      items: [],
+      isActive: !partial.isExpired && !partial.isRevoked,
+      ...partial,
+    };
+  }
+
+  it("classifica buckets e filtra", () => {
+    const list = [
+      invite({ allSubmitted: false, isExpired: false, isRevoked: false }),
+      invite({ allSubmitted: true, isExpired: false, isRevoked: false }),
+      invite({ allSubmitted: false, isExpired: true, isRevoked: false }),
+      invite({ allSubmitted: true, isExpired: false, isRevoked: true }),
+    ];
+    expect(list.map(inviteListBucket)).toEqual([
+      "pending",
+      "responded",
+      "inactive",
+      "inactive",
+    ]);
+    expect(countInviteBuckets(list)).toEqual({
+      all: 4,
+      pending: 1,
+      responded: 1,
+      inactive: 2,
+    });
+    expect(filterInvites(list, "responded")).toHaveLength(1);
   });
 });
