@@ -222,7 +222,12 @@ export function ProtocolInviteStatusList({
           O responsável preenche sem login; o link expira em 30 dias.
         </p>
         {canCreate && onCreate ? (
-          <Button type="button" size="sm" className="mt-4" onClick={onCreate}>
+          <Button
+            type="button"
+            size="sm"
+            className="mt-4 w-full sm:w-auto"
+            onClick={onCreate}
+          >
             Novo link
           </Button>
         ) : null}
@@ -232,7 +237,11 @@ export function ProtocolInviteStatusList({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
+      <div
+        role="toolbar"
+        aria-label="Filtrar links"
+        className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {FILTERS.map((item) => {
           const selected = filter === item.id;
           const count = counts[item.id];
@@ -242,7 +251,7 @@ export function ProtocolInviteStatusList({
               type="button"
               size="sm"
               variant={selected ? "default" : "outline"}
-              className="rounded-full"
+              className="shrink-0 rounded-full"
               onClick={() => setFilterAndReset(item.id)}
             >
               {item.label} · {count}
@@ -286,46 +295,58 @@ export function ProtocolInviteStatusList({
             return (
               <li
                 key={invite.id}
-                className="flex items-start gap-3 rounded-xl border border-border bg-card px-3 py-3 sm:items-center"
+                className="flex flex-col gap-3 rounded-xl border border-border bg-card px-3 py-3 sm:flex-row sm:items-center"
               >
-                <span
-                  className={cn(
-                    "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-muted",
-                    meta.iconClass,
-                  )}
-                  aria-hidden
-                >
-                  <StatusIcon className="size-4" />
-                </span>
+                <div className="flex min-w-0 flex-1 items-start gap-3">
+                  <span
+                    className={cn(
+                      "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-muted",
+                      meta.iconClass,
+                    )}
+                    aria-hidden
+                  >
+                    <StatusIcon className="size-4" />
+                  </span>
 
-                <div className="min-w-0 flex-1 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-medium">{title}</p>
-                    <Badge className={meta.badgeClass}>{meta.label}</Badge>
-                  </div>
-                  {invite.items.length > 2 ? (
-                    <p className="line-clamp-2 text-xs text-muted-foreground">
-                      {invite.items.map((i) => i.protocolName).join(" · ")}
-                    </p>
-                  ) : null}
-                  <p className="text-xs text-muted-foreground">
-                    Enviado em {formatInviteDateTime(invite.createdAt)}
-                    {lastSubmittedAt
-                      ? ` · Respondido em ${formatInviteDateTime(lastSubmittedAt)}`
-                      : null}
-                  </p>
-                  {!invite.allSubmitted && invite.isActive ? (
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-medium leading-snug">
+                        {title}
+                      </p>
+                      <Badge className={meta.badgeClass}>{meta.label}</Badge>
+                    </div>
+                    {invite.items.length > 2 ? (
+                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                        {invite.items.map((i) => i.protocolName).join(" · ")}
+                      </p>
+                    ) : null}
                     <p className="text-xs text-muted-foreground">
-                      {
-                        invite.items.filter((i) => i.status === "submitted")
-                          .length
-                      }
-                      /{invite.items.length} instrumentos
+                      <span className="sm:hidden">
+                        {formatInviteDateTime(invite.createdAt)}
+                        {lastSubmittedAt
+                          ? ` · Resp. ${formatInviteDateTime(lastSubmittedAt)}`
+                          : null}
+                      </span>
+                      <span className="hidden sm:inline">
+                        Enviado em {formatInviteDateTime(invite.createdAt)}
+                        {lastSubmittedAt
+                          ? ` · Respondido em ${formatInviteDateTime(lastSubmittedAt)}`
+                          : null}
+                      </span>
                     </p>
-                  ) : null}
+                    {!invite.allSubmitted && invite.isActive ? (
+                      <p className="text-xs text-muted-foreground">
+                        {
+                          invite.items.filter((i) => i.status === "submitted")
+                            .length
+                        }
+                        /{invite.items.length} instrumentos
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
 
-                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+                <div className="grid grid-cols-3 gap-2 sm:flex sm:shrink-0 sm:flex-wrap sm:items-center sm:justify-end sm:gap-1">
                   {invite.isActive ? (
                     <Button
                       type="button"
@@ -348,7 +369,8 @@ export function ProtocolInviteStatusList({
                       }
                     >
                       <List data-icon="inline-start" />
-                      Ver respostas
+                      <span className="sm:hidden">Respostas</span>
+                      <span className="hidden sm:inline">Ver respostas</span>
                     </Button>
                   ) : null}
 

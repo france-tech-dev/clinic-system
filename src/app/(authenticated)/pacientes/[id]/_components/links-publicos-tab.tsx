@@ -32,16 +32,26 @@ export function LinksPublicosTab({
       aria-labelledby="patient-tab-links-publicos"
       className="space-y-4"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-1">
           <h2 className="text-sm font-medium">Links enviados</h2>
-          <p className="text-sm text-muted-foreground">
-            Acompanhe o preenchimento pelos responsáveis, abra as respostas e
-            limpe links inativos.
+          <p className="text-sm text-muted-foreground sm:max-w-prose">
+            <span className="sm:hidden">
+              Acompanhe respostas e limpe links inativos.
+            </span>
+            <span className="hidden sm:inline">
+              Acompanhe o preenchimento pelos responsáveis, abra as respostas e
+              limpe links inativos.
+            </span>
           </p>
         </div>
         {canCreate ? (
-          <Button type="button" size="sm" onClick={() => setInviteOpen(true)}>
+          <Button
+            type="button"
+            size="sm"
+            className="w-full shrink-0 sm:w-auto"
+            onClick={() => setInviteOpen(true)}
+          >
             <Link2 data-icon="inline-start" />
             Novo link
           </Button>

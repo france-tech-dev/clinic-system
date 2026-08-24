@@ -43,14 +43,17 @@ export function ProtocolInviteResultsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
+      <DialogContent className="flex max-h-[min(92dvh,100%)] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
         <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
           <DialogTitle className="font-serif">
             Respostas do responsável
           </DialogTitle>
-          <DialogDescription>
-            Pré-visualização das avaliações preenchidas. Gráficos por
-            instrumento entram numa próxima etapa.
+          <DialogDescription className="text-pretty">
+            <span className="sm:hidden">Pré-visualização das respostas.</span>
+            <span className="hidden sm:inline">
+              Pré-visualização das avaliações preenchidas. Gráficos por
+              instrumento entram numa próxima etapa.
+            </span>
           </DialogDescription>
         </DialogHeader>
 
