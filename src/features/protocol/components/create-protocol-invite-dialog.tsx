@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { IconSearch } from "@tabler/icons-react";
 import { Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import { createProtocolInviteAction } from "@/features/protocol/invite/protocol-invite.actions";
 import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
@@ -37,8 +43,19 @@ export function CreateProtocolInviteDialog({
   onCreated: (invite: ProtocolInviteDTO) => void;
 }) {
   const [selected, setSelected] = useState<string[]>([]);
+  const [query, setQuery] = useState("");
   const [pending, startTransition] = useTransition();
   const [createdUrl, setCreatedUrl] = useState<string | null>(null);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return protocols;
+    return protocols.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q),
+    );
+  }, [protocols, query]);
 
   function toggle(id: string) {
     setSelected((prev) =>
@@ -49,6 +66,7 @@ export function CreateProtocolInviteDialog({
   function handleOpenChange(next: boolean) {
     if (!next) {
       setSelected([]);
+      setQuery("");
       setCreatedUrl(null);
     }
     onOpenChange(next);
@@ -111,29 +129,51 @@ export function CreateProtocolInviteDialog({
                 Nenhum instrumento disponível para link público.
               </p>
             ) : (
-              protocols.map((protocol) => {
-                const checked = selected.includes(protocol.id);
-                return (
-                  <label
-                    key={protocol.id}
-                    className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3"
-                  >
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={() => toggle(protocol.id)}
-                      className="mt-0.5"
-                    />
-                    <span className="min-w-0">
-                      <span className="block text-sm font-medium">
-                        {protocol.name}
-                      </span>
-                      <span className="block text-xs text-muted-foreground">
-                        {protocol.description}
-                      </span>
-                    </span>
-                  </label>
-                );
-              })
+              <>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <IconSearch data-icon="inline-start" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    placeholder="Buscar avaliação…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    aria-label="Buscar avaliação por nome"
+                  />
+                </InputGroup>
+
+                {filtered.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    Nenhuma avaliação encontrada.
+                  </p>
+                ) : (
+                  <div className="grid max-h-90dvh gap-3 overflow-y-auto">
+                    {filtered.map((protocol) => {
+                      const checked = selected.includes(protocol.id);
+                      return (
+                        <label
+                          key={protocol.id}
+                          className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3"
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={() => toggle(protocol.id)}
+                            className="mt-0.5"
+                          />
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium">
+                              {protocol.name}
+                            </span>
+                            <span className="block text-xs text-muted-foreground">
+                              {protocol.description}
+                            </span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
