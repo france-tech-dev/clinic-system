@@ -23,33 +23,44 @@ export function LinksPublicosTab({
 }) {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [invites, setInvites] = useState(initialInvites);
+  const canCreate = canWriteInvites && inviteProtocols.length > 0;
 
   return (
     <section
       role="tabpanel"
       id="patient-tabpanel-links-publicos"
       aria-labelledby="patient-tab-links-publicos"
-      className="space-y-3"
+      className="space-y-4"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground">
-          Links para responsáveis preencherem avaliações fora da clínica.
-        </p>
-        {canWriteInvites && inviteProtocols.length > 0 ? (
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setInviteOpen(true)}
-          >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-1">
+          <h2 className="text-sm font-medium">Links enviados</h2>
+          <p className="text-sm text-muted-foreground">
+            Acompanhe o preenchimento pelos responsáveis, abra as respostas e
+            limpe links inativos.
+          </p>
+        </div>
+        {canCreate ? (
+          <Button type="button" size="sm" onClick={() => setInviteOpen(true)}>
             <Link2 data-icon="inline-start" />
-            Gerar link de avaliação
+            Novo link
           </Button>
-        ) : null}
+        ) : canWriteInvites ? (
+          <p className="text-xs text-muted-foreground">
+            Nenhum instrumento disponível para link público.
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Geração de links fora do plano actual.
+          </p>
+        )}
       </div>
 
       <ProtocolInviteStatusList
         invites={invites}
         canManage={canWriteInvites}
+        canCreate={canCreate}
+        onCreate={() => setInviteOpen(true)}
         onChange={setInvites}
       />
 
