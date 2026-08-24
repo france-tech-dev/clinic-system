@@ -32,6 +32,7 @@ import { PatientStatus } from "../../../../../prisma/generated/prisma/enums";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";
+import { LinksPublicosTab } from "./_components/links-publicos-tab";
 import { usePatientDetail } from "./_components/hooks/use-patient-detail";
 import { PatientDetailDialogs } from "./_components/patient-detail-dialogs";
 import { PatientDetailHeader } from "./_components/patient-detail-header";
@@ -144,11 +145,7 @@ export function PacienteDetailClient({
 
       {vm.tab === "avaliacao" && (
         <AvaliacaoTab
-          patientId={vm.detail.patient.id}
           clinicalEvaluations={vm.detail.clinicalEvaluations}
-          initialInvites={initialProtocolInvites}
-          inviteProtocols={inviteProtocols}
-          canWriteInvites={canWriteInvites}
           onNewEvaluation={vm.evaluations.openNewEvaluation}
           onViewEvaluation={vm.evaluations.setViewEval}
         />
@@ -166,6 +163,15 @@ export function PacienteDetailClient({
           sessionNotes={vm.detail.sessionNotes}
           onNewSession={vm.sessions.openNewSession}
           onViewSession={vm.sessions.setViewSession}
+        />
+      )}
+
+      {vm.tab === "links-publicos" && (
+        <LinksPublicosTab
+          patientId={vm.detail.patient.id}
+          initialInvites={initialProtocolInvites}
+          inviteProtocols={inviteProtocols}
+          canWriteInvites={canWriteInvites}
         />
       )}
 
