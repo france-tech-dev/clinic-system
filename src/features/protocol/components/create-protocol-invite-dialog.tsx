@@ -102,10 +102,10 @@ export function CreateProtocolInviteDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Gerar link de avaliação</DialogTitle>
+          <DialogTitle>Enviar link para o responsável</DialogTitle>
           <DialogDescription>
-            O responsável preenche os instrumentos seleccionados sem precisar de
-            login. O link expira em 30 dias.
+            Crie um link com uma ou mais avaliações. O responsável preenche sem
+            login; o link expira em 30 dias.
           </DialogDescription>
         </DialogHeader>
 
@@ -147,7 +147,7 @@ export function CreateProtocolInviteDialog({
                     Nenhuma avaliação encontrada.
                   </p>
                 ) : (
-                  <div className="grid max-h-90dvh gap-3 overflow-y-auto">
+                  <div className="grid max-h-[50dvh] gap-3 overflow-y-auto">
                     {filtered.map((protocol) => {
                       const checked = selected.includes(protocol.id);
                       return (
