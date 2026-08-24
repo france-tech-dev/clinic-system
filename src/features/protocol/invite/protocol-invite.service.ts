@@ -76,6 +76,7 @@ function toItemDTO(item: InviteRow["items"][number]): ProtocolInviteItemDTO {
     status: item.status === "submitted" ? "submitted" : "pending",
     totalCount: template ? listItemProtocolItemIds(template).length : 0,
     submittedAt: item.submittedAt?.toISOString() ?? null,
+    evaluationId: item.evaluation?.id ?? null,
   };
 }
 
@@ -164,6 +165,23 @@ export async function revokeProtocolInvite(
   return row ? toDTO(row, origin) : null;
 }
 
+export async function deleteProtocolInvite(
+  organizationId: string,
+  id: string,
+  origin?: string,
+) {
+  const existing = await protocolInviteRepository.findById(organizationId, id);
+  if (!existing) return null;
+  const flags = inviteFlags(existing);
+  if (flags.isActive) {
+    throw new Error(
+      "Revogue o link activo antes de excluir, ou aguarde expirar.",
+    );
+  }
+  const row = await protocolInviteRepository.delete(organizationId, id);
+  return row ? toDTO(row, origin) : null;
+}
+
 export async function getPublicProtocolInvite(
   token: string,
 ): Promise<PublicProtocolInviteDTO | null> {
@@ -180,7 +198,10 @@ export async function getPublicProtocolInvite(
     clinicName: row.organization.name.trim() || "Clínica",
     expiresAt: row.expiresAt?.toISOString() ?? null,
     allSubmitted: flags.allSubmitted,
-    items: row.items.map(toItemDTO),
+    items: row.items.map((item) => ({
+      ...toItemDTO(item),
+      evaluationId: null,
+    })),
   };
 }
 

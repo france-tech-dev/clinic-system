@@ -7,6 +7,8 @@ export type ProtocolInviteItemDTO = {
   status: ProtocolInviteItemStatus;
   totalCount: number;
   submittedAt: string | null;
+  /** Presente quando o responsável já enviou este instrumento. */
+  evaluationId: string | null;
 };
 
 export type ProtocolInviteDTO = {

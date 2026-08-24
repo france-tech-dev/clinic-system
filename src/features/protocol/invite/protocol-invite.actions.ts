@@ -15,6 +15,7 @@ import {
 } from "./protocol-invite.schema";
 import {
   createProtocolInvite,
+  deleteProtocolInvite,
   listProtocolInvites,
   revokeProtocolInvite,
 } from "./protocol-invite.service";
@@ -93,6 +94,30 @@ export async function revokeProtocolInviteAction(
     const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
     const origin = await requestOrigin();
     const data = await revokeProtocolInvite(
+      organizationId,
+      parsed.data.id,
+      origin,
+    );
+    if (!data) return fail("Convite não encontrado");
+
+    revalidatePath(paths.paciente(data.patientId));
+    return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function deleteProtocolInviteAction(
+  input: unknown,
+): Promise<ActionResult<ProtocolInviteDTO>> {
+  try {
+    await requirePermission({ project: ["delete"] });
+    const parsed = protocolInviteIdSchema.safeParse(input);
+    if (!parsed.success) return fail("Dados inválidos");
+
+    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
+    const origin = await requestOrigin();
+    const data = await deleteProtocolInvite(
       organizationId,
       parsed.data.id,
       origin,

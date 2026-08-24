@@ -8,7 +8,12 @@ const inviteInclude = {
       user: { select: { name: true } },
     },
   },
-  items: { orderBy: { createdAt: "asc" as const } },
+  items: {
+    orderBy: { createdAt: "asc" as const },
+    include: {
+      evaluation: { select: { id: true } },
+    },
+  },
 } as const;
 
 export const protocolInviteRepository = {
@@ -92,6 +97,16 @@ export const protocolInviteRepository = {
       data: { revokedAt: new Date() },
       include: inviteInclude,
     });
+  },
+
+  async delete(organizationId: string, id: string) {
+    const existing = await db.protocolInvite.findFirst({
+      where: { id, organizationId },
+      include: inviteInclude,
+    });
+    if (!existing) return null;
+    await db.protocolInvite.delete({ where: { id } });
+    return existing;
   },
 
   async submitItem(data: {
