@@ -153,7 +153,7 @@ Cruzar contexts: `application/` ou `domains/X/index.ts` (DAG; sem imports profun
 | **A** | Reverter layout para fase 1 (`src/domains`, `src/features`, `src/shared`, `src/platform`, `src/ui`, `worker/`) | ✅       |
 | **B** | Um `node_modules` na raiz; sem workspace `apps/*` + `packages/*`                                               | ✅       |
 | **C** | Redis + 1 job real                                                                                             | pendente |
-| **D** | `index.ts` por domain; limpar UI residual (ver [`domains-ui-debt.md`](./domains-ui-debt.md))                   | pendente |
+| **D** | `index.ts` por domain; UI residual movida para `src/features` (protocol, anamnese, PDF) | concluído |
 | **E** | Quando Fastify: extrair `packages/*` + `apps/api` (fase 2)                                                     | futuro   |
 
 ---

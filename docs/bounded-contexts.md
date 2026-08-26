@@ -104,5 +104,5 @@ Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./archi
 - Pastas `domain/` / `application/` / `infrastructure/` por feature
 - Entities ricas + Aggregates em cima do Prisma
 - Domain events / outbox sem necessidade de produto
-- Meter UI de domínio dentro de `src/domains` (excepto dívida em [`domains-ui-debt.md`](./domains-ui-debt.md))
+- Meter UI de domínio dentro de `src/domains`
 - Mover `patient` / `protocol` / … para `src/platform`

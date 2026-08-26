@@ -16,7 +16,6 @@ Documentos relacionados:
 - Mensalidade Stripe: [`billing.md`](./billing.md)
 - Media / R2: [`media-storage.md`](./media-storage.md)
 - Jobs e filas: [`jobs-queues.md`](./jobs-queues.md)
-- Dívida de UI em domains: [`domains-ui-debt.md`](./domains-ui-debt.md)
 - Regras para o Cursor (agente): [`.cursor/rules/`](../.cursor/rules/)
 
 ---
@@ -93,7 +92,7 @@ Imports de negócio preferem `@/domains/…`. O alias `@/server/*` continua a ap
 | `src/features/`  | `@/features/`   | Componentes/hooks UI por domínio (≥2 rotas)     |
 | `src/ui/`        | `@/components/` | Design system sem regra de negócio              |
 
-Não mover lógica clínica para platform. Não meter React/UI de produto em `src/domains` (dívida residual: [`domains-ui-debt.md`](./domains-ui-debt.md)).
+Não mover lógica clínica para platform. Não meter React/UI de produto em `src/domains`.
 
 ---
 
