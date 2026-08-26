@@ -1,6 +1,6 @@
 import { fisioterapiaEvaluationModules } from "./fisioterapia";
 import { terapiaOcupacionalEvaluationModules } from "./terapia-ocupacional";
-import type { EvaluationModule } from "./types";
+import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
 
 /**
  * Instrumentos com UI em `protocol`.

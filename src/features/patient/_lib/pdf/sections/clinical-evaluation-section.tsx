@@ -1,5 +1,5 @@
 import { Text, View } from "@react-pdf/renderer";
-import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
+import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";

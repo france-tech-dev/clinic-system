@@ -2,7 +2,7 @@ import { createItemEvaluationModule } from "../../_shared/create-item-module";
 import {
   SPM_ESCOLA_5ANOS_PROTOCOL_ID,
   SPM_ESCOLA_5ANOS_TEMPLATE,
-} from "./template";
+} from "@/domains/protocol/evaluation-modules/terapia-ocupacional/spm-escola-5anos/template";
 
 export const spmEscola5anosModule = createItemEvaluationModule({
   id: SPM_ESCOLA_5ANOS_PROTOCOL_ID,

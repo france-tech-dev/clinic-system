@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { ProtocolEvaluationComparisonDTO } from "@/features/protocol/protocol.types";
+import type { ProtocolEvaluationComparisonDTO } from "@/domains/protocol/protocol.types";
 
 function shortDomainTitle(title: string) {
   if (title.length <= 18) return title;

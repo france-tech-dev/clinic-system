@@ -3,7 +3,7 @@
 import { useEffect, useRef, useTransition } from "react";
 import { useCompletion } from "@ai-sdk/react";
 import { toast } from "sonner";
-import { saveProtocolInterpretationAIAction } from "@/features/protocol/protocol.actions";
+import { saveProtocolInterpretationAIAction } from "@/domains/protocol/protocol.actions";
 
 const API_PATH = "/api/ai/protocol-interpretation-ai";
 

@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   PATIENT_SEXES,
   type PatientDraftInput,
-} from "@/features/patient/patient.schema";
+} from "@/domains/patient/patient.schema";
 import {
   PATIENT_PRICING_TYPES,
   patientPriceFieldLabel,
@@ -30,7 +30,7 @@ import { PATIENT_SEX_LABEL } from "@/shared/constants/patient-sex";
 import {
   PatientPricingType,
   type PatientSex,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 export function PatientFormFields() {
   const { control } = useFormContext<PatientDraftInput>();

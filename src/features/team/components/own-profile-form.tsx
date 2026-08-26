@@ -17,12 +17,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MemberPatientsIndicator } from "@/features/team/components/member-patients-indicator";
-import { updateOwnProfileAction } from "@/features/team/team.actions";
+import { updateOwnProfileAction } from "@/domains/team/team.actions";
 import {
   updateOwnProfileSchema,
   type UpdateOwnProfileInput,
-} from "@/features/team/team.schema";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+} from "@/domains/team/team.schema";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { getHealthProfession } from "@/shared/constants/professions";
 import { memberRoleLabel } from "@/shared/constants/member-role";
 import { memberStatusLabel } from "@/shared/constants/member-status";

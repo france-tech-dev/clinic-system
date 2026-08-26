@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import {
   getAnamneseAction,
   saveAnamneseAction,
-} from "@/features/anamnese/anamnese.actions";
-import type { AnamneseDTO } from "@/features/anamnese/anamnese.types";
+} from "@/domains/anamnese/anamnese.actions";
+import type { AnamneseDTO } from "@/domains/anamnese/anamnese.types";
+import type { AnamneseReportPayload } from "@/domains/anamnese/_lib/pdf/types";
 import { AnamnesePdfPreviewDialog } from "@/features/anamnese/components/anamnese-pdf-preview-dialog";
-import type { AnamneseReportPayload } from "@/features/anamnese/_lib/pdf/types";
 import { paths } from "@/shared/constants/paths";
 import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import type {
@@ -24,10 +24,10 @@ import type {
   ProfessionalProfile,
 } from "@/shared/types/professional";
 import { formatProfessionalSignature } from "@/shared/types/professional";
-import { PatientStatus } from "../../../../../../../prisma/generated/prisma/enums";
-import type { AnamneseSection } from "../../../field-types";
+import { PatientStatus } from "@prisma/enums";
+import type { AnamneseSection } from "@/domains/anamnese/forms/field-types";
 import { AnamneseField } from "./anamnese-field";
-import { flattenAnamneseForPdf } from "../../../flatten-for-pdf";
+import { flattenAnamneseForPdf } from "@/domains/anamnese/forms/flatten-for-pdf";
 
 export function AnamneseFormClient({
   formId,

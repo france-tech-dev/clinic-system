@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/native-select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import type { AnamneseField } from "../../../field-types";
+import type { AnamneseField } from "@/domains/anamnese/forms/field-types";
 import { cn } from "@/shared/lib/utils";
 
 export function AnamneseField({

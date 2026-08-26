@@ -14,8 +14,8 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import type { ProtocolEvaluationPreviewDTO } from "@/features/protocol/protocol.types";
-import type { ProtocolInviteItemDTO } from "@/features/protocol/invite/protocol-invite.types";
+import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
+import type { ProtocolInviteItemDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { ProtocolInterpretationAIPanel } from "./protocol-interpretation-ai-panel";
 

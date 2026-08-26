@@ -1,6 +1,6 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
 import { gmfm88Module } from "./gmfm-88";
-import type { EvaluationModule } from "../types";
+import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
 
 export const FISIOTERAPIA_PROFESSION_ID =
   "fisioterapeuta" satisfies HealthProfessionId;

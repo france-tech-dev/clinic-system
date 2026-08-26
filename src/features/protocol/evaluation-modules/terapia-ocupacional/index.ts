@@ -1,5 +1,5 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
-import type { EvaluationModule } from "../types";
+import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
 import { pediAutocuidadoModule } from "./pedi-autocuidado";
 import { pediFuncaoSocialModule } from "./pedi-funcao-social";
 import { pediMobilidadeModule } from "./pedi-mobilidade";

@@ -29,16 +29,16 @@ import {
 import {
   deleteProtocolInviteAction,
   revokeProtocolInviteAction,
-} from "@/features/protocol/invite/protocol-invite.actions";
+} from "@/domains/protocol/invite/protocol-invite.actions";
 import {
   countInviteBuckets,
   filterInvites,
   inviteListBucket,
   type InviteListFilter,
-} from "@/features/protocol/invite/_lib/invite-list-filter";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
-import { getProtocolEvaluationPreviewAction } from "@/features/protocol/protocol.actions";
-import type { ProtocolEvaluationPreviewDTO } from "@/features/protocol/protocol.types";
+} from "@/domains/protocol/invite/_lib/invite-list-filter";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
+import { getProtocolEvaluationPreviewAction } from "@/domains/protocol/protocol.actions";
+import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
 import { cn } from "@/shared/lib/utils";
 import { ProtocolInviteResultsDialog } from "./protocol-invite-results-dialog";
 

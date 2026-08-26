@@ -4,8 +4,8 @@ import { PageFooter } from "@/shared/lib/pdf/components/page-footer";
 import { PatientInfo } from "@/shared/lib/pdf/components/patient-info";
 import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
-import { getPatientReportTitle } from "../report-meta";
-import type { PatientReportPayload } from "../types";
+import { getPatientReportTitle } from "@/domains/patient/_lib/pdf/report-meta";
+import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
 import { ClinicalEvaluationSection } from "../sections/clinical-evaluation-section";
 
 type PatientReportDocumentProps = {

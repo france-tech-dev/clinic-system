@@ -9,7 +9,7 @@ export {
   type Gmfm88Item,
   type Gmfm88Domain,
   type Gmfm88Template,
-} from "./template";
+} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
 export {
   emptyGmfm88Scores,
   summarizeGmfm88,
@@ -17,4 +17,4 @@ export {
   type Gmfm88Scores,
   type Gmfm88DomainSummary,
   type Gmfm88OverallSummary,
-} from "./scoring";
+} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";

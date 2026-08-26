@@ -1,5 +1,5 @@
 import { formatBrl } from "@/shared/lib/money-utils";
-import type { CashflowSummary } from "@/features/finance/finance.types";
+import type { CashflowSummary } from "@/domains/finance/finance.types";
 import { cn } from "@/shared/lib/utils";
 
 export function CashflowSummaryCards({

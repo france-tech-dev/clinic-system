@@ -6,7 +6,7 @@ import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { PatientReportDocument } from "@/features/patient/_lib/pdf/build-patient-report-document";
 import { downloadPatientReport } from "@/features/patient/_lib/pdf/download-patient-report";
-import type { PatientReportPayload } from "@/features/patient/_lib/pdf/types";
+import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

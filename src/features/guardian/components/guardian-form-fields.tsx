@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
+import type { GuardianDraftInput } from "@/domains/guardian/guardian.schema";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
 
 export function GuardianFormFields({

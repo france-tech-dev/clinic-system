@@ -18,15 +18,15 @@ import { Input } from "@/components/ui/input";
 import {
   saveCurrentMemberProfessionalAction,
   saveProfessionalAction,
-} from "@/features/settings/settings.actions";
+} from "@/domains/settings/settings.actions";
 import {
   memberProfessionalSchema,
   professionalProfileSchema,
-} from "@/features/settings/settings.schema";
+} from "@/domains/settings/settings.schema";
 import {
   formatProfessionalSignature,
   type ProfessionalProfile,
-} from "@/features/settings/settings.types";
+} from "@/domains/settings/settings.types";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
 type ProfileFormValues = {

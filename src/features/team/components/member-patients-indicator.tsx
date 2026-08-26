@@ -14,7 +14,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import type { TeamMemberPatientEmbed } from "@/features/team/team.types";
+import type { TeamMemberPatientEmbed } from "@/domains/team/team.types";
 import { initialsFromName } from "@/shared/lib/initials-from-name";
 import { cn } from "@/shared/lib/utils";
 
