@@ -75,12 +75,20 @@ GOOGLE_CLIENT_SECRET=""
 # STRIPE_PRICE_PRO="price_..."
 # STRIPE_PRICE_ENTERPRISE="price_..."
 
+# IA — interpretação de protocolos (opcional; ver docs/ai.md)
+# AI_PROVIDER="google"
+# GOOGLE_GENERATIVE_AI_API_KEY="..."
+# AI_MODEL="gemini-2.5-flash"
+# AI_PROVIDER="openai"
+# OPENAI_API_KEY="sk-..."
+# AI_MODEL="gpt-5-mini"
+
 # Staff de plataforma — acesso a /plataforma (user ids separados por vírgula)
 # PLATFORM_ADMIN_USER_IDS="user_id_1,user_id_2"
 ```
 
 Obrigatórias no boot: `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.  
-Brevo, Stripe e R2 são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2`).
+Brevo, Stripe, R2 e OpenAI são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2`).
 
 ```bash
 pnpm exec prisma generate
