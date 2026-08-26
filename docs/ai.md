@@ -8,7 +8,7 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 | -------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Cliente / modelo / stream  | [`src/shared/lib/ai`](../src/shared/lib/ai/index.ts)                                                      |
 | Prompt clínico (protocolo) | [`src/features/protocol/_lib/interpretationAI`](../src/features/protocol/_lib/interpretationAI/prompt.ts) |
-| Stream HTTP                | `POST /api/ai/protocol-interpretation`                                                                    |
+| Stream HTTP                | `POST /api/ai/protocol-interpretation-ai`                                                                    |
 | Persistência               | `ProtocolEvaluation.interpretationAI`                                                                     |
 
 `shared/lib/ai` não contém regras clínicas — só provider e helpers reutilizáveis. Novos casos (evolução, anamnese) devem acrescentar prompts no respectivo domínio e reutilizar o cliente.
@@ -37,9 +37,9 @@ Chave em [Google AI Studio](https://aistudio.google.com/apikey). Sem a chave do 
 ## Fluxo (interpretação de protocolo)
 
 1. Profissional abre respostas do link público (paciente → Links públicos).
-2. Clica **Gerar** → `POST /api/ai/protocol-interpretation` com `{ evaluationId }`.
+2. Clica **Gerar** → `POST /api/ai/protocol-interpretation-ai` com `{ evaluationId }`.
 3. Servidor valida sessão, permissão `project:read`, feature gated `ai`, monta preview tipado + primeiro nome/idade, e faz stream do texto.
-4. Profissional edita o rascunho e **Guarda** via `saveProtocolInterpretationAction`.
+4. Profissional edita o rascunho e **Guarda** via `saveProtocolInterpretationAIAction`.
 
 ## Limites clínicos e privacidade
 
