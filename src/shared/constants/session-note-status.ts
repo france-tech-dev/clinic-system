@@ -1,4 +1,4 @@
-import { SessionNoteStatus } from "../../../prisma/generated/prisma/enums";
+import { SessionNoteStatus } from "@prisma/enums";
 
 export const SESSION_NOTE_STATUS_LABEL = {
   [SessionNoteStatus.ATTENDED]: "Compareceu",

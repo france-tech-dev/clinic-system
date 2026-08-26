@@ -40,6 +40,8 @@ const envSchema = z
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
     AI_PROVIDER: z.enum(["openai", "google"]).default("google"),
     AI_MODEL: z.string().optional(),
+
+    REDIS_URL: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.OBJECT_STORAGE_DRIVER !== "r2") return;

@@ -1,4 +1,4 @@
-import { AppointmentStatus } from "../../../prisma/generated/prisma/enums";
+import { AppointmentStatus } from "@prisma/enums";
 
 export const APPOINTMENT_STATUSES = [
   { id: AppointmentStatus.SCHEDULED, label: "Agendado", color: "#285C52" },

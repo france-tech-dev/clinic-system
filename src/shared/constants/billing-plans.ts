@@ -1,7 +1,7 @@
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 export const BILLING_PLANS = [
   BillingPlan.STARTER,

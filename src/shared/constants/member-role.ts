@@ -1,4 +1,4 @@
-import { Role } from "../../../prisma/generated/prisma/enums";
+import { Role } from "@prisma/enums";
 
 export const MEMBER_ROLE_LABEL = {
   [Role.OWNER]: "Proprietário",

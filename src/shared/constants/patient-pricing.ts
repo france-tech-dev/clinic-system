@@ -1,4 +1,4 @@
-import { PatientPricingType } from "../../../prisma/generated/prisma/enums";
+import { PatientPricingType } from "@prisma/enums";
 
 export const PATIENT_PRICING_TYPES = [
   { id: PatientPricingType.SESSION, label: "Por sessão" },
