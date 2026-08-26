@@ -163,6 +163,19 @@ model RateLimit {
   @@map("rate_limit")
 }
 
+model AiGenerationLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  kind           String
+  evaluationId   String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([userId, createdAt])
+  @@map("ai_generation_logs")
+}
+
 // Organizações
 model Organization {
   id                  String               @id

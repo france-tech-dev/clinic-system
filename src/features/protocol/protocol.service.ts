@@ -12,6 +12,10 @@ import {
   ageYearsFromBirthDate,
   patientFirstName,
 } from "./_lib/interpretationAI/prompt";
+import {
+  computeItemProtocolRawScores,
+  formatRawScoresForPrompt,
+} from "./_lib/interpretationAI/raw-section-scores";
 import { protocolRepository } from "./protocol.repository";
 import type {
   ProtocolEvaluationFormInput,
@@ -153,10 +157,21 @@ export async function getProtocolInterpretationAIContext(
   const preview = await getProtocolEvaluationPreview(organizationId, id);
   if (!preview) return null;
 
+  const dto = toDTO(row);
+  const mod = getEvaluationModule(dto.protocolId);
+  const template = mod?.template;
+  const rawScoresText =
+    template != null
+      ? formatRawScoresForPrompt(
+          computeItemProtocolRawScores(template, dto.scores),
+        )
+      : null;
+
   return {
     preview,
     patientFirstName: patientFirstName(row.patient.name),
     patientAgeYears: ageYearsFromBirthDate(row.patient.birthDate),
+    rawScoresText,
   };
 }
 

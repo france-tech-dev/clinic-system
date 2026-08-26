@@ -12,6 +12,8 @@ export type ProtocolInterpretationAIPrompt = {
   user: string;
 };
 
+export type { ProtocolRawScoresSummary } from "./raw-section-scores";
+
 export const PROTOCOL_INTERPRETATION_AI_SYSTEM_PROMPT = `És um assistente clínico de apoio a terapeutas ocupacionais e profissionais de reabilitação pediátrica.
 
 A tua tarefa é interpretar respostas item a item de um protocolo de avaliação (ex.: SPM, PEDI, Perfil Sensorial), com base apenas nos dados fornecidos.
@@ -22,6 +24,7 @@ Estrutura obrigatória da resposta (em português do Brasil):
    - Identifica padrões (hiper-reatividade, hiporreatividade, busca sensorial, preservação, etc.).
    - Cita itens relevantes pelo número/id e pela resposta (ex.: "22, Sempre").
    - Contrasta itens elevados com itens assinalados como nunca/ausentes quando isso esclarece o padrão.
+   - Quando houver "Pontuações brutas por secção", usa-as só como apoio quantitativo (não como norma).
 
 2. Formulação integrada — eixo comum que atravessa as secções, em linguagem clínica objectiva.
 
@@ -29,6 +32,7 @@ Estrutura obrigatória da resposta (em português do Brasil):
 
 Regras:
 - NÃO inventes T-scores, percentis, bandas normativas ("Disfunção Definida", "Alguns Problemas", etc.) nem números que não constem dos dados.
+- As somas brutas NÃO são T-scores — nunca as apresentes como escores padronizados.
 - NÃO faças diagnóstico médico ou de TEA; limita-te a padrões sensoriais/funcionais descritos pelos itens.
 - NÃO inventes itens, respostas ou contexto familiar ausente.
 - Tom clínico, preciso e útil para o profissional rever e editar.
@@ -54,28 +58,40 @@ function formatSections(preview: ProtocolEvaluationPreviewDTO): string {
 export function buildProtocolInterpretationAIPrompt(
   preview: ProtocolEvaluationPreviewDTO,
   meta: ProtocolInterpretationAIMeta,
+  rawScoresText?: string | null,
 ): ProtocolInterpretationAIPrompt {
   const ageLine =
     meta.patientAgeYears != null
       ? `Idade aproximada: ${meta.patientAgeYears} anos`
       : "Idade: não informada";
 
-  const user = [
+  const userParts = [
     `Instrumento: ${preview.protocolName} (${preview.protocolId})`,
     `Data da avaliação: ${preview.date}`,
     `Paciente (primeiro nome): ${meta.patientFirstName}`,
     ageLine,
     "",
+  ];
+
+  if (rawScoresText) {
+    userParts.push(
+      "Pontuações brutas por secção (determinísticas — NÃO são T-scores):",
+      rawScoresText,
+      "",
+    );
+  }
+
+  userParts.push(
     "Respostas por secção (valor já em rótulo humano):",
     "",
     formatSections(preview),
     "",
     "Gera a interpretação completa conforme a estrutura do system prompt.",
-  ].join("\n");
+  );
 
   return {
     system: PROTOCOL_INTERPRETATION_AI_SYSTEM_PROMPT,
-    user,
+    user: userParts.join("\n"),
   };
 }
 

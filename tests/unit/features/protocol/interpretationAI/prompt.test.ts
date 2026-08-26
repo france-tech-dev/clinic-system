@@ -74,6 +74,17 @@ describe("buildProtocolInterpretationAIPrompt", () => {
     expect(prompt.user).not.toMatch(/cpf|email|telefone|@/i);
   });
 
+  it("inclui pontuações brutas quando fornecidas", () => {
+    const prompt = buildProtocolInterpretationAIPrompt(
+      fixturePreview,
+      { patientFirstName: "Sara", patientAgeYears: 5 },
+      "- Audição: bruto 10 (2/2 respondidos)",
+    );
+    expect(prompt.user).toContain("Pontuações brutas por secção");
+    expect(prompt.user).toContain("bruto 10");
+    expect(prompt.system).toContain("NÃO são T-scores");
+  });
+
   it("omite idade quando desconhecida", () => {
     const prompt = buildProtocolInterpretationAIPrompt(fixturePreview, {
       patientFirstName: "Sara",

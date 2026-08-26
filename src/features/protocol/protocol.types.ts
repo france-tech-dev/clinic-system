@@ -55,4 +55,5 @@ export type ProtocolInterpretationAIContextDTO = {
   preview: ProtocolEvaluationPreviewDTO;
   patientFirstName: string;
   patientAgeYears: number | null;
+  rawScoresText: string | null;
 };
