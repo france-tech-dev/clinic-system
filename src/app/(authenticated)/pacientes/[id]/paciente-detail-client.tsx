@@ -12,23 +12,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
+import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import {
   setPatientMembersAction,
   setPatientStatusAction,
-} from "@/features/patient/patient.actions";
+} from "@/domains/patient/patient.actions";
 import { PATIENT_STATUS_LABEL } from "@/shared/constants/patient-status";
-import type { PatientDetailDTO } from "@/features/patient/patient.types";
+import type { PatientDetailDTO } from "@/domains/patient/patient.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
-} from "@/features/settings/settings.types";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+} from "@/domains/settings/settings.types";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import type { PublicInviteProtocolOption } from "@/features/protocol/components/create-protocol-invite-dialog";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
-import { PatientStatus } from "../../../../../prisma/generated/prisma/enums";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
+import { PatientStatus } from "@prisma/enums";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";

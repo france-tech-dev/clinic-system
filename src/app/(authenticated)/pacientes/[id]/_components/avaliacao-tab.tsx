@@ -1,6 +1,6 @@
 "use client";
 
-import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
+import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { AvaliacaoLista } from "./avaliacao-lista";
 
 export function AvaliacaoTab({

@@ -3,7 +3,7 @@ import { PlanosClient } from "./planos-client";
 import {
   getBillingSnapshot,
   isStripeConfigured,
-} from "@/features/billing/billing.service";
+} from "@/domains/billing/billing.service";
 import { requireOrgId } from "@/shared/lib/org-context";
 
 type PlanosPageProps = {

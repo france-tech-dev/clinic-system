@@ -16,11 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { changeForcedPasswordAction } from "@/features/team/team.actions";
+import { changeForcedPasswordAction } from "@/domains/team/team.actions";
 import {
   changeForcedPasswordSchema,
   type ChangeForcedPasswordInput,
-} from "@/features/team/team.schema";
+} from "@/domains/team/team.schema";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
 

@@ -4,7 +4,7 @@ import {
   BillingBanner,
   shouldShowBillingBanner,
 } from "@/features/billing/components/billing-banner";
-import { getBillingSnapshot } from "@/features/billing/billing.service";
+import { getBillingSnapshot } from "@/domains/billing/billing.service";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { getCurrentUser } from "@/server/auth/users";
 import { getOrganizations } from "@/server/organizations/organizations";

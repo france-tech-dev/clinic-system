@@ -30,7 +30,7 @@ import { cn } from "@/shared/lib/utils";
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 const STATUS_LABEL: Record<BillingStatus, string> = {
   [BillingStatus.TRIALING]: "Em teste",

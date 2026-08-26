@@ -1,6 +1,6 @@
 import { InviteHub } from "@/features/protocol/components/public/invite-hub";
 import { PublicInviteUnavailable } from "@/features/protocol/components/public/public-invite-unavailable";
-import { getPublicProtocolInvite } from "@/features/protocol/invite/protocol-invite.service";
+import { getPublicProtocolInvite } from "@/domains/protocol/invite/protocol-invite.service";
 
 export default async function PublicAvaliacaoHubPage({
   params,

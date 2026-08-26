@@ -10,12 +10,12 @@ import {
   removeOrganizationLogoAction,
   saveOrganizationBrandingAction,
   uploadOrganizationLogoAction,
-} from "@/features/settings/settings.actions";
+} from "@/domains/settings/settings.actions";
 import {
   organizationBrandingSchema,
   type OrganizationBrandingInput,
-} from "@/features/settings/settings.schema";
-import type { PrintBranding } from "@/features/settings/settings.types";
+} from "@/domains/settings/settings.schema";
+import type { PrintBranding } from "@/domains/settings/settings.types";
 import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { isCustomOrganizationLogo } from "@/shared/lib/organization-logo";

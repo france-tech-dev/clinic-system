@@ -24,13 +24,13 @@ import {
 import {
   createBillingPortalSessionAction,
   createSubscribeCheckoutAction,
-} from "@/features/billing/billing.actions";
-import type { BillingSnapshotDTO } from "@/features/billing/billing.types";
+} from "@/domains/billing/billing.actions";
+import type { BillingSnapshotDTO } from "@/domains/billing/billing.types";
 import { cn } from "@/shared/lib/utils";
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 const STATUS_LABEL: Record<BillingStatus, string> = {
   [BillingStatus.TRIALING]: "Em período de teste",

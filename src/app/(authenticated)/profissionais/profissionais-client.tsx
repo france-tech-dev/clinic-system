@@ -31,16 +31,16 @@ import { MemberPatientsIndicator } from "@/features/team/components/member-patie
 import {
   deleteProfessionalAction,
   setMemberPatientsAction,
-} from "@/features/team/team.actions";
+} from "@/domains/team/team.actions";
 import type {
   AssignablePatientOption,
   TeamMemberDTO,
-} from "@/features/team/team.types";
+} from "@/domains/team/team.types";
 import { getHealthProfession } from "@/shared/constants/professions";
 import { memberRoleLabel } from "@/shared/constants/member-role";
 import { memberStatusLabel } from "@/shared/constants/member-status";
 import { initialsFromName } from "@/shared/lib/initials-from-name";
-import { Role, MemberStatus } from "../../../../prisma/generated/prisma/enums";
+import { Role, MemberStatus } from "@prisma/enums";
 import { CreateProfessionalDialog } from "./_components/create-professional-dialog";
 import { EditProfessionalDialog } from "./_components/edit-professional-dialog";
 

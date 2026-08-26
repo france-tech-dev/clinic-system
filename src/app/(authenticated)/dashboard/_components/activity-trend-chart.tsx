@@ -9,7 +9,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { ActivityMonthPoint } from "@/features/dashboard/dashboard.types";
+import type { ActivityMonthPoint } from "@/domains/dashboard/dashboard.types";
 
 const chartConfig = {
   patients: { label: "Novos pacientes", color: "var(--chart-1)" },

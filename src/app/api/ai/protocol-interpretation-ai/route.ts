@@ -11,8 +11,8 @@ import { logAiGeneration } from "@/shared/lib/ai/audit";
 import { formatAiProviderError } from "@/shared/lib/ai/errors";
 import { OrgContextError } from "@/shared/lib/org-context";
 import { assertRateLimit } from "@/shared/lib/rate-limit";
-import { buildProtocolInterpretationAIPrompt } from "@/features/protocol/_lib/interpretationAI/prompt";
-import { getProtocolInterpretationAIContext } from "@/features/protocol/protocol.service";
+import { buildProtocolInterpretationAIPrompt } from "@/domains/protocol/_lib/interpretationAI/prompt";
+import { getProtocolInterpretationAIContext } from "@/domains/protocol/protocol.service";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;

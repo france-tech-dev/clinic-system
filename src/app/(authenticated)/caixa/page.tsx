@@ -1,12 +1,12 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { getCashflowPageData } from "@/features/finance/finance.service";
+import { getCashflowPageData } from "@/domains/finance/finance.service";
 import type {
   CashflowPageData,
   CashMemberOption,
-} from "@/features/finance/finance.types";
-import { parseMonthParam } from "@/features/finance/_lib/month-utils";
-import { listPatients } from "@/features/patient/patient.service";
-import { listOrganizationMembers } from "@/features/schedule/schedule.service";
+} from "@/domains/finance/finance.types";
+import { parseMonthParam } from "@/domains/finance/_lib/month-utils";
+import { listPatients } from "@/domains/patient/patient.service";
+import { listOrganizationMembers } from "@/domains/schedule/schedule.service";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { CaixaClient } from "./caixa-client";
 

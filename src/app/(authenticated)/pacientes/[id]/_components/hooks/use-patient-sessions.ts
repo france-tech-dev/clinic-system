@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteSessionAction } from "@/features/patient/patient.actions";
+import { deleteSessionAction } from "@/domains/patient/patient.actions";
 import type {
   PatientDetailDTO,
   SessionNoteDTO,
-} from "@/features/patient/patient.types";
+} from "@/domains/patient/patient.types";
 
 export function usePatientSessions({
   setDetail,

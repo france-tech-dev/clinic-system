@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
-import type { SessionNoteDTO } from "@/features/patient/patient.types";
+import type { SessionNoteDTO } from "@/domains/patient/patient.types";
 import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 

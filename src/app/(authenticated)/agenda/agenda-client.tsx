@@ -23,28 +23,28 @@ import {
 import {
   deleteAppointmentAction,
   setAppointmentStatusAction,
-} from "@/features/schedule/schedule.actions";
+} from "@/domains/schedule/schedule.actions";
 import {
   filterAppointmentsByMemberId,
   filterAppointmentsByPatientId,
-} from "@/features/schedule/_lib/filter-appointments-by-member";
-import type { CalendarEvent } from "@/features/schedule/_lib/appointment-calendar-utils";
+} from "@/domains/schedule/_lib/filter-appointments-by-member";
+import type { CalendarEvent } from "@/domains/schedule/_lib/appointment-calendar-utils";
 import type {
   AppointmentDTO,
   ScheduleMemberDTO,
-} from "@/features/schedule/schedule.types";
+} from "@/domains/schedule/schedule.types";
 import type {
   PatientDTO,
   SessionLinkableAppointmentDTO,
-} from "@/features/patient/patient.types";
+} from "@/domains/patient/patient.types";
 import { SessionFormDialog } from "@/features/patient/components/session-form-dialog";
 import {
   addDaysIso,
   relativeDayLabel,
   todayIso,
 } from "@/shared/constants/appointment";
-import type { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
-import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
+import type { AppointmentStatus } from "@prisma/enums";
+import { CashTransactionType } from "@prisma/enums";
 import { paths } from "@/shared/constants/paths";
 import { replacePathAndQuery } from "@/shared/lib/replace-path-and-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

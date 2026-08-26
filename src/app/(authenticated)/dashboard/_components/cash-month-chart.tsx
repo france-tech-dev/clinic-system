@@ -9,7 +9,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { CashDayPoint } from "@/features/dashboard/dashboard.types";
+import type { CashDayPoint } from "@/domains/dashboard/dashboard.types";
 import { formatBrl } from "@/shared/lib/money-utils";
 
 const chartConfig = {

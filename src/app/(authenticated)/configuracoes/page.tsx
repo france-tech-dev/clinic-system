@@ -2,11 +2,11 @@ import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import {
   getPrintBranding,
   getProfessionalProfile,
-} from "@/features/settings/settings.service";
+} from "@/domains/settings/settings.service";
 import type {
   PrintBranding,
   ProfessionalProfile,
-} from "@/features/settings/settings.types";
+} from "@/domains/settings/settings.types";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { EMPTY_PROFESSIONAL } from "@/shared/types/professional";
 import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";

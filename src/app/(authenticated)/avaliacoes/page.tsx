@@ -16,12 +16,12 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { getBillingAccess } from "@/server/billing/access";
-import { listTeamMembers } from "@/features/team/team.service";
+import { listTeamMembers } from "@/domains/team/team.service";
 import {
   filterEvaluationCatalogByProfessions,
   type ProfessionEvaluationCatalogItem,
-} from "@/features/protocol/evaluation-modules";
-import { MemberStatus } from "../../../../prisma/generated/prisma/enums";
+} from "@/domains/protocol/evaluation-modules";
+import { MemberStatus } from "@prisma/enums";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";

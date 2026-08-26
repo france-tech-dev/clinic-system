@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { handleStripeWebhookEvent } from "@/features/billing/billing.service";
+import { handleStripeWebhookEvent } from "@/domains/billing/billing.service";
 import { env } from "@/shared/env";
 import { getStripe } from "@/shared/lib/stripe";
 

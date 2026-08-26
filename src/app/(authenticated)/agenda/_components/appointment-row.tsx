@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Check, ChevronDown } from "lucide-react";
-import type { AppointmentDTO } from "@/features/schedule/schedule.types";
+import type { AppointmentDTO } from "@/domains/schedule/schedule.types";
 import {
   APPOINTMENT_STATUSES,
   appointmentStatusInfo,
@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AppointmentStatus } from "../../../../../prisma/generated/prisma/enums";
+import { AppointmentStatus } from "@prisma/enums";
 
 export function AppointmentRow({
   appointment,

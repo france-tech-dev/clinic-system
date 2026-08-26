@@ -8,7 +8,7 @@ import {
   type PublicInviteProtocolOption,
 } from "@/features/protocol/components/create-protocol-invite-dialog";
 import { ProtocolInviteStatusList } from "@/features/protocol/components/protocol-invite-status";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 
 export function LinksPublicosTab({
   patientId,

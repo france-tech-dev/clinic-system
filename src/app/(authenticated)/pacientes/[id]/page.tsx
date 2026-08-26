@@ -3,24 +3,24 @@ import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import {
   listPatientAnamneses,
   toAnamneseSummary,
-} from "@/features/anamnese/anamnese.service";
-import { buildAnamnesePdfBlocks } from "@/features/anamnese/_lib/pdf/build-blocks";
-import { getCatalogAnamnese } from "@/features/anamnese/forms";
-import { getPatientDetail } from "@/features/patient/patient.service";
-import { listTeamMembers } from "@/features/team/team.service";
-import type { TeamMemberDTO } from "@/features/team/team.types";
-import { listGuardians } from "@/features/guardian/guardian.service";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
-import type { PatientDetailDTO } from "@/features/patient/patient.types";
-import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
+} from "@/domains/anamnese/anamnese.service";
+import { buildAnamnesePdfBlocks } from "@/domains/anamnese/_lib/pdf/build-blocks";
+import { getCatalogAnamnese } from "@/domains/anamnese/forms";
+import { getPatientDetail } from "@/domains/patient/patient.service";
+import { listTeamMembers } from "@/domains/team/team.service";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
+import { listGuardians } from "@/domains/guardian/guardian.service";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
+import type { PatientDetailDTO } from "@/domains/patient/patient.types";
+import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
 import {
   getPrintBranding,
   getProfessionalProfile,
-} from "@/features/settings/settings.service";
+} from "@/domains/settings/settings.service";
 import type {
   PrintBranding,
   ProfessionalProfile,
-} from "@/features/settings/settings.types";
+} from "@/domains/settings/settings.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { isLeadershipRole } from "@/shared/lib/member-role";
@@ -28,8 +28,8 @@ import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import {
   listProtocolInvites,
   listPublicInviteProtocols,
-} from "@/features/protocol/invite/protocol-invite.service";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+} from "@/domains/protocol/invite/protocol-invite.service";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import { getBillingAccess } from "@/server/billing/access";
 import { headers } from "next/headers";
 import { PacienteDetailClient } from "./paciente-detail-client";

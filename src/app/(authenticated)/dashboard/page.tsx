@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { Button } from "@/components/ui/button";
-import { buildCashDaySeries } from "@/features/dashboard/_lib/build-cash-day-series";
-import { getDashboardData } from "@/features/dashboard/dashboard.service";
-import type { DashboardPageData } from "@/features/dashboard/dashboard.types";
-import { getCashflowPageData } from "@/features/finance/finance.service";
+import { buildCashDaySeries } from "@/domains/dashboard/_lib/build-cash-day-series";
+import { getDashboardData } from "@/domains/dashboard/dashboard.service";
+import type { DashboardPageData } from "@/domains/dashboard/dashboard.types";
+import { getCashflowPageData } from "@/domains/finance/finance.service";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { DashboardContent } from "./_components/dashboard-content";

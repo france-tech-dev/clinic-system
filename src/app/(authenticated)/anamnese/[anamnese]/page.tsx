@@ -9,12 +9,13 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { getAnamneseForm, getCatalogAnamnese } from "@/features/anamnese/forms";
-import { listPatients } from "@/features/patient/patient.service";
+import { getCatalogAnamnese } from "@/domains/anamnese/forms";
+import { getAnamneseForm } from "@/features/anamnese/forms";
+import { listPatients } from "@/domains/patient/patient.service";
 import {
   getPrintBranding,
   getProfessionalProfile,
-} from "@/features/settings/settings.service";
+} from "@/domains/settings/settings.service";
 import { getBillingAccess } from "@/server/billing/access";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { paths } from "@/shared/constants/paths";

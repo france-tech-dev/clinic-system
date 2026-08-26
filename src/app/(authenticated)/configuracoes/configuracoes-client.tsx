@@ -4,7 +4,7 @@ import { ProfessionalProfileForm } from "@/features/settings/components/professi
 import type {
   PrintBranding,
   ProfessionalProfile,
-} from "@/features/settings/settings.types";
+} from "@/domains/settings/settings.types";
 import { ClinicBrandingForm } from "./_components/clinic-branding-form";
 
 export function ConfiguracoesClient({

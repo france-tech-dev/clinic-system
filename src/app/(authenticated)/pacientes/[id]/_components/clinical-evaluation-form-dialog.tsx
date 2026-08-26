@@ -16,12 +16,12 @@ import { Form } from "@/components/ui/form";
 import {
   createClinicalEvaluationAction,
   updateClinicalEvaluationAction,
-} from "@/features/patient/patient.actions";
+} from "@/domains/patient/patient.actions";
 import {
   clinicalEvaluationFormSchema,
   updateClinicalEvaluationSchema,
-} from "@/features/patient/patient.schema";
-import type { ClinicalEvaluationDTO } from "@/features/patient/patient.types";
+} from "@/domains/patient/patient.schema";
+import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { ClinicalEvaluationFormClinicalFields } from "./clinical-evaluation-form/clinical-evaluation-form-clinical-fields";
