@@ -1,0 +1,371 @@
+{
+  "scale": "pedi",
+  "sections": [
+    {
+      "id": "a",
+      "title": "TRANSFERÊNCIAS NO BANHEIRO",
+      "items": [
+        {
+          "id": "a-01",
+          "label": "Fica sentado se estiver apoiado em equipamento ou no adulto"
+        },
+        {
+          "id": "a-02",
+          "label": "Fica sentado sem apoio na privada ou no troninho"
+        },
+        {
+          "id": "a-03",
+          "label": "Senta e levanta de privada baixa ou troninho"
+        },
+        {
+          "id": "a-04",
+          "label": "Senta e levanta de privada própria para adulto"
+        },
+        {
+          "id": "a-05",
+          "label": "Senta e levanta de privada sem usar seus próprios braços"
+        }
+      ]
+    },
+    {
+      "id": "b",
+      "title": "TRANSFERÊNCIAS DE CADEIRAS/CADEIRAS DE RODAS",
+      "items": [
+        {
+          "id": "b-01",
+          "label": "Fica sentado se estiver apoiado em equipamento ou adulto"
+        },
+        {
+          "id": "b-02",
+          "label": "Fica sentado em cadeira ou banco sem apoio"
+        },
+        {
+          "id": "b-03",
+          "label": "Senta e levanta de cadeira, mobília baixa/infantis"
+        },
+        {
+          "id": "b-04",
+          "label": "Senta e levanta de cadeira/cadeira de rodas de tamanho adulto"
+        },
+        {
+          "id": "b-05",
+          "label": "Senta e levanta de cadeira sem usar seus próprios braços"
+        }
+      ]
+    },
+    {
+      "id": "c1",
+      "title": "TRANSFERÊNCIAS NO CARRO",
+      "items": [
+        {
+          "id": "c1-01",
+          "label": "Movimenta-se no carro; mexe-se e sobe/desce da cadeira do carro"
+        },
+        {
+          "id": "c1-02",
+          "label": "Entra e sai do carro com pouco auxílio ou instrução"
+        },
+        {
+          "id": "c1-03",
+          "label": "Maneja cinto de segurança e tranca da cadeira"
+        },
+        {
+          "id": "c1-04",
+          "label": "Maneja cinto de segurança e tranca da cadeira de forma independente"
+        },
+        {
+          "id": "c1-05",
+          "label": "Entra e sai do carro e passa de porta a porta do mesmo lado"
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "title": "TRANSFERÊNCIAS NO ÔNIBUS",
+      "items": [
+        {
+          "id": "c2-01",
+          "label": "Sobe e desce do banco do ônibus"
+        },
+        {
+          "id": "c2-02",
+          "label": "Move-se com ônibus em movimento"
+        },
+        {
+          "id": "c2-03",
+          "label": "Desce na escada do ônibus"
+        },
+        {
+          "id": "c2-04",
+          "label": "Passa na roleta"
+        },
+        {
+          "id": "c2-05",
+          "label": "Sobe a escada do ônibus"
+        }
+      ]
+    },
+    {
+      "id": "d",
+      "title": "MOBILIDADE NA CAMA / TRANSFERÊNCIAS",
+      "items": [
+        {
+          "id": "d-01",
+          "label": "Passa de deitada para sentada na cama ou berço"
+        },
+        {
+          "id": "d-02",
+          "label": "Passa para sentada na beirada da cama"
+        },
+        {
+          "id": "d-03",
+          "label": "Deita a partir de sentada na beirada da cama"
+        },
+        {
+          "id": "d-04",
+          "label": "Sobe e desce de sua própria cama, sem usar seus braços"
+        }
+      ]
+    },
+    {
+      "id": "e",
+      "title": "TRANSFERÊNCIAS NO CHUVEIRO",
+      "items": [
+        {
+          "id": "e-01",
+          "label": "Entra no chuveiro"
+        },
+        {
+          "id": "e-02",
+          "label": "Sai do chuveiro"
+        },
+        {
+          "id": "e-03",
+          "label": "Agacha para pegar sabonete ou shampoo no chão"
+        },
+        {
+          "id": "e-04",
+          "label": "Abre e fecha box/cortina"
+        },
+        {
+          "id": "e-05",
+          "label": "Abre e fecha torneira"
+        }
+      ]
+    },
+    {
+      "id": "f",
+      "title": "MÉTODOS DE LOCOMOÇÃO EM AMBIENTE INTERNO (escore 1 se já realiza)",
+      "items": [
+        {
+          "id": "f-01",
+          "label": "Rola, pivoteia, arrasta ou engatinha no chão"
+        },
+        {
+          "id": "f-02",
+          "label": "Anda, porém segurando-se na mobília, parede, de adulto ou utilizando andador"
+        },
+        {
+          "id": "f-03",
+          "label": "Anda sem auxílio"
+        }
+      ]
+    },
+    {
+      "id": "g",
+      "title": "LOCOMOÇÃO EM AMBIENTE INTERNO: DISTÂNCIA/VELOCIDADE (escore 1 se já realiza)",
+      "items": [
+        {
+          "id": "g-01",
+          "label": "Move-se pelo ambiente, mas com dificuldade (ex: velocidade lenta para a idade)"
+        },
+        {
+          "id": "g-02",
+          "label": "Move-se pelo ambiente sem dificuldade"
+        },
+        {
+          "id": "g-03",
+          "label": "Move-se entre ambientes com dificuldade (ex: velocidade lenta para a idade)"
+        },
+        {
+          "id": "g-04",
+          "label": "Move-se entre ambientes sem dificuldade"
+        },
+        {
+          "id": "g-05",
+          "label": "Move-se entre ambientes internos por 15 m; abre e fecha portas internas e externas"
+        }
+      ]
+    },
+    {
+      "id": "h",
+      "title": "LOCOMOÇÃO EM AMBIENTE INTERNO: ARRASTA / CARREGA OBJETOS",
+      "items": [
+        {
+          "id": "h-01",
+          "label": "Muda de lugar intencionalmente"
+        },
+        {
+          "id": "h-02",
+          "label": "Move-se, concomitantemente, com objetos pelo chão"
+        },
+        {
+          "id": "h-03",
+          "label": "Carrega objetos pequenos que cabem em uma das mãos"
+        },
+        {
+          "id": "h-04",
+          "label": "Carrega objetos grandes que requerem a utilização de duas mãos"
+        },
+        {
+          "id": "h-05",
+          "label": "Carrega objetos frágeis ou que contêm líquidos"
+        }
+      ]
+    },
+    {
+      "id": "i",
+      "title": "LOCOMOÇÃO EM AMBIENTE EXTERNO: MÉTODOS",
+      "items": [
+        {
+          "id": "i-01",
+          "label": "Anda, mas segura em objetos, adultos ou aparelhos de apoio"
+        },
+        {
+          "id": "i-02",
+          "label": "Anda sem apoio"
+        }
+      ]
+    },
+    {
+      "id": "j",
+      "title": "LOCOMOÇÃO EM AMBIENTE EXTERNO: DISTÂNCIA / VELOCIDADE (escore 1 se já for capaz)",
+      "items": [
+        {
+          "id": "j-01",
+          "label": "Move-se por 3 - 15 m (comprimento de 1-5 carros)"
+        },
+        {
+          "id": "j-02",
+          "label": "Move-se por 15 - 30 m (comprimento de 5-10 carros)"
+        },
+        {
+          "id": "j-03",
+          "label": "Move-se por 30 - 45 m"
+        },
+        {
+          "id": "j-04",
+          "label": "Move-se por 45 m ou mais, mas com dificuldade (tropeça, velocidade lenta para a idade)"
+        },
+        {
+          "id": "j-05",
+          "label": "Move-se por 45 m ou mais sem dificuldade"
+        }
+      ]
+    },
+    {
+      "id": "k",
+      "title": "LOCOMOÇÃO EM AMBIENTE EXTERNO: SUPERFÍCIES",
+      "items": [
+        {
+          "id": "k-01",
+          "label": "Move-se em superfícies niveladas (passeios e ruas planas)"
+        },
+        {
+          "id": "k-02",
+          "label": "Superfícies pouco acidentadas (asfalto rachado)"
+        },
+        {
+          "id": "k-03",
+          "label": "Superfícies irregulares e acidentadas (gramados e ruas de cascalho)"
+        },
+        {
+          "id": "k-04",
+          "label": "Sobe e desce rampas ou inclinações"
+        },
+        {
+          "id": "k-05",
+          "label": "Sobe e desce meio-fio"
+        }
+      ]
+    },
+    {
+      "id": "l",
+      "title": "SUBIR ESCADAS (escore 1 se a criança conseguiu previamente a habilidade)",
+      "items": [
+        {
+          "id": "l-01",
+          "label": "Arrasta-se, engatinha para cima por partes de lances parciais de escada (1-11 degraus)"
+        },
+        {
+          "id": "l-02",
+          "label": "Arrasta, engatinha para cima por um lance de escada completo (12-15 degraus)"
+        },
+        {
+          "id": "l-03",
+          "label": "Sobe partes de um lance de escada (1-11 degraus)"
+        },
+        {
+          "id": "l-04",
+          "label": "Sobe um lance completo, mas com dificuldade (lento para a idade)"
+        },
+        {
+          "id": "l-05",
+          "label": "Sobe um conjunto de lances de escada sem dificuldade"
+        }
+      ]
+    },
+    {
+      "id": "m",
+      "title": "DESCER ESCADAS (escore 1 se a criança conseguiu previamente a habilidade)",
+      "items": [
+        {
+          "id": "m-01",
+          "label": "Arrasta-se, engatinha para baixo por partes de lances parciais de escada (1-11 degraus)"
+        },
+        {
+          "id": "m-02",
+          "label": "Arrasta-se, rasteja para baixo por um lance de escada (12-15 degraus)"
+        },
+        {
+          "id": "m-03",
+          "label": "Desce, ereto, um lance de escada completo (12-15 degraus)"
+        },
+        {
+          "id": "m-04",
+          "label": "Desce um lance completo, mas com dificuldade (lento para a idade)"
+        },
+        {
+          "id": "m-05",
+          "label": "Desce um conjunto de lances de escada sem dificuldade"
+        }
+      ]
+    },
+    {
+      "id": "n",
+      "title": "MOBILIDADE FUNCIONAL (COM AJUDA)",
+      "items": [
+        {
+          "id": "n-01",
+          "label": "Anda em superfícies planas com ajuda (ex: andador, bengala ou apoio físico)"
+        },
+        {
+          "id": "n-02",
+          "label": "Anda em superfícies irregulares com ajuda"
+        },
+        {
+          "id": "n-03",
+          "label": "Sobe escadas com ajuda (ex: segurando no corrimão ou com ajuda de outra pessoa)"
+        },
+        {
+          "id": "n-04",
+          "label": "Move-se em cadeira de rodas manual com ajuda parcial ou total"
+        },
+        {
+          "id": "n-05",
+          "label": "Move-se em cadeira de rodas motorizada (ex: com joystick, controle)"
+        }
+      ]
+    }
+  ]
+}
