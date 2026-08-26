@@ -4,18 +4,21 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 
 ## Fundação
 
-| Peça                       | Local                                                                                                     |
-| -------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Cliente / modelo / stream  | [`src/shared/lib/ai`](../src/shared/lib/ai/index.ts)                                                      |
-| Prompt clínico (protocolo) | [`src/features/protocol/_lib/interpretationAI`](../src/features/protocol/_lib/interpretationAI/prompt.ts) |
-| Stream HTTP                | `POST /api/ai/protocol-interpretation-ai`                                                                    |
-| Persistência               | `ProtocolEvaluation.interpretationAI`                                                                     |
+| Peça                          | Local                                                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Cliente / modelo / stream     | [`packages/shared/src/lib/ai`](../packages/shared/src/lib/ai/index.ts)                                                    |
+| Hook client (gerar/stream)    | [`useProtocolInterpretationAI`](../apps/web/src/features/protocol/hooks/use-protocol-interpretation-ai.ts)               |
+| Prompt clínico (protocolo)    | [`packages/domains/.../interpretationAI`](../packages/domains/src/protocol/_lib/interpretationAI/prompt.ts)              |
+| Somas brutas (determinístico) | [`raw-section-scores.ts`](../packages/domains/src/protocol/_lib/interpretationAI/raw-section-scores.ts)                  |
+| Stream HTTP                   | `POST /api/ai/protocol-interpretation-ai`                                                                                 |
+| Persistência                  | `ProtocolEvaluation.interpretationAI`                                                                                     |
+| Auditoria                     | `AiGenerationLog` (`ai_generation_logs`)                                                                                  |
 
 `shared/lib/ai` não contém regras clínicas — só provider e helpers reutilizáveis. Novos casos (evolução, anamnese) devem acrescentar prompts no respectivo domínio e reutilizar o cliente.
 
 ## Variáveis de ambiente
 
-Em [`src/shared/env.ts`](../src/shared/env.ts):
+Em [`packages/shared/src/env.ts`](../packages/shared/src/env.ts):
 
 ```env
 # Provider: google (default) | openai
@@ -37,15 +40,23 @@ Chave em [Google AI Studio](https://aistudio.google.com/apikey). Sem a chave do 
 ## Fluxo (interpretação de protocolo)
 
 1. Profissional abre respostas do link público (paciente → Links públicos).
-2. Clica **Gerar** → `POST /api/ai/protocol-interpretation-ai` com `{ evaluationId }`.
-3. Servidor valida sessão, permissão `project:read`, feature gated `ai`, monta preview tipado + primeiro nome/idade, e faz stream do texto.
-4. Profissional edita o rascunho e **Guarda** via `saveProtocolInterpretationAIAction`.
+2. Clica **Gerar** (ou **Parar** a meio) → hook `useProtocolInterpretationAI` → `POST /api/ai/protocol-interpretation-ai`.
+3. Servidor: rate limit org/user → auditoria → preview + somas brutas → stream.
+4. Profissional edita o rascunho e **Salva** via `saveProtocolInterpretationAIAction`.
+
+## Rate limit
+
+Por janela de 1 hora (tabela `rate_limit`):
+
+- Clínica: `ai:org:{organizationId}` — máx. 40
+- Utilizador: `ai:user:{userId}` — máx. 20
 
 ## Limites clínicos e privacidade
 
-- **Não inventa T-scores / bandas normativas** — o sistema ainda não calcula normas SPM; a análise é item a item.
+- **Não inventa T-scores / bandas normativas** — só somas brutas determinísticas + itens; normas oficiais exigem tabelas licenciadas (fase futura).
 - Texto é **rascunho assistido** — o profissional deve rever antes de uso clínico.
-- Prompt envia só: instrumento, data, primeiro nome, idade aproximada (se houver) e itens com rótulos. Sem CPF, contacto ou outros PII.
+- Prompt: instrumento, data, primeiro nome, idade (se houver), somas brutas, itens. Sem CPF/contacto.
+- Auditoria: `organizationId`, `userId`, `kind`, `evaluationId`, `createdAt` — **sem** texto do prompt/resposta.
 - Feature gated: `"ai"` no plano **Enterprise** (trial/legado têm todas as gated features).
 
 ## Billing
