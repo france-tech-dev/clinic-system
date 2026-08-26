@@ -48,8 +48,8 @@ export default async function PacienteDetailPage({
   let orgMembers: TeamMemberDTO[] = [];
   let isLeadership = false;
   let protocolInvites: ProtocolInviteDTO[] = [];
-  let inviteProtocols = listPublicInviteProtocols();
   let canWriteInvites = false;
+  let canUseAi = false;
   let professional: ProfessionalProfile = {
     name: "",
     registration: "",
@@ -60,6 +60,8 @@ export default async function PacienteDetailPage({
     clinicName: "Clinic System",
     logoUrl: "/logo_dark.png",
   };
+
+  const inviteProtocols = listPublicInviteProtocols();
 
   try {
     const { organizationId, userId } = await requireOrgId();
@@ -98,6 +100,7 @@ export default async function PacienteDetailPage({
     protocolInvites = invites;
     canWriteInvites =
       billing.mode === "full" && billing.features.includes("avaliacoes");
+    canUseAi = billing.mode === "full" && billing.features.includes("ai");
     anamneses = anamneseRecords.map((row) =>
       toAnamneseSummary(
         row,
@@ -142,6 +145,7 @@ export default async function PacienteDetailPage({
         initialProtocolInvites={protocolInvites}
         inviteProtocols={inviteProtocols}
         canWriteInvites={canWriteInvites}
+        canUseAi={canUseAi}
       />
     </AppPage>
   );

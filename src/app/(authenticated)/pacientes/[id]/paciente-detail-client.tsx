@@ -54,6 +54,7 @@ export function PacienteDetailClient({
   initialProtocolInvites,
   inviteProtocols,
   canWriteInvites,
+  canUseAi,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
@@ -66,6 +67,7 @@ export function PacienteDetailClient({
   initialProtocolInvites: ProtocolInviteDTO[];
   inviteProtocols: PublicInviteProtocolOption[];
   canWriteInvites: boolean;
+  canUseAi: boolean;
 }) {
   const vm = usePatientDetail({
     initial,
@@ -172,6 +174,7 @@ export function PacienteDetailClient({
           initialInvites={initialProtocolInvites}
           inviteProtocols={inviteProtocols}
           canWriteInvites={canWriteInvites}
+          canUseAi={canUseAi}
         />
       )}
 

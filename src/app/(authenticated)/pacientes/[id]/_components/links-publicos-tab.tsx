@@ -15,11 +15,13 @@ export function LinksPublicosTab({
   initialInvites,
   inviteProtocols,
   canWriteInvites,
+  canUseAi,
 }: {
   patientId: string;
   initialInvites: ProtocolInviteDTO[];
   inviteProtocols: PublicInviteProtocolOption[];
   canWriteInvites: boolean;
+  canUseAi: boolean;
 }) {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [invites, setInvites] = useState(initialInvites);
@@ -70,6 +72,7 @@ export function LinksPublicosTab({
         invites={invites}
         canManage={canWriteInvites}
         canCreate={canCreate}
+        canUseAi={canUseAi}
         onCreate={() => setInviteOpen(true)}
         onChange={setInvites}
       />
