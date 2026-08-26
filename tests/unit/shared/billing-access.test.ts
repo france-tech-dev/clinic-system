@@ -48,6 +48,22 @@ describe("resolveBillingAccess", () => {
     expect(access.maxProfessionals).toBe(9);
   });
 
+  it("Enterprise activo inclui avaliações, portal e IA", () => {
+    const access = resolveBillingAccess({
+      status: BillingStatus.ACTIVE,
+      plan: BillingPlan.ENTERPRISE,
+      trialEndsAt: null,
+    });
+    expect(access.features).toEqual([
+      "anamnese",
+      "caixa",
+      "avaliacoes",
+      "portal",
+      "ai",
+    ]);
+    expect(access.maxProfessionals).toBeNull();
+  });
+
   it("CANCELLED fica read-only", () => {
     const access = resolveBillingAccess({
       status: BillingStatus.CANCELLED,
