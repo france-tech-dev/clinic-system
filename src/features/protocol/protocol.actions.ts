@@ -12,6 +12,7 @@ import {
   listProtocolEvaluationsSchema,
   protocolEvaluationFormSchema,
   protocolEvaluationIdSchema,
+  saveProtocolInterpretationAISchema,
   updateProtocolEvaluationSchema,
 } from "./protocol.schema";
 import {
@@ -22,6 +23,7 @@ import {
   getProtocolEvaluationPreview,
   listProtocolEvaluations,
   resolveProtocolAuthorMemberId,
+  saveProtocolInterpretationAI,
   updateProtocolEvaluation,
 } from "./protocol.service";
 import type {
@@ -93,6 +95,29 @@ export async function getProtocolEvaluationPreviewAction(
       parsed.data.id,
     );
     if (!data) return fail("Avaliação não encontrada");
+    return ok(data);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function saveProtocolInterpretationAIAction(
+  input: unknown,
+): Promise<ActionResult<ProtocolEvaluationDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const parsed = saveProtocolInterpretationAISchema.safeParse(input);
+    if (!parsed.success) return failZod(parsed.error);
+
+    const { organizationId } = await requireOrgFeatureWrite("ai");
+    const data = await saveProtocolInterpretationAI(
+      organizationId,
+      parsed.data.id,
+      parsed.data.interpretationAI,
+    );
+    if (!data) return fail("Avaliação não encontrada");
+
+    revalidateProtocol(data.protocolId, data.patientId);
     return ok(data);
   } catch (error) {
     return handleError(error);

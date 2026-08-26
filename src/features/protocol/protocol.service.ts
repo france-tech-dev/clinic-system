@@ -8,6 +8,10 @@ import {
   ITEM_SCALE_OPTIONS,
   type ItemResponseValue,
 } from "./evaluation-modules/_shared/item-scale";
+import {
+  ageYearsFromBirthDate,
+  patientFirstName,
+} from "./_lib/interpretationAI/prompt";
 import { protocolRepository } from "./protocol.repository";
 import type {
   ProtocolEvaluationFormInput,
@@ -17,6 +21,7 @@ import type {
   ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
   ProtocolEvaluationPreviewDTO,
+  ProtocolInterpretationAIContextDTO,
 } from "./protocol.types";
 
 function parseScores(raw: string): Record<string, number | string | null> {
@@ -49,6 +54,10 @@ function toDTO(row: ProtocolEvaluationRow): ProtocolEvaluationDTO {
     date: row.date,
     scores,
     notes: row.notes,
+    interpretationAI: row.interpretationAI ?? null,
+    interpretationAIUpdatedAt: row.interpretationAIUpdatedAt
+      ? row.interpretationAIUpdatedAt.toISOString()
+      : null,
     summary,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
@@ -102,6 +111,8 @@ export async function getProtocolEvaluationPreview(
       protocolId: dto.protocolId,
       protocolName: mod?.name ?? dto.label,
       date: dto.date,
+      interpretationAI: dto.interpretationAI,
+      interpretationAIUpdatedAt: dto.interpretationAIUpdatedAt,
       sections: [],
     };
   }
@@ -118,6 +129,8 @@ export async function getProtocolEvaluationPreview(
     protocolId: dto.protocolId,
     protocolName: mod.name,
     date: dto.date,
+    interpretationAI: dto.interpretationAI,
+    interpretationAIUpdatedAt: dto.interpretationAIUpdatedAt,
     sections: template.sections.map((section) => ({
       id: section.id,
       title: section.title,
@@ -128,6 +141,36 @@ export async function getProtocolEvaluationPreview(
       })),
     })),
   };
+}
+
+export async function getProtocolInterpretationAIContext(
+  organizationId: string,
+  id: string,
+): Promise<ProtocolInterpretationAIContextDTO | null> {
+  const row = await protocolRepository.findById(organizationId, id);
+  if (!row) return null;
+
+  const preview = await getProtocolEvaluationPreview(organizationId, id);
+  if (!preview) return null;
+
+  return {
+    preview,
+    patientFirstName: patientFirstName(row.patient.name),
+    patientAgeYears: ageYearsFromBirthDate(row.patient.birthDate),
+  };
+}
+
+export async function saveProtocolInterpretationAI(
+  organizationId: string,
+  id: string,
+  interpretationAI: string | null,
+) {
+  const row = await protocolRepository.updateInterpretationAI(
+    organizationId,
+    id,
+    interpretationAI,
+  );
+  return row ? toDTO(row) : null;
 }
 
 export async function createProtocolEvaluation(

@@ -79,6 +79,19 @@ export const protocolEvaluationIdSchema = z.object({
   id: z.string().min(1),
 });
 
+export const saveProtocolInterpretationAISchema = z.object({
+  id: z.string().min(1),
+  interpretationAI: z
+    .string()
+    .max(50_000)
+    .nullable()
+    .transform((value) => {
+      if (value == null) return null;
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : null;
+    }),
+});
+
 export const listProtocolEvaluationsSchema = z.object({
   patientId: z.string().min(1),
   protocolId: z.string().min(1).optional(),
@@ -94,4 +107,7 @@ export type ProtocolEvaluationFormInput = z.infer<
 >;
 export type UpdateProtocolEvaluationInput = z.infer<
   typeof updateProtocolEvaluationSchema
+>;
+export type SaveProtocolInterpretationAIInput = z.infer<
+  typeof saveProtocolInterpretationAISchema
 >;

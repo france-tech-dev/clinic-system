@@ -5,7 +5,7 @@ import type {
 } from "./protocol.schema";
 
 const assessmentInclude = {
-  patient: { select: { id: true, name: true } },
+  patient: { select: { id: true, name: true, birthDate: true } },
   member: {
     include: {
       user: { select: { name: true } },
@@ -84,6 +84,27 @@ export const protocolRepository = {
         date: data.date,
         scores: JSON.stringify(data.scores),
         notes: data.notes ?? "",
+      },
+      include: assessmentInclude,
+    });
+  },
+
+  async updateInterpretationAI(
+    organizationId: string,
+    id: string,
+    interpretationAI: string | null,
+  ) {
+    const existing = await db.protocolEvaluation.findFirst({
+      where: { id, organizationId },
+      select: { id: true },
+    });
+    if (!existing) return null;
+
+    return db.protocolEvaluation.update({
+      where: { id },
+      data: {
+        interpretationAI,
+        interpretationAIUpdatedAt: interpretationAI ? new Date() : null,
       },
       include: assessmentInclude,
     });

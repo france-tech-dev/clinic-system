@@ -35,6 +35,11 @@ const envSchema = z
     R2_SECRET_ACCESS_KEY: z.string().optional(),
     R2_BUCKET: z.string().optional(),
     R2_PUBLIC_BASE_URL: z.string().optional(),
+
+    OPENAI_API_KEY: z.string().optional(),
+    GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
+    AI_PROVIDER: z.enum(["openai", "google"]).default("google"),
+    AI_MODEL: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.OBJECT_STORAGE_DRIVER !== "r2") return;

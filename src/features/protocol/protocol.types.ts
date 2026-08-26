@@ -13,6 +13,8 @@ export type ProtocolEvaluationDTO = {
   date: string;
   scores: Record<string, ProtocolScoreValue>;
   notes: string;
+  interpretationAI: string | null;
+  interpretationAIUpdatedAt: string | null;
   summary: Gmfm88OverallSummary | null;
   createdAt: string;
   updatedAt: string;
@@ -36,6 +38,8 @@ export type ProtocolEvaluationPreviewDTO = {
   protocolId: string;
   protocolName: string;
   date: string;
+  interpretationAI: string | null;
+  interpretationAIUpdatedAt: string | null;
   sections: Array<{
     id: string;
     title: string;
@@ -45,4 +49,10 @@ export type ProtocolEvaluationPreviewDTO = {
       valueLabel: string;
     }>;
   }>;
+};
+
+export type ProtocolInterpretationAIContextDTO = {
+  preview: ProtocolEvaluationPreviewDTO;
+  patientFirstName: string;
+  patientAgeYears: number | null;
 };
