@@ -3,7 +3,7 @@ import { resolveBillingAccess } from "@/shared/constants/billing-plans";
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 describe("resolveBillingAccess", () => {
   it("sem linha de billing trata como legado com tudo libertado", () => {

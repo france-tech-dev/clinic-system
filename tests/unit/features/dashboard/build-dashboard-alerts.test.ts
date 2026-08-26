@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDashboardAlerts } from "@/features/dashboard/_lib/build-dashboard-alerts";
+import { buildDashboardAlerts } from "@/domains/dashboard/_lib/build-dashboard-alerts";
 
 describe("buildDashboardAlerts", () => {
   const now = new Date("2026-07-13T12:00:00");

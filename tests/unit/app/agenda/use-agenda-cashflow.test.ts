@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { buildCashDraftFromAppointment } from "@/app/(authenticated)/agenda/_components/hooks/use-agenda-cashflow";
-import type { AppointmentDTO } from "@/features/schedule/schedule.types";
+import type { AppointmentDTO } from "@/domains/schedule/schedule.types";
 import {
   AppointmentStatus,
   CashTransactionType,
   PatientPricingType,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 const appointment: AppointmentDTO = {
   id: "a1",

@@ -7,8 +7,8 @@ import {
   appointmentDateTime,
   appointmentDisplayColor,
   calendarEventStyle,
-} from "@/features/schedule/_lib/appointment-calendar-utils";
-import { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
+} from "@/domains/schedule/_lib/appointment-calendar-utils";
+import { AppointmentStatus } from "@prisma/enums";
 
 describe("appointmentDateTime", () => {
   it("combina data e hora", () => {

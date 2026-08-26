@@ -3,7 +3,7 @@ import {
   filterAppointmentsByMemberId,
   filterAppointmentsByPatientId,
   normalizeFilterIds,
-} from "@/features/schedule/_lib/filter-appointments-by-member";
+} from "@/domains/schedule/_lib/filter-appointments-by-member";
 
 describe("normalizeFilterIds", () => {
   it("trata all, null e vazio como sem filtro", () => {

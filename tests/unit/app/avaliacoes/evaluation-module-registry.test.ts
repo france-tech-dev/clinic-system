@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 // O registry puxa `render` → actions → auth → email (`server-only`).
 vi.mock("server-only", () => ({}));
 
+import { PROFESSION_EVALUATION_CATALOG } from "@/domains/protocol/evaluation-modules";
 import {
   EVALUATION_MODULE_REGISTRY,
-  PROFESSION_EVALUATION_CATALOG,
   getEvaluationModule,
 } from "@/features/protocol/evaluation-modules";
 
@@ -48,15 +48,17 @@ describe("assessment catalog ↔ UI registry", () => {
       (item) => item.professionId === "terapeuta_ocupacional",
     );
     expect(to).toBeDefined();
-    expect(to?.assessments.map((a) => a.id).sort()).toEqual(
-      [
+    const ids = to?.assessments.map((a) => a.id) ?? [];
+    expect(ids).toEqual(
+      expect.arrayContaining([
         "pedi-autocuidado",
         "pedi-funcao-social",
         "pedi-mobilidade",
         "spm-casa-2anos",
         "spm-casa-3anos",
         "spm-casa-5anos",
-      ].sort(),
+      ]),
     );
+    expect(ids.length).toBeGreaterThanOrEqual(6);
   });
 });

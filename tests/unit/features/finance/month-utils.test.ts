@@ -4,7 +4,7 @@ import {
   monthParamToBounds,
   parseMonthParam,
   shiftMonthParam,
-} from "@/features/finance/_lib/month-utils";
+} from "@/domains/finance/_lib/month-utils";
 
 describe("parseMonthParam", () => {
   it("aceita yyyy-MM válido", () => {

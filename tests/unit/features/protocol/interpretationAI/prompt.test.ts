@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ProtocolEvaluationPreviewDTO } from "@/features/protocol/protocol.types";
+import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
 import {
   ageYearsFromBirthDate,
   buildProtocolInterpretationAIPrompt,
   patientFirstName,
   PROTOCOL_INTERPRETATION_AI_SYSTEM_PROMPT,
-} from "@/features/protocol/_lib/interpretationAI/prompt";
+} from "@/domains/protocol/_lib/interpretationAI/prompt";
 
 const fixturePreview: ProtocolEvaluationPreviewDTO = {
   id: "eval_1",

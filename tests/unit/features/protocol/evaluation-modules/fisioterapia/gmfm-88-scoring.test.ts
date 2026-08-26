@@ -3,7 +3,7 @@ import {
   emptyGmfm88Scores,
   summarizeGmfm88,
   summarizeGmfm88Domain,
-} from "@/features/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
+} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
 
 describe("summarizeGmfm88Domain", () => {
   it("calcula total e percentual do domínio A", () => {
