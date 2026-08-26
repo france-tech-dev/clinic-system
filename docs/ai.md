@@ -4,15 +4,15 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 
 ## Fundação
 
-| Peça                          | Local                                                                                                                     |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Cliente / modelo / stream     | [`packages/shared/src/lib/ai`](../packages/shared/src/lib/ai/index.ts)                                                    |
-| Hook client (gerar/stream)    | [`useProtocolInterpretationAI`](../apps/web/src/features/protocol/hooks/use-protocol-interpretation-ai.ts)               |
-| Prompt clínico (protocolo)    | [`packages/domains/.../interpretationAI`](../packages/domains/src/protocol/_lib/interpretationAI/prompt.ts)              |
-| Somas brutas (determinístico) | [`raw-section-scores.ts`](../packages/domains/src/protocol/_lib/interpretationAI/raw-section-scores.ts)                  |
-| Stream HTTP                   | `POST /api/ai/protocol-interpretation-ai`                                                                                 |
-| Persistência                  | `ProtocolEvaluation.interpretationAI`                                                                                     |
-| Auditoria                     | `AiGenerationLog` (`ai_generation_logs`)                                                                                  |
+| Peça                          | Local                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| Cliente / modelo / stream     | [`src/shared/lib/ai`](../src/shared/lib/ai/index.ts)                                              |
+| Hook client (gerar/stream)    | [`useProtocolInterpretationAI`](../src/features/protocol/hooks/use-protocol-interpretation-ai.ts) |
+| Prompt clínico (protocolo)    | [`interpretationAI`](../src/domains/protocol/_lib/interpretationAI/prompt.ts)                     |
+| Somas brutas (determinístico) | [`raw-section-scores.ts`](../src/domains/protocol/_lib/interpretationAI/raw-section-scores.ts)    |
+| Stream HTTP                   | `POST /api/ai/protocol-interpretation-ai`                                                         |
+| Persistência                  | `ProtocolEvaluation.interpretationAI`                                                             |
+| Auditoria                     | `AiGenerationLog` (`ai_generation_logs`)                                                          |
 
 `shared/lib/ai` não contém regras clínicas — só provider e helpers reutilizáveis. Novos casos (evolução, anamnese) devem acrescentar prompts no respectivo domínio e reutilizar o cliente.
 
