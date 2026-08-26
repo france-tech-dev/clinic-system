@@ -155,6 +155,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ## Notas
 
+- **IA:** fundação + interpretação de protocolos — [`docs/ai.md`](ai.md).
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
 - **Logo / media em produção:** pipeline em `shared/lib/media`; R2 — [`docs/media-storage.md`](media-storage.md). Dokploy com volume local pode adiar.
 - **Jobs / filas (futuro):** Redis + BullMQ; worker Node no Dokploy; R2 para ficheiros — [`docs/jobs-queues.md`](jobs-queues.md). Cloudflare Queues só como orquestração leve opcional.

@@ -258,7 +258,7 @@ Regras:
 1. Validar com **Zod** (`safeParse`) — nunca confiar só no cliente
 2. Actions **finas**: validar → chamar service → `revalidatePath` / `revalidateTag`
 3. Segredos só no servidor (env)
-4. Route Handlers (`app/api/`) só para webhooks e HTTP externo
+4. Route Handlers (`app/api/`) só para webhooks, HTTP externo e **streaming de IA** (ex. `/api/ai/*`) — ver [`docs/ai.md`](ai.md)
 5. Manter **nomes exportados** estáveis ao refatorar
 
 Cliente:
@@ -309,17 +309,17 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 
 ## 11. Domínios actuais (`features/`)
 
-| Feature     | Responsabilidade                                        |
-| ----------- | ------------------------------------------------------- |
-| `patient`   | Pacientes, ClinicalEvaluation, evoluções, PDF              |
-| `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)      |
-| `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User        |
-| `schedule`  | Agenda, agendamentos, calendário, repetição semanal     |
-| `finance`   | Fluxo de caixa, lançamentos                             |
-| `settings`  | Perfil profissional, branding da clínica                |
-| `team`      | Profissionais da clínica                                |
-| `dashboard` | Painel, estatísticas, alertas                            |
-| `protocol`  | ProtocolEvaluation (ex.: GMFM-88) + EvaluationModuleUI  |
+| Feature     | Responsabilidade                                       |
+| ----------- | ------------------------------------------------------ |
+| `patient`   | Pacientes, ClinicalEvaluation, evoluções, PDF          |
+| `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)     |
+| `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User       |
+| `schedule`  | Agenda, agendamentos, calendário, repetição semanal    |
+| `finance`   | Fluxo de caixa, lançamentos                            |
+| `settings`  | Perfil profissional, branding da clínica               |
+| `team`      | Profissionais da clínica                               |
+| `dashboard` | Painel, estatísticas, alertas                          |
+| `protocol`  | ProtocolEvaluation (ex.: GMFM-88) + EvaluationModuleUI |
 
 ---
 
