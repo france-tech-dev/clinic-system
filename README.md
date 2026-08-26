@@ -120,38 +120,20 @@ pnpm validate:rate-limit -- --a http://127.0.0.1:3001 --b http://127.0.0.1:3002
 
 ## Estrutura
 
-```
-src/
-├── app/
-│   ├── (authenticated)/   # painel, agenda, pacientes, anamnese, avaliações, caixa, …
-│   ├── (not-authenticated)/auth/
-│   ├── (portal)/          # portal do responsável
-│   └── api/
-├── features/
-│   ├── anamnese/          # formulários por especialidade
-│   ├── dashboard/         # painel e busca
-│   ├── finance/           # fluxo de caixa
-│   ├── guardian/          # responsáveis / Role.CLIENT
-│   ├── patient/           # prontuário, evoluções, PDF
-│   ├── protocol/          # avaliações estruturadas (ex.: GMFM-88)
-│   ├── schedule/          # agenda
-│   ├── settings/          # configurações / branding
-│   └── team/              # profissionais
-├── components/            # UI genérica (shadcn, auth, templates)
-├── shared/                # prisma, auth, constants, guards, types
-├── server/                # helpers Better Auth (sessão, org, convites)
-└── hooks/                 # hooks globais
-```
+Alvo (**fase 1** — aplicada): `src/domains` (negócio) + `src/features` (UI) + `worker/` — preparado para **Fastify** depois.  
+Detalhe: [`docs/target-structure.md`](docs/target-structure.md).
 
-Cada feature segue `repository` → `service` → `actions` (Zod + revalidação). Features **não** importam entre si; orquestração em `app/`; código comum em `shared/`.
+Camadas: `repository` → `service` → `actions` (Zod + revalidação). Domains **sem** React.
 
-Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`docs/ToDo.md`](docs/ToDo.md) · testes: [`tests/README.md`](tests/README.md).
+Documentação: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`docs/ToDo.md`](docs/ToDo.md) · testes: [`tests/README.md`](tests/README.md).
 
 ## Scripts
 
 | Comando                    | Descrição                                     |
 | -------------------------- | --------------------------------------------- |
-| `pnpm dev`                 | Servidor de desenvolvimento                   |
+| `pnpm dev`                 | Next.js em desenvolvimento                    |
+| `pnpm worker`              | Worker BullMQ (`tsx worker/index.ts`)         |
+| `pnpm worker:dev`          | Worker em modo watch                          |
 | `pnpm build`               | `prisma generate` + build Next.js             |
 | `pnpm start`               | Servidor de produção                          |
 | `pnpm lint`                | ESLint + verificação de arquitectura (`arch`) |

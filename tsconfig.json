@@ -13,23 +13,21 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "paths": {
+      "@/domains/*": ["./src/domains/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "@/server/*": ["./src/platform/*"],
+      "@/components/*": ["./src/ui/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@prisma/client": ["./prisma/generated/prisma/client"],
+      "@prisma/enums": ["./prisma/generated/prisma/enums"],
+      "@prisma/browser": ["./prisma/generated/prisma/browser"],
+      "@prisma/models": ["./prisma/generated/prisma/models"],
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "tests/**/*.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]
 }

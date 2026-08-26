@@ -1,11 +1,21 @@
+# Single package at root — no apps/packages workspace
+packages:
+  - "."
+
 autoInstallPeers: false
 strictPeerDependencies: false
+
 allowBuilds:
   "@prisma/engines": true
   esbuild: true
+  msgpackr-extract: true
   prisma: true
   sharp: true
   unrs-resolver: true
+
 overrides:
   better-sqlite3: "-"
   mysql2: "-"
+
+minimumReleaseAgeExclude:
+  - bullmq@6.2.2
