@@ -115,12 +115,14 @@ export function ProtocolInviteStatusList({
   canManage,
   canCreate,
   onCreate,
+  canUseAi,
 }: {
   invites: ProtocolInviteDTO[];
   onChange: (invites: ProtocolInviteDTO[]) => void;
   canManage: boolean;
   canCreate?: boolean;
   onCreate?: () => void;
+  canUseAi: boolean;
 }) {
   const [filter, setFilter] = useState<InviteListFilter>("all");
   const [page, setPage] = useState(0);
@@ -468,6 +470,20 @@ export function ProtocolInviteStatusList({
         onSelectEvaluationId={loadEvaluation}
         preview={previewData}
         loading={previewPending}
+        canUseAi={canUseAi}
+        onInterpretationAISaved={(evaluationId, interpretationAI) => {
+          setPreviewData((prev) =>
+            prev && prev.id === evaluationId
+              ? {
+                  ...prev,
+                  interpretationAI,
+                  interpretationAIUpdatedAt: interpretationAI
+                    ? new Date().toISOString()
+                    : null,
+                }
+              : prev,
+          );
+        }}
       />
     </div>
   );

@@ -17,6 +17,7 @@ import {
 import type { ProtocolEvaluationPreviewDTO } from "@/features/protocol/protocol.types";
 import type { ProtocolInviteItemDTO } from "@/features/protocol/invite/protocol-invite.types";
 import { formatDateBR } from "@/shared/lib/format-date-br";
+import { ProtocolInterpretationAIPanel } from "./protocol-interpretation-ai-panel";
 
 export function ProtocolInviteResultsDialog({
   open,
@@ -26,6 +27,8 @@ export function ProtocolInviteResultsDialog({
   onSelectEvaluationId,
   preview,
   loading,
+  canUseAi,
+  onInterpretationAISaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -34,6 +37,11 @@ export function ProtocolInviteResultsDialog({
   onSelectEvaluationId: (evaluationId: string) => void;
   preview: ProtocolEvaluationPreviewDTO | null;
   loading: boolean;
+  canUseAi: boolean;
+  onInterpretationAISaved?: (
+    evaluationId: string,
+    interpretationAI: string | null,
+  ) => void;
 }) {
   const submitted = items.filter(
     (item) => item.status === "submitted" && item.evaluationId != null,
@@ -43,7 +51,7 @@ export function ProtocolInviteResultsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[min(92dvh,100%)] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
+      <DialogContent className="flex max-h-[min(92dvh,100%)] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
         <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
           <DialogTitle className="font-serif">
             Respostas do responsável
@@ -105,6 +113,18 @@ export function ProtocolInviteResultsDialog({
                   Em breve: gráfico de cada avaliação neste diálogo.
                 </p>
               </div>
+
+              {preview && activeEvaluationId && preview.sections.length > 0 ? (
+                <ProtocolInterpretationAIPanel
+                  key={activeEvaluationId}
+                  evaluationId={activeEvaluationId}
+                  initialInterpretationAI={preview.interpretationAI}
+                  canUseAi={canUseAi}
+                  onSaved={(interpretationAI) =>
+                    onInterpretationAISaved?.(activeEvaluationId, interpretationAI)
+                  }
+                />
+              ) : null}
 
               {loading && !preview ? (
                 <div className="flex justify-center py-8">
