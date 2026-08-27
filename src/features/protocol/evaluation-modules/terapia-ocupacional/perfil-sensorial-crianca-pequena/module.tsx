@@ -9,5 +9,6 @@ export const perfilSensorialCriancaPequenaModule = createItemEvaluationModule({
   name: "Perfil Sensorial (Criança Pequena)",
   description:
     "Perfil Sensorial — criança pequena, 7 a 35 meses (54 itens).",
+  professionId: "terapeuta_ocupacional",
   template: PERFIL_SENSORIAL_CRIANCA_PEQUENA_TEMPLATE,
 });

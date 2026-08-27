@@ -8,5 +8,6 @@ export const pediFuncaoSocialModule = createItemEvaluationModule({
   id: PEDI_FUNCAO_SOCIAL_PROTOCOL_ID,
   name: "PEDI Função Social",
   description: "Avaliação de função social do PEDI (65 itens).",
+  professionId: "terapeuta_ocupacional",
   template: PEDI_FUNCAO_SOCIAL_TEMPLATE,
 });

@@ -8,5 +8,6 @@ export const pediAutocuidadoModule = createItemEvaluationModule({
   id: PEDI_AUTOCUIDADO_PROTOCOL_ID,
   name: "PEDI Autocuidado",
   description: "Avaliação de autocuidado do PEDI (73 itens).",
+  professionId: "terapeuta_ocupacional",
   template: PEDI_AUTOCUIDADO_TEMPLATE,
 });

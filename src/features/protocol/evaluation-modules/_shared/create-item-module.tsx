@@ -4,20 +4,20 @@ import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/typ
 import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
 import type { HealthProfessionId } from "@/shared/constants/professions";
 
-const TO_PROFESSION = "terapeuta_ocupacional" satisfies HealthProfessionId;
-
 export function createItemEvaluationModule(def: {
   id: string;
   name: string;
   description: string;
   template: ItemProtocolTemplate;
+  professionId: HealthProfessionId;
+  supportsPublicInvite?: boolean;
 }): EvaluationModule {
   return {
     id: def.id,
     name: def.name,
     description: def.description,
-    professionId: TO_PROFESSION,
-    supportsPublicInvite: true,
+    professionId: def.professionId,
+    supportsPublicInvite: def.supportsPublicInvite ?? true,
     template: def.template,
     render: async ({
       organizationId,

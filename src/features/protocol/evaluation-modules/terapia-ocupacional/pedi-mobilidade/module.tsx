@@ -8,5 +8,6 @@ export const pediMobilidadeModule = createItemEvaluationModule({
   id: PEDI_MOBILIDADE_PROTOCOL_ID,
   name: "PEDI Mobilidade",
   description: "Avaliação de mobilidade do PEDI (69 itens).",
+  professionId: "terapeuta_ocupacional",
   template: PEDI_MOBILIDADE_TEMPLATE,
 });
