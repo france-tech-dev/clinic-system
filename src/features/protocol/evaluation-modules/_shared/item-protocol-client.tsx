@@ -41,13 +41,17 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  compareProtocolEvaluationsAction,
   createProtocolEvaluationAction,
   deleteProtocolEvaluationAction,
   listProtocolEvaluationsAction,
   updateProtocolEvaluationAction,
 } from "@/domains/protocol/protocol.actions";
 import { protocolEvaluationFormSchema } from "@/domains/protocol/protocol.schema";
-import type { ProtocolEvaluationDTO } from "@/domains/protocol/protocol.types";
+import type {
+  ProtocolEvaluationComparisonDTO,
+  ProtocolEvaluationDTO,
+} from "@/domains/protocol/protocol.types";
 import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
@@ -57,8 +61,13 @@ import {
   listItemProtocolItemIds,
   type ItemProtocolTemplate,
 } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
-import { ITEM_SCALE_OPTIONS, type ItemResponseValue } from "@/domains/protocol/evaluation-modules/_shared/item-scale";
+import {
+  ITEM_SCALE_OPTIONS,
+  type ItemResponseValue,
+} from "@/domains/protocol/evaluation-modules/_shared/item-scale";
 import { scoresToItemResponses } from "@/domains/protocol/evaluation-modules/_shared/parse-item-scores";
+import { summarizeItemProtocol } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-scoring";
+import { ProtocolComparisonChart } from "@/features/protocol/evaluation-modules/_shared/protocol-comparison-chart";
 
 type FormValues = {
   id?: string;
@@ -128,6 +137,10 @@ export function ItemProtocolClient({
   const [editing, setEditing] = useState<ProtocolEvaluationDTO | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [baselineId, setBaselineId] = useState("");
+  const [followUpId, setFollowUpId] = useState("");
+  const [comparison, setComparison] =
+    useState<ProtocolEvaluationComparisonDTO | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(
@@ -172,6 +185,11 @@ export function ItemProtocolClient({
   const progressValue =
     progress.total === 0 ? 0 : (progress.answered / progress.total) * 100;
 
+  const liveSummary = useMemo(
+    () => summarizeItemProtocol(template, scores),
+    [scores, template],
+  );
+
   function openCreate() {
     if (!patientId) {
       toast.error("Selecione um paciente");
@@ -208,7 +226,36 @@ export function ItemProtocolClient({
 
   function onPatientChange(id: string) {
     setPatientId(id);
+    setComparison(null);
+    setBaselineId("");
+    setFollowUpId("");
     reload(id);
+  }
+
+  function runComparison() {
+    if (!baselineId || !followUpId) {
+      toast.error("Selecione as duas avaliações para comparar");
+      return;
+    }
+    if (baselineId === followUpId) {
+      toast.error("Escolha avaliações diferentes");
+      return;
+    }
+    startTransition(async () => {
+      const result = await compareProtocolEvaluationsAction({
+        baselineId,
+        followUpId,
+      });
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      if (!result.data) {
+        toast.error("Não foi possível gerar o comparativo");
+        return;
+      }
+      setComparison(result.data);
+    });
   }
 
   function onSubmit(values: FormValues) {
@@ -306,6 +353,9 @@ export function ItemProtocolClient({
                   <p className="truncate text-sm font-medium">{row.label}</p>
                   <p className="text-xs text-muted-foreground">
                     {formatDateBR(row.date)}
+                    {row.summary
+                      ? ` · bruto ${row.summary.totalScore}/${row.summary.maxScore} (${row.summary.percent.toFixed(1)}%)`
+                      : null}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -338,6 +388,75 @@ export function ItemProtocolClient({
           )}
         </CardContent>
       </Card>
+
+      {assessments.length >= 2 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-serif text-lg">Comparativo</CardTitle>
+            <CardDescription>
+              Evolução do escore bruto (% do máximo por secção). Sem T-scores
+              nem normas oficiais.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <span className="text-sm font-medium">Avaliação base</span>
+                <Select value={baselineId} onValueChange={setBaselineId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assessments.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.label} — {formatDateBR(a.date)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-1.5">
+                <span className="text-sm font-medium">Comparar com</span>
+                <Select value={followUpId} onValueChange={setFollowUpId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assessments.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.label} — {formatDateBR(a.date)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              className="w-fit"
+              onClick={runComparison}
+              disabled={pending}
+            >
+              {pending ? <Spinner data-icon="inline-start" /> : null}
+              Gerar comparativo
+            </Button>
+            {comparison ? (
+              <div className="space-y-4 border-t border-border pt-4">
+                <p className="text-sm text-muted-foreground">
+                  Evolução geral:{" "}
+                  <span className="font-medium text-foreground">
+                    {comparison.overallDeltaPercent >= 0 ? "+" : ""}
+                    {comparison.overallDeltaPercent.toFixed(1)} p.p.
+                  </span>{" "}
+                  ({comparison.baseline.summary?.percent.toFixed(1)}% →{" "}
+                  {comparison.followUp.summary?.percent.toFixed(1)}%)
+                </p>
+                <ProtocolComparisonChart comparison={comparison} />
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="flex max-h-[92dvh] w-full max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
@@ -404,6 +523,10 @@ export function ItemProtocolClient({
                   <div className="flex items-center justify-between gap-3 text-sm">
                     <span className="font-medium tabular-nums">
                       {progress.answered} / {progress.total} questões
+                    </span>
+                    <span className="text-muted-foreground tabular-nums">
+                      Bruto {liveSummary.totalScore}/{liveSummary.maxScore} (
+                      {liveSummary.percent.toFixed(1)}%)
                     </span>
                   </div>
                   <Progress value={progressValue} className="h-2" />
