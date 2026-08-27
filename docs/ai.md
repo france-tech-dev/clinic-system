@@ -53,7 +53,7 @@ Por janela de 1 hora (tabela `rate_limit`):
 
 ## Limites clínicos e privacidade
 
-- **Não inventa T-scores / bandas normativas** — só somas brutas determinísticas + itens; normas oficiais exigem tabelas licenciadas (fase futura).
+- **Não inventa T-scores / bandas normativas** — só somas brutas determinísticas + itens; normas oficiais exigem tabelas licenciadas — ver [`avaliacao/scoring-oficial-to.md`](./avaliacao/scoring-oficial-to.md).
 - Texto é **rascunho assistido** — o profissional deve rever antes de uso clínico.
 - Prompt: instrumento, data, primeiro nome, idade (se houver), somas brutas, itens. Sem CPF/contacto.
 - Auditoria: `organizationId`, `userId`, `kind`, `evaluationId`, `createdAt` — **sem** texto do prompt/resposta.

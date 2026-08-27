@@ -123,6 +123,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Pendente
 
+- [ ] **Score + gráfico TO** — raw + comparativo ✅ (sem normas) · ver [`avaliacao/scoring-oficial-to.md`](./avaliacao/scoring-oficial-to.md) · auditoria templates / normas pendente
 - [ ] **Hub `/relatorio`** — página dedicada para gerar PDF (prontuário, anamnese, avaliação) num só sítio
 - [ ] **GMFM-88 PDF** — exportar/visualizar o comparativo / ficha preenchida em PDF
 - [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos (`/portal` ainda é stub)
