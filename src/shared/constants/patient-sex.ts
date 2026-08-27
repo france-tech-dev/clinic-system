@@ -1,4 +1,4 @@
-import { PatientSex } from "../../../prisma/generated/prisma/enums";
+import { PatientSex } from "@prisma/enums";
 
 export const PATIENT_SEX_LABEL = {
   [PatientSex.FEMALE]: "Feminino",

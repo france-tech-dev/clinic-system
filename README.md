@@ -75,12 +75,20 @@ GOOGLE_CLIENT_SECRET=""
 # STRIPE_PRICE_PRO="price_..."
 # STRIPE_PRICE_ENTERPRISE="price_..."
 
+# IA — interpretação de protocolos (opcional; ver docs/ai.md)
+# AI_PROVIDER="google"
+# GOOGLE_GENERATIVE_AI_API_KEY="..."
+# AI_MODEL="gemini-2.5-flash"
+# AI_PROVIDER="openai"
+# OPENAI_API_KEY="sk-..."
+# AI_MODEL="gpt-5-mini"
+
 # Staff de plataforma — acesso a /plataforma (user ids separados por vírgula)
 # PLATFORM_ADMIN_USER_IDS="user_id_1,user_id_2"
 ```
 
 Obrigatórias no boot: `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.  
-Brevo, Stripe e R2 são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2`).
+Brevo, Stripe, R2 e OpenAI são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2`).
 
 ```bash
 pnpm exec prisma generate
@@ -112,38 +120,20 @@ pnpm validate:rate-limit -- --a http://127.0.0.1:3001 --b http://127.0.0.1:3002
 
 ## Estrutura
 
-```
-src/
-├── app/
-│   ├── (authenticated)/   # painel, agenda, pacientes, anamnese, avaliações, caixa, …
-│   ├── (not-authenticated)/auth/
-│   ├── (portal)/          # portal do responsável
-│   └── api/
-├── features/
-│   ├── anamnese/          # formulários por especialidade
-│   ├── dashboard/         # painel e busca
-│   ├── finance/           # fluxo de caixa
-│   ├── guardian/          # responsáveis / Role.CLIENT
-│   ├── patient/           # prontuário, evoluções, PDF
-│   ├── protocol/          # avaliações estruturadas (ex.: GMFM-88)
-│   ├── schedule/          # agenda
-│   ├── settings/          # configurações / branding
-│   └── team/              # profissionais
-├── components/            # UI genérica (shadcn, auth, templates)
-├── shared/                # prisma, auth, constants, guards, types
-├── server/                # helpers Better Auth (sessão, org, convites)
-└── hooks/                 # hooks globais
-```
+Alvo (**fase 1** — aplicada): `src/domains` (negócio) + `src/features` (UI) + `worker/` — preparado para **Fastify** depois.  
+Detalhe: [`docs/target-structure.md`](docs/target-structure.md).
 
-Cada feature segue `repository` → `service` → `actions` (Zod + revalidação). Features **não** importam entre si; orquestração em `app/`; código comum em `shared/`.
+Camadas: `repository` → `service` → `actions` (Zod + revalidação). Domains **sem** React.
 
-Documentação detalhada: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`docs/ToDo.md`](docs/ToDo.md) · testes: [`tests/README.md`](tests/README.md).
+Documentação: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`docs/ToDo.md`](docs/ToDo.md) · testes: [`tests/README.md`](tests/README.md).
 
 ## Scripts
 
 | Comando                    | Descrição                                     |
 | -------------------------- | --------------------------------------------- |
-| `pnpm dev`                 | Servidor de desenvolvimento                   |
+| `pnpm dev`                 | Next.js em desenvolvimento                    |
+| `pnpm worker`              | Worker BullMQ (`tsx worker/index.ts`)         |
+| `pnpm worker:dev`          | Worker em modo watch                          |
 | `pnpm build`               | `prisma generate` + build Next.js             |
 | `pnpm start`               | Servidor de produção                          |
 | `pnpm lint`                | ESLint + verificação de arquitectura (`arch`) |

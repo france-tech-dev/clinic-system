@@ -53,32 +53,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createGuardianAction } from "@/features/guardian/guardian.actions";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
+import { createGuardianAction } from "@/domains/guardian/guardian.actions";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import {
   EMPTY_GUARDIAN_DRAFT,
   guardianDraftToCreateInput,
-} from "@/features/guardian/_lib/guardian-form-defaults";
+} from "@/domains/guardian/_lib/guardian-form-defaults";
 import {
   guardianDraftSchema,
   type GuardianDraftInput,
-} from "@/features/guardian/guardian.schema";
+} from "@/domains/guardian/guardian.schema";
 import {
   createPatientAction,
   setPatientMembersAction,
   setPatientStatusAction,
-} from "@/features/patient/patient.actions";
+} from "@/domains/patient/patient.actions";
 import {
   patientDraftSchema,
   type PatientDraftInput,
-} from "@/features/patient/patient.schema";
+} from "@/domains/patient/patient.schema";
 import type {
   PatientDTO,
   PatientStatus,
-} from "@/features/patient/patient.types";
-import { EMPTY_PATIENT_DRAFT } from "@/features/patient/_lib/patient-form-defaults";
-import { formatPatientListMeta } from "@/features/patient/_lib/patient-list-meta";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+} from "@/domains/patient/patient.types";
+import { EMPTY_PATIENT_DRAFT } from "@/domains/patient/_lib/patient-form-defaults";
+import { formatPatientListMeta } from "@/domains/patient/_lib/patient-list-meta";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { parseBrl } from "@/shared/lib/money-utils";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
@@ -94,7 +94,7 @@ import {
 import {
   MemberStatus,
   PatientStatus as PatientStatusEnum,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 type PendingStatusChange = {
   patient: PatientDTO;

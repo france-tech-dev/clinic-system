@@ -1,21 +1,21 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { appointmentsToCalendarEvents } from "@/features/schedule/_lib/appointment-calendar-utils";
+import { appointmentsToCalendarEvents } from "@/domains/schedule/_lib/appointment-calendar-utils";
 import {
   monthBounds,
   parseIsoDateParam,
-} from "@/features/schedule/_lib/schedule-appointments-range";
-import { listPatients } from "@/features/patient/patient.service";
-import type { PatientDTO } from "@/features/patient/patient.types";
+} from "@/domains/schedule/_lib/schedule-appointments-range";
+import { listPatients } from "@/domains/patient/patient.service";
+import type { PatientDTO } from "@/domains/patient/patient.types";
 import {
   getAgendaPageData,
   getCurrentMemberId,
   listAppointmentsByDateRange,
   listOrganizationMembers,
-} from "@/features/schedule/schedule.service";
+} from "@/domains/schedule/schedule.service";
 import type {
   AppointmentDTO,
   ScheduleMemberDTO,
-} from "@/features/schedule/schedule.types";
+} from "@/domains/schedule/schedule.types";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { todayIso } from "@/shared/constants/appointment";
 import { isLeadershipRole } from "@/shared/lib/member-role";

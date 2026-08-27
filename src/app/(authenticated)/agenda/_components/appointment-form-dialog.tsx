@@ -37,20 +37,20 @@ import {
 import {
   createAppointmentAction,
   updateAppointmentAction,
-} from "@/features/schedule/schedule.actions";
+} from "@/domains/schedule/schedule.actions";
 import {
   appointmentDialogSchema,
   type AppointmentDialogInput,
-} from "@/features/schedule/schedule.schema";
+} from "@/domains/schedule/schedule.schema";
 import type {
   AppointmentDTO,
   ScheduleMemberDTO,
-} from "@/features/schedule/schedule.types";
-import type { PatientDTO } from "@/features/patient/patient.types";
+} from "@/domains/schedule/schedule.types";
+import type { PatientDTO } from "@/domains/patient/patient.types";
 import { APPOINTMENT_STATUSES } from "@/shared/constants/appointment";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import { cn } from "@/shared/lib/utils";
-import { AppointmentStatus } from "../../../../../prisma/generated/prisma/enums";
+import { AppointmentStatus } from "@prisma/enums";
 
 function buildDefaults(
   initial: AppointmentDTO | null,

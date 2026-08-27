@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteClinicalEvaluationAction } from "@/features/patient/patient.actions";
+import { deleteClinicalEvaluationAction } from "@/domains/patient/patient.actions";
 import type {
   ClinicalEvaluationDTO,
   PatientDetailDTO,
-} from "@/features/patient/patient.types";
+} from "@/domains/patient/patient.types";
 
 export function usePatientClinicalEvaluations({
   setDetail,

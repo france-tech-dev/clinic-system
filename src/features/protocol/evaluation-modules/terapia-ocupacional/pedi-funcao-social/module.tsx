@@ -2,7 +2,7 @@ import { createItemEvaluationModule } from "../../_shared/create-item-module";
 import {
   PEDI_FUNCAO_SOCIAL_PROTOCOL_ID,
   PEDI_FUNCAO_SOCIAL_TEMPLATE,
-} from "./template";
+} from "@/domains/protocol/evaluation-modules/terapia-ocupacional/pedi-funcao-social/template";
 
 export const pediFuncaoSocialModule = createItemEvaluationModule({
   id: PEDI_FUNCAO_SOCIAL_PROTOCOL_ID,

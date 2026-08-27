@@ -3,7 +3,7 @@ import { resolveBillingAccess } from "@/shared/constants/billing-plans";
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 describe("resolveBillingAccess", () => {
   it("sem linha de billing trata como legado com tudo libertado", () => {
@@ -46,6 +46,22 @@ describe("resolveBillingAccess", () => {
     });
     expect(access.features).toEqual(["anamnese", "caixa"]);
     expect(access.maxProfessionals).toBe(9);
+  });
+
+  it("Enterprise activo inclui avaliações, portal e IA", () => {
+    const access = resolveBillingAccess({
+      status: BillingStatus.ACTIVE,
+      plan: BillingPlan.ENTERPRISE,
+      trialEndsAt: null,
+    });
+    expect(access.features).toEqual([
+      "anamnese",
+      "caixa",
+      "avaliacoes",
+      "portal",
+      "ai",
+    ]);
+    expect(access.maxProfessionals).toBeNull();
   });
 
   it("CANCELLED fica read-only", () => {

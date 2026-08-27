@@ -8,18 +8,20 @@ import {
   type PublicInviteProtocolOption,
 } from "@/features/protocol/components/create-protocol-invite-dialog";
 import { ProtocolInviteStatusList } from "@/features/protocol/components/protocol-invite-status";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 
 export function LinksPublicosTab({
   patientId,
   initialInvites,
   inviteProtocols,
   canWriteInvites,
+  canUseAi,
 }: {
   patientId: string;
   initialInvites: ProtocolInviteDTO[];
   inviteProtocols: PublicInviteProtocolOption[];
   canWriteInvites: boolean;
+  canUseAi: boolean;
 }) {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [invites, setInvites] = useState(initialInvites);
@@ -70,6 +72,7 @@ export function LinksPublicosTab({
         invites={invites}
         canManage={canWriteInvites}
         canCreate={canCreate}
+        canUseAi={canUseAi}
         onCreate={() => setInviteOpen(true)}
         onChange={setInvites}
       />

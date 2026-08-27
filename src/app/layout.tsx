@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { TooltipProvider } from "../components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import Provider from "./providers/Provider";
 import { cn } from "@/shared/lib/utils";

@@ -29,16 +29,16 @@ import {
 import {
   deleteProtocolInviteAction,
   revokeProtocolInviteAction,
-} from "@/features/protocol/invite/protocol-invite.actions";
+} from "@/domains/protocol/invite/protocol-invite.actions";
 import {
   countInviteBuckets,
   filterInvites,
   inviteListBucket,
   type InviteListFilter,
-} from "@/features/protocol/invite/_lib/invite-list-filter";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
-import { getProtocolEvaluationPreviewAction } from "@/features/protocol/protocol.actions";
-import type { ProtocolEvaluationPreviewDTO } from "@/features/protocol/protocol.types";
+} from "@/domains/protocol/invite/_lib/invite-list-filter";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
+import { getProtocolEvaluationPreviewAction } from "@/domains/protocol/protocol.actions";
+import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
 import { cn } from "@/shared/lib/utils";
 import { ProtocolInviteResultsDialog } from "./protocol-invite-results-dialog";
 
@@ -115,12 +115,14 @@ export function ProtocolInviteStatusList({
   canManage,
   canCreate,
   onCreate,
+  canUseAi,
 }: {
   invites: ProtocolInviteDTO[];
   onChange: (invites: ProtocolInviteDTO[]) => void;
   canManage: boolean;
   canCreate?: boolean;
   onCreate?: () => void;
+  canUseAi: boolean;
 }) {
   const [filter, setFilter] = useState<InviteListFilter>("all");
   const [page, setPage] = useState(0);
@@ -468,6 +470,20 @@ export function ProtocolInviteStatusList({
         onSelectEvaluationId={loadEvaluation}
         preview={previewData}
         loading={previewPending}
+        canUseAi={canUseAi}
+        onInterpretationAISaved={(evaluationId, interpretationAI) => {
+          setPreviewData((prev) =>
+            prev && prev.id === evaluationId
+              ? {
+                  ...prev,
+                  interpretationAI,
+                  interpretationAIUpdatedAt: interpretationAI
+                    ? new Date().toISOString()
+                    : null,
+                }
+              : prev,
+          );
+        }}
       />
     </div>
   );

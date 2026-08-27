@@ -33,12 +33,12 @@ import {
 import {
   listTeamMembersAction,
   updateProfessionalAction,
-} from "@/features/team/team.actions";
+} from "@/domains/team/team.actions";
 import {
   updateProfessionalSchema,
   type UpdateProfessionalInput,
-} from "@/features/team/team.schema";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+} from "@/domains/team/team.schema";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import {
   getHealthProfession,
   HEALTH_PROFESSION_IDS,
@@ -50,7 +50,7 @@ import {
 } from "@/shared/constants/member-role";
 import { MEMBER_STATUS_OPTIONS } from "@/shared/constants/member-status";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
-import { MemberStatus, Role } from "../../../../../prisma/generated/prisma/enums";
+import { MemberStatus, Role } from "@prisma/enums";
 
 function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
   const role =

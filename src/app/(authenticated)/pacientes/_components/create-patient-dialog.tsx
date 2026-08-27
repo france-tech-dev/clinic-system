@@ -27,14 +27,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GuardianFormFields } from "@/features/guardian/components/guardian-form-fields";
-import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
+import type { GuardianDraftInput } from "@/domains/guardian/guardian.schema";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
-import type { PatientDraftInput } from "@/features/patient/patient.schema";
+import type { PatientDraftInput } from "@/domains/patient/patient.schema";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { TeamMemberDTO } from "@/features/team/team.types";
-import { MemberStatus } from "../../../../../prisma/generated/prisma/enums";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
+import { MemberStatus } from "@prisma/enums";
 
 function guardianOptionLabel(g: GuardianDTO) {
   return [

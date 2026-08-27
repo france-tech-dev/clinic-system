@@ -1,7 +1,7 @@
 import {
   CashPaymentMethod,
   CashTransactionType,
-} from "../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 export const CASH_TRANSACTION_TYPES = [
   { id: CashTransactionType.INCOME, label: "Entrada" },

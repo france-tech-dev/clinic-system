@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
+import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 

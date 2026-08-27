@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { paths } from "@/shared/constants/paths";
-import type { BillingSnapshotDTO } from "../billing.types";
-import { BillingStatus } from "../../../../prisma/generated/prisma/enums";
+import type { BillingSnapshotDTO } from "@/domains/billing/billing.types";
+import { BillingStatus } from "@prisma/enums";
 
 function trialDaysLeft(trialEndsAt: string | null): number | null {
   if (!trialEndsAt) return null;

@@ -9,12 +9,12 @@ import type {
   CashflowPageData,
   CashMemberOption,
   CashTransactionDTO,
-} from "@/features/finance/finance.types";
+} from "@/domains/finance/finance.types";
 import {
   currentMonthParam,
   shiftMonthParam,
-} from "@/features/finance/_lib/month-utils";
-import type { PatientDTO } from "@/features/patient/patient.types";
+} from "@/domains/finance/_lib/month-utils";
+import type { PatientDTO } from "@/domains/patient/patient.types";
 import {
   cashPaymentMethodLabel,
   cashTransactionTypeLabel,
@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntityCombobox } from "@/components/entity-combobox";
 import { Spinner } from "@/components/ui/spinner";
-import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
+import { CashTransactionType } from "@prisma/enums";
 
 const MEMBER_FILTER_ALL = "all";
 

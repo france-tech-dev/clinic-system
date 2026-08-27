@@ -1,4 +1,4 @@
-import { MemberStatus } from "../../../prisma/generated/prisma/enums";
+import { MemberStatus } from "@prisma/enums";
 
 export const MEMBER_STATUS_LABEL = {
   [MemberStatus.ACTIVE]: "Ativo",

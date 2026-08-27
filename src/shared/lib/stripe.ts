@@ -3,7 +3,7 @@ import { env } from "@/shared/env";
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 let client: Stripe | null | undefined;
 

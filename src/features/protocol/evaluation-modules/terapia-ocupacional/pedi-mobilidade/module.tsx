@@ -2,7 +2,7 @@ import { createItemEvaluationModule } from "../../_shared/create-item-module";
 import {
   PEDI_MOBILIDADE_PROTOCOL_ID,
   PEDI_MOBILIDADE_TEMPLATE,
-} from "./template";
+} from "@/domains/protocol/evaluation-modules/terapia-ocupacional/pedi-mobilidade/template";
 
 export const pediMobilidadeModule = createItemEvaluationModule({
   id: PEDI_MOBILIDADE_PROTOCOL_ID,

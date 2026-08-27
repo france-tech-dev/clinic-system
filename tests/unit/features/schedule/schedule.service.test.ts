@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Decimal } from "@prisma/client/runtime/client";
-import { scheduleRepository } from "@/features/schedule/schedule.repository";
-import { rescheduleAppointment } from "@/features/schedule/schedule.service";
+import { scheduleRepository } from "@/domains/schedule/schedule.repository";
+import { rescheduleAppointment } from "@/domains/schedule/schedule.service";
 
-vi.mock("@/features/schedule/schedule.repository", () => ({
+vi.mock("@/domains/schedule/schedule.repository", () => ({
   scheduleRepository: {
     findById: vi.fn(),
     reschedule: vi.fn(),

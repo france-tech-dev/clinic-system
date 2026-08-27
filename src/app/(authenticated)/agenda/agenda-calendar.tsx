@@ -16,18 +16,18 @@ import withDragAndDrop, {
 } from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, set, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { AppointmentStatus } from "../../../../prisma/generated/prisma/enums";
+import { AppointmentStatus } from "@prisma/enums";
 import { toast } from "sonner";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { rescheduleAppointmentAction } from "@/features/schedule/schedule.actions";
+import { rescheduleAppointmentAction } from "@/domains/schedule/schedule.actions";
 import {
   type CalendarEvent,
   calendarEventStyle,
   formatAppointmentDate,
   formatAppointmentTime,
-} from "@/features/schedule/_lib/appointment-calendar-utils";
-import { parseIsoDateParam } from "@/features/schedule/_lib/schedule-appointments-range";
+} from "@/domains/schedule/_lib/appointment-calendar-utils";
+import { parseIsoDateParam } from "@/domains/schedule/_lib/schedule-appointments-range";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { paths } from "@/shared/constants/paths";
 import "./agenda-calendar.css";

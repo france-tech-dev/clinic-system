@@ -17,7 +17,7 @@ import { VerifyEmail } from "@/components/emails/verify-email";
 import { sendEmail } from "@/shared/lib/email";
 import { getActiveOrganization } from "@/server/organizations/active-organization";
 import { paths } from "@/shared/constants/paths";
-import { Role } from "../../../prisma/generated/prisma/enums";
+import { Role } from "@prisma/enums";
 import { startOrganizationTrial } from "@/server/billing/start-trial";
 import { env } from "@/shared/env";
 

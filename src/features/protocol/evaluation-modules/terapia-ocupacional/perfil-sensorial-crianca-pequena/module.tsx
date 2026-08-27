@@ -2,7 +2,7 @@ import { createItemEvaluationModule } from "../../_shared/create-item-module";
 import {
   PERFIL_SENSORIAL_CRIANCA_PEQUENA_PROTOCOL_ID,
   PERFIL_SENSORIAL_CRIANCA_PEQUENA_TEMPLATE,
-} from "./template";
+} from "@/domains/protocol/evaluation-modules/terapia-ocupacional/perfil-sensorial-crianca-pequena/template";
 
 export const perfilSensorialCriancaPequenaModule = createItemEvaluationModule({
   id: PERFIL_SENSORIAL_CRIANCA_PEQUENA_PROTOCOL_ID,

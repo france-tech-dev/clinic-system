@@ -36,12 +36,12 @@ import {
   createCashTransactionAction,
   deleteCashTransactionAction,
   updateCashTransactionAction,
-} from "@/features/finance/finance.actions";
+} from "@/domains/finance/finance.actions";
 import {
   cashTransactionDraftSchema,
   type CashTransactionDraftInput,
-} from "@/features/finance/finance.schema";
-import type { CashTransactionDTO } from "@/features/finance/finance.types";
+} from "@/domains/finance/finance.schema";
+import type { CashTransactionDTO } from "@/domains/finance/finance.types";
 import type { PatientOption } from "@/shared/types/patient-option";
 import {
   CASH_PAYMENT_METHODS,
@@ -52,7 +52,7 @@ import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 import {
   CashPaymentMethod,
   CashTransactionType,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 export type CashTransactionDraft = {
   type?: CashTransactionType;

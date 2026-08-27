@@ -45,9 +45,9 @@ import {
   deleteProtocolEvaluationAction,
   listProtocolEvaluationsAction,
   updateProtocolEvaluationAction,
-} from "@/features/protocol/protocol.actions";
-import { protocolEvaluationFormSchema } from "@/features/protocol/protocol.schema";
-import type { ProtocolEvaluationDTO } from "@/features/protocol/protocol.types";
+} from "@/domains/protocol/protocol.actions";
+import { protocolEvaluationFormSchema } from "@/domains/protocol/protocol.schema";
+import type { ProtocolEvaluationDTO } from "@/domains/protocol/protocol.types";
 import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
@@ -56,9 +56,9 @@ import {
   emptyItemProtocolResponses,
   listItemProtocolItemIds,
   type ItemProtocolTemplate,
-} from "./item-protocol-template";
-import { ITEM_SCALE_OPTIONS, type ItemResponseValue } from "./item-scale";
-import { scoresToItemResponses } from "./parse-item-scores";
+} from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
+import { ITEM_SCALE_OPTIONS, type ItemResponseValue } from "@/domains/protocol/evaluation-modules/_shared/item-scale";
+import { scoresToItemResponses } from "@/domains/protocol/evaluation-modules/_shared/parse-item-scores";
 
 type FormValues = {
   id?: string;

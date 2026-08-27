@@ -1,5 +1,5 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
-import type { AnamneseFormModule } from "../types";
+import type { AnamneseFormModule } from "@/domains/anamnese/forms/types";
 import { anamneseToForm } from "./anamnese-to/module";
 
 export const TERAPIA_OCUPACIONAL_PROFESSION_ID =

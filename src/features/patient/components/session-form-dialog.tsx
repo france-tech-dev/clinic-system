@@ -32,22 +32,22 @@ import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-statu
 import {
   createSessionAction,
   updateSessionAction,
-} from "@/features/patient/patient.actions";
+} from "@/domains/patient/patient.actions";
 import {
   sessionFormSchema,
   updateSessionNoteSchema,
-} from "@/features/patient/patient.schema";
+} from "@/domains/patient/patient.schema";
 import type {
   SessionLinkableAppointmentDTO,
   SessionNoteDTO,
-} from "@/features/patient/patient.types";
+} from "@/domains/patient/patient.types";
 import {
   appointmentStatusInfo,
   formatTime,
 } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
-import { SessionNoteStatus } from "../../../../prisma/generated/prisma/enums";
+import { SessionNoteStatus } from "@prisma/enums";
 
 type SessionDialogValues = {
   id?: string;

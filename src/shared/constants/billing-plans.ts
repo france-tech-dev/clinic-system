@@ -1,7 +1,7 @@
 import {
   BillingPlan,
   BillingStatus,
-} from "../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 export const BILLING_PLANS = [
   BillingPlan.STARTER,
@@ -23,6 +23,7 @@ export const GATED_FEATURES = [
   "caixa",
   "avaliacoes",
   "portal",
+  "ai",
 ] as const;
 export type GatedFeatureId = (typeof GATED_FEATURES)[number];
 
@@ -52,8 +53,9 @@ const PRO_HIGHLIGHTS = [
 
 const ENTERPRISE_HIGHLIGHTS = [
   ...PRO_HIGHLIGHTS,
-  "Avaliações estruturadas (GMFM-88 e protocolos)",
+  "Avaliações estruturadas (GMFM-88 e protocolos de avaliação)",
   "Portal do responsável",
+  "Interpretação assistida por IA (protocolos de avaliação)",
 ] as const;
 
 export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
@@ -75,7 +77,7 @@ export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
     id: BillingPlan.ENTERPRISE,
     name: "Enterprise",
     maxProfessionals: null,
-    features: ["anamnese", "caixa", "avaliacoes", "portal"],
+    features: ["anamnese", "caixa", "avaliacoes", "portal", "ai"],
     highlights: ENTERPRISE_HIGHLIGHTS,
   },
 ];

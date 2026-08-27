@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CashflowSummaryCards } from "@/features/finance/components/cashflow-summary-cards";
-import type { DashboardPageData } from "@/features/dashboard/dashboard.types";
+import type { DashboardPageData } from "@/domains/dashboard/dashboard.types";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { formatBrl } from "@/shared/lib/money-utils";

@@ -1,10 +1,10 @@
 import { GmfmProtocolClient } from "./components/protocol-client";
-import { listProtocolEvaluations } from "@/features/protocol/protocol.service";
+import { listProtocolEvaluations } from "@/domains/protocol/protocol.service";
 import type {
   EvaluationModule,
   EvaluationModuleRenderContext,
-} from "../../types";
-import { GMFM88_PROTOCOL_ID } from "./template";
+} from "@/domains/protocol/evaluation-modules/types";
+import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
 
 const MODULE_NAME = "GMFM-88";
 const MODULE_DESCRIPTION =

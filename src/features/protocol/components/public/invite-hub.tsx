@@ -12,8 +12,8 @@ import { Progress } from "@/components/ui/progress";
 import {
   protocolAbbrev,
   protocolSubtitle,
-} from "@/features/protocol/invite/_lib/protocol-labels";
-import type { PublicProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+} from "@/domains/protocol/invite/_lib/protocol-labels";
+import type { PublicProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
 import { PublicInviteShell } from "./public-invite-shell";

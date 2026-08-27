@@ -18,9 +18,9 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
-import type { AssignableMemberOption } from "@/features/patient/patient.types";
+import type { AssignableMemberOption } from "@/domains/patient/patient.types";
 import { getHealthProfession } from "@/shared/constants/professions";
-import { MemberStatus } from "../../../../prisma/generated/prisma/enums";
+import { MemberStatus } from "@prisma/enums";
 
 export function AssignPatientMembersDialog({
   open,

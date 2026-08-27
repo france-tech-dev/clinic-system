@@ -10,7 +10,7 @@ import {
   IconUsers,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { Role } from "../../prisma/generated/prisma/enums";
+import { Role } from "@prisma/enums";
 
 export type SidebarItem = {
   name: string;

@@ -2,11 +2,11 @@
 
 import { useCallback, useState } from "react";
 import type { CashTransactionDraft } from "@/features/finance/components/cash-transaction-form-dialog";
-import type { AppointmentDTO } from "@/features/schedule/schedule.types";
+import type { AppointmentDTO } from "@/domains/schedule/schedule.types";
 import {
   AppointmentStatus,
   CashTransactionType,
-} from "../../../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 export function buildCashDraftFromAppointment(
   appointment: AppointmentDTO,

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,17 +23,50 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/domains/*": [
+        "./src/domains/*"
+      ],
+      "@/features/*": [
+        "./src/features/*"
+      ],
+      "@/shared/*": [
+        "./src/shared/*"
+      ],
+      "@/server/*": [
+        "./src/platform/*"
+      ],
+      "@/components/*": [
+        "./src/ui/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@prisma/client": [
+        "./prisma/generated/prisma/client"
+      ],
+      "@prisma/enums": [
+        "./prisma/generated/prisma/enums"
+      ],
+      "@prisma/browser": [
+        "./prisma/generated/prisma/browser"
+      ],
+      "@prisma/models": [
+        "./prisma/generated/prisma/models"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "tests/**/*.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "tests/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

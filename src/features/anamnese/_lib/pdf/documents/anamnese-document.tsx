@@ -5,7 +5,7 @@ import { PageFooter } from "@/shared/lib/pdf/components/page-footer";
 import { PatientInfo } from "@/shared/lib/pdf/components/patient-info";
 import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
-import type { AnamneseReportPayload } from "../types";
+import type { AnamneseReportPayload } from "@/domains/anamnese/_lib/pdf/types";
 
 export function AnamneseDocument({
   payload,

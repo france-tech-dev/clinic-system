@@ -1,4 +1,4 @@
-import { Role } from "../../../prisma/generated/prisma/enums";
+import { Role } from "@prisma/enums";
 
 const PANEL_ROLES: readonly Role[] = [
   Role.OWNER,

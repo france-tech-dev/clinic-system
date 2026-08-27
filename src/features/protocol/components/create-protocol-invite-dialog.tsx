@@ -20,8 +20,8 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
-import { createProtocolInviteAction } from "@/features/protocol/invite/protocol-invite.actions";
-import type { ProtocolInviteDTO } from "@/features/protocol/invite/protocol-invite.types";
+import { createProtocolInviteAction } from "@/domains/protocol/invite/protocol-invite.actions";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 
 export type PublicInviteProtocolOption = {
   id: string;

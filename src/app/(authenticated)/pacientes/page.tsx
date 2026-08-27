@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { listGuardians } from "@/features/guardian/guardian.service";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
-import { listPatients } from "@/features/patient/patient.service";
-import type { PatientDTO } from "@/features/patient/patient.types";
-import { listTeamMembers } from "@/features/team/team.service";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+import { listGuardians } from "@/domains/guardian/guardian.service";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
+import { listPatients } from "@/domains/patient/patient.service";
+import type { PatientDTO } from "@/domains/patient/patient.types";
+import { listTeamMembers } from "@/domains/team/team.service";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";

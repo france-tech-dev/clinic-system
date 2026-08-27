@@ -5,7 +5,7 @@ import { useTransition } from "react";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { AnamneseDocument } from "@/features/anamnese/_lib/pdf/documents/anamnese-document";
-import type { AnamneseReportPayload } from "@/features/anamnese/_lib/pdf/types";
+import type { AnamneseReportPayload } from "@/domains/anamnese/_lib/pdf/types";
 import { downloadPdfBlob, renderPdfBlob } from "@/shared/lib/pdf/generate";
 import { Button } from "@/components/ui/button";
 import {

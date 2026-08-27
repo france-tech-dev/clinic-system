@@ -1,6 +1,6 @@
-import { getAnamnese } from "@/features/anamnese/anamnese.service";
-import type { AnamneseFormModule, AnamneseRenderContext } from "../../types";
-import { ANAMNESE_SCHEMA } from "./schema";
+import { getAnamnese } from "@/domains/anamnese/anamnese.service";
+import type { AnamneseFormModule, AnamneseRenderContext } from "@/domains/anamnese/forms/types";
+import { ANAMNESE_SCHEMA } from "@/domains/anamnese/forms/terapia-ocupacional/anamnese-to/schema";
 import { AnamneseFormClient } from "./components/anamnese-form-client";
 
 export const ANAMNESE_TO_FORM_ID = "anamnese-to";

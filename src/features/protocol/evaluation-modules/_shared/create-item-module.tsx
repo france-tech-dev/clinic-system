@@ -1,7 +1,7 @@
 import { ItemProtocolClient } from "./item-protocol-client";
-import { listProtocolEvaluations } from "@/features/protocol/protocol.service";
-import type { EvaluationModule } from "../types";
-import type { ItemProtocolTemplate } from "./item-protocol-template";
+import { listProtocolEvaluations } from "@/domains/protocol/protocol.service";
+import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
+import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
 import type { HealthProfessionId } from "@/shared/constants/professions";
 
 const TO_PROFESSION = "terapeuta_ocupacional" satisfies HealthProfessionId;

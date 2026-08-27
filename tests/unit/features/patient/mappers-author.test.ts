@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   toClinicalEvaluationDTO,
   toSessionDTO,
-} from "@/features/patient/_lib/mappers";
+} from "@/domains/patient/_lib/mappers";
 
 describe("patient mappers — autoria", () => {
   it("toClinicalEvaluationDTO inclui professionalName do member", () => {

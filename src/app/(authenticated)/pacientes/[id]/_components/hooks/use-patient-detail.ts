@@ -2,23 +2,23 @@
 
 import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { deletePatientAction } from "@/features/patient/patient.actions";
+import { deletePatientAction } from "@/domains/patient/patient.actions";
 import type {
   ClinicalEvaluationDTO,
   PatientDetailDTO,
-} from "@/features/patient/patient.types";
-import type { AnamneseSummaryDTO } from "@/features/anamnese/anamnese.types";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
-import { buildPatientReportPayload } from "@/features/patient/_lib/pdf/build-patient-report-payload";
+} from "@/domains/patient/patient.types";
+import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
+import { buildPatientReportPayload } from "@/domains/patient/_lib/pdf/build-patient-report-payload";
 import type {
   PatientReportMode,
   PatientReportPayload,
-} from "@/features/patient/_lib/pdf/types";
+} from "@/domains/patient/_lib/pdf/types";
 import type {
   PrintBranding,
   ProfessionalProfile,
-} from "@/features/settings/settings.types";
-import { formatProfessionalSignature } from "@/features/settings/settings.types";
+} from "@/domains/settings/settings.types";
+import { formatProfessionalSignature } from "@/domains/settings/settings.types";
 import { paths } from "@/shared/constants/paths";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { useRouter } from "next/navigation";

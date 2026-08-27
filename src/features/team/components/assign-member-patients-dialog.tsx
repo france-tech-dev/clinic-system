@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import { initialsFromName } from "@/shared/lib/initials-from-name";
-import type { AssignablePatientOption } from "@/features/team/team.types";
+import type { AssignablePatientOption } from "@/domains/team/team.types";
 
 export function AssignMemberPatientsDialog({
   open,

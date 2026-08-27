@@ -33,12 +33,12 @@ import {
 import {
   createProfessionalAction,
   listTeamMembersAction,
-} from "@/features/team/team.actions";
+} from "@/domains/team/team.actions";
 import {
   createProfessionalSchema,
   type CreateProfessionalInput,
-} from "@/features/team/team.schema";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+} from "@/domains/team/team.schema";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
 import { ASSIGNABLE_MEMBER_ROLE_OPTIONS } from "@/shared/constants/member-role";
 import {

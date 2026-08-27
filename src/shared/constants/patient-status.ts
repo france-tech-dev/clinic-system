@@ -1,4 +1,4 @@
-import { PatientStatus } from "../../../prisma/generated/prisma/enums";
+import { PatientStatus } from "@prisma/enums";
 
 export const PATIENT_STATUS_LABEL = {
   [PatientStatus.ACTIVE]: "Ativo",

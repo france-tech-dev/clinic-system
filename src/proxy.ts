@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { MemberStatus } from "../prisma/generated/prisma/enums";
+import { MemberStatus } from "@prisma/enums";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
 import {

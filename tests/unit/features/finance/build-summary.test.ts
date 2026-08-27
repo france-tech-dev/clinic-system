@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildSummary } from "@/features/finance/_lib/build-summary";
-import type { CashTransactionDTO } from "@/features/finance/finance.types";
+import { buildSummary } from "@/domains/finance/_lib/build-summary";
+import type { CashTransactionDTO } from "@/domains/finance/finance.types";
 import {
   CashPaymentMethod,
   CashTransactionType,
-} from "../../../../prisma/generated/prisma/enums";
+} from "@prisma/enums";
 
 function tx(
   overrides: Partial<CashTransactionDTO> &

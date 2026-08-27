@@ -15,10 +15,10 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { GuardianFormFields } from "@/features/guardian/components/guardian-form-fields";
-import type { GuardianDraftInput } from "@/features/guardian/guardian.schema";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
+import type { GuardianDraftInput } from "@/domains/guardian/guardian.schema";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
-import type { PatientDraftInput } from "@/features/patient/patient.schema";
+import type { PatientDraftInput } from "@/domains/patient/patient.schema";
 
 function guardianOptionLabel(g: GuardianDTO) {
   return [g.name, g.cpf || null].filter(Boolean).join(" · ");

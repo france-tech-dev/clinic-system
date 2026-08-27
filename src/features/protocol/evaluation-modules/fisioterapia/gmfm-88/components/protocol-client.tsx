@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { EntityCombobox } from "@/components/entity-combobox";
-import { PatientStatus } from "../../../../../../../prisma/generated/prisma/enums";
+import { PatientStatus } from "@prisma/enums";
 import {
   Select,
   SelectContent,
@@ -40,24 +40,24 @@ import {
   type GmfmEvaluationFormValues,
 } from "./evaluation-form";
 import { GmfmComparisonChart } from "./comparison-chart";
-import { GMFM88_PROTOCOL_ID } from "../template";
+import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
 import {
   emptyGmfm88Scores,
   summarizeGmfm88,
   type Gmfm88Scores,
-} from "../scoring";
+} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
 import {
   compareProtocolEvaluationsAction,
   createProtocolEvaluationAction,
   deleteProtocolEvaluationAction,
   listProtocolEvaluationsAction,
   updateProtocolEvaluationAction,
-} from "@/features/protocol/protocol.actions";
-import { protocolEvaluationFormSchema } from "@/features/protocol/protocol.schema";
+} from "@/domains/protocol/protocol.actions";
+import { protocolEvaluationFormSchema } from "@/domains/protocol/protocol.schema";
 import type {
   ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
-} from "@/features/protocol/protocol.types";
+} from "@/domains/protocol/protocol.types";
 import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";

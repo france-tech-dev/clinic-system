@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { buildActivityMonthSeries } from "@/features/dashboard/_lib/build-activity-month-series";
-import { buildCashDaySeries } from "@/features/dashboard/_lib/build-cash-day-series";
-import { CashTransactionType } from "../../../../prisma/generated/prisma/enums";
+import { buildActivityMonthSeries } from "@/domains/dashboard/_lib/build-activity-month-series";
+import { buildCashDaySeries } from "@/domains/dashboard/_lib/build-cash-day-series";
+import { CashTransactionType } from "@prisma/enums";
 
 describe("buildCashDaySeries", () => {
   it("agrega entradas e saídas por dia do mês", () => {

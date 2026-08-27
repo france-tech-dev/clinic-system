@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { InviteInstrumentForm } from "@/features/protocol/components/public/invite-instrument-form";
 import { PublicInviteUnavailable } from "@/features/protocol/components/public/public-invite-unavailable";
 import { getEvaluationModule } from "@/features/protocol/evaluation-modules";
-import { getPublicProtocolInviteInstrument } from "@/features/protocol/invite/protocol-invite.service";
+import { getPublicProtocolInviteInstrument } from "@/domains/protocol/invite/protocol-invite.service";
 
 export default async function PublicAvaliacaoInstrumentPage({
   params,

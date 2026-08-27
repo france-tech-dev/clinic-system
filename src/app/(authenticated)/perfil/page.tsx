@@ -1,6 +1,6 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
-import { getOwnTeamMember } from "@/features/team/team.service";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+import { getOwnTeamMember } from "@/domains/team/team.service";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { PerfilClient } from "./perfil-client";
 

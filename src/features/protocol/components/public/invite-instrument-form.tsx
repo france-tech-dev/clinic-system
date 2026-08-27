@@ -8,16 +8,16 @@ import { ArrowLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
-import { submitPublicInviteAction } from "@/features/protocol/invite/protocol-invite.public.actions";
-import type { PublicProtocolInviteInstrumentDTO } from "@/features/protocol/invite/protocol-invite.types";
+import { submitPublicInviteAction } from "@/domains/protocol/invite/protocol-invite.public.actions";
+import type { PublicProtocolInviteInstrumentDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import {
   parseItemProtocolResponses,
   type ItemProtocolTemplate,
-} from "@/features/protocol/evaluation-modules/_shared/item-protocol-template";
+} from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
 import {
   ITEM_SCALE_OPTIONS,
   type ItemResponseValue,
-} from "@/features/protocol/evaluation-modules/_shared/item-scale";
+} from "@/domains/protocol/evaluation-modules/_shared/item-scale";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
 import { PublicInviteShell } from "./public-invite-shell";

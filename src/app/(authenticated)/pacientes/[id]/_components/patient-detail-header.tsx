@@ -20,12 +20,12 @@ import {
 import type {
   PatientDTO,
   PatientStatus,
-} from "@/features/patient/patient.types";
-import type { TeamMemberDTO } from "@/features/team/team.types";
+} from "@/domains/patient/patient.types";
+import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
-import { PatientStatus as PatientStatusEnum } from "../../../../../../prisma/generated/prisma/enums";
+import { PatientStatus as PatientStatusEnum } from "@prisma/enums";
 
 export function PatientDetailHeader({
   patient,

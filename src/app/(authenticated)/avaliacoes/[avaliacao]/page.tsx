@@ -10,11 +10,9 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  getCatalogEvaluation,
-  getEvaluationModule,
-} from "@/features/protocol/evaluation-modules";
-import { listPatients } from "@/features/patient/patient.service";
+import { getCatalogEvaluation } from "@/domains/protocol/evaluation-modules";
+import { getEvaluationModule } from "@/features/protocol/evaluation-modules";
+import { listPatients } from "@/domains/patient/patient.service";
 import { getBillingAccess } from "@/server/billing/access";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { paths } from "@/shared/constants/paths";

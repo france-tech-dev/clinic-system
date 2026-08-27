@@ -7,26 +7,26 @@ import { toast } from "sonner";
 import {
   enableGuardianPortalAccessAction,
   updateGuardianAction,
-} from "@/features/guardian/guardian.actions";
-import type { GuardianDTO } from "@/features/guardian/guardian.types";
+} from "@/domains/guardian/guardian.actions";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import {
   EMPTY_GUARDIAN_DRAFT,
   guardianDraftToForm,
   guardianDtoToDraft,
   type GuardianFormDraft,
-} from "@/features/guardian/_lib/guardian-form-defaults";
+} from "@/domains/guardian/_lib/guardian-form-defaults";
 import {
   guardianDraftSchema,
   type GuardianDraftInput,
-} from "@/features/guardian/guardian.schema";
+} from "@/domains/guardian/guardian.schema";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
-import { updatePatientAction } from "@/features/patient/patient.actions";
+import { updatePatientAction } from "@/domains/patient/patient.actions";
 import {
   patientDraftSchema,
   type PatientDraftInput,
-} from "@/features/patient/patient.schema";
-import type { PatientDetailDTO } from "@/features/patient/patient.types";
-import { patientDtoToDraft } from "@/features/patient/_lib/patient-form-defaults";
+} from "@/domains/patient/patient.schema";
+import type { PatientDetailDTO } from "@/domains/patient/patient.types";
+import { patientDtoToDraft } from "@/domains/patient/_lib/patient-form-defaults";
 import { parseBrl } from "@/shared/lib/money-utils";
 import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
 
