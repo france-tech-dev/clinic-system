@@ -1,24 +1,35 @@
 import { ItemProtocolClient } from "./item-protocol-client";
 import { listProtocolEvaluations } from "@/domains/protocol/protocol.service";
+import type {
+  ProtocolInstrument,
+} from "@/domains/protocol/evaluation-modules/instruments";
 import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
 import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
-import type { HealthProfessionId } from "@/shared/constants/professions";
 
-export function createItemEvaluationModule(def: {
-  id: string;
-  name: string;
-  description: string;
+/** Instrumento com template de itens (PEDI, SPM, Perfil, …). */
+export type ItemProtocolInstrument = ProtocolInstrument & {
   template: ItemProtocolTemplate;
-  professionId: HealthProfessionId;
-  supportsPublicInvite?: boolean;
-}): EvaluationModule {
+};
+
+export function createItemEvaluationModule(
+  instrument: ItemProtocolInstrument,
+): EvaluationModule {
+  const {
+    id,
+    name,
+    description,
+    professionId,
+    template,
+    supportsPublicInvite,
+  } = instrument;
+
   return {
-    id: def.id,
-    name: def.name,
-    description: def.description,
-    professionId: def.professionId,
-    supportsPublicInvite: def.supportsPublicInvite ?? true,
-    template: def.template,
+    id,
+    name,
+    description,
+    professionId,
+    supportsPublicInvite: supportsPublicInvite ?? true,
+    template,
     render: async ({
       organizationId,
       patients,
@@ -26,18 +37,14 @@ export function createItemEvaluationModule(def: {
       canWrite,
     }) => {
       const initialProtocolEvaluations = initialPatientId
-        ? await listProtocolEvaluations(
-            organizationId,
-            initialPatientId,
-            def.id,
-          )
+        ? await listProtocolEvaluations(organizationId, initialPatientId, id)
         : [];
 
       return (
         <ItemProtocolClient
-          protocolId={def.id}
-          protocolName={def.name}
-          template={def.template}
+          protocolId={id}
+          protocolName={name}
+          template={template}
           patients={patients}
           initialPatientId={initialPatientId}
           initialProtocolEvaluations={initialProtocolEvaluations}

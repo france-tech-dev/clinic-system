@@ -1,9 +1,7 @@
 import type { HealthProfessionId } from "@/shared/constants/professions";
 import type { ItemProtocolTemplate } from "./_shared/item-protocol-template";
 import type { CatalogEvaluationDef } from "./types";
-import {
-  GMFM88_PROTOCOL_ID,
-} from "./fisioterapia/gmfm-88/template";
+import { GMFM88_PROTOCOL_ID } from "./fisioterapia/gmfm-88/template";
 import {
   PEDI_AUTOCUIDADO_PROTOCOL_ID,
   PEDI_AUTOCUIDADO_TEMPLATE,
@@ -85,8 +83,7 @@ const PROTOCOL_INSTRUMENTS: ProtocolInstrument[] = [
   {
     id: PERFIL_SENSORIAL_CRIANCA_PEQUENA_PROTOCOL_ID,
     name: "Perfil Sensorial (Criança Pequena)",
-    description:
-      "Perfil Sensorial — criança pequena, 7 a 35 meses (54 itens).",
+    description: "Perfil Sensorial — criança pequena, 7 a 35 meses (54 itens).",
     professionId: "terapeuta_ocupacional",
     supportsPublicInvite: true,
     template: PERFIL_SENSORIAL_CRIANCA_PEQUENA_TEMPLATE,

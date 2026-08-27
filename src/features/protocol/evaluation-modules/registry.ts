@@ -2,10 +2,6 @@ import { fisioterapiaEvaluationModules } from "./fisioterapia";
 import { terapiaOcupacionalEvaluationModules } from "./terapia-ocupacional";
 import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
 
-/**
- * Instrumentos com UI em `protocol`.
- * Para adicionar: `evaluation-modules/<profissão>/<id>/module.tsx` e incluir na lista da profissão.
- */
 const EVALUATION_MODULES: EvaluationModule[] = [
   ...fisioterapiaEvaluationModules,
   ...terapiaOcupacionalEvaluationModules,
