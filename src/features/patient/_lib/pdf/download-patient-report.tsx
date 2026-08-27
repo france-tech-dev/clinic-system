@@ -1,7 +1,7 @@
 import { downloadPdfBlob, renderPdfBlob } from "@/shared/lib/pdf/generate";
 import { PatientReportDocument } from "./build-patient-report-document";
-import { buildPatientReportFilename } from "./report-meta";
-import type { PatientReportPayload } from "./types";
+import { buildPatientReportFilename } from "@/domains/patient/_lib/pdf/report-meta";
+import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
 
 export async function downloadPatientReport(
   payload: PatientReportPayload,

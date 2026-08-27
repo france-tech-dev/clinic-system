@@ -3,12 +3,14 @@ import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
 import { formatDateBR } from "@/shared/lib/format-date-br";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
-import type { ClinicalEvaluationReportOptions } from "../clinical-evaluation-report-options";
-import type { ClinicalEvaluationReportSectionId } from "../clinical-evaluation-report-options";
+import type {
+  ClinicalEvaluationReportOptions,
+  ClinicalEvaluationReportSectionId,
+} from "@/domains/patient/_lib/pdf/clinical-evaluation-report-options";
 import {
   getClinicalEvaluationReportDomains,
   isClinicalEvaluationSectionEnabled,
-} from "../clinical-evaluation-report-options";
+} from "@/domains/patient/_lib/pdf/clinical-evaluation-report-options";
 
 function hasSectionContent(value: string): boolean {
   return value.trim().length > 0;

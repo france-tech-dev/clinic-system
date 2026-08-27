@@ -1,4 +1,4 @@
-import type { PatientReportPayload } from "./types";
+import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
 import { ClinicalEvaluationDocument } from "./documents/clinical-evaluation-document";
 import { FullRecordDocument } from "./documents/full-record-document";
 
