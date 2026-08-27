@@ -3,24 +3,15 @@ import {
   GMFM88_TEMPLATE,
   type Gmfm88Domain,
 } from "./template";
+import type {
+  ProtocolDomainSummary,
+  ProtocolOverallSummary,
+} from "../../_shared/protocol-score-summary";
 
 export type Gmfm88Scores = Record<string, number | null | undefined>;
 
-export type Gmfm88DomainSummary = {
-  domainId: string;
-  title: string;
-  totalScore: number;
-  maxScore: number;
-  percent: number;
-  itemCount: number;
-};
-
-export type Gmfm88OverallSummary = {
-  totalScore: number;
-  maxScore: number;
-  percent: number;
-  domains: Gmfm88DomainSummary[];
-};
+export type Gmfm88DomainSummary = ProtocolDomainSummary;
+export type Gmfm88OverallSummary = ProtocolOverallSummary;
 
 function domainMaxScore(domain: Gmfm88Domain): number {
   return domain.items.length * GMFM88_MAX_ITEM_SCORE;
@@ -56,8 +47,8 @@ export function summarizeGmfm88Domain(
 }
 
 export function summarizeGmfm88(scores: Gmfm88Scores): Gmfm88OverallSummary {
-  const domains = GMFM88_TEMPLATE.domains.map(
-    (d) => summarizeGmfm88Domain(scores, d.id)!,
+  const domains = GMFM88_TEMPLATE.domains.map((d) =>
+    summarizeGmfm88Domain(scores, d.id)!,
   );
   const totalScore = domains.reduce((sum, d) => sum + d.totalScore, 0);
   const maxScore = domains.reduce((sum, d) => sum + d.maxScore, 0);

@@ -8,6 +8,7 @@ import {
   ITEM_SCALE_OPTIONS,
   type ItemResponseValue,
 } from "./evaluation-modules/_shared/item-scale";
+import { summarizeItemProtocol } from "./evaluation-modules/_shared/item-protocol-scoring";
 import {
   ageYearsFromBirthDate,
   patientFirstName,
@@ -26,11 +27,13 @@ import type {
   ProtocolEvaluationComparisonDTO,
   ProtocolEvaluationPreviewDTO,
   ProtocolInterpretationAIContextDTO,
+  ProtocolScoreValue,
 } from "./protocol.types";
+import type { ProtocolOverallSummary } from "./evaluation-modules/_shared/protocol-score-summary";
 
-function parseScores(raw: string): Record<string, number | string | null> {
+function parseScores(raw: string): Record<string, ProtocolScoreValue> {
   try {
-    return JSON.parse(raw) as Record<string, number | string | null>;
+    return JSON.parse(raw) as Record<string, ProtocolScoreValue>;
   } catch {
     return {};
   }
@@ -40,12 +43,21 @@ type ProtocolEvaluationRow = NonNullable<
   Awaited<ReturnType<typeof protocolRepository.findById>>
 >;
 
+function resolveSummary(
+  protocolId: string,
+  scores: Record<string, ProtocolScoreValue>,
+): ProtocolOverallSummary | null {
+  if (protocolId === GMFM88_PROTOCOL_ID) {
+    return summarizeGmfm88(scores as Gmfm88Scores);
+  }
+  const template = getProtocolInstrument(protocolId)?.template;
+  if (!template) return null;
+  return summarizeItemProtocol(template, scores);
+}
+
 function toDTO(row: ProtocolEvaluationRow): ProtocolEvaluationDTO {
   const scores = parseScores(row.scores);
-  const summary =
-    row.protocolId === GMFM88_PROTOCOL_ID
-      ? summarizeGmfm88(scores as Gmfm88Scores)
-      : null;
+  const summary = resolveSummary(row.protocolId, scores);
 
   return {
     id: row.id,

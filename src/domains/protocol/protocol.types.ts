@@ -1,4 +1,4 @@
-import type { Gmfm88OverallSummary } from "./evaluation-modules/fisioterapia/gmfm-88/scoring";
+import type { ProtocolOverallSummary } from "./evaluation-modules/_shared/protocol-score-summary";
 
 export type ProtocolScoreValue = number | string | null;
 
@@ -15,7 +15,7 @@ export type ProtocolEvaluationDTO = {
   notes: string;
   interpretationAI: string | null;
   interpretationAIUpdatedAt: string | null;
-  summary: Gmfm88OverallSummary | null;
+  summary: ProtocolOverallSummary | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -39,7 +39,7 @@ import {
   GmfmEvaluationForm,
   type GmfmEvaluationFormValues,
 } from "./evaluation-form";
-import { GmfmComparisonChart } from "./comparison-chart";
+import { ProtocolComparisonChart } from "@/features/protocol/evaluation-modules/_shared/protocol-comparison-chart";
 import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
 import {
   emptyGmfm88Scores,
@@ -410,7 +410,7 @@ export function GmfmProtocolClient({
                       ({comparison.baseline.summary?.percent.toFixed(1)}% →{" "}
                       {comparison.followUp.summary?.percent.toFixed(1)}%)
                     </p>
-                    <GmfmComparisonChart comparison={comparison} />
+                    <ProtocolComparisonChart comparison={comparison} />
                   </div>
                 ) : null}
               </CardContent>
