@@ -33,11 +33,13 @@ export function useProtocolInterpretationAI({
   initialInterpretationAI,
   canUseAi,
   onSaved,
+  onGenerationStarted,
 }: {
   evaluationId: string;
   initialInterpretationAI: string | null;
   canUseAi: boolean;
   onSaved?: (interpretationAI: string | null) => void;
+  onGenerationStarted?: () => void;
 }) {
   const [isSaving, startSave] = useTransition();
 
@@ -48,7 +50,11 @@ export function useProtocolInterpretationAI({
       streamProtocol: "text",
       body: { evaluationId },
       initialCompletion: initialInterpretationAI ?? "",
-      fetch: protocolInterpretationFetch,
+      fetch: async (input, init) => {
+        const res = await protocolInterpretationFetch(input, init);
+        onGenerationStarted?.();
+        return res;
+      },
       onError: (error) => {
         if (isAbortError(error)) return;
         toast.error(error.message || "Falha ao gerar interpretação.");

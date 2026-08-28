@@ -14,16 +14,6 @@ async function requireWritableBilling(organizationId: string): Promise<void> {
   }
 }
 
-async function requireBillingFeature(
-  organizationId: string,
-  feature: GatedFeatureId,
-): Promise<void> {
-  const access = await getBillingAccess(organizationId);
-  if (!access.features.includes(feature)) {
-    throw new Error("Este recurso não está incluído no seu plano.");
-  }
-}
-
 /** Gate de assentos do plano (ex.: criar profissional). */
 export async function requireSeatAvailable(
   organizationId: string,
@@ -49,6 +39,9 @@ export async function requireOrgWrite() {
 /** Como `requireOrgWrite`, mais feature do plano (anamnese, caixa, …). */
 export async function requireOrgFeatureWrite(feature: GatedFeatureId) {
   const ctx = await requireOrgWrite();
-  await requireBillingFeature(ctx.organizationId, feature);
-  return ctx;
+  const billing = await getBillingAccess(ctx.organizationId);
+  if (!billing.features.includes(feature)) {
+    throw new Error("Este recurso não está incluído no seu plano.");
+  }
+  return { ...ctx, billing };
 }

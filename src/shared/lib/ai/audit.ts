@@ -19,3 +19,17 @@ export async function logAiGeneration(input: {
     },
   });
 }
+
+export async function countAiGenerationsSince(input: {
+  organizationId: string;
+  userId?: string;
+  since: Date;
+}): Promise<number> {
+  return db.aiGenerationLog.count({
+    where: {
+      organizationId: input.organizationId,
+      ...(input.userId ? { userId: input.userId } : {}),
+      createdAt: { gte: input.since },
+    },
+  });
+}
