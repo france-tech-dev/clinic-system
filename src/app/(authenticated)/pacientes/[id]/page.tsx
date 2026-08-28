@@ -31,6 +31,8 @@ import {
 } from "@/domains/protocol/invite/protocol-invite.service";
 import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import { getBillingAccess } from "@/server/billing/access";
+import type { AiTrialQuotaDTO } from "@/shared/constants/ai-limits";
+import { getAiTrialQuota } from "@/shared/lib/ai/generation-limit";
 import { headers } from "next/headers";
 import { PacienteDetailClient } from "./paciente-detail-client";
 
@@ -50,6 +52,7 @@ export default async function PacienteDetailPage({
   let protocolInvites: ProtocolInviteDTO[] = [];
   let canWriteInvites = false;
   let canUseAi = false;
+  let aiTrialQuota: AiTrialQuotaDTO | null = null;
   let professional: ProfessionalProfile = {
     name: "",
     registration: "",
@@ -101,6 +104,13 @@ export default async function PacienteDetailPage({
     canWriteInvites =
       billing.mode === "full" && billing.features.includes("avaliacoes");
     canUseAi = billing.mode === "full" && billing.features.includes("ai");
+    if (canUseAi) {
+      aiTrialQuota = await getAiTrialQuota({
+        organizationId,
+        userId,
+        billing,
+      });
+    }
     anamneses = anamneseRecords.map((row) =>
       toAnamneseSummary(
         row,
@@ -146,6 +156,7 @@ export default async function PacienteDetailPage({
         inviteProtocols={inviteProtocols}
         canWriteInvites={canWriteInvites}
         canUseAi={canUseAi}
+        initialAiTrialQuota={aiTrialQuota}
       />
     </AppPage>
   );

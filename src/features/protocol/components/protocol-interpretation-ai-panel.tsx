@@ -4,6 +4,8 @@ import { Square, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { formatTrialAiQuotaHint } from "@/shared/lib/ai/_lib/quota";
+import { useAiTrialQuota } from "@/features/protocol/components/ai-trial-quota-provider";
 import { useProtocolInterpretationAI } from "@/features/protocol/hooks/use-protocol-interpretation-ai";
 
 export function ProtocolInterpretationAIPanel({
@@ -17,6 +19,8 @@ export function ProtocolInterpretationAIPanel({
   canUseAi: boolean;
   onSaved?: (interpretationAI: string | null) => void;
 }) {
+  const { quota, consumeGeneration } = useAiTrialQuota();
+
   const {
     text,
     setText,
@@ -28,8 +32,9 @@ export function ProtocolInterpretationAIPanel({
   } = useProtocolInterpretationAI({
     evaluationId,
     initialInterpretationAI,
-    canUseAi,
+    canUseAi: canUseAi && (quota?.canGenerate ?? true),
     onSaved,
+    onGenerationStarted: consumeGeneration,
   });
 
   if (!canUseAi) {
@@ -43,6 +48,9 @@ export function ProtocolInterpretationAIPanel({
     );
   }
 
+  const trialQuotaHint = quota ? formatTrialAiQuotaHint(quota) : null;
+  const generateDisabled = isSaving || (quota != null && !quota.canGenerate);
+
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-border p-3 sm:p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -52,6 +60,9 @@ export function ProtocolInterpretationAIPanel({
             Interpretação por IA — rever antes de usar clinicamente. A IA não
             inventa T-scores; usa respostas item a item e somas brutas.
           </p>
+          {trialQuotaHint ? (
+            <p className="text-xs text-muted-foreground">{trialQuotaHint}</p>
+          ) : null}
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
           {isGenerating ? (
@@ -69,7 +80,7 @@ export function ProtocolInterpretationAIPanel({
               type="button"
               size="sm"
               variant="outline"
-              disabled={isSaving}
+              disabled={generateDisabled}
               onClick={() => void generate()}
             >
               <Sparkles data-icon="inline-start" />
@@ -87,6 +98,13 @@ export function ProtocolInterpretationAIPanel({
           </Button>
         </div>
       </div>
+
+      {quota && !quota.canGenerate ? (
+        <p className="text-xs text-muted-foreground">
+          Limite do período de teste atingido. Assine o plano Enterprise para
+          continuar a gerar interpretações.
+        </p>
+      ) : null}
 
       <Textarea
         value={text}

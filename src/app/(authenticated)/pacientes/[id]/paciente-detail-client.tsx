@@ -28,6 +28,7 @@ import type { TeamMemberDTO } from "@/domains/team/team.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import type { PublicInviteProtocolOption } from "@/features/protocol/components/create-protocol-invite-dialog";
 import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
+import type { AiTrialQuotaDTO } from "@/shared/constants/ai-limits";
 import { PatientStatus } from "@prisma/enums";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
@@ -55,6 +56,7 @@ export function PacienteDetailClient({
   inviteProtocols,
   canWriteInvites,
   canUseAi,
+  initialAiTrialQuota,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
@@ -68,6 +70,7 @@ export function PacienteDetailClient({
   inviteProtocols: PublicInviteProtocolOption[];
   canWriteInvites: boolean;
   canUseAi: boolean;
+  initialAiTrialQuota: AiTrialQuotaDTO | null;
 }) {
   const vm = usePatientDetail({
     initial,
@@ -175,6 +178,7 @@ export function PacienteDetailClient({
           inviteProtocols={inviteProtocols}
           canWriteInvites={canWriteInvites}
           canUseAi={canUseAi}
+          initialAiTrialQuota={initialAiTrialQuota}
         />
       )}
 
