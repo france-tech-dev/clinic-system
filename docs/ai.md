@@ -46,10 +46,17 @@ Chave em [Google AI Studio](https://aistudio.google.com/apikey). Sem a chave do 
 
 ## Rate limit
 
-Por janela de 1 hora (tabela `rate_limit`):
+Dois regimes, conforme billing da clínica:
 
-- Clínica: `ai:org:{organizationId}` — máx. 40
-- Utilizador: `ai:user:{userId}` — máx. 20
+| Regime                      | Clínica     | Utilizador  | Janela                                                                                  |
+| --------------------------- | ----------- | ----------- | --------------------------------------------------------------------------------------- |
+| **Período de teste**        | 20 gerações | 10 gerações | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` |
+| **Plano pago (Enterprise)** | 40          | 20          | 1 hora (`rate_limit`)                                                                   |
+
+Constantes: [`src/shared/constants/ai-limits.ts`](../src/shared/constants/ai-limits.ts)  
+Enforcement: [`src/shared/lib/ai/generation-limit.ts`](../src/shared/lib/ai/generation-limit.ts)
+
+A quota de trial é carregada no servidor (página do paciente), injectada via `AiTrialQuotaProvider` na tab de links públicos e mostrada no painel de interpretação.
 
 ## Limites clínicos e privacidade
 

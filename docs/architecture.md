@@ -72,25 +72,25 @@ clinic-system/
 
 ### Aliases TypeScript
 
-| Alias            | Destino físico    |
-| ---------------- | ----------------- |
-| `@/domains/*`    | `src/domains/*`   |
-| `@/shared/*`     | `src/shared/*`    |
-| `@/server/*`     | `src/platform/*`  |
-| `@/components/*` | `src/ui/*`        |
-| `@/features/*`   | `src/features/*`  |
-| `@/*`            | `src/*`           |
+| Alias            | Destino físico   |
+| ---------------- | ---------------- |
+| `@/domains/*`    | `src/domains/*`  |
+| `@/shared/*`     | `src/shared/*`   |
+| `@/server/*`     | `src/platform/*` |
+| `@/components/*` | `src/ui/*`       |
+| `@/features/*`   | `src/features/*` |
+| `@/*`            | `src/*`          |
 
 Imports de negócio preferem `@/domains/…`. O alias `@/server/*` continua a apontar para platform.
 
 ### Fronteira platform vs domains vs UI web
 
-| Pasta física     | Alias           | Conteúdo                                        |
-| ---------------- | --------------- | ----------------------------------------------- |
-| `src/platform/`  | `@/server/`     | Sessão, convites, permissões Better Auth        |
-| `src/domains/`   | `@/domains/`    | Pacientes, agenda, caixa, regras, actions finas |
-| `src/features/`  | `@/features/`   | Componentes/hooks UI por domínio (≥2 rotas)     |
-| `src/ui/`        | `@/components/` | Design system sem regra de negócio              |
+| Pasta física    | Alias           | Conteúdo                                        |
+| --------------- | --------------- | ----------------------------------------------- |
+| `src/platform/` | `@/server/`     | Sessão, convites, permissões Better Auth        |
+| `src/domains/`  | `@/domains/`    | Pacientes, agenda, caixa, regras, actions finas |
+| `src/features/` | `@/features/`   | Componentes/hooks UI por domínio (≥2 rotas)     |
+| `src/ui/`       | `@/components/` | Design system sem regra de negócio              |
 
 Não mover lógica clínica para platform. Não meter React/UI de produto em `src/domains`.
 
@@ -137,14 +137,14 @@ components/ (ui)  →  shared/   (evitar domains/)
 platform/         →  shared/
 ```
 
-| Origem (conceito / pasta)     | Pode importar                                                     | Não pode importar                     |
-| ----------------------------- | ----------------------------------------------------------------- | ------------------------------------- |
-| `src/app/`                    | `@/domains`, `@/features`, `@/shared`, `@/components`, `@/server` | —                                     |
-| `src/domains`                 | `@/shared`, `@/server` (platform)                                 | outros contexts profundos, `app/`, ui |
-| `src/features/` (UI)          | `@/domains`, `@/shared`, `@/components`                           | UI de outra rota `_components/`       |
-| `src/shared`                  | outros módulos `shared/`                                          | `domains/`, `app/`                    |
-| `src/ui` (`@/components`)     | `@/shared` (utils)                                                | `domains/` (preferência)              |
-| `src/platform` (`@/server`)   | `@/shared`                                                        | `domains/`, `app/`                    |
+| Origem (conceito / pasta)   | Pode importar                                                     | Não pode importar                     |
+| --------------------------- | ----------------------------------------------------------------- | ------------------------------------- |
+| `src/app/`                  | `@/domains`, `@/features`, `@/shared`, `@/components`, `@/server` | —                                     |
+| `src/domains`               | `@/shared`, `@/server` (platform)                                 | outros contexts profundos, `app/`, ui |
+| `src/features/` (UI)        | `@/domains`, `@/shared`, `@/components`                           | UI de outra rota `_components/`       |
+| `src/shared`                | outros módulos `shared/`                                          | `domains/`, `app/`                    |
+| `src/ui` (`@/components`)   | `@/shared` (utils)                                                | `domains/` (preferência)              |
+| `src/platform` (`@/server`) | `@/shared`                                                        | `domains/`, `app/`                    |
 
 ### Orquestração multi-domínio
 
@@ -205,12 +205,12 @@ import { X } from "@/app/(authenticated)/caixa/_components/...";
 
 ### Exemplos neste projecto
 
-| Componente                  | Destino                                    |
-| --------------------------- | ------------------------------------------ |
-| `CashTransactionFormDialog` | `src/features/finance/components/`         |
-| `PatientPdfPreviewDialog`   | `src/features/patient/components/`         |
-| `AppPage`                   | `src/app/(authenticated)/_components/`     |
-| `Button`, `Dialog`          | `src/ui` (`@/components/ui/`)              |
+| Componente                  | Destino                                |
+| --------------------------- | -------------------------------------- |
+| `CashTransactionFormDialog` | `src/features/finance/components/`     |
+| `PatientPdfPreviewDialog`   | `src/features/patient/components/`     |
+| `AppPage`                   | `src/app/(authenticated)/_components/` |
+| `Button`, `Dialog`          | `src/ui` (`@/components/ui/`)          |
 
 ---
 
