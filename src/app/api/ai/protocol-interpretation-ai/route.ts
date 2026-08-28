@@ -9,17 +9,16 @@ import {
 } from "@/shared/lib/ai";
 import { logAiGeneration } from "@/shared/lib/ai/audit";
 import { formatAiProviderError } from "@/shared/lib/ai/errors";
+import {
+  AiGenerationLimitError,
+  assertAiGenerationAllowed,
+} from "@/shared/lib/ai/generation-limit";
 import { OrgContextError } from "@/shared/lib/org-context";
-import { assertRateLimit } from "@/shared/lib/rate-limit";
 import { buildProtocolInterpretationAIPrompt } from "@/domains/protocol/_lib/interpretationAI/prompt";
 import { getProtocolInterpretationAIContext } from "@/domains/protocol/protocol.service";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
-
-const AI_ORG_MAX_PER_HOUR = 40;
-const AI_USER_MAX_PER_HOUR = 20;
-const AI_WINDOW_SEC = 60 * 60;
 
 const bodySchema = z.object({
   evaluationId: z.string().min(1),
@@ -28,41 +27,10 @@ const bodySchema = z.object({
 export async function POST(req: Request) {
   try {
     await requirePermission({ project: ["read"] });
-    const { organizationId, userId } = await requireOrgFeatureWrite("ai");
+    const { organizationId, userId, billing } =
+      await requireOrgFeatureWrite("ai");
 
-    const orgLimit = await assertRateLimit({
-      key: `ai:org:${organizationId}`,
-      windowSec: AI_WINDOW_SEC,
-      max: AI_ORG_MAX_PER_HOUR,
-    });
-    if (!orgLimit.ok) {
-      return Response.json(
-        {
-          error: `Limite de gerações da clínica atingido. Tente novamente em cerca de ${orgLimit.retryAfterSec}s.`,
-        },
-        {
-          status: 429,
-          headers: { "Retry-After": String(orgLimit.retryAfterSec) },
-        },
-      );
-    }
-
-    const userLimit = await assertRateLimit({
-      key: `ai:user:${userId}`,
-      windowSec: AI_WINDOW_SEC,
-      max: AI_USER_MAX_PER_HOUR,
-    });
-    if (!userLimit.ok) {
-      return Response.json(
-        {
-          error: `Limite de gerações da sua conta atingido. Tente novamente em cerca de ${userLimit.retryAfterSec}s.`,
-        },
-        {
-          status: 429,
-          headers: { "Retry-After": String(userLimit.retryAfterSec) },
-        },
-      );
-    }
+    await assertAiGenerationAllowed({ organizationId, userId, billing });
 
     const json: unknown = await req.json();
     const parsed = bodySchema.safeParse(json);
@@ -121,6 +89,17 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof OrgContextError) {
       return Response.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof AiGenerationLimitError) {
+      return Response.json(
+        { error: error.message },
+        {
+          status: 429,
+          headers: error.retryAfterSec
+            ? { "Retry-After": String(error.retryAfterSec) }
+            : undefined,
+        },
+      );
     }
     if (error instanceof AiConfigError) {
       return Response.json({ error: error.message }, { status: 503 });
