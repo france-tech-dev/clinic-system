@@ -5,8 +5,8 @@ export const AI_LIMITS = {
     windowSec: 60 * 60,
   },
   trial: {
-    orgMax: 20,
-    userMax: 10,
+    orgMax: 5,
+    userMax: 5,
   },
 } as const;
 

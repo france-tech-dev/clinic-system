@@ -1,19 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { AI_LIMITS } from "@/shared/constants/ai-limits";
 import {
   buildTrialAiQuota,
   consumeTrialAiQuota,
   formatTrialAiQuotaHint,
 } from "@/shared/lib/ai/_lib/quota";
-import { AI_LIMITS } from "@/shared/constants/ai-limits";
+import { describe, expect, it } from "vitest";
 
 describe("buildTrialAiQuota", () => {
   it("calcula remaining e canGenerate", () => {
-    const quota = buildTrialAiQuota(5, 2);
+    const quota = buildTrialAiQuota(2, 2);
 
     expect(quota.org).toEqual({
-      used: 5,
+      used: 2,
       max: AI_LIMITS.trial.orgMax,
-      remaining: AI_LIMITS.trial.orgMax - 5,
+      remaining: AI_LIMITS.trial.orgMax - 2,
     });
     expect(quota.user.remaining).toBe(AI_LIMITS.trial.userMax - 2);
     expect(quota.canGenerate).toBe(true);
@@ -42,6 +42,6 @@ describe("formatTrialAiQuotaHint", () => {
     expect(formatTrialAiQuotaHint(almostFull)).toContain("1 geração restante");
 
     const plenty = buildTrialAiQuota(0, 0);
-    expect(formatTrialAiQuotaHint(plenty)).toContain("20 gerações restantes");
+    expect(formatTrialAiQuotaHint(plenty)).toContain("5 gerações restantes");
   });
 });

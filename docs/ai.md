@@ -7,6 +7,7 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 | Peça                          | Local                                                                                             |
 | ----------------------------- | ------------------------------------------------------------------------------------------------- |
 | Cliente / modelo / stream     | [`src/shared/lib/ai`](../src/shared/lib/ai/index.ts)                                              |
+| Rotas HTTP (auth + limites)   | [`route-handler.ts`](../src/shared/lib/ai/route-handler.ts)                                       |
 | Hook client (gerar/stream)    | [`useProtocolInterpretationAI`](../src/features/protocol/hooks/use-protocol-interpretation-ai.ts) |
 | Prompt clínico (protocolo)    | [`interpretationAI`](../src/domains/protocol/_lib/interpretationAI/prompt.ts)                     |
 | Somas brutas (determinístico) | [`raw-section-scores.ts`](../src/domains/protocol/_lib/interpretationAI/raw-section-scores.ts)    |
@@ -14,7 +15,7 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 | Persistência                  | `ProtocolEvaluation.interpretationAI`                                                             |
 | Auditoria                     | `AiGenerationLog` (`ai_generation_logs`)                                                          |
 
-`shared/lib/ai` não contém regras clínicas — só provider e helpers reutilizáveis. Novos casos (evolução, anamnese) devem acrescentar prompts no respectivo domínio e reutilizar o cliente.
+`shared/lib/ai` não contém regras clínicas — só provider e helpers reutilizáveis. Novos casos devem acrescentar prompts no respectivo domínio e reutilizar `prepareAiGeneration` + `route-handler`.
 
 ## Variáveis de ambiente
 
@@ -41,17 +42,19 @@ Chave em [Google AI Studio](https://aistudio.google.com/apikey). Sem a chave do 
 
 1. Profissional abre respostas do link público (paciente → Links públicos).
 2. Clica **Gerar** (ou **Parar** a meio) → hook `useProtocolInterpretationAI` → `POST /api/ai/protocol-interpretation-ai`.
-3. Servidor: rate limit org/user → auditoria → preview + somas brutas → stream.
+3. Servidor: `prepareAiGeneration` → auditoria → preview + somas brutas → stream.
 4. Profissional edita o rascunho e **Salva** via `saveProtocolInterpretationAIAction`.
+
+Novas rotas `/api/ai/*`: reutilizar `prepareAiGeneration`, `logAiGeneration` e `toAiRouteErrorResponse` de [`route-handler.ts`](../src/shared/lib/ai/route-handler.ts).
 
 ## Rate limit
 
 Dois regimes, conforme billing da clínica:
 
-| Regime                      | Clínica     | Utilizador  | Janela                                                                                  |
-| --------------------------- | ----------- | ----------- | --------------------------------------------------------------------------------------- |
-| **Período de teste**        | 20 gerações | 10 gerações | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` |
-| **Plano pago (Enterprise)** | 40          | 20          | 1 hora (`rate_limit`)                                                                   |
+| Regime                      | Clínica    | Utilizador | Janela                                                                                                               |
+| --------------------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Período de teste**        | 5 gerações | 5 gerações | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` (todas as rotas `/api/ai/*`) |
+| **Plano pago (Enterprise)** | 40         | 20         | 1 hora (`rate_limit`)                                                                                                |
 
 Constantes: [`src/shared/constants/ai-limits.ts`](../src/shared/constants/ai-limits.ts)  
 Enforcement: [`src/shared/lib/ai/generation-limit.ts`](../src/shared/lib/ai/generation-limit.ts)
