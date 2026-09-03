@@ -26,6 +26,7 @@ import {
   createSubscribeCheckoutAction,
 } from "@/domains/billing/billing.actions";
 import type { BillingSnapshotDTO } from "@/domains/billing/billing.types";
+import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";
 import {
   BillingPlan,
@@ -320,9 +321,12 @@ export function PlanosClient({
                   </CardAction>
                 ) : null}
                 <CardDescription>
+                  {formatBrl(plan.priceMonthlyBrl)}
+                  /mês
+                  {" · "}
                   {plan.maxProfessionals
-                    ? `Até ${plan.maxProfessionals} profissionais`
-                    : "Profissionais ilimitados"}
+                    ? `até ${plan.maxProfessionals} profissionais`
+                    : "profissionais ilimitados"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 pt-(--card-spacing)">

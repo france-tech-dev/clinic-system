@@ -6,24 +6,24 @@ Cobrança da **Movi** às clínicas pelo uso do sistema. Não é Stripe Connect:
 
 ## Decisões
 
-| Tema                          | Escolha                                                 |
-| ----------------------------- | ------------------------------------------------------- |
-| Produto                       | Stripe Billing (assinatura), não Connect                |
-| Trial                         | 7 dias, sem cartão, tudo libertado                      |
-| Sem cartão no dia 7           | Stripe cancela (`missing_payment_method: cancel`)       |
-| App após cancel               | **Read-only** (consulta; criar/editar bloqueado)        |
-| Assinar no trial              | Update da **mesma** assinatura; cobra no fim dos 7 dias |
-| Depois do cancel              | Checkout novo (`mode: subscription`)                    |
-| Clínicas sem linha de billing | Acesso completo (legado — já em produção)               |
-| Preços                        | Fora do código (`STRIPE_PRICE_*` no host)               |
+| Tema                          | Escolha                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------- |
+| Produto                       | Stripe Billing (assinatura), não Connect                                           |
+| Trial                         | 7 dias, sem cartão, tudo libertado                                                 |
+| Sem cartão no dia 7           | Stripe cancela (`missing_payment_method: cancel`)                                  |
+| App após cancel               | **Read-only** (consulta; criar/editar bloqueado)                                   |
+| Assinar no trial              | Update da **mesma** assinatura; cobra no fim dos 7 dias                            |
+| Depois do cancel              | Checkout novo (`mode: subscription`)                                               |
+| Clínicas sem linha de billing | Acesso completo (legado — já em produção)                                          |
+| Preços                        | Catálogo público em `BILLING_PLAN_PRICES_BRL`; Stripe via `STRIPE_PRICE_*` no host |
 
 ## Planos
 
-| Plano          | Profissionais | Inclui                                                                      |
-| -------------- | ------------- | --------------------------------------------------------------------------- |
-| **Starter**    | até 3         | Agenda, pacientes, profissionais, painel, busca, configurações, organização |
-| **Pro**        | até 9         | Starter + anamnese + caixa                                                  |
-| **Enterprise** | ilimitado     | Pro + avaliações + portal dos pais                                          |
+| Plano          | Profissionais | Mensalidade (catálogo)        | Inclui                                                                      |
+| -------------- | ------------- | ----------------------------- | --------------------------------------------------------------------------- |
+| **Starter**    | até 3         | ver `BILLING_PLAN_PRICES_BRL` | Agenda, pacientes, profissionais, painel, busca, configurações, organização |
+| **Pro**        | até 9         | ver `BILLING_PLAN_PRICES_BRL` | Starter + anamnese + caixa                                                  |
+| **Enterprise** | ilimitado     | ver `BILLING_PLAN_PRICES_BRL` | Pro + avaliações + portal dos pais + IA                                     |
 
 Trial ignora plano e limite de profissionais.
 
@@ -44,7 +44,7 @@ Endpoint: `POST /api/stripe/webhook`
 
 ## Código
 
-- Catálogo (só features gated): `src/shared/constants/billing-plans.ts`
+- Catálogo (features gated + preços públicos): `src/shared/constants/billing-plans.ts`
 - Persistência / Stripe: `src/features/billing/`
 - Trial na criação da org: `src/server/billing/start-trial.ts` (hook Better Auth)
 - Gates nas **actions** (`requireOrgWrite` / `requireOrgFeatureWrite`) — o proxy não consulta billing

@@ -1,7 +1,4 @@
-import {
-  BillingPlan,
-  BillingStatus,
-} from "@prisma/enums";
+import { BillingPlan, BillingStatus } from "@prisma/enums";
 
 export const BILLING_PLANS = [
   BillingPlan.STARTER,
@@ -29,12 +26,19 @@ export type GatedFeatureId = (typeof GATED_FEATURES)[number];
 
 export const TRIAL_DAYS = 7;
 
+export const BILLING_PLAN_PRICES_BRL = {
+  [BillingPlan.STARTER]: 149,
+  [BillingPlan.PRO]: 279,
+  [BillingPlan.ENTERPRISE]: 449,
+} as const satisfies Record<BillingPlan, number>;
+
 export type BillingPlanDef = {
   id: BillingPlan;
   name: string;
   maxProfessionals: number | null;
   features: readonly GatedFeatureId[];
   highlights: readonly string[];
+  priceMonthlyBrl: number;
 };
 
 export const STARTER_HIGHLIGHTS = [
@@ -65,6 +69,7 @@ export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
     maxProfessionals: 3,
     features: [],
     highlights: STARTER_HIGHLIGHTS,
+    priceMonthlyBrl: BILLING_PLAN_PRICES_BRL[BillingPlan.STARTER],
   },
   {
     id: BillingPlan.PRO,
@@ -72,6 +77,7 @@ export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
     maxProfessionals: 9,
     features: ["anamnese", "caixa"],
     highlights: PRO_HIGHLIGHTS,
+    priceMonthlyBrl: BILLING_PLAN_PRICES_BRL[BillingPlan.PRO],
   },
   {
     id: BillingPlan.ENTERPRISE,
@@ -79,6 +85,7 @@ export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
     maxProfessionals: null,
     features: ["anamnese", "caixa", "avaliacoes", "portal", "ai"],
     highlights: ENTERPRISE_HIGHLIGHTS,
+    priceMonthlyBrl: BILLING_PLAN_PRICES_BRL[BillingPlan.ENTERPRISE],
   },
 ];
 
