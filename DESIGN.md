@@ -173,7 +173,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 **Landing (Persuade):** secções e cards sobretudo flat (`border` + `bg-card` / tons); CTA final pode usar halo radial teal suave (não purple glow).
 
-**Liquid glass (só nav marketing):** ao scroll, o pill usa blur profundo (~48px) + `saturate` alto + fundo branco translúcido / specular inset — utilitário `.liquid-glass` em `globals.css` e classes equivalentes no `LandingNav`. Fallback opaco se não houver `backdrop-filter`.
+**Glass na nav marketing:** o pill flutuante (`LandingNav`) aplica blur + saturate via classes Tailwind ao scroll (`data-scrolling=true`) — sem utilitário CSS dedicado.
 
 ### Named Rules
 
