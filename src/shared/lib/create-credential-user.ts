@@ -1,5 +1,5 @@
-import { hashPassword } from "better-auth/crypto";
 import { db } from "@/shared/lib/prisma";
+import { hashPassword } from "better-auth/crypto";
 
 function parseOptionalBirthDate(value: string | null | undefined): Date | null {
   if (!value?.trim()) return null;
@@ -36,6 +36,7 @@ export async function createCredentialUser(data: {
         userId: user.id,
         accountId: user.id,
         providerId: "credential",
+        issuer: "local:credential",
         password: hashed,
       },
     });
