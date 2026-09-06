@@ -136,7 +136,7 @@ export function parseCashPeriodParams(
     return buildCashPeriod("custom", fallback.start, fallback.end);
   }
 
-  if (preset && preset !== "custom") {
+  if (preset) {
     if (preset === "month" && params.month) {
       const month = parseMonthParam(params.month);
       const start = `${month}-01`;

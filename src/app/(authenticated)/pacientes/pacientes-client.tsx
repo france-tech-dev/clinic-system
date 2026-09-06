@@ -454,7 +454,6 @@ export function PacientesClient({
                 }
                 extraOption={{ id: "__all__", name: "Todos os profissionais" }}
                 placeholder="Profissional"
-                searchPlaceholder="Pesquisar profissional…"
                 emptyText="Nenhum profissional encontrado"
                 className="w-full sm:w-56"
                 aria-label="Filtrar por profissional"
