@@ -1,9 +1,10 @@
-import { describe, expect, it } from "vitest";
 import {
   filterAppointmentsByMemberId,
   filterAppointmentsByPatientId,
+  filterAppointmentsByStatus,
   normalizeFilterIds,
 } from "@/domains/schedule/_lib/filter-appointments-by-member";
+import { describe, expect, it } from "vitest";
 
 describe("normalizeFilterIds", () => {
   it("trata all, null e vazio como sem filtro", () => {
@@ -73,8 +74,25 @@ describe("filterAppointmentsByPatientId", () => {
       { id: "1", patientId: "p-a" },
       { id: "3", patientId: "p-a" },
     ]);
-    expect(filterAppointmentsByPatientId(items, ["p-a", "p-b"])).toEqual(
-      items,
-    );
+    expect(filterAppointmentsByPatientId(items, ["p-a", "p-b"])).toEqual(items);
+  });
+});
+
+describe("filterAppointmentsByStatus", () => {
+  const items = [
+    { id: "1", status: "SCHEDULED" },
+    { id: "2", status: "COMPLETED" },
+    { id: "3", status: "SCHEDULED" },
+  ];
+
+  it("filtra por um ou vários status", () => {
+    expect(filterAppointmentsByStatus(items, [])).toEqual(items);
+    expect(filterAppointmentsByStatus(items, ["SCHEDULED"])).toEqual([
+      { id: "1", status: "SCHEDULED" },
+      { id: "3", status: "SCHEDULED" },
+    ]);
+    expect(
+      filterAppointmentsByStatus(items, ["SCHEDULED", "COMPLETED"]),
+    ).toEqual(items);
   });
 });
