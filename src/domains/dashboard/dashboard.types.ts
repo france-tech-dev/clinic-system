@@ -1,3 +1,4 @@
+import type { CashPeriod } from "@/shared/types/cash-period";
 import type { CashflowSummary } from "@/shared/types/cashflow";
 
 export type DashboardStats = {
@@ -28,6 +29,8 @@ export type CashDayPoint = {
   label: string;
   income: number;
   expense: number;
+  forecastIncome: number;
+  forecastExpense: number;
 };
 
 export type ActivityMonthPoint = {
@@ -38,15 +41,45 @@ export type ActivityMonthPoint = {
   evaluations: number;
 };
 
+export type UpcomingBirthday = {
+  patientId: string;
+  patientName: string;
+  nextDate: string;
+  dayMonthLabel: string;
+  turningAge: number;
+};
+
+export type BusiestWeekday = {
+  weekday: number;
+  shortLabel: string;
+  label: string;
+  count: number;
+};
+
+export type BusiestHourRow = {
+  hour: number;
+  label: string;
+  counts: number[];
+};
+
+export type BusiestSlots = {
+  weekdays: BusiestWeekday[];
+  hours: BusiestHourRow[];
+  maxHourCount: number;
+  total: number;
+};
+
 export type DashboardData = {
   stats: DashboardStats;
   alerts: DashboardAlert[];
   recentActivity: DashboardActivity[];
   activitySeries: ActivityMonthPoint[];
+  upcomingBirthdays: UpcomingBirthday[];
+  busiestSlots: BusiestSlots;
 };
 
 export type DashboardPageData = DashboardData & {
   financeSummary: CashflowSummary;
-  financeMonthLabel: string;
+  financePeriod: CashPeriod;
   cashSeries: CashDayPoint[];
 };

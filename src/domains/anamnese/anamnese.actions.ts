@@ -1,22 +1,15 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
 import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
 import { anamneseSaveSchema, getAnamneseSchema } from "./anamnese.schema";
 import { getAnamnese, saveAnamnese } from "./anamnese.service";
 import type { AnamneseDTO } from "./anamnese.types";
-
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
 
 function revalidateAnamnese(formId: string, patientId: string) {
   revalidatePath(paths.anamnese.byId(formId));
@@ -29,17 +22,16 @@ export async function getAnamneseAction(
 ): Promise<ActionResult<AnamneseDTO | null>> {
   try {
     await requirePermission({ project: ["read"] });
-    const parsed = getAnamneseSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(getAnamneseSchema, input);
     const { organizationId } = await requireOrgId();
     const data = await getAnamnese(
       organizationId,
-      parsed.data.patientId,
-      parsed.data.formId,
+      payload.patientId,
+      payload.formId,
     );
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -48,19 +40,18 @@ export async function saveAnamneseAction(
 ): Promise<ActionResult<AnamneseDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = anamneseSaveSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(anamneseSaveSchema, input);
     const { organizationId } = await requireOrgFeatureWrite("anamnese");
     const saved = await saveAnamnese(
       organizationId,
-      parsed.data.patientId,
-      parsed.data.formId,
-      parsed.data.data,
+      payload.patientId,
+      payload.formId,
+      payload.data,
     );
-    if (!saved) return fail("Paciente não encontrado");
-    revalidateAnamnese(parsed.data.formId, parsed.data.patientId);
+    if (!saved) throw new AppError("Paciente não encontrado");
+    revalidateAnamnese(payload.formId, payload.patientId);
     return ok(saved);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }

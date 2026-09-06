@@ -1,7 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { requirePermission } from "@/server/auth/permissions";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import {
@@ -9,11 +7,13 @@ import {
   requireSeatAvailable,
 } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
 import { auth } from "@/shared/lib/auth";
 import { isLeadershipRole } from "@/shared/lib/member-role";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import {
   changeForcedPasswordSchema,
   createProfessionalSchema,
@@ -34,13 +34,6 @@ import {
 } from "./team.service";
 import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
 
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
-
 export async function listTeamMembersAction(): Promise<
   ActionResult<TeamMemberDTO[]>
 > {
@@ -50,7 +43,7 @@ export async function listTeamMembersAction(): Promise<
     const { organizationId } = await requireOrgId();
     return ok(await listTeamMembers(organizationId));
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -61,10 +54,10 @@ export async function getOwnTeamMemberAction(): Promise<
     await requirePermission({ project: ["read"] });
     const { organizationId, userId } = await requireOrgId();
     const member = await getOwnTeamMember(organizationId, userId);
-    if (!member) return fail("Membro não encontrado nesta clínica");
+    if (!member) throw new AppError("Membro não encontrado nesta clínica");
     return ok(member);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -73,18 +66,15 @@ export async function updateOwnProfileAction(
 ): Promise<ActionResult<TeamMemberDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updateOwnProfileSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(updateOwnProfileSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
-    const data = await updateOwnProfile(organizationId, userId, parsed.data);
+    const data = await updateOwnProfile(organizationId, userId, payload);
     revalidatePath(paths.perfil);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.pacientes, "layout");
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -94,19 +84,16 @@ export async function createProfessionalAction(
   try {
     await requirePermission({ project: ["create"] });
 
-    const parsed = createProfessionalSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(createProfessionalSchema, input);
 
     const { organizationId } = await requireOrgWrite();
     await requireSeatAvailable(organizationId);
-    const data = await createProfessional(organizationId, parsed.data);
+    const data = await createProfessional(organizationId, payload);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -116,18 +103,15 @@ export async function updateProfessionalAction(
   try {
     await requirePermission({ project: ["update"] });
 
-    const parsed = updateProfessionalSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(updateProfessionalSchema, input);
 
     const { organizationId, userId } = await requireOrgWrite();
-    await updateProfessional(organizationId, userId, parsed.data);
+    await updateProfessional(organizationId, userId, payload);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
     return ok(undefined);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -137,18 +121,15 @@ export async function deleteProfessionalAction(
   try {
     await requirePermission({ project: ["delete"] });
 
-    const parsed = deleteProfessionalSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(deleteProfessionalSchema, input);
 
     const { organizationId, userId } = await requireOrgWrite();
-    await deleteProfessional(organizationId, userId, parsed.data.memberId);
+    await deleteProfessional(organizationId, userId, payload.memberId);
     revalidatePath(paths.profissionais);
     revalidatePath(paths.agenda);
     return ok(undefined);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -157,10 +138,7 @@ export async function setMemberPatientsAction(
 ): Promise<ActionResult<TeamMemberDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = memberPatientsSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(memberPatientsSchema, input);
 
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
@@ -170,15 +148,15 @@ export async function setMemberPatientsAction(
 
     const data = await setMemberPatients(
       organizationId,
-      parsed.data.memberId,
-      parsed.data.patientIds,
+      payload.memberId,
+      payload.patientIds,
     );
-    if (!data) return fail("Profissional não encontrado");
+    if (!data) throw new AppError("Profissional não encontrado");
     revalidatePath(paths.profissionais);
     revalidatePath(paths.pacientes, "layout");
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -186,25 +164,22 @@ export async function changeForcedPasswordAction(
   input: unknown,
 ): Promise<ActionResult<void>> {
   try {
-    const parsed = changeForcedPasswordSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(changeForcedPasswordSchema, input);
 
     const session = await auth.api.getSession({
       headers: await headers(),
     });
     if (!session?.user?.id) {
-      return fail("Sessão inválida. Faça login novamente.");
+      throw new AppError("Sessão inválida. Faça login novamente.");
     }
 
-    await changeForcedPassword(session.user.id, parsed.data.newPassword);
+    await changeForcedPassword(session.user.id, payload.newPassword);
     await auth.api.getSession({
       headers: await headers(),
       query: { disableCookieCache: true },
     });
     return ok(undefined);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }

@@ -1,7 +1,8 @@
 import { db } from "@/shared/lib/prisma";
-import type {
-  CashPaymentMethod,
-  CashTransactionType,
+import {
+  CashTransactionStatus,
+  type CashPaymentMethod,
+  type CashTransactionType,
 } from "@prisma/enums";
 import type {
   CashTransactionFormInput,
@@ -54,6 +55,7 @@ export const financeRepository = {
       data: {
         organizationId,
         type: data.type as CashTransactionType,
+        status: data.status as CashTransactionStatus,
         amount: data.amount,
         date: data.date,
         description: data.description,
@@ -76,6 +78,7 @@ export const financeRepository = {
       where: { id: data.id },
       data: {
         type: data.type as CashTransactionType,
+        status: data.status as CashTransactionStatus,
         amount: data.amount,
         date: data.date,
         description: data.description,
@@ -83,6 +86,20 @@ export const financeRepository = {
         patientId: data.patientId ?? null,
         memberId: data.memberId ?? null,
       },
+      include: includeRelations,
+    });
+  },
+
+  async markPosted(organizationId: string, id: string) {
+    const existing = await db.cashTransaction.findFirst({
+      where: { id, organizationId },
+      select: { id: true, status: true },
+    });
+    if (!existing) return null;
+
+    return db.cashTransaction.update({
+      where: { id },
+      data: { status: CashTransactionStatus.POSTED },
       include: includeRelations,
     });
   },

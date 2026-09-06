@@ -1,9 +1,12 @@
+import type { CashPeriod } from "@/shared/types/cash-period";
+import type { CashflowSummary } from "@/shared/types/cashflow";
 import type {
   CashPaymentMethod,
+  CashTransactionStatus,
   CashTransactionType,
 } from "@prisma/enums";
-import type { CashflowSummary } from "@/shared/types/cashflow";
 
+export type { CashPeriod, PeriodPreset } from "@/shared/types/cash-period";
 export type { CashflowSummary } from "@/shared/types/cashflow";
 
 /** Opção de membro para selects do caixa (shape compatível com ScheduleMemberDTO). */
@@ -15,6 +18,7 @@ export type CashMemberOption = {
 export type CashTransactionDTO = {
   id: string;
   type: CashTransactionType;
+  status: CashTransactionStatus;
   amount: number;
   date: string;
   description: string;
@@ -28,8 +32,7 @@ export type CashTransactionDTO = {
 };
 
 export type CashflowPageData = {
-  month: string;
-  monthLabel: string;
+  period: CashPeriod;
   memberFilter: string | null;
   transactions: CashTransactionDTO[];
   summary: CashflowSummary;

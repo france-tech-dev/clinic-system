@@ -1,3 +1,4 @@
+import { formatCivilDateParam } from "@/shared/lib/civil-date-param";
 import { memberToProfessionalProfile } from "@/shared/types/professional";
 import { PatientSex } from "@prisma/enums";
 import type {
@@ -18,28 +19,6 @@ export function parseDomains(raw: string): ClinicalEvaluationDomain[] {
   } catch {
     return [];
   }
-}
-
-export function formatBirthDateParam(
-  value: Date | null | undefined,
-): string | null {
-  if (!value) return null;
-  const y = value.getUTCFullYear();
-  const m = String(value.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(value.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-export function parseBirthDateParam(
-  value: string | null | undefined,
-): Date | null {
-  if (!value) return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return null;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  return new Date(Date.UTC(year, month - 1, day));
 }
 
 export function toPatientGuardianEmbed(row: {
@@ -105,7 +84,7 @@ export function toPatientDTO(row: {
   return {
     id: row.id,
     name: row.name,
-    birthDate: formatBirthDateParam(row.birthDate),
+    birthDate: formatCivilDateParam(row.birthDate),
     sex: row.sex ?? PatientSex.NOT_INFORMED,
     photoUrl: row.photoUrl ?? null,
     notes: row.notes,

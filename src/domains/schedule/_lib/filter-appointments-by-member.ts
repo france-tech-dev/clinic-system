@@ -37,3 +37,11 @@ export function filterAppointmentsByPatientId<T extends { patientId: string }>(
 ): T[] {
   return filterByIds(items, (item) => item.patientId, patientId);
 }
+
+/** Filtra agendamentos/eventos por status. Sem ids = todos. */
+export function filterAppointmentsByStatus<T extends { status: string }>(
+  items: T[],
+  status: string | readonly string[] | null | undefined,
+): T[] {
+  return filterByIds(items, (item) => item.status, status);
+}
