@@ -9,6 +9,11 @@ import {
 } from "@/components/ui/chart";
 import type { BusiestWeekday } from "@/domains/dashboard/dashboard.types";
 import { BUSIEST_LOOKBACK_DAYS } from "@/domains/dashboard/_lib/build-busiest-slots";
+import {
+  DASHBOARD_CHART_BODY,
+  DashboardChartEmpty,
+  DashboardChartPanel,
+} from "./dashboard-chart-panel";
 
 const chartConfig = {
   count: { label: "Agendamentos", color: "var(--chart-1)" },
@@ -18,23 +23,22 @@ export function BusiestDaysChart({ data }: { data: BusiestWeekday[] }) {
   const hasValues = data.some((d) => d.count > 0);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-serif text-lg font-medium tracking-tight">
-          Dias mais movimentados
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Últimos {BUSIEST_LOOKBACK_DAYS} dias
-        </p>
-      </div>
+    <DashboardChartPanel
+      title="Dias mais movimentados"
+      meta={`Últimos ${BUSIEST_LOOKBACK_DAYS} dias`}
+    >
       {hasValues ? (
-        <ChartContainer config={chartConfig} className="aspect-[4/3] w-full">
-          <BarChart data={data} margin={{ left: 4, right: 4, top: 20 }}>
+        <ChartContainer
+          config={chartConfig}
+          className={`aspect-auto ${DASHBOARD_CHART_BODY}`}
+        >
+          <BarChart data={data} margin={{ left: 0, right: 0, top: 18, bottom: 0 }}>
             <XAxis
               dataKey="shortLabel"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
+              tickMargin={6}
+              className="text-[10px]"
             />
             <YAxis hide allowDecimals={false} domain={[0, "auto"]} />
             <ChartTooltip
@@ -52,22 +56,22 @@ export function BusiestDaysChart({ data }: { data: BusiestWeekday[] }) {
             <Bar
               dataKey="count"
               fill="var(--color-count)"
-              radius={[6, 6, 0, 0]}
-              maxBarSize={40}
+              radius={[3, 3, 0, 0]}
+              maxBarSize={22}
             >
               <LabelList
                 dataKey="count"
                 position="top"
-                className="fill-foreground text-xs"
+                className="fill-foreground text-[10px]"
               />
             </Bar>
           </BarChart>
         </ChartContainer>
       ) : (
-        <p className="rounded-xl border border-dashed border-border px-3 py-8 text-center text-sm text-muted-foreground">
+        <DashboardChartEmpty>
           Ainda sem agendamentos neste período.
-        </p>
+        </DashboardChartEmpty>
       )}
-    </div>
+    </DashboardChartPanel>
   );
 }

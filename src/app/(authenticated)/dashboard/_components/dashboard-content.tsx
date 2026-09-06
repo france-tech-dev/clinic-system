@@ -86,22 +86,18 @@ export function DashboardContent({
         </div>
       </DashboardSection>
 
-      {/* 3 — Tendências */}
-      <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-6">
+      {/* 3 — Tendências e padrões */}
+      <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
         <CashMonthChart
           data={data.cashSeries}
           periodLabel={data.financePeriod.label}
         />
         <ActivityTrendChart data={data.activitySeries} />
-      </div>
-
-      {/* 4 — Padrões de agenda */}
-      <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-6">
         <BusiestDaysChart data={data.busiestSlots.weekdays} />
         <BusiestHoursHeatmap data={data.busiestSlots} />
       </div>
 
-      {/* 5 — Atenção */}
+      {/* 4 — Atenção */}
       <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-6">
         <DashboardSection id="dash-alertas" title="Alertas clínicos">
           {data.alerts.length === 0 ? (
@@ -167,7 +163,7 @@ export function DashboardContent({
         </DashboardSection>
       </div>
 
-      {/* 6 — Feed */}
+      {/* 5 — Feed */}
       <DashboardSection id="dash-atividade" title="Atividade recente">
         {data.recentActivity.length === 0 ? (
           <EmptyNote>Ainda sem registros.</EmptyNote>

@@ -10,9 +10,14 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { ActivityMonthPoint } from "@/domains/dashboard/dashboard.types";
+import {
+  DASHBOARD_CHART_BODY,
+  DashboardChartEmpty,
+  DashboardChartPanel,
+} from "./dashboard-chart-panel";
 
 const chartConfig = {
-  patients: { label: "Novos pacientes", color: "var(--chart-1)" },
+  patients: { label: "Pacientes", color: "var(--chart-1)" },
   sessions: { label: "Evoluções", color: "var(--chart-2)" },
   evaluations: { label: "Avaliações", color: "var(--chart-3)" },
 } satisfies ChartConfig;
@@ -23,26 +28,35 @@ export function ActivityTrendChart({ data }: { data: ActivityMonthPoint[] }) {
   );
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-serif text-lg font-medium tracking-tight">
-          Atividade
-        </h2>
-        <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
-      </div>
+    <DashboardChartPanel title="Atividade" meta="Últimos 6 meses">
       {hasValues ? (
-        <ChartContainer config={chartConfig} className="aspect-video w-full">
-          <AreaChart data={data} margin={{ left: 8, right: 8, top: 8 }}>
+        <ChartContainer
+          config={chartConfig}
+          className={`aspect-auto ${DASHBOARD_CHART_BODY}`}
+        >
+          <AreaChart
+            data={data}
+            margin={{ left: 0, right: 0, top: 4, bottom: 0 }}
+          >
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="label" tickLine={false} axisLine={false} />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={4}
+              className="text-[10px]"
+            />
             <YAxis
               allowDecimals={false}
               tickLine={false}
               axisLine={false}
-              width={32}
+              width={24}
+              className="text-[10px]"
             />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend
+              content={<ChartLegendContent className="pt-1 text-[10px]" />}
+            />
             <Area
               type="monotone"
               dataKey="patients"
@@ -70,10 +84,10 @@ export function ActivityTrendChart({ data }: { data: ActivityMonthPoint[] }) {
           </AreaChart>
         </ChartContainer>
       ) : (
-        <p className="rounded-xl border border-dashed border-border px-3 py-8 text-center text-sm text-muted-foreground">
+        <DashboardChartEmpty>
           Ainda não há atividade registrada neste período.
-        </p>
+        </DashboardChartEmpty>
       )}
-    </div>
+    </DashboardChartPanel>
   );
 }

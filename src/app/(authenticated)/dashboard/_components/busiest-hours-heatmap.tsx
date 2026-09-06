@@ -1,6 +1,16 @@
 import type { BusiestSlots } from "@/domains/dashboard/dashboard.types";
 import { BUSIEST_LOOKBACK_DAYS } from "@/domains/dashboard/_lib/build-busiest-slots";
 import { cn } from "@/shared/lib/utils";
+import {
+  DASHBOARD_CHART_BODY,
+  DashboardChartEmpty,
+  DashboardChartPanel,
+} from "./dashboard-chart-panel";
+
+/** Célula do heatmap — manter headers e tracks em sincronia. */
+const CELL = "size-6";
+const CELL_TRACK = "1.5rem"; // = size-6
+const HOUR_TRACK = "2rem";
 
 function cellOpacity(count: number, max: number) {
   if (count <= 0 || max <= 0) return 0;
@@ -12,30 +22,35 @@ export function BusiestHoursHeatmap({ data }: { data: BusiestSlots }) {
   const dayLabels = data.weekdays.map((d) => d.shortLabel);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-serif text-lg font-medium tracking-tight">
-          Horários mais movimentados
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Últimos {BUSIEST_LOOKBACK_DAYS} dias
-        </p>
-      </div>
+    <DashboardChartPanel
+      className="w-fit max-w-full justify-self-start"
+      title="Horários mais movimentados"
+      meta={`Últimos ${BUSIEST_LOOKBACK_DAYS} dias`}
+    >
       {hasValues ? (
-        <div className="overflow-x-auto rounded-xl border border-border p-3">
+        <div
+          className={cn(
+            "overflow-y-auto overflow-x-hidden",
+            DASHBOARD_CHART_BODY,
+            "w-fit max-w-full",
+          )}
+        >
           <div
-            className="grid min-w-[280px] gap-1"
+            className="grid w-fit gap-1.5"
             style={{
-              gridTemplateColumns: `2.5rem repeat(${dayLabels.length}, minmax(0, 1fr))`,
+              gridTemplateColumns: `${HOUR_TRACK} repeat(${dayLabels.length}, ${CELL_TRACK})`,
             }}
             role="table"
             aria-label="Mapa de calor de agendamentos por hora e dia da semana"
           >
-            <div className="size-0" aria-hidden />
+            <div className="sticky top-0 z-10 size-0 bg-card" aria-hidden />
             {dayLabels.map((label, i) => (
               <div
                 key={`h-${i}`}
-                className="pb-1 text-center text-xs text-muted-foreground"
+                className={cn(
+                  CELL,
+                  "sticky top-0 z-10 flex items-end justify-center bg-card pb-0.5 text-center text-[10px] tabular-nums text-muted-foreground",
+                )}
                 role="columnheader"
               >
                 {label}
@@ -44,7 +59,7 @@ export function BusiestHoursHeatmap({ data }: { data: BusiestSlots }) {
             {data.hours.map((row) => (
               <div key={row.hour} className="contents" role="row">
                 <div
-                  className="flex items-center text-xs text-muted-foreground"
+                  className="flex h-6 items-center text-[10px] tabular-nums text-muted-foreground"
                   role="rowheader"
                 >
                   {row.label}
@@ -59,8 +74,9 @@ export function BusiestHoursHeatmap({ data }: { data: BusiestSlots }) {
                       title={title}
                       aria-label={title}
                       className={cn(
-                        "aspect-square rounded-sm border border-transparent",
-                        count === 0 && "bg-muted/60",
+                        CELL,
+                        "rounded-[5px]",
+                        count === 0 && "bg-muted",
                       )}
                       style={
                         count > 0
@@ -77,10 +93,10 @@ export function BusiestHoursHeatmap({ data }: { data: BusiestSlots }) {
           </div>
         </div>
       ) : (
-        <p className="rounded-xl border border-dashed border-border px-3 py-8 text-center text-sm text-muted-foreground">
+        <DashboardChartEmpty>
           Ainda sem horários registados neste período.
-        </p>
+        </DashboardChartEmpty>
       )}
-    </div>
+    </DashboardChartPanel>
   );
 }
