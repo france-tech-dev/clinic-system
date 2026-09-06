@@ -1,11 +1,17 @@
 import {
   CashPaymentMethod,
+  CashTransactionStatus,
   CashTransactionType,
 } from "@prisma/enums";
 
 export const CASH_TRANSACTION_TYPES = [
   { id: CashTransactionType.INCOME, label: "Entrada" },
   { id: CashTransactionType.EXPENSE, label: "Saída" },
+] as const;
+
+export const CASH_TRANSACTION_STATUSES = [
+  { id: CashTransactionStatus.POSTED, label: "Realizado" },
+  { id: CashTransactionStatus.FORECAST, label: "Previsto" },
 ] as const;
 
 export const CASH_PAYMENT_METHODS = [
@@ -22,4 +28,8 @@ export function cashPaymentMethodLabel(id: CashPaymentMethod): string {
 
 export function cashTransactionTypeLabel(id: CashTransactionType): string {
   return CASH_TRANSACTION_TYPES.find((t) => t.id === id)?.label ?? id;
+}
+
+export function cashTransactionStatusLabel(id: CashTransactionStatus): string {
+  return CASH_TRANSACTION_STATUSES.find((s) => s.id === id)?.label ?? id;
 }

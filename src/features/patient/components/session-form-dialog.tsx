@@ -46,7 +46,7 @@ import {
   formatTime,
 } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/format-date-br";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { SessionNoteStatus } from "@prisma/enums";
 
 type SessionDialogValues = {

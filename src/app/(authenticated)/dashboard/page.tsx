@@ -4,12 +4,25 @@ import { Button } from "@/components/ui/button";
 import { buildCashDaySeries } from "@/domains/dashboard/_lib/build-cash-day-series";
 import { getDashboardData } from "@/domains/dashboard/dashboard.service";
 import type { DashboardPageData } from "@/domains/dashboard/dashboard.types";
+import { parseCashPeriodParams } from "@/domains/finance/_lib/period-utils";
 import { getCashflowPageData } from "@/domains/finance/finance.service";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { DashboardContent } from "./_components/dashboard-content";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    period?: string;
+    from?: string;
+    to?: string;
+    month?: string;
+  }>;
+}) {
+  const params = await searchParams;
+  const period = parseCashPeriodParams(params);
+
   let data: DashboardPageData | null = null;
   let error: string | null = null;
 
@@ -17,13 +30,17 @@ export default async function DashboardPage() {
     const { organizationId } = await requireOrgId();
     const [dashboard, cashflow] = await Promise.all([
       getDashboardData(organizationId),
-      getCashflowPageData(organizationId),
+      getCashflowPageData(organizationId, period),
     ]);
     data = {
       ...dashboard,
       financeSummary: cashflow.summary,
-      financeMonthLabel: cashflow.monthLabel,
-      cashSeries: buildCashDaySeries(cashflow.transactions, cashflow.month),
+      financePeriod: cashflow.period,
+      cashSeries: buildCashDaySeries(
+        cashflow.transactions,
+        cashflow.period.start,
+        cashflow.period.end,
+      ),
     };
   } catch (e) {
     error =

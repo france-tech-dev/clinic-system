@@ -82,7 +82,7 @@ import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { parseBrl } from "@/shared/lib/money-utils";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { AssignPatientMembersDialog } from "@/features/patient/components/assign-patient-members-dialog";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";

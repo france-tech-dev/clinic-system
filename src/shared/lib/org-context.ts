@@ -1,7 +1,8 @@
+import { AppError } from "@/shared/lib/app-error";
 import { auth } from "@/shared/lib/auth";
 import { headers } from "next/headers";
 
-export class OrgContextError extends Error {
+export class OrgContextError extends AppError {
   constructor(message: string) {
     super(message);
     this.name = "OrgContextError";

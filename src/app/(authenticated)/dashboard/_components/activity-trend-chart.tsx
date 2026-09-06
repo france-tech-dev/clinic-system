@@ -25,7 +25,9 @@ export function ActivityTrendChart({ data }: { data: ActivityMonthPoint[] }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-serif text-lg font-medium">Atividade</h2>
+        <h2 className="font-serif text-lg font-medium tracking-tight">
+          Atividade
+        </h2>
         <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
       </div>
       {hasValues ? (
@@ -68,7 +70,7 @@ export function ActivityTrendChart({ data }: { data: ActivityMonthPoint[] }) {
           </AreaChart>
         </ChartContainer>
       ) : (
-        <p className="rounded-md border border-border px-3 py-8 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-dashed border-border px-3 py-8 text-center text-sm text-muted-foreground">
           Ainda não há atividade registrada neste período.
         </p>
       )}

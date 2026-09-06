@@ -1,11 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { paths } from "@/shared/constants/paths";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
-import { requirePlatformAdmin } from "@/server/platform/require-platform-admin";
 import {
   deletePlatformOrganization,
   getPlatformOrganizationSlug,
@@ -13,8 +7,14 @@ import {
   setOrganizationBillingExempt,
   type PlatformOrganizationRow,
 } from "@/server/platform/platform-organizations";
+import { requirePlatformAdmin } from "@/server/platform/require-platform-admin";
+import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
 import { deleteManagedImage } from "@/shared/lib/media";
 import { getStripe } from "@/shared/lib/stripe";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 const setExemptSchema = z.object({
   organizationId: z.string().min(1),
@@ -51,12 +51,6 @@ function toDTO(row: PlatformOrganizationRow): PlatformOrganizationDTO {
   };
 }
 
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
-
 export async function listPlatformOrganizationsAction(): Promise<
   ActionResult<PlatformOrganizationDTO[]>
 > {
@@ -65,7 +59,7 @@ export async function listPlatformOrganizationsAction(): Promise<
     const rows = await listPlatformOrganizations();
     return ok(rows.map(toDTO));
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -74,16 +68,15 @@ export async function setOrganizationBillingExemptAction(
 ): Promise<ActionResult<void>> {
   try {
     await requirePlatformAdmin();
-    const parsed = setExemptSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(setExemptSchema, input);
     await setOrganizationBillingExempt(
-      parsed.data.organizationId,
-      parsed.data.billingExempt,
+      payload.organizationId,
+      payload.billingExempt,
     );
     revalidatePath(paths.plataforma);
     return ok(undefined);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -92,19 +85,18 @@ export async function deletePlatformOrganizationAction(
 ): Promise<ActionResult<{ id: string }>> {
   try {
     await requirePlatformAdmin();
-    const parsed = deleteOrgSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(deleteOrgSchema, input);
 
-    const slug = await getPlatformOrganizationSlug(parsed.data.organizationId);
-    if (!slug) return fail("Clínica não encontrada.");
-    if (slug !== parsed.data.confirmSlug) {
-      return fail("O slug não coincide. Digite o slug exacto para confirmar.");
+    const slug = await getPlatformOrganizationSlug(payload.organizationId);
+    if (!slug) throw new AppError("Clínica não encontrada.");
+    if (slug !== payload.confirmSlug) {
+      throw new AppError(
+        "O slug não coincide. Digite o slug exacto para confirmar.",
+      );
     }
 
-    const deleted = await deletePlatformOrganization(
-      parsed.data.organizationId,
-    );
-    if (!deleted) return fail("Clínica não encontrada.");
+    const deleted = await deletePlatformOrganization(payload.organizationId);
+    if (!deleted) throw new AppError("Clínica não encontrada.");
 
     if (deleted.logo) {
       await deleteManagedImage(deleted.logo).catch(() => undefined);
@@ -125,6 +117,6 @@ export async function deletePlatformOrganizationAction(
     revalidatePath(paths.plataforma);
     return ok({ id: deleted.id });
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }

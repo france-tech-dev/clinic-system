@@ -27,7 +27,7 @@ import {
   formatProfessionalSignature,
   type ProfessionalProfile,
 } from "@/domains/settings/settings.types";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
 type ProfileFormValues = {
   name: string;

@@ -27,7 +27,7 @@ import { getHealthProfession } from "@/shared/constants/professions";
 import { memberRoleLabel } from "@/shared/constants/member-role";
 import { memberStatusLabel } from "@/shared/constants/member-status";
 import { formatProfessionalSignature } from "@/shared/types/professional";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
 function toFormValues(member: TeamMemberDTO): UpdateOwnProfileInput {
   return {

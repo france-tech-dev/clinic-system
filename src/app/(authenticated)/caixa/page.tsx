@@ -1,11 +1,12 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
+import { parseCashPeriodParams } from "@/domains/finance/_lib/period-utils";
 import { getCashflowPageData } from "@/domains/finance/finance.service";
 import type {
   CashflowPageData,
   CashMemberOption,
 } from "@/domains/finance/finance.types";
-import { parseMonthParam } from "@/domains/finance/_lib/month-utils";
 import { listPatients } from "@/domains/patient/patient.service";
+import type { PatientDTO } from "@/domains/patient/patient.types";
 import { listOrganizationMembers } from "@/domains/schedule/schedule.service";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { CaixaClient } from "./caixa-client";
@@ -23,14 +24,20 @@ function parseMemberFilter(
 export default async function CaixaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string; member?: string }>;
+  searchParams: Promise<{
+    period?: string;
+    from?: string;
+    to?: string;
+    month?: string;
+    member?: string;
+  }>;
 }) {
   const params = await searchParams;
-  const month = parseMonthParam(params.month);
+  const period = parseCashPeriodParams(params);
 
   let error: string | null = null;
   let pageData: CashflowPageData | null = null;
-  let patients: Awaited<ReturnType<typeof listPatients>> = [];
+  let patients: PatientDTO[] = [];
   let members: CashMemberOption[] = [];
   let memberFilter = MEMBER_FILTER_ALL;
 
@@ -42,7 +49,7 @@ export default async function CaixaPage({
     memberFilter = filterId ?? MEMBER_FILTER_ALL;
 
     [pageData, patients] = await Promise.all([
-      getCashflowPageData(organizationId, month, filterId),
+      getCashflowPageData(organizationId, period, filterId),
       listPatients(organizationId),
     ]);
   } catch (e) {
@@ -54,17 +61,14 @@ export default async function CaixaPage({
 
   return (
     <AppPage title="Caixa">
-      {error ? (
-        <p className="text-sm text-destructive">{error}</p>
-      ) : pageData ? (
-        <CaixaClient
-          key={`${month}-${memberFilter}`}
-          initial={pageData}
-          patients={patients}
-          members={members}
-          memberFilter={memberFilter}
-        />
-      ) : null}
+      <CaixaClient
+        key={`${period.preset}-${period.start}-${period.end}-${memberFilter}`}
+        error={error}
+        initial={pageData}
+        patients={patients}
+        members={members}
+        memberFilter={memberFilter}
+      />
     </AppPage>
   );
 }

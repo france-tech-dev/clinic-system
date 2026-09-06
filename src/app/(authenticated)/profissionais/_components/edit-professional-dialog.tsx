@@ -49,7 +49,7 @@ import {
   MEMBER_ROLE_OPTIONS,
 } from "@/shared/constants/member-role";
 import { MEMBER_STATUS_OPTIONS } from "@/shared/constants/member-status";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { MemberStatus, Role } from "@prisma/enums";
 
 function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {

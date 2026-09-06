@@ -17,7 +17,7 @@ import type {
   ScheduleMemberDTO,
 } from "@/domains/schedule/schedule.types";
 import { findProxyMember } from "@/server/auth/proxy-member";
-import { todayIso } from "@/shared/constants/appointment";
+import { todayIso, APPOINTMENT_STATUSES } from "@/shared/constants/appointment";
 import { isLeadershipRole } from "@/shared/lib/member-role";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { AgendaClient } from "./agenda-client";
@@ -38,6 +38,10 @@ function parseIdList(
   return result;
 }
 
+const VALID_STATUS_IDS = new Set(
+  APPOINTMENT_STATUSES.map((s) => s.id as string),
+);
+
 const CAL_VIEWS = new Set(["day", "week", "month"]);
 
 function parseCalView(raw: string | undefined): "day" | "week" | "month" {
@@ -52,6 +56,7 @@ type AgendaPageProps = {
     calView?: string;
     member?: string;
     patient?: string;
+    status?: string;
   }>;
 };
 
@@ -74,6 +79,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   let defaultMemberId = "";
   let initialMemberFilter: string[] = [];
   let initialPatientFilter: string[] = [];
+  let initialStatusFilter: string[] = [];
   let canSuggestCash = false;
 
   try {
@@ -109,6 +115,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       params.patient,
       new Set(patientList.map((p) => p.id)),
     );
+    initialStatusFilter = parseIdList(params.status, VALID_STATUS_IDS);
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -120,6 +127,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const filterKey = [
     initialMemberFilter.join(","),
     initialPatientFilter.join(","),
+    initialStatusFilter.join(","),
   ].join("|");
 
   if (error) {
@@ -146,6 +154,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       defaultMemberId={defaultMemberId}
       initialMemberFilter={initialMemberFilter}
       initialPatientFilter={initialPatientFilter}
+      initialStatusFilter={initialStatusFilter}
       canSuggestCash={canSuggestCash}
     />
   );

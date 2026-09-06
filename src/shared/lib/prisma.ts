@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
-import "dotenv/config";
 import { env } from "@/shared/env";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
+import { Pool } from "pg";
 
 const globalForDb = globalThis as unknown as {
   prisma: PrismaClient | undefined;

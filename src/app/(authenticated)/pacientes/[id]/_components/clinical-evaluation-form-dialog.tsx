@@ -23,7 +23,7 @@ import {
 } from "@/domains/patient/patient.schema";
 import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { ClinicalEvaluationFormClinicalFields } from "./clinical-evaluation-form/clinical-evaluation-form-clinical-fields";
 import { ClinicalEvaluationFormDomainsSection } from "./clinical-evaluation-form/clinical-evaluation-form-domains-section";
 import { ClinicalEvaluationFormMetaFields } from "./clinical-evaluation-form/clinical-evaluation-form-meta-fields";

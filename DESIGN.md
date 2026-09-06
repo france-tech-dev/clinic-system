@@ -150,7 +150,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 ## Layout
 
-- Shell autenticado: `AppPage` (`px-4 lg:px-6`, `gap-4` / `md:gap-6`).
+- Shell autenticado: `AppPage` (`px-4 lg:px-6`, `gap-3` / `md:gap-4`; header compacto). `fillViewport` só em calendário / workspace clínico.
 - Listas e hubs: grelha responsiva sem forçar cards decorativos.
 - Workspaces clínicos: `ClinicalWorkspaceShell` — uma secção activa + footer fixo.
 - Landing: content `max-w-6xl`; secções com ritmo generoso (`py-20` / `lg:py-28`); grelhas 1 → 2 → 3 colunas.
