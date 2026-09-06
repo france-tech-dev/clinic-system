@@ -8,16 +8,15 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { sidebarItems, type SidebarUser } from "@/resources/sidebar-items";
 import { ThemeLogo } from "../ThemeSwitcher/theme-logo";
+import { User } from "lucide-react";
 
 const defaultUser: SidebarUser = {
   name: "Usuário",
   email: "",
-  avatar: "/logo_dark.png",
+  avatar: <User />,
   role: null,
 };
 
@@ -43,19 +42,20 @@ export function AppSidebar({
   });
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem className="flex justify-center px-4 py-2">
-            <ThemeLogo />
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="flex items-center gap-2.5 overflow-hidden px-2 py-2 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0">
+          <ThemeLogo />
+          <span className="truncate font-serif text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+            Movi Clinicas
+          </span>
+        </div>
         <OrganizationSwitcher
           organizations={organizations}
           activeOrganizationId={activeOrganizationId}
         />
       </SidebarHeader>
-      <SidebarContent className="px-2">
+      <SidebarContent>
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>

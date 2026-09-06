@@ -36,6 +36,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   createCashTransactionAction,
   deleteCashTransactionAction,
+  markCashTransactionPostedAction,
   updateCashTransactionAction,
 } from "@/domains/finance/finance.actions";
 import {
@@ -208,6 +209,20 @@ export function CashTransactionFormDialog({
         return;
       }
       toast.success("Lançamento removido");
+      onSaved();
+      onOpenChange(false);
+    });
+  }
+
+  function handleMarkPosted() {
+    if (!initial) return;
+    startTransition(async () => {
+      const result = await markCashTransactionPostedAction({ id: initial.id });
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      toast.success("Lançamento marcado como realizado");
       onSaved();
       onOpenChange(false);
     });
@@ -460,6 +475,17 @@ export function CashTransactionFormDialog({
             >
               Cancelar
             </Button>
+            {initial?.status === CashTransactionStatus.FORECAST ? (
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={pending}
+                onClick={handleMarkPosted}
+              >
+                {pending ? <Spinner data-icon="inline-start" /> : null}
+                Marcar realizado
+              </Button>
+            ) : null}
             <Button
               type="submit"
               form="cash-transaction-form"

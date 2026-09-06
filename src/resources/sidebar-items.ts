@@ -1,5 +1,6 @@
 import { paths } from "@/shared/constants/paths";
 import { LEADERSHIP_ROLES } from "@/shared/lib/member-role";
+import { Role } from "@prisma/enums";
 import {
   IconCalendar,
   IconCash,
@@ -7,10 +8,9 @@ import {
   IconFileText,
   IconLayoutDashboard,
   IconShield,
-  IconUsers,
   IconUserPlus,
+  IconUsers,
 } from "@tabler/icons-react";
-import { Role } from "@prisma/enums";
 
 export type SidebarItem = {
   name: string;
@@ -23,7 +23,7 @@ export type SidebarItem = {
 export type SidebarUser = {
   name: string;
   email: string;
-  avatar: string;
+  avatar: string | React.ReactNode;
   role: Role | null;
 };
 

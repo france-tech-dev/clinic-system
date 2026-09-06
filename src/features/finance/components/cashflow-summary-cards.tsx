@@ -10,11 +10,11 @@ function projectedHint(real: number, forecast: number) {
 
 export function CashflowSummaryCards({
   summary,
-  monthLabel,
+  periodLabel,
   variant = "hero",
 }: {
   summary: CashflowSummary;
-  monthLabel?: string;
+  periodLabel?: string;
   variant?: "hero" | "equal";
 }) {
   const balanceClass =
@@ -54,7 +54,7 @@ export function CashflowSummaryCards({
         {items.map((item) => (
           <div
             key={item.label}
-            className="rounded-md border border-border bg-card p-4"
+            className="rounded-xl border border-border bg-card p-4"
           >
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
               {item.label}
@@ -76,9 +76,9 @@ export function CashflowSummaryCards({
     );
   }
 
-  const saldoLabel = monthLabel
-    ? `Saldo do mês · ${monthLabel}`
-    : "Saldo do mês";
+  const saldoLabel = periodLabel
+    ? `Saldo do período · ${periodLabel}`
+    : "Saldo do período";
   const balanceHint =
     summary.forecastIncome > 0 || summary.forecastExpense > 0
       ? `de ${formatBrl(summary.projectedBalance)} previstos`
@@ -86,7 +86,7 @@ export function CashflowSummaryCards({
 
   return (
     <div className="grid gap-3 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-      <div className="rounded-md border border-border bg-card p-5 sm:p-6">
+      <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
         <p className="text-sm text-muted-foreground">{saldoLabel}</p>
         <p
           className={cn(
@@ -103,7 +103,7 @@ export function CashflowSummaryCards({
         ) : null}
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-1">
-        <div className="rounded-md border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Entradas
           </p>
@@ -116,7 +116,7 @@ export function CashflowSummaryCards({
             </p>
           ) : null}
         </div>
-        <div className="rounded-md border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Saídas
           </p>
