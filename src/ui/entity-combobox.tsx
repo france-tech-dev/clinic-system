@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Combobox,
   ComboboxContent,
@@ -8,8 +7,6 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-  ComboboxTrigger,
-  ComboboxValue,
 } from "@/components/ui/combobox";
 import { cn } from "@/shared/lib/utils";
 
@@ -23,10 +20,9 @@ export type EntityComboboxProps = {
   value: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
-  searchPlaceholder?: string;
   emptyText?: string;
-  /** Opção extra no topo (ex.: "Todos", "Nenhum"). */
   extraOption?: EntityComboboxOption;
+  allowClear?: boolean;
   disabled?: boolean;
   className?: string;
   id?: string;
@@ -38,10 +34,10 @@ export function EntityCombobox({
   options,
   value,
   onValueChange,
-  placeholder = "Selecione…",
-  searchPlaceholder = "Pesquisar…",
+  placeholder = "Pesquisar…",
   emptyText = "Nenhum resultado",
   extraOption,
+  allowClear = false,
   disabled,
   className,
   id,
@@ -50,39 +46,37 @@ export function EntityCombobox({
 }: EntityComboboxProps) {
   const items = extraOption ? [extraOption, ...options] : options;
   const selected = items.find((item) => item.id === value) ?? null;
+  const showClear =
+    Boolean(selected) &&
+    (allowClear ||
+      (extraOption != null && selected?.id !== extraOption.id) ||
+      (extraOption != null && selected?.id === extraOption.id && allowClear));
 
   return (
     <Combobox
       items={items}
       value={selected}
       onValueChange={(item) => {
-        onValueChange(item?.id ?? extraOption?.id ?? "");
+        if (!item) {
+          onValueChange(extraOption?.id ?? (allowClear ? "" : value));
+          return;
+        }
+        onValueChange(item.id);
       }}
       itemToStringLabel={(item) => item.name}
       isItemEqualToValue={(a, b) => a.id === b.id}
+      disabled={disabled}
     >
-      <ComboboxTrigger
+      <ComboboxInput
+        id={id}
         disabled={disabled}
-        render={
-          <Button
-            type="button"
-            variant="outline"
-            id={id}
-            disabled={disabled}
-            aria-invalid={ariaInvalid}
-            aria-label={ariaLabel}
-            className={cn(
-              "w-full justify-between",
-              !selected && "text-muted-foreground",
-              className,
-            )}
-          >
-            <ComboboxValue placeholder={placeholder} />
-          </Button>
-        }
+        placeholder={placeholder}
+        showClear={showClear}
+        className={cn("w-full", className)}
+        aria-invalid={ariaInvalid}
+        aria-label={ariaLabel}
       />
       <ComboboxContent>
-        <ComboboxInput placeholder={searchPlaceholder} showTrigger={false} />
         <ComboboxEmpty>{emptyText}</ComboboxEmpty>
         <ComboboxList>
           {(item) => (

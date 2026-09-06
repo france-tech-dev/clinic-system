@@ -18,9 +18,9 @@ interface ThemeLogoProps {
 
 export function ThemeLogo({
   alt = "Movi Clinicas",
-  width = 120,
-  height = 48,
-  className = "h-20 w-auto max-w-full object-contain",
+  width = 32,
+  height = 32,
+  className = "size-8 object-contain",
 }: ThemeLogoProps) {
   const theme = useTheme();
 

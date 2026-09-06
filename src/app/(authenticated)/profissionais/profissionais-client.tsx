@@ -164,14 +164,9 @@ export function ProfissionaisClient({
       }
     >
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <p className="text-sm text-muted-foreground">
-            Equipa da clínica — profissionais que atendem e acedem ao painel.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {members.length} na lista
-          </p>
-        </div>
+        <p className="text-sm text-muted-foreground">
+          {members.length} na lista
+        </p>
 
         {members.length === 0 ? (
           <div className="space-y-3 rounded-md border border-border bg-card px-4 py-8 text-center">

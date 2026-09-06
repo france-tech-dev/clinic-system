@@ -29,8 +29,8 @@ export function AppPage({
         <div
           className={cn(
             fillViewport
-              ? "flex min-h-0 flex-1 flex-col gap-4 pt-4 md:gap-6 md:pt-6"
-              : "flex min-h-full flex-col gap-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] md:gap-6 md:pt-6 md:pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]",
+              ? "flex min-h-0 flex-1 flex-col gap-3 pt-3 md:gap-4 md:pt-4"
+              : "flex min-h-full flex-col gap-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] md:gap-4 md:pt-4 md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]",
             contentClassName,
           )}
         >

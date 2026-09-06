@@ -1,5 +1,5 @@
 import { db } from "@/shared/lib/prisma";
-import { PatientStatus } from "@prisma/enums";
+import { AppointmentStatus, PatientStatus } from "@prisma/enums";
 
 export const dashboardRepository = {
   countPatients(organizationId: string) {
@@ -82,6 +82,28 @@ export const dashboardRepository = {
         date: { gte: startDate },
       },
       select: { date: true },
+    });
+  },
+
+  findActivePatientsWithBirthDate(organizationId: string) {
+    return db.patient.findMany({
+      where: {
+        organizationId,
+        status: PatientStatus.ACTIVE,
+        birthDate: { not: null },
+      },
+      select: { id: true, name: true, birthDate: true },
+    });
+  },
+
+  findAppointmentSlotsSince(organizationId: string, startDate: string) {
+    return db.appointment.findMany({
+      where: {
+        organizationId,
+        date: { gte: startDate },
+        status: { not: AppointmentStatus.CANCELLED },
+      },
+      select: { date: true, time: true },
     });
   },
 };

@@ -204,14 +204,12 @@ export function AgendaCalendar({
   );
 
   return (
-    <div className="agenda-calendar flex min-h-0 flex-1 flex-col rounded-md border border-border bg-card p-3 lg:p-4">
-      <p className="mb-3 hidden shrink-0 text-sm text-muted-foreground md:block">
-        Use o ícone à direita do agendamento para arrastar. Clique para editar.
+    <div className="agenda-calendar flex min-h-0 flex-1 flex-col rounded-md border border-border bg-card p-2 sm:p-3">
+      <p className="sr-only">
+        No computador, use o ícone à direita do agendamento para arrastar.
+        Clique ou toque para editar.
       </p>
-      <p className="mb-3 shrink-0 text-sm text-muted-foreground md:hidden">
-        Vista do dia. Toque num agendamento para editar.
-      </p>
-      <div className="relative min-h-[80dvh] flex-1 md:min-h-105">
+      <div className="relative min-h-0 flex-1">
         <div className="absolute inset-0">
           <DnDCalendar
             localizer={localizer}

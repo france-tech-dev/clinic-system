@@ -9,7 +9,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ title, rightContent }: SiteHeaderProps) {
   return (
-    <header className="flex shrink-0 items-center gap-2 border-b pt-[calc(1rem+env(safe-area-inset-top,0px))] pb-4 transition-[width,height] ease-linear">
+    <header className="flex shrink-0 items-center gap-2 border-b pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-2.5 transition-[width,height] ease-linear">
       <div className="flex w-full min-w-0 items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1 shrink-0" />
         <Separator

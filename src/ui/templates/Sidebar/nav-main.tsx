@@ -29,22 +29,22 @@ export function NavMain({ items }: { items: Item[] }) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
+      <SidebarGroupContent>
+        <SidebarMenu className="gap-1">
           {items.map((item) => {
             const active = isNavActive(pathname, item.url);
             return (
               <SidebarMenuItem key={item.name}>
                 <SidebarMenuButton
                   tooltip={item.name}
-                  className="h-[unset]"
+                  size="lg"
+                  className="h-10 gap-2.5 px-2"
                   isActive={active}
                   asChild
                 >
                   <Link
                     href={item.url}
                     prefetch={true}
-                    className="flex items-center gap-2"
                     onClick={() => {
                       if (isMobile) setOpenMobile(false);
                     }}
@@ -52,7 +52,7 @@ export function NavMain({ items }: { items: Item[] }) {
                     {item.icon ? (
                       <span
                         className={cn(
-                          "rounded-full p-2 text-xl",
+                          "flex size-8 shrink-0 items-center justify-center rounded-full [&_svg]:size-4",
                           active
                             ? "bg-secondary text-primary"
                             : "text-muted-foreground",
@@ -61,7 +61,9 @@ export function NavMain({ items }: { items: Item[] }) {
                         <item.icon />
                       </span>
                     ) : null}
-                    <span>{item.name}</span>
+                    <span className="text-sm group-data-[collapsible=icon]:hidden">
+                      {item.name}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -1,12 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
 import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
+import { parseCashPeriodParams } from "./_lib/period-utils";
 import {
   cashTransactionFormSchema,
   cashTransactionIdSchema,
@@ -16,30 +17,32 @@ import {
   createCashTransaction,
   deleteCashTransaction,
   getCashflowPageData,
+  markCashTransactionPosted,
   updateCashTransaction,
 } from "./finance.service";
 import type { CashTransactionDTO, CashflowPageData } from "./finance.types";
 
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
+const FALLBACK =
+  "Não foi possível concluir a operação no caixa. Tente novamente.";
 
 function revalidateCashflow() {
   revalidatePath(paths.caixa);
+  revalidatePath(paths.dashboard);
 }
 
 export async function getCashflowPageDataAction(
-  month?: string,
+  input?: unknown,
 ): Promise<ActionResult<CashflowPageData>> {
   try {
     await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
-    return ok(await getCashflowPageData(organizationId, month));
+    const period =
+      input && typeof input === "object"
+        ? parseCashPeriodParams(input as Record<string, string | undefined>)
+        : parseCashPeriodParams({});
+    return ok(await getCashflowPageData(organizationId, period));
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error, FALLBACK);
   }
 }
 
@@ -48,14 +51,14 @@ export async function createCashTransactionAction(
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = cashTransactionFormSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(cashTransactionFormSchema, input);
     const { organizationId } = await requireOrgFeatureWrite("caixa");
-    const data = await createCashTransaction(organizationId, parsed.data);
+
+    const data = await createCashTransaction(organizationId, payload);
     revalidateCashflow();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error, FALLBACK);
   }
 }
 
@@ -64,15 +67,32 @@ export async function updateCashTransactionAction(
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updateCashTransactionSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(updateCashTransactionSchema, input);
     const { organizationId } = await requireOrgFeatureWrite("caixa");
-    const data = await updateCashTransaction(organizationId, parsed.data);
-    if (!data) return fail("Lançamento não encontrado");
+
+    const data = await updateCashTransaction(organizationId, payload);
+    if (!data) throw new AppError("Lançamento não encontrado");
     revalidateCashflow();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error, FALLBACK);
+  }
+}
+
+export async function markCashTransactionPostedAction(
+  input: unknown,
+): Promise<ActionResult<CashTransactionDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const { id } = AppError.parse(cashTransactionIdSchema, input);
+    const { organizationId } = await requireOrgFeatureWrite("caixa");
+
+    const data = await markCashTransactionPosted(organizationId, id);
+    if (!data) throw new AppError("Lançamento não encontrado");
+    revalidateCashflow();
+    return ok(data);
+  } catch (error) {
+    return AppError.result(error, FALLBACK);
   }
 }
 
@@ -81,16 +101,14 @@ export async function deleteCashTransactionAction(
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const parsed = cashTransactionIdSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const { id } = AppError.parse(cashTransactionIdSchema, input);
     const { organizationId } = await requireOrgFeatureWrite("caixa");
-    const data = await deleteCashTransaction(organizationId, parsed.data.id);
-    if (!data) return fail("Lançamento não encontrado");
+
+    const data = await deleteCashTransaction(organizationId, id);
+    if (!data) throw new AppError("Lançamento não encontrado");
     revalidateCashflow();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error, FALLBACK);
   }
 }

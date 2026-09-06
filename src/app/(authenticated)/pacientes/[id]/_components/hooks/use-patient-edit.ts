@@ -28,7 +28,7 @@ import {
 import type { PatientDetailDTO } from "@/domains/patient/patient.types";
 import { patientDtoToDraft } from "@/domains/patient/_lib/patient-form-defaults";
 import { parseBrl } from "@/shared/lib/money-utils";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
 export function usePatientEdit({
   detail,

@@ -1,13 +1,13 @@
 "use server";
 
-import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/server/auth/permissions";
 import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 import { paths } from "@/shared/constants/paths";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { AppError } from "@/shared/lib/app-error";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import {
   createProtocolInviteSchema,
   listProtocolInvitesSchema,
@@ -20,13 +20,6 @@ import {
   revokeProtocolInvite,
 } from "./protocol-invite.service";
 import type { ProtocolInviteDTO } from "./protocol-invite.types";
-
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
 
 async function requestOrigin(): Promise<string | undefined> {
   const h = await headers();
@@ -41,8 +34,7 @@ export async function createProtocolInviteAction(
 ): Promise<ActionResult<ProtocolInviteDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = createProtocolInviteSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(createProtocolInviteSchema, input);
 
     const { organizationId, userId } =
       await requireOrgFeatureWrite("avaliacoes");
@@ -50,15 +42,15 @@ export async function createProtocolInviteAction(
     const data = await createProtocolInvite(
       organizationId,
       userId,
-      parsed.data,
+      payload,
       origin,
     );
-    if (!data) return fail("Paciente não encontrado");
+    if (!data) throw new AppError("Paciente não encontrado");
 
-    revalidatePath(paths.paciente(parsed.data.patientId));
+    revalidatePath(paths.paciente(payload.patientId));
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -67,19 +59,18 @@ export async function listProtocolInvitesAction(
 ): Promise<ActionResult<ProtocolInviteDTO[]>> {
   try {
     await requirePermission({ project: ["read"] });
-    const parsed = listProtocolInvitesSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(listProtocolInvitesSchema, input);
 
     const { organizationId } = await requireOrgId();
     const origin = await requestOrigin();
     const data = await listProtocolInvites(
       organizationId,
-      parsed.data.patientId,
+      payload.patientId,
       origin,
     );
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -88,22 +79,17 @@ export async function revokeProtocolInviteAction(
 ): Promise<ActionResult<ProtocolInviteDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = protocolInviteIdSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(protocolInviteIdSchema, input);
 
     const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
     const origin = await requestOrigin();
-    const data = await revokeProtocolInvite(
-      organizationId,
-      parsed.data.id,
-      origin,
-    );
-    if (!data) return fail("Convite não encontrado");
+    const data = await revokeProtocolInvite(organizationId, payload.id, origin);
+    if (!data) throw new AppError("Convite não encontrado");
 
     revalidatePath(paths.paciente(data.patientId));
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -112,21 +98,16 @@ export async function deleteProtocolInviteAction(
 ): Promise<ActionResult<ProtocolInviteDTO>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const parsed = protocolInviteIdSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(protocolInviteIdSchema, input);
 
     const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
     const origin = await requestOrigin();
-    const data = await deleteProtocolInvite(
-      organizationId,
-      parsed.data.id,
-      origin,
-    );
-    if (!data) return fail("Convite não encontrado");
+    const data = await deleteProtocolInvite(organizationId, payload.id, origin);
+    if (!data) throw new AppError("Convite não encontrado");
 
     revalidatePath(paths.paciente(data.patientId));
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }

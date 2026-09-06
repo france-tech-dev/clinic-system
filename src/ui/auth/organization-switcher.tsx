@@ -68,12 +68,12 @@ export function OrganizationSwitcher({
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size="lg" asChild>
+          <SidebarMenuButton size="lg" asChild tooltip="Criar clínica">
             <Link href={paths.organizacao}>
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <IconPlus />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">Criar clínica</span>
                 <span className="text-muted-foreground truncate text-xs">
                   Nova organização
@@ -94,14 +94,18 @@ export function OrganizationSwitcher({
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              tooltip={activeOrganization?.name ?? "Trocar clínica"}
               aria-label="Trocar clínica"
             >
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <IconBuildingHospital className="size-4" />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">
                   {activeOrganization?.name ?? "Selecionar clínica"}
                 </span>
               </div>
-              <IconSelector className="ml-auto" />
+              <IconSelector className="ml-auto group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

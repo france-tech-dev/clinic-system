@@ -17,7 +17,7 @@ import {
 } from "@/domains/settings/settings.schema";
 import type { PrintBranding } from "@/domains/settings/settings.types";
 import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { isCustomOrganizationLogo } from "@/shared/lib/organization-logo";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";

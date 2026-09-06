@@ -29,7 +29,7 @@ Tudo-em-um para clínicas multi-profissionais (com ênfase em TO), com funcional
 
 - Uso em desktop e mobile no browser, durante o atendimento e na gestão da clínica.
 - Fluxos centrais: marcar/realizar sessões na agenda; registar evoluções e PDFs (prontuário, anamnese); cobrança no caixa; visão de liderança no dashboard; assinatura Stripe (trial → plano).
-- Terminologia de produto: clínica = organização; painel interno da plataforma Movi ≠ dashboard da clínica; “Fichário” aparece em copy de onboarding.
+- Terminologia de produto: clínica = organização; painel interno da plataforma Movi ≠ dashboard da clínica.
 
 ## Capabilities and Constraints
 

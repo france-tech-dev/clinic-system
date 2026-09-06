@@ -1,10 +1,8 @@
-import { auth } from "@/shared/lib/auth";
-import { serializeMemberProfessionalMetadata } from "@/shared/types/professional";
 import { getHealthProfession } from "@/shared/constants/professions";
-import {
-  MemberStatus,
-  Role,
-} from "@prisma/enums";
+import { auth } from "@/shared/lib/auth";
+import { formatCivilDateParam } from "@/shared/lib/civil-date-param";
+import { serializeMemberProfessionalMetadata } from "@/shared/types/professional";
+import { MemberStatus, Role } from "@prisma/enums";
 import { teamRepository } from "./team.repository";
 import type {
   CreateProfessionalInput,
@@ -32,14 +30,6 @@ function toMemberRole(role: CreateProfessionalInput["role"]): Role {
   }
 }
 
-function formatBirthDate(value: Date | null | undefined): string | null {
-  if (!value) return null;
-  const year = value.getUTCFullYear();
-  const month = String(value.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(value.getUTCDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 function toTeamMemberDTO(row: MemberListRow | MemberProfileRow): TeamMemberDTO {
   return {
     id: row.id,
@@ -52,7 +42,7 @@ function toTeamMemberDTO(row: MemberListRow | MemberProfileRow): TeamMemberDTO {
     imageUrl: row.user.image?.trim() || null,
     email: row.user.email?.trim() || "",
     phone: row.user.phone,
-    birthDate: formatBirthDate(row.user.birthDate),
+    birthDate: formatCivilDateParam(row.user.birthDate),
     createdAt: row.createdAt.toISOString(),
     patients: (row.patients ?? []).map((patient) => ({
       id: patient.id,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
@@ -32,9 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   createCashTransactionAction,
   deleteCashTransactionAction,
+  markCashTransactionPostedAction,
   updateCashTransactionAction,
 } from "@/domains/finance/finance.actions";
 import {
@@ -45,17 +47,20 @@ import type { CashTransactionDTO } from "@/domains/finance/finance.types";
 import type { PatientOption } from "@/shared/types/patient-option";
 import {
   CASH_PAYMENT_METHODS,
+  CASH_TRANSACTION_STATUSES,
   CASH_TRANSACTION_TYPES,
 } from "@/shared/constants/cash";
 import { amountToBrlInput, parseBrl } from "@/shared/lib/money-utils";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import {
   CashPaymentMethod,
+  CashTransactionStatus,
   CashTransactionType,
 } from "@prisma/enums";
 
 export type CashTransactionDraft = {
   type?: CashTransactionType;
+  status?: CashTransactionStatus;
   date?: string;
   description?: string;
   amount?: number | null;
@@ -78,6 +83,10 @@ function buildDefaults(
       draft?.type ??
       defaultType ??
       CashTransactionType.INCOME,
+    status:
+      initial?.status ??
+      draft?.status ??
+      CashTransactionStatus.POSTED,
     date: initial?.date ?? draft?.date ?? defaultDate,
     description: initial?.description ?? draft?.description ?? "",
     amountInput: amount ? amountToBrlInput(amount) : "",
@@ -85,8 +94,8 @@ function buildDefaults(
       initial?.paymentMethod ??
       draft?.paymentMethod ??
       CashPaymentMethod.CASH,
-    patientId: initial?.patientId ?? draft?.patientId ?? "none",
-    memberId: initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "none",
+    patientId: initial?.patientId ?? draft?.patientId ?? "",
+    memberId: initial?.memberId ?? draft?.memberId ?? defaultMemberId ?? "",
   };
 }
 
@@ -133,6 +142,9 @@ export function CashTransactionFormDialog({
     defaultValues: defaults,
   });
 
+  const status = useWatch({ control: form.control, name: "status" });
+  const isForecast = status === CashTransactionStatus.FORECAST;
+
   function handleOpenChange(next: boolean) {
     if (!next) {
       form.reset(defaults);
@@ -153,12 +165,13 @@ export function CashTransactionFormDialog({
     startTransition(async () => {
       const payload = {
         type: data.type,
+        status: data.status,
         date: data.date,
         description: data.description,
         amount,
         paymentMethod: data.paymentMethod,
-        patientId: data.patientId === "none" ? null : data.patientId,
-        memberId: data.memberId === "none" ? null : data.memberId,
+        patientId: data.patientId.trim() || null,
+        memberId: data.memberId.trim() || null,
       };
 
       const result = initial
@@ -201,6 +214,20 @@ export function CashTransactionFormDialog({
     });
   }
 
+  function handleMarkPosted() {
+    if (!initial) return;
+    startTransition(async () => {
+      const result = await markCashTransactionPostedAction({ id: initial.id });
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      toast.success("Lançamento marcado como realizado");
+      onSaved();
+      onOpenChange(false);
+    });
+  }
+
   const typeLocked = lockType && !initial;
   const createTitle =
     defaults.type === CashTransactionType.EXPENSE
@@ -222,6 +249,39 @@ export function CashTransactionFormDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid gap-4"
           >
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Situação *</FormLabel>
+                  <FormControl>
+                    <ToggleGroup
+                      type="single"
+                      variant="outline"
+                      size="sm"
+                      value={field.value}
+                      onValueChange={(v) => {
+                        if (v) field.onChange(v);
+                      }}
+                      className="w-full"
+                    >
+                      {CASH_TRANSACTION_STATUSES.map((item) => (
+                        <ToggleGroupItem
+                          key={item.id}
+                          value={item.id}
+                          className="flex-1"
+                        >
+                          {item.label}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {!typeLocked ? (
               <FormField
                 control={form.control}
@@ -260,7 +320,9 @@ export function CashTransactionFormDialog({
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Data *</FormLabel>
+                    <FormLabel>
+                      {isForecast ? "Data prevista *" : "Data *"}
+                    </FormLabel>
                     <FormControl>
                       <DatePicker
                         id="cash-date"
@@ -311,81 +373,81 @@ export function CashTransactionFormDialog({
               )}
             />
 
-            <div className="grid items-start gap-3 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="paymentMethod"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Forma de pagamento *</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={(v) => {
-                        if (v) field.onChange(v);
-                      }}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {CASH_PAYMENT_METHODS.map((item) => (
-                          <SelectItem key={item.id} value={item.id}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="paymentMethod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Forma de pagamento *</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      if (v) field.onChange(v);
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {CASH_PAYMENT_METHODS.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="patientId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Paciente (opcional)</FormLabel>
+                    <FormLabel>Paciente</FormLabel>
                     <FormControl>
                       <EntityCombobox
                         options={patients}
                         value={field.value}
                         onValueChange={field.onChange}
-                        placeholder="Nenhum"
+                        placeholder="Pesquisar paciente…"
                         emptyText="Nenhum paciente encontrado"
-                        extraOption={{ id: "none", name: "Nenhum" }}
+                        allowClear
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {members.length > 0 ? (
-              <FormField
-                control={form.control}
-                name="memberId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profissional (opcional)</FormLabel>
-                    <FormControl>
-                      <EntityCombobox
-                        options={members}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Nenhum"
-                        emptyText="Nenhum profissional encontrado"
-                        extraOption={{ id: "none", name: "Nenhum" }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : null}
+              {members.length > 0 ? (
+                <FormField
+                  control={form.control}
+                  name="memberId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Profissional</FormLabel>
+                      <FormControl>
+                        <EntityCombobox
+                          options={members}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Pesquisar profissional…"
+                          emptyText="Nenhum profissional encontrado"
+                          allowClear
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
+            </div>
           </form>
         </Form>
 
@@ -413,6 +475,17 @@ export function CashTransactionFormDialog({
             >
               Cancelar
             </Button>
+            {initial?.status === CashTransactionStatus.FORECAST ? (
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={pending}
+                onClick={handleMarkPosted}
+              >
+                {pending ? <Spinner data-icon="inline-start" /> : null}
+                Marcar realizado
+              </Button>
+            ) : null}
             <Button
               type="submit"
               form="cash-transaction-form"

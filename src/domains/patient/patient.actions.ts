@@ -1,14 +1,14 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/server/auth/permissions";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
 import { isLeadershipRole } from "@/shared/lib/member-role";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
 import {
   clinicalEvaluationFormSchema,
   clinicalEvaluationIdSchema,
@@ -29,9 +29,9 @@ import {
   deleteClinicalEvaluation,
   deletePatient,
   deleteSessionNote,
-  resolveAuthorMemberId,
   getPatientDetail,
   listPatients,
+  resolveAuthorMemberId,
   setPatientMembers,
   setPatientStatus,
   updateClinicalEvaluation,
@@ -45,13 +45,6 @@ import type {
   PatientStatus,
   SessionNoteDTO,
 } from "./patient.types";
-
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
 
 function revalidatePatient(id?: string) {
   revalidatePath(paths.pacientes);
@@ -69,7 +62,7 @@ export async function listPatientsAction(opts?: {
     const { organizationId } = await requireOrgId();
     return ok(await listPatients(organizationId, opts));
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -80,10 +73,10 @@ export async function getPatientDetailAction(
     await requirePermission({ project: ["read"] });
     const { organizationId } = await requireOrgId();
     const detail = await getPatientDetail(organizationId, id);
-    if (!detail) return fail("Paciente não encontrado");
+    if (!detail) throw new AppError("Paciente não encontrado");
     return ok(detail);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -92,23 +85,20 @@ export async function createPatientAction(
 ): Promise<ActionResult<PatientDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = patientFormSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(patientFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
     const memberIds = isLeadershipRole(member?.role ?? null)
-      ? (parsed.data.memberIds ?? [])
+      ? (payload.memberIds ?? [])
       : [];
     const data = await createPatient(organizationId, {
-      ...parsed.data,
+      ...payload,
       memberIds,
     });
     revalidatePatient();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -117,18 +107,15 @@ export async function updatePatientAction(
 ): Promise<ActionResult<PatientDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updatePatientSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(updatePatientSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const { id, ...rest } = parsed.data;
+    const { id, ...rest } = payload;
     const data = await updatePatient(organizationId, id, rest);
-    if (!data) return fail("Paciente não encontrado");
+    if (!data) throw new AppError("Paciente não encontrado");
     revalidatePatient(id);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -137,8 +124,7 @@ export async function setPatientStatusAction(
 ): Promise<ActionResult<PatientDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = patientStatusSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(patientStatusSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
     if (!isLeadershipRole(member?.role ?? null)) {
@@ -146,14 +132,14 @@ export async function setPatientStatusAction(
     }
     const data = await setPatientStatus(
       organizationId,
-      parsed.data.id,
-      parsed.data.status,
+      payload.id,
+      payload.status,
     );
-    if (!data) return fail("Paciente não encontrado");
-    revalidatePatient(parsed.data.id);
+    if (!data) throw new AppError("Paciente não encontrado");
+    revalidatePatient(payload.id);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -162,8 +148,7 @@ export async function setPatientMembersAction(
 ): Promise<ActionResult<PatientDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = patientMembersSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(patientMembersSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
     if (!isLeadershipRole(member?.role ?? null)) {
@@ -171,15 +156,15 @@ export async function setPatientMembersAction(
     }
     const data = await setPatientMembers(
       organizationId,
-      parsed.data.patientId,
-      parsed.data.memberIds,
+      payload.patientId,
+      payload.memberIds,
     );
-    if (!data) return fail("Paciente não encontrado");
-    revalidatePatient(parsed.data.patientId);
+    if (!data) throw new AppError("Paciente não encontrado");
+    revalidatePatient(payload.patientId);
     revalidatePath(paths.profissionais);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -188,15 +173,14 @@ export async function deletePatientAction(
 ): Promise<ActionResult<PatientDTO>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const parsed = patientIdSchema.safeParse(input);
-    if (!parsed.success) return fail("ID inválido");
+    const { id } = AppError.parse(patientIdSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const data = await deletePatient(organizationId, parsed.data.id);
-    if (!data) return fail("Paciente não encontrado");
+    const data = await deletePatient(organizationId, id);
+    if (!data) throw new AppError("Paciente não encontrado");
     revalidatePatient();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -205,22 +189,19 @@ export async function createClinicalEvaluationAction(
 ): Promise<ActionResult<ClinicalEvaluationDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = clinicalEvaluationFormSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(clinicalEvaluationFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
     const data = await createClinicalEvaluation(
       organizationId,
-      parsed.data,
+      payload,
       memberId,
     );
-    if (!data) return fail("Paciente não encontrado");
-    revalidatePatient(parsed.data.patientId);
+    if (!data) throw new AppError("Paciente não encontrado");
+    revalidatePatient(payload.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -229,18 +210,15 @@ export async function updateClinicalEvaluationAction(
 ): Promise<ActionResult<ClinicalEvaluationDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updateClinicalEvaluationSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(updateClinicalEvaluationSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const { id, ...rest } = parsed.data;
+    const { id, ...rest } = payload;
     const data = await updateClinicalEvaluation(organizationId, id, rest);
-    if (!data) return fail("Avaliação não encontrada");
+    if (!data) throw new AppError("Avaliação não encontrada");
     revalidatePatient(rest.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -249,18 +227,14 @@ export async function deleteClinicalEvaluationAction(
 ): Promise<ActionResult<{ id: string }>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const parsed = clinicalEvaluationIdSchema.safeParse(input);
-    if (!parsed.success) return fail("ID inválido");
+    const { id } = AppError.parse(clinicalEvaluationIdSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const removed = await deleteClinicalEvaluation(
-      organizationId,
-      parsed.data.id,
-    );
-    if (!removed) return fail("Avaliação não encontrada");
+    const removed = await deleteClinicalEvaluation(organizationId, id);
+    if (!removed) throw new AppError("Avaliação não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -269,20 +243,17 @@ export async function createSessionAction(
 ): Promise<ActionResult<SessionNoteDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = sessionFormSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(sessionFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
-    const data = await createSessionNote(organizationId, parsed.data, memberId);
+    const data = await createSessionNote(organizationId, payload, memberId);
     if (!data) {
-      return fail("Agendamento não encontrado ou já possui evolução");
+      throw new AppError("Agendamento não encontrado ou já possui evolução");
     }
-    revalidatePatient(parsed.data.patientId);
+    revalidatePatient(payload.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -291,20 +262,17 @@ export async function updateSessionAction(
 ): Promise<ActionResult<SessionNoteDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updateSessionNoteSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(updateSessionNoteSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const { id, ...rest } = parsed.data;
+    const { id, ...rest } = payload;
     const data = await updateSessionNote(organizationId, id, rest);
     if (!data) {
-      return fail("Evolução ou agendamento não encontrado");
+      throw new AppError("Evolução ou agendamento não encontrado");
     }
     revalidatePatient(rest.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -313,14 +281,13 @@ export async function deleteSessionAction(
 ): Promise<ActionResult<{ id: string }>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const parsed = sessionIdSchema.safeParse(input);
-    if (!parsed.success) return fail("ID inválido");
+    const { id } = AppError.parse(sessionIdSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const removed = await deleteSessionNote(organizationId, parsed.data.id);
-    if (!removed) return fail("Evolução não encontrada");
+    const removed = await deleteSessionNote(organizationId, id);
+    if (!removed) throw new AppError("Evolução não encontrada");
     revalidatePatient(removed.patientId);
     return ok({ id: removed.id });
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }

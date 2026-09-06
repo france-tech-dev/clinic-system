@@ -1,12 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
 import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
 import {
   compareProtocolEvaluationsSchema,
   listProtocolEvaluationsSchema,
@@ -27,17 +27,10 @@ import {
   updateProtocolEvaluation,
 } from "./protocol.service";
 import type {
-  ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
+  ProtocolEvaluationDTO,
   ProtocolEvaluationPreviewDTO,
 } from "./protocol.types";
-
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
 
 function revalidateProtocol(protocolId: string, patientId?: string) {
   revalidatePath(paths.avaliacoes.byId(protocolId));
@@ -49,18 +42,17 @@ export async function listProtocolEvaluationsAction(
 ): Promise<ActionResult<ProtocolEvaluationDTO[]>> {
   try {
     await requirePermission({ project: ["read"] });
-    const parsed = listProtocolEvaluationsSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(listProtocolEvaluationsSchema, input);
 
     const { organizationId } = await requireOrgId();
     const data = await listProtocolEvaluations(
       organizationId,
-      parsed.data.patientId,
-      parsed.data.protocolId,
+      payload.patientId,
+      payload.protocolId,
     );
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -69,15 +61,14 @@ export async function getProtocolEvaluationAction(
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
     await requirePermission({ project: ["read"] });
-    const parsed = protocolEvaluationIdSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(protocolEvaluationIdSchema, input);
 
     const { organizationId } = await requireOrgId();
-    const data = await getProtocolEvaluation(organizationId, parsed.data.id);
-    if (!data) return fail("Avaliação não encontrada");
+    const data = await getProtocolEvaluation(organizationId, payload.id);
+    if (!data) throw new AppError("Avaliação não encontrada");
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -86,18 +77,14 @@ export async function getProtocolEvaluationPreviewAction(
 ): Promise<ActionResult<ProtocolEvaluationPreviewDTO>> {
   try {
     await requirePermission({ project: ["read"] });
-    const parsed = protocolEvaluationIdSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(protocolEvaluationIdSchema, input);
 
     const { organizationId } = await requireOrgId();
-    const data = await getProtocolEvaluationPreview(
-      organizationId,
-      parsed.data.id,
-    );
-    if (!data) return fail("Avaliação não encontrada");
+    const data = await getProtocolEvaluationPreview(organizationId, payload.id);
+    if (!data) throw new AppError("Avaliação não encontrada");
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -106,21 +93,20 @@ export async function saveProtocolInterpretationAIAction(
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = saveProtocolInterpretationAISchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(saveProtocolInterpretationAISchema, input);
 
     const { organizationId } = await requireOrgFeatureWrite("ai");
     const data = await saveProtocolInterpretationAI(
       organizationId,
-      parsed.data.id,
-      parsed.data.interpretationAI,
+      payload.id,
+      payload.interpretationAI,
     );
-    if (!data) return fail("Avaliação não encontrada");
+    if (!data) throw new AppError("Avaliação não encontrada");
 
     revalidateProtocol(data.protocolId, data.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -129,8 +115,7 @@ export async function createProtocolEvaluationAction(
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = protocolEvaluationFormSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(protocolEvaluationFormSchema, input);
 
     const { organizationId, userId } =
       await requireOrgFeatureWrite("avaliacoes");
@@ -140,15 +125,15 @@ export async function createProtocolEvaluationAction(
     );
     const data = await createProtocolEvaluation(
       organizationId,
-      parsed.data,
+      payload,
       memberId,
     );
-    if (!data) return fail("Paciente não encontrado");
+    if (!data) throw new AppError("Paciente não encontrado");
 
-    revalidateProtocol(parsed.data.protocolId, parsed.data.patientId);
+    revalidateProtocol(payload.protocolId, payload.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -157,17 +142,16 @@ export async function updateProtocolEvaluationAction(
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updateProtocolEvaluationSchema.safeParse(input);
-    if (!parsed.success) return failZod(parsed.error);
+    const payload = AppError.parse(updateProtocolEvaluationSchema, input);
 
     const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
-    const data = await updateProtocolEvaluation(organizationId, parsed.data);
-    if (!data) return fail("Avaliação não encontrada");
+    const data = await updateProtocolEvaluation(organizationId, payload);
+    if (!data) throw new AppError("Avaliação não encontrada");
 
-    revalidateProtocol(data.protocolId, parsed.data.patientId);
+    revalidateProtocol(data.protocolId, payload.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -176,23 +160,19 @@ export async function deleteProtocolEvaluationAction(
 ): Promise<ActionResult<ProtocolEvaluationDTO>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const parsed = protocolEvaluationIdSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(protocolEvaluationIdSchema, input);
 
     const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
-    const existing = await getProtocolEvaluation(
-      organizationId,
-      parsed.data.id,
-    );
-    if (!existing) return fail("Avaliação não encontrada");
+    const existing = await getProtocolEvaluation(organizationId, payload.id);
+    if (!existing) throw new AppError("Avaliação não encontrada");
 
-    const data = await deleteProtocolEvaluation(organizationId, parsed.data.id);
-    if (!data) return fail("Avaliação não encontrada");
+    const data = await deleteProtocolEvaluation(organizationId, payload.id);
+    if (!data) throw new AppError("Avaliação não encontrada");
 
     revalidateProtocol(existing.protocolId, existing.patientId);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -201,18 +181,17 @@ export async function compareProtocolEvaluationsAction(
 ): Promise<ActionResult<ProtocolEvaluationComparisonDTO>> {
   try {
     await requirePermission({ project: ["read"] });
-    const parsed = compareProtocolEvaluationsSchema.safeParse(input);
-    if (!parsed.success) return fail("Dados inválidos");
+    const payload = AppError.parse(compareProtocolEvaluationsSchema, input);
 
     const { organizationId } = await requireOrgId();
     const data = await compareProtocolEvaluations(
       organizationId,
-      parsed.data.baselineId,
-      parsed.data.followUpId,
+      payload.baselineId,
+      payload.followUpId,
     );
-    if (!data) return fail("Não foi possível comparar as avaliações");
+    if (!data) throw new AppError("Não foi possível comparar as avaliações");
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }

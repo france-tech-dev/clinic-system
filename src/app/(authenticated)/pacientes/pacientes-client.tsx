@@ -82,7 +82,7 @@ import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { parseBrl } from "@/shared/lib/money-utils";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { AssignPatientMembersDialog } from "@/features/patient/components/assign-patient-members-dialog";
 import { CreatePatientDialog } from "./_components/create-patient-dialog";
@@ -401,13 +401,7 @@ export function PacientesClient({
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <p className="text-sm text-muted-foreground">
-              Cadastro de pacientes da clínica — busca, filtra e gere o ciclo
-              Ativo / Pausado / Alta.
-            </p>
-            <p className="text-sm text-muted-foreground">{listCountLabel}</p>
-          </div>
+          <p className="text-sm text-muted-foreground">{listCountLabel}</p>
 
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="relative w-full sm:max-w-xs sm:flex-1">
@@ -460,7 +454,6 @@ export function PacientesClient({
                 }
                 extraOption={{ id: "__all__", name: "Todos os profissionais" }}
                 placeholder="Profissional"
-                searchPlaceholder="Pesquisar profissional…"
                 emptyText="Nenhum profissional encontrado"
                 className="w-full sm:w-56"
                 aria-label="Filtrar por profissional"

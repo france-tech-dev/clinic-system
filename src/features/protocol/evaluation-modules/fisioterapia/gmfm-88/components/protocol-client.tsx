@@ -60,7 +60,7 @@ import type {
 } from "@/domains/protocol/protocol.types";
 import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
 import { formatDateBR } from "@/shared/lib/format-date-br";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
 function buildDefaults(
   patientId: string,

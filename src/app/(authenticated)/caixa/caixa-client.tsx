@@ -2,21 +2,21 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { CashflowSummaryCards } from "@/features/finance/components/cashflow-summary-cards";
 import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
+import { CashPeriodFilter } from "@/features/finance/components/cash-period-filter";
+import { cashPeriodToSearchParams } from "@/domains/finance/_lib/period-utils";
 import type {
   CashflowPageData,
   CashMemberOption,
+  CashPeriod,
   CashTransactionDTO,
 } from "@/domains/finance/finance.types";
-import {
-  currentMonthParam,
-  shiftMonthParam,
-} from "@/domains/finance/_lib/month-utils";
 import type { PatientDTO } from "@/domains/patient/patient.types";
 import {
   cashPaymentMethodLabel,
+  cashTransactionStatusLabel,
   cashTransactionTypeLabel,
 } from "@/shared/constants/cash";
 import { paths } from "@/shared/constants/paths";
@@ -27,11 +27,43 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntityCombobox } from "@/components/entity-combobox";
 import { Spinner } from "@/components/ui/spinner";
-import { CashTransactionType } from "@prisma/enums";
+import {
+  CashTransactionStatus,
+  CashTransactionType,
+} from "@prisma/enums";
 
 const MEMBER_FILTER_ALL = "all";
 
 export function CaixaClient({
+  error,
+  initial,
+  patients,
+  members,
+  memberFilter,
+}: {
+  error: string | null;
+  initial: CashflowPageData | null;
+  patients: PatientDTO[];
+  members: CashMemberOption[];
+  memberFilter: string;
+}) {
+  if (error) {
+    return <p className="text-sm text-destructive">{error}</p>;
+  }
+
+  if (!initial) return null;
+
+  return (
+    <CaixaClientBody
+      initial={initial}
+      patients={patients}
+      members={members}
+      memberFilter={memberFilter}
+    />
+  );
+}
+
+function CaixaClientBody({
   initial,
   patients,
   members,
@@ -52,39 +84,27 @@ export function CaixaClient({
   const [navPending, startNavTransition] = useTransition();
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const thisMonth = currentMonthParam();
-  const isCurrentMonth = initial.month === thisMonth;
 
   const filterMemberName = useMemo(() => {
     if (memberFilter === MEMBER_FILTER_ALL) return null;
     return members.find((m) => m.id === memberFilter)?.name ?? null;
   }, [memberFilter, members]);
 
-  function buildUrl(month: string, member: string) {
-    const params = new URLSearchParams();
-    params.set("month", month);
-    if (member && member !== MEMBER_FILTER_ALL) {
-      params.set("member", member);
-    }
-    return `${paths.caixa}?${params.toString()}`;
+  function buildUrl(period: CashPeriod, member: string) {
+    return `${paths.caixa}?${cashPeriodToSearchParams(period, {
+      member: member !== MEMBER_FILTER_ALL ? member : undefined,
+    })}`;
   }
 
-  function navigateMonth(delta: number) {
-    const next = shiftMonthParam(initial.month, delta);
+  function navigatePeriod(next: CashPeriod) {
     startNavTransition(() => {
       router.push(buildUrl(next, memberFilter));
     });
   }
 
-  function goToThisMonth() {
-    startNavTransition(() => {
-      router.push(buildUrl(thisMonth, memberFilter));
-    });
-  }
-
   function changeMemberFilter(next: string) {
     startNavTransition(() => {
-      router.push(buildUrl(initial.month, next || MEMBER_FILTER_ALL));
+      router.push(buildUrl(initial.period, next || MEMBER_FILTER_ALL));
     });
   }
 
@@ -106,7 +126,7 @@ export function CaixaClient({
   return (
     <div
       className={cn(
-        "flex flex-col gap-6 transition-opacity",
+        "flex flex-col gap-4 transition-opacity",
         navPending && "pointer-events-none opacity-60",
       )}
       aria-busy={navPending}
@@ -114,7 +134,7 @@ export function CaixaClient({
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <span>
-            Conferência · {initial.monthLabel}
+            Conferência · {initial.period.label}
             {filterMemberName ? ` · ${filterMemberName}` : " · Toda a clínica"}
           </span>
           {navPending ? (
@@ -125,61 +145,32 @@ export function CaixaClient({
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => navigateMonth(-1)}
-                disabled={navPending}
-                aria-label="Mês anterior"
-              >
-                <ChevronLeft className="size-4" />
-              </Button>
-              <p className="min-w-36 text-center font-serif text-lg font-semibold capitalize">
-                {initial.monthLabel}
-              </p>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => navigateMonth(1)}
-                disabled={navPending}
-                aria-label="Próximo mês"
-              >
-                <ChevronRight className="size-4" />
-              </Button>
-            </div>
-            {!isCurrentMonth ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                disabled={navPending}
-                onClick={goToThisMonth}
-              >
-                Este mês
-              </Button>
-            ) : null}
-            {members.length > 0 ? (
-              <EntityCombobox
-                options={members}
-                value={memberFilter}
-                onValueChange={changeMemberFilter}
-                placeholder="Profissional"
-                emptyText="Nenhum profissional encontrado"
-                extraOption={{
-                  id: MEMBER_FILTER_ALL,
-                  name: "Todos os profissionais",
-                }}
-                className="w-56"
-                aria-label="Filtrar por profissional"
-                disabled={navPending}
-              />
-            ) : null}
-          </div>
-
+          <CashPeriodFilter
+            period={initial.period}
+            onPeriodChange={navigatePeriod}
+            pending={navPending}
+            trailing={
+              members.length > 0 ? (
+                <EntityCombobox
+                  options={members}
+                  value={memberFilter}
+                  onValueChange={changeMemberFilter}
+                  placeholder="Profissional"
+                  emptyText="Nenhum profissional encontrado"
+                  extraOption={{
+                    id: MEMBER_FILTER_ALL,
+                    name: "Todos os profissionais",
+                  }}
+                  className="w-56"
+                  aria-label="Filtrar por profissional"
+                  disabled={navPending}
+                />
+              ) : null
+            }
+          />
           <div className="flex flex-wrap gap-2">
             <Button
+              size="sm"
               variant="outline"
               disabled={navPending}
               onClick={() => openCreate(CashTransactionType.EXPENSE)}
@@ -187,7 +178,11 @@ export function CaixaClient({
               <Plus data-icon="inline-start" />
               Saída
             </Button>
-            <Button disabled={navPending} onClick={() => openCreate(CashTransactionType.INCOME)}>
+            <Button
+              size="sm"
+              disabled={navPending}
+              onClick={() => openCreate(CashTransactionType.INCOME)}
+            >
               <Plus data-icon="inline-start" />
               Entrada
             </Button>
@@ -197,19 +192,19 @@ export function CaixaClient({
 
       <CashflowSummaryCards
         summary={initial.summary}
-        monthLabel={initial.monthLabel}
+        periodLabel={initial.period.label}
         variant="hero"
       />
 
       <div className="rounded-md border border-border bg-card">
         <div className="border-b border-border px-4 py-3">
-          <p className="text-sm font-medium">Lançamentos do mês</p>
+          <p className="text-sm font-medium">Lançamentos do período</p>
         </div>
 
         {initial.transactions.length === 0 ? (
           <div className="space-y-3 px-4 py-8 text-center">
             <p className="text-sm text-muted-foreground">
-              Nenhum lançamento neste mês
+              Nenhum lançamento neste período
               {filterMemberName ? ` para ${filterMemberName}` : ""}.
             </p>
             <p className="mx-auto max-w-md text-sm text-muted-foreground">
@@ -252,6 +247,11 @@ export function CaixaClient({
                       >
                         {cashTransactionTypeLabel(tx.type)}
                       </Badge>
+                      {tx.status === CashTransactionStatus.FORECAST ? (
+                        <Badge variant="secondary">
+                          {cashTransactionStatusLabel(tx.status)}
+                        </Badge>
+                      ) : null}
                       <span className="font-medium">{tx.description}</span>
                     </div>
                     <p className="mt-1.5 text-xs text-muted-foreground">
@@ -266,6 +266,8 @@ export function CaixaClient({
                   <span
                     className={cn(
                       "shrink-0 font-medium tabular-nums",
+                      tx.status === CashTransactionStatus.FORECAST &&
+                        "opacity-70",
                       tx.type === CashTransactionType.INCOME
                         ? "text-emerald-700 dark:text-emerald-400"
                         : "text-destructive",

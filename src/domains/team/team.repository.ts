@@ -1,10 +1,8 @@
-import { hashPassword } from "better-auth/crypto";
+import { parseCivilDateParam } from "@/shared/lib/civil-date-param";
 import { createCredentialUser } from "@/shared/lib/create-credential-user";
 import { db } from "@/shared/lib/prisma";
-import {
-  MemberStatus,
-  Role,
-} from "@prisma/enums";
+import { MemberStatus, Role } from "@prisma/enums";
+import { hashPassword } from "better-auth/crypto";
 import type { CreateProfessionalInput } from "./team.schema";
 
 const memberListInclude = {
@@ -23,13 +21,6 @@ const memberListInclude = {
     orderBy: { name: "asc" as const },
   },
 } as const;
-
-function parseOptionalBirthDate(value: string | null | undefined): Date | null {
-  if (!value?.trim()) return null;
-  const [year, month, day] = value.split("-").map(Number);
-  if ([year, month, day].some(Number.isNaN)) return null;
-  return new Date(Date.UTC(year, month - 1, day));
-}
 
 export const teamRepository = {
   async listMembers(organizationId: string) {
@@ -214,7 +205,7 @@ export const teamRepository = {
         name: data.name,
         email: data.email,
         phone: data.phone?.trim() || null,
-        birthDate: parseOptionalBirthDate(data.birthDate),
+        birthDate: parseCivilDateParam(data.birthDate),
       },
     });
   },

@@ -81,12 +81,7 @@ export default async function AvaliacoesPage() {
 
   return (
     <AppPage title="Avaliações">
-      <div className="flex flex-col gap-6">
-        <p className="text-sm text-muted-foreground">
-          Protocolos estruturados da clínica. Abra o instrumento da sua área e
-          escolha o paciente no passo seguinte.
-        </p>
-
+      <div className="flex flex-col gap-4">
         {error ? (
           <Alert variant="destructive">
             <AlertTitle>Não foi possível carregar</AlertTitle>

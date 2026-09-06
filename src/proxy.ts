@@ -1,6 +1,4 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { MemberStatus } from "@prisma/enums";
+import { findProxyMember } from "@/server/auth/proxy-member";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
 import {
@@ -8,7 +6,9 @@ import {
   isLeadershipRole,
 } from "@/shared/lib/member-role";
 import { isPlatformAdminUserId } from "@/shared/lib/platform-admin";
-import { findProxyMember } from "@/server/auth/proxy-member";
+import { MemberStatus } from "@prisma/enums";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 const leadershipPaths = [
   paths.dashboard,
@@ -27,6 +27,10 @@ function isPublicAvaliacaoRoute(pathname: string) {
     pathname === paths.avaliacaoPublica.root ||
     pathname.startsWith(`${paths.avaliacaoPublica.root}/`)
   );
+}
+
+function isMarketingHome(pathname: string) {
+  return pathname === paths.root;
 }
 
 function isOrgSetupRoute(pathname: string) {
@@ -52,7 +56,11 @@ export async function proxy(req: NextRequest) {
   });
 
   if (!session) {
-    if (isAuthRoute(pathname) || isPublicAvaliacaoRoute(pathname)) {
+    if (
+      isAuthRoute(pathname) ||
+      isPublicAvaliacaoRoute(pathname) ||
+      isMarketingHome(pathname)
+    ) {
       return NextResponse.next();
     }
     const loginUrl = new URL(paths.auth.login, req.url);
@@ -72,6 +80,11 @@ export async function proxy(req: NextRequest) {
     if (!isPlatformAdminUserId(session.user.id)) {
       return NextResponse.redirect(new URL(paths.agenda, req.url));
     }
+    return NextResponse.next();
+  }
+
+  // Rotas públicas
+  if (isMarketingHome(pathname) || isPublicAvaliacaoRoute(pathname)) {
     return NextResponse.next();
   }
 
@@ -100,11 +113,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL(paths.organizacao, req.url));
   }
 
-  // Preenchimento público de avaliações: qualquer visitante (mesmo autenticado)
-  if (isPublicAvaliacaoRoute(pathname)) {
-    return NextResponse.next();
-  }
-
   // Portal: qualquer autenticado com membership
   if (isPortalRoute(pathname) && hasMembership) {
     return NextResponse.next();
@@ -123,10 +131,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(
       new URL(member ? paths.auth.login : paths.organizacao, req.url),
     );
-  }
-
-  if (pathname === paths.root) {
-    return NextResponse.redirect(new URL(paths.agenda, req.url));
   }
 
   if (isLeadershipPath(pathname) && !isLeadershipRole(member?.role ?? null)) {

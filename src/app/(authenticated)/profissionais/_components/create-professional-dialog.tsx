@@ -45,7 +45,7 @@ import {
   getHealthProfession,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
 const DEFAULT_VALUES: CreateProfessionalInput = {
   name: "",

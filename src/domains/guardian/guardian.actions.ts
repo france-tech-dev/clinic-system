@@ -1,20 +1,18 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { paths } from "@/shared/constants/paths";
 import { requirePermission } from "@/server/auth/permissions";
 import {
   requireOrgFeatureWrite,
   requireOrgWrite,
 } from "@/server/billing/require-billing";
-import { firstZodMessage, zodFieldErrors } from "@/shared/lib/zod-field-errors";
-import { OrgContextError } from "@/shared/lib/org-context";
+import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
 import {
-  fail,
   ok,
   type ActionResult,
   type FieldErrors,
 } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
 import {
   createGuardianSchema,
   enableGuardianPortalSchema,
@@ -39,13 +37,13 @@ function fieldErrorsFromMessage(message: string): FieldErrors | undefined {
   return undefined;
 }
 
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error && error.message) {
-    return fail(error.message, fieldErrorsFromMessage(error.message));
+function handleGuardianError(error: unknown): ActionResult<never> {
+  if (error instanceof Error && !(error instanceof AppError) && error.message) {
+    return new AppError(error.message, {
+      fieldErrors: fieldErrorsFromMessage(error.message),
+    }).result();
   }
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
+  return AppError.result(error);
 }
 
 function revalidateGuardianPaths(patientId?: string) {
@@ -58,16 +56,13 @@ export async function createGuardianAction(
 ): Promise<ActionResult<CreatedGuardianDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const parsed = createGuardianSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(firstZodMessage(parsed.error), zodFieldErrors(parsed.error));
-    }
+    const payload = AppError.parse(createGuardianSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const data = await createGuardian(organizationId, parsed.data);
+    const data = await createGuardian(organizationId, payload);
     revalidateGuardianPaths();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return handleGuardianError(error);
   }
 }
 
@@ -76,17 +71,14 @@ export async function updateGuardianAction(
 ): Promise<ActionResult<GuardianDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = updateGuardianSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(firstZodMessage(parsed.error), zodFieldErrors(parsed.error));
-    }
+    const payload = AppError.parse(updateGuardianSchema, input);
     const { organizationId } = await requireOrgWrite();
-    const data = await updateGuardian(organizationId, parsed.data);
-    if (!data) return fail("Responsável não encontrado");
+    const data = await updateGuardian(organizationId, payload);
+    if (!data) throw new AppError("Responsável não encontrado");
     revalidateGuardianPaths();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return handleGuardianError(error);
   }
 }
 
@@ -95,15 +87,12 @@ export async function enableGuardianPortalAccessAction(
 ): Promise<ActionResult<CreatedGuardianDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = enableGuardianPortalSchema.safeParse(input);
-    if (!parsed.success) {
-      return fail(firstZodMessage(parsed.error), zodFieldErrors(parsed.error));
-    }
+    const payload = AppError.parse(enableGuardianPortalSchema, input);
     const { organizationId } = await requireOrgFeatureWrite("portal");
-    const data = await enableGuardianPortalAccess(organizationId, parsed.data);
+    const data = await enableGuardianPortalAccess(organizationId, payload);
     revalidateGuardianPaths();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return handleGuardianError(error);
   }
 }

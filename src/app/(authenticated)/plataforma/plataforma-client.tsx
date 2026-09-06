@@ -248,10 +248,9 @@ export function PlataformaClient({
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="rounded-md border border-border bg-muted/30 px-4 py-3">
-        <p className="text-sm font-medium">Consola interna Movi</p>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="text-sm font-medium">
           {counts.total} clínicas · {counts.exempt} isentas · {counts.trial} em
           teste · {counts.noBilling} sem faturação · {counts.active} ativas
         </p>

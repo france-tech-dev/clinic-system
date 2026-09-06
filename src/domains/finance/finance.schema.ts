@@ -1,15 +1,21 @@
-import { z } from "zod";
 import { parseBrl } from "@/shared/lib/money-utils";
 import {
   CashPaymentMethod,
+  CashTransactionStatus,
   CashTransactionType,
 } from "@prisma/enums";
+import { z } from "zod";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida");
 
 const transactionType = z.enum([
   CashTransactionType.INCOME,
   CashTransactionType.EXPENSE,
+]);
+
+const transactionStatus = z.enum([
+  CashTransactionStatus.POSTED,
+  CashTransactionStatus.FORECAST,
 ]);
 
 const paymentMethod = z.enum([
@@ -22,6 +28,7 @@ const paymentMethod = z.enum([
 
 export const cashTransactionFormSchema = z.object({
   type: transactionType,
+  status: transactionStatus,
   date: isoDate,
   description: z
     .string()
@@ -38,9 +45,10 @@ export const updateCashTransactionSchema = cashTransactionFormSchema.extend({
   id: z.string().cuid(),
 });
 
-/** Schema do diálogo UI: valor em string BRL; patientId/memberId usam "none". */
+/** Schema do diálogo UI: valor em string BRL; patientId/memberId vazios = nenhum. */
 export const cashTransactionDraftSchema = z.object({
   type: transactionType,
+  status: transactionStatus,
   date: isoDate,
   description: z
     .string()
@@ -53,15 +61,17 @@ export const cashTransactionDraftSchema = z.object({
     .min(1, "Informe um valor")
     .refine((v) => parseBrl(v) !== null, "Informe um valor válido"),
   paymentMethod: paymentMethod,
-  patientId: z.string().min(1),
-  memberId: z.string().min(1),
+  patientId: z.string(),
+  memberId: z.string(),
 });
 
 export const cashTransactionIdSchema = z.object({
   id: z.string().cuid(),
 });
 
-export type CashTransactionFormInput = z.infer<typeof cashTransactionFormSchema>;
+export type CashTransactionFormInput = z.infer<
+  typeof cashTransactionFormSchema
+>;
 export type UpdateCashTransactionInput = z.infer<
   typeof updateCashTransactionSchema
 >;

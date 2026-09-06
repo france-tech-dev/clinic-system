@@ -132,6 +132,25 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [ ] **Filtros** — por data, nome, idade, etc. nas listagens
 - [ ] **Exportação** — PDF/CSV das listagens
 
+### Futuro
+
+Prioridade (acordada — widgets de liderança antes de ERP):
+
+1. [x] **Filtro de período partilhado** — dashboard + caixa (presets Hoje/semana/mês/7d/30d/custom + `from`/`to`)
+   - ![Filtro de Caixa](<../public/ideas/filtro de caixa.png>)
+   - ![Filtro de Financeiro](../public/ideas/Financeiro.png)
+2. [x] **Próximos aniversariantes** — widget no dashboard
+3. [x] **Dias mais movimentados** e **Horários mais movimentados** — ![Filtros](<../public/ideas/mais movimentados.png>)
+4. [x] **Fluxo de caixa: previsto** — Entradas/Saídas previstas + Saldo previsto (`status` POSTED|FORECAST)
+5. [x] **Agenda: filtros avançados** — status/profissional/paciente na vista actual (não clonar calendário paralelo) — ref. ![Agendamentos](../public/ideas/agendamentos.png)
+6. [ ] **Envio de WhatsApp pelo sistema** — lembrete de consulta para o responsável
+
+Adiado (não copiar o ERP agora):
+
+- [ ] **Financeiro completo** — contas a pagar/receber, rankings, comissões — ![Pagina do Financeiro](<../public/ideas/pagina do financeiro.png>)
+- [ ] **Configurações mega-menu** — ![Configurações](../public/ideas/configs.png)
+- [ ] **Estoque** — Nome, Quantidade, Preço, Preço de venda, Total, Validade, Compra, Fornecedor, Observações
+
 ### Observabilidade (futuro)
 
 - [ ] Relatório de acessos (dispositivo: computador, celular, tablet, …)
@@ -150,7 +169,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] `/plataforma` — isentar clínicas (`billingExempt` + `PLATFORM_ADMIN_USER_IDS`)
 - [x] `/planos` — plano actual + Customer Portal (cartão / cancelar)
 - [ ] Preços e `STRIPE_PRICE_*` / `STRIPE_SECRET_KEY` em produção (live)
-- [ ] Activar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
+- [ ] Ativar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
 
 ---
 

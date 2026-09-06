@@ -1,14 +1,6 @@
-import { hashPassword } from "better-auth/crypto";
+import { parseCivilDateParam } from "@/shared/lib/civil-date-param";
 import { db } from "@/shared/lib/prisma";
-
-function parseOptionalBirthDate(value: string | null | undefined): Date | null {
-  if (!value?.trim()) return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
-  if (!match) return null;
-  return new Date(
-    Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])),
-  );
-}
+import { hashPassword } from "better-auth/crypto";
 
 /** Cria User + Account credential com `mustChangePassword` (padrão profissionais/responsáveis). */
 export async function createCredentialUser(data: {
@@ -26,7 +18,7 @@ export async function createCredentialUser(data: {
         email: data.email,
         emailVerified: true,
         phone: data.phone?.trim() || null,
-        birthDate: parseOptionalBirthDate(data.birthDate),
+        birthDate: parseCivilDateParam(data.birthDate),
         mustChangePassword: true,
       },
     });
@@ -36,6 +28,7 @@ export async function createCredentialUser(data: {
         userId: user.id,
         accountId: user.id,
         providerId: "credential",
+        issuer: "local:credential",
         password: hashed,
       },
     });

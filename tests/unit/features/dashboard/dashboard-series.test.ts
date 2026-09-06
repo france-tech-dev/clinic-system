@@ -1,27 +1,44 @@
-import { describe, expect, it } from "vitest";
 import { buildActivityMonthSeries } from "@/domains/dashboard/_lib/build-activity-month-series";
 import { buildCashDaySeries } from "@/domains/dashboard/_lib/build-cash-day-series";
 import { CashTransactionType } from "@prisma/enums";
+import { describe, expect, it } from "vitest";
 
 describe("buildCashDaySeries", () => {
-  it("agrega entradas e saídas por dia do mês", () => {
+  it("agrega realizados e previstos por dia do mês", () => {
     const series = buildCashDaySeries(
       [
         { date: "2026-03-01", type: CashTransactionType.INCOME, amount: 100 },
         { date: "2026-03-01", type: CashTransactionType.EXPENSE, amount: 40 },
         { date: "2026-03-02", type: CashTransactionType.INCOME, amount: 50 },
+        {
+          date: "2026-03-01",
+          type: CashTransactionType.INCOME,
+          amount: 999,
+          status: "FORECAST",
+        },
+        {
+          date: "2026-03-02",
+          type: CashTransactionType.EXPENSE,
+          amount: 25,
+          status: "FORECAST",
+        },
       ],
-      "2026-03",
+      "2026-03-01",
+      "2026-03-31",
     );
     expect(series[0]).toMatchObject({
       date: "2026-03-01",
       income: 100,
       expense: 40,
+      forecastIncome: 999,
+      forecastExpense: 0,
     });
     expect(series[1]).toMatchObject({
       date: "2026-03-02",
       income: 50,
       expense: 0,
+      forecastIncome: 0,
+      forecastExpense: 25,
     });
     expect(series).toHaveLength(31);
   });

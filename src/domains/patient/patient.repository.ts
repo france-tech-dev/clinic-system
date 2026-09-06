@@ -1,9 +1,6 @@
+import { parseCivilDateParam } from "@/shared/lib/civil-date-param";
 import { db } from "@/shared/lib/prisma";
-import {
-  PatientPricingType,
-  PatientSex,
-  Role,
-} from "@prisma/enums";
+import { PatientPricingType, PatientSex, Role } from "@prisma/enums";
 import type {
   ClinicalEvaluationFormInput,
   PatientFormInput,
@@ -11,7 +8,6 @@ import type {
   UpdatePatientInput,
 } from "./patient.schema";
 import type { PatientStatus } from "./patient.types";
-import { parseBirthDateParam } from "./_lib/mappers";
 
 const memberAuthorInclude = {
   member: {
@@ -148,7 +144,7 @@ export const patientRepository = {
         organizationId,
         guardianId: data.guardianId,
         name: data.name,
-        birthDate: parseBirthDateParam(data.birthDate),
+        birthDate: parseCivilDateParam(data.birthDate),
         sex: data.sex ?? PatientSex.NOT_INFORMED,
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
@@ -184,7 +180,7 @@ export const patientRepository = {
       data: {
         guardianId: data.guardianId,
         name: data.name,
-        birthDate: parseBirthDateParam(data.birthDate),
+        birthDate: parseCivilDateParam(data.birthDate),
         sex: data.sex ?? PatientSex.NOT_INFORMED,
         photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",

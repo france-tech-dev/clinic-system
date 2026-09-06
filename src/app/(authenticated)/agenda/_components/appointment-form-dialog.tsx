@@ -48,7 +48,7 @@ import type {
 } from "@/domains/schedule/schedule.types";
 import type { PatientDTO } from "@/domains/patient/patient.types";
 import { APPOINTMENT_STATUSES } from "@/shared/constants/appointment";
-import { applyActionFieldErrors } from "@/shared/lib/zod-field-errors";
+import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { AppointmentStatus } from "@prisma/enums";
 

@@ -1,14 +1,14 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { paths } from "@/shared/constants/paths";
-import { findProxyMember } from "@/server/auth/proxy-member";
 import { requirePermission } from "@/server/auth/permissions";
+import { findProxyMember } from "@/server/auth/proxy-member";
 import { requireOrgWrite } from "@/server/billing/require-billing";
+import { paths } from "@/shared/constants/paths";
+import { AppError } from "@/shared/lib/app-error";
 import { isLeadershipRole } from "@/shared/lib/member-role";
-import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
-import { failZod } from "@/shared/lib/zod-field-errors";
-import { fail, ok, type ActionResult } from "@/shared/types/action-result";
+import { requireOrgId } from "@/shared/lib/org-context";
+import { ok, type ActionResult } from "@/shared/types/action-result";
+import { revalidatePath } from "next/cache";
 import {
   memberProfessionalSchema,
   organizationBrandingSchema,
@@ -16,8 +16,8 @@ import {
 } from "./settings.schema";
 import {
   getCurrentMemberProfessionalProfile,
-  getProfessionalProfile,
   getPrintBranding,
+  getProfessionalProfile,
   removeOrganizationLogo,
   saveCurrentMemberProfessionalProfile,
   saveOrganizationBranding,
@@ -25,13 +25,6 @@ import {
   saveProfessionalProfile,
 } from "./settings.service";
 import type { PrintBranding, ProfessionalProfile } from "./settings.types";
-
-function handleError(error: unknown): ActionResult<never> {
-  if (error instanceof OrgContextError) return fail(error.message);
-  if (error instanceof Error) return fail(error.message);
-  console.error(error);
-  return fail("Algo deu errado. Tente novamente.");
-}
 
 async function requireLeadershipWrite() {
   const { organizationId, userId } = await requireOrgWrite();
@@ -55,7 +48,7 @@ export async function getProfessionalAction(): Promise<
     const { organizationId } = await requireOrgId();
     return ok(await getProfessionalProfile(organizationId));
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -67,7 +60,7 @@ export async function getPrintBrandingAction(): Promise<
     const { organizationId } = await requireOrgId();
     return ok(await getPrintBranding(organizationId));
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -76,17 +69,14 @@ export async function saveProfessionalAction(
 ): Promise<ActionResult<ProfessionalProfile>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = professionalProfileSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(professionalProfileSchema, input);
     const { organizationId } = await requireLeadershipWrite();
-    const data = await saveProfessionalProfile(organizationId, parsed.data);
+    const data = await saveProfessionalProfile(organizationId, payload);
     revalidatePath(paths.dashboard);
     revalidatePath(paths.configuracoes);
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -100,7 +90,7 @@ export async function getCurrentMemberProfessionalAction(): Promise<
       await getCurrentMemberProfessionalProfile(organizationId, userId),
     );
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -109,21 +99,18 @@ export async function saveCurrentMemberProfessionalAction(
 ): Promise<ActionResult<ProfessionalProfile>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = memberProfessionalSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(memberProfessionalSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const data = await saveCurrentMemberProfessionalProfile(
       organizationId,
       userId,
-      parsed.data,
+      payload,
     );
     revalidatePath(paths.perfil);
     revalidatePath(paths.pacientes, "layout");
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -132,19 +119,16 @@ export async function saveOrganizationBrandingAction(
 ): Promise<ActionResult<PrintBranding>> {
   try {
     await requirePermission({ project: ["update"] });
-    const parsed = organizationBrandingSchema.safeParse(input);
-    if (!parsed.success) {
-      return failZod(parsed.error);
-    }
+    const payload = AppError.parse(organizationBrandingSchema, input);
     const { organizationId } = await requireLeadershipWrite();
     const data = await saveOrganizationBranding(
       organizationId,
-      parsed.data.clinicName,
+      payload.clinicName,
     );
     revalidateBrandingPaths();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -155,7 +139,7 @@ export async function uploadOrganizationLogoAction(
     await requirePermission({ project: ["update"] });
     const file = formData.get("logo");
     if (!(file instanceof File) || file.size === 0) {
-      return fail("Selecione uma imagem");
+      throw new AppError("Selecione uma imagem");
     }
 
     const { organizationId } = await requireLeadershipWrite();
@@ -163,7 +147,7 @@ export async function uploadOrganizationLogoAction(
     revalidateBrandingPaths();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
 
@@ -177,6 +161,6 @@ export async function removeOrganizationLogoAction(): Promise<
     revalidateBrandingPaths();
     return ok(data);
   } catch (error) {
-    return handleError(error);
+    return AppError.result(error);
   }
 }
