@@ -83,6 +83,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Rotas públicas
+  if (isMarketingHome(pathname) || isPublicAvaliacaoRoute(pathname)) {
+    return NextResponse.next();
+  }
+
   const member = await findProxyMember(
     session.user.id,
     session.session.activeOrganizationId,
@@ -108,11 +113,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL(paths.organizacao, req.url));
   }
 
-  // Preenchimento público de avaliações: qualquer visitante (mesmo autenticado)
-  if (isPublicAvaliacaoRoute(pathname)) {
-    return NextResponse.next();
-  }
-
   // Portal: qualquer autenticado com membership
   if (isPortalRoute(pathname) && hasMembership) {
     return NextResponse.next();
@@ -131,10 +131,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(
       new URL(member ? paths.auth.login : paths.organizacao, req.url),
     );
-  }
-
-  if (pathname === paths.root) {
-    return NextResponse.redirect(new URL(paths.agenda, req.url));
   }
 
   if (isLeadershipPath(pathname) && !isLeadershipRole(member?.role ?? null)) {
