@@ -9,8 +9,9 @@
 
 .agenda-calendar .rbc-toolbar {
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .agenda-calendar .rbc-toolbar .rbc-toolbar-label {
@@ -106,7 +107,8 @@
 
 .agenda-calendar .rbc-timeslot-group {
   border-bottom: 1px solid var(--border);
-  min-height: 48px;
+  /* Mais altura útil na grelha quando o calendário preenche o viewport */
+  min-height: 3.5rem;
 }
 
 .agenda-calendar .rbc-time-gutter .rbc-timeslot-group {

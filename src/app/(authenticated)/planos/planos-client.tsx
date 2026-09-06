@@ -235,7 +235,7 @@ export function PlanosClient({
   const showSubscribe = !snapshot.billingExempt && !snapshot.isLegacy;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {checkoutSuccess ? (
         <Alert>
           <AlertTitle>Plano confirmado</AlertTitle>

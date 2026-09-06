@@ -325,9 +325,17 @@ export function AgendaClient({
     ? "Nenhum agendamento para este dia com estes filtros."
     : "Nenhum agendamento para este dia.";
 
+  const isCalendar = activeView === "calendario";
+
   return (
     <AppPage
       title="Agenda"
+      fillViewport={isCalendar}
+      contentClassName={
+        isCalendar
+          ? "flex min-h-0 flex-1 flex-col gap-3 px-4 pb-2 pt-3 md:gap-3 md:pb-3 md:pt-4 lg:px-6"
+          : undefined
+      }
       rightContent={
         <Button size="sm" onClick={openCreate}>
           <Plus data-icon="inline-start" />
@@ -335,12 +343,14 @@ export function AgendaClient({
         </Button>
       }
     >
-      <div className="flex min-h-full flex-1 flex-col gap-6">
-        <div className="flex shrink-0 flex-col gap-3">
-          <p className="text-sm text-muted-foreground">
-            Turno clínico do dia — marque sessões, atualize status e registe
-            evoluções.
-          </p>
+      <div
+        className={
+          isCalendar
+            ? "flex min-h-0 flex-1 flex-col gap-3"
+            : "flex min-h-full flex-1 flex-col gap-4"
+        }
+      >
+        <div className="flex shrink-0 flex-col gap-2 sm:gap-3">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <EntityMultiCombobox
               options={sortedPatients}
@@ -392,7 +402,7 @@ export function AgendaClient({
         <Tabs
           value={activeView}
           onValueChange={(v) => switchView(v as "lista" | "calendario")}
-          className="flex min-h-0 flex-1 flex-col"
+          className="flex min-h-0 flex-1 flex-col gap-2"
         >
           <TabsList className="shrink-0">
             <TabsTrigger value="lista">Lista</TabsTrigger>
@@ -536,7 +546,7 @@ export function AgendaClient({
 
           <TabsContent
             value="calendario"
-            className="mt-4 flex min-h-0 flex-1 flex-col gap-3"
+            className="mt-0 flex min-h-0 flex-1 flex-col gap-2 outline-none"
           >
             <AgendaStatusLegend />
             <AgendaCalendar

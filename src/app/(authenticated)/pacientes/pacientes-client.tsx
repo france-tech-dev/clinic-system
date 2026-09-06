@@ -401,13 +401,7 @@ export function PacientesClient({
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <p className="text-sm text-muted-foreground">
-              Cadastro de pacientes da clínica — busca, filtra e gere o ciclo
-              Ativo / Pausado / Alta.
-            </p>
-            <p className="text-sm text-muted-foreground">{listCountLabel}</p>
-          </div>
+          <p className="text-sm text-muted-foreground">{listCountLabel}</p>
 
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="relative w-full sm:max-w-xs sm:flex-1">

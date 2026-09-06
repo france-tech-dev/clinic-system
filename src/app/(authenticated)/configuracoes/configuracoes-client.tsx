@@ -16,7 +16,7 @@ export function ConfiguracoesClient({
 }) {
   return (
     <div
-      className="flex max-w-lg flex-col gap-6"
+      className="flex max-w-lg flex-col gap-4"
       aria-labelledby="identidade-clinica-heading"
     >
       <div className="flex flex-col gap-1">

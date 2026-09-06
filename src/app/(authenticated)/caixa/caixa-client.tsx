@@ -106,7 +106,7 @@ export function CaixaClient({
   return (
     <div
       className={cn(
-        "flex flex-col gap-6 transition-opacity",
+        "flex flex-col gap-4 transition-opacity",
         navPending && "pointer-events-none opacity-60",
       )}
       aria-busy={navPending}

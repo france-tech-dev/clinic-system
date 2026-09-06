@@ -22,7 +22,7 @@ export function DashboardContent({
   error: string | null;
 }) {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       {error ? (
         <div
           role="alert"
@@ -76,7 +76,7 @@ export function DashboardContent({
             />
           </div>
 
-          <div className="grid items-start gap-8 lg:grid-cols-2">
+          <div className="grid items-start gap-4 lg:grid-cols-2">
             <CashMonthChart
               data={data.cashSeries}
               monthLabel={data.financeMonthLabel}
@@ -103,7 +103,7 @@ export function DashboardContent({
             />
           </section>
 
-          <div className="grid items-start gap-6 lg:grid-cols-2">
+          <div className="grid items-start gap-4 lg:grid-cols-2">
             <section
               className="flex flex-col gap-3"
               aria-labelledby="dash-alertas"
