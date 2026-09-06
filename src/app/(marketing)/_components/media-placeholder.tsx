@@ -18,12 +18,12 @@ export function MediaPlaceholder({
       role="img"
       aria-label={label}
       className={cn(
-        "flex w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border/80 bg-muted/40 text-center dark:bg-muted/20",
+        "flex w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border/80 bg-muted/40 text-center text-muted-foreground dark:bg-muted/20",
         aspectClassName,
         className,
       )}
     >
-      <p className="max-w-[16rem] px-4 text-sm text-muted-foreground">{label}</p>
+      <p className="max-w-[16rem] px-4 text-sm text-current opacity-80">{label}</p>
     </div>
   );
 }

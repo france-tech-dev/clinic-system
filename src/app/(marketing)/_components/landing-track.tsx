@@ -1,13 +1,11 @@
 import Link from "next/link";
-import { IconArrowUpRight } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
 import { paths } from "@/shared/constants/paths";
 import { MediaPlaceholder } from "./media-placeholder";
 
 const TRACK_CARDS = [
   {
     title: "Agenda do dia",
-    body: "Vê o turno, confirmações e o que ainda precisa de evolução.",
+    body: "Veja o turno, confirmações e o que ainda precisa de evolução.",
     label: "UI agenda · imagem",
     tone: "bg-[oklch(0.92_0.03_75)] dark:bg-[oklch(0.22_0.02_75)]",
   },
@@ -39,19 +37,13 @@ export function LandingTrack() {
               id="landing-track-title"
               className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
             >
-              Acompanha tudo
+              Acompanhe tudo o que precisa
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Liga o fluxo clínico ao administrativo: do atendimento ao fecho do
-              mês, no mesmo fichário.
+              Una o fluxo clínico ao administrativo: do atendimento ao
+              fechamento do mês, no mesmo sistema.
             </p>
           </div>
-          <Button variant="outline" asChild className="w-fit shrink-0">
-            <a href="#planos">
-              Ver planos
-              <IconArrowUpRight data-icon="inline-end" />
-            </a>
-          </Button>
         </div>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -80,7 +72,7 @@ export function LandingTrack() {
         </div>
 
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Preferes começar já?{" "}
+          Prefere começar já?{" "}
           <Link
             href={paths.auth.signup}
             className="font-medium text-foreground underline-offset-4 hover:underline"

@@ -12,7 +12,7 @@ const READY = [
     body: "Cobrança e KPIs para a liderança — no mesmo isolamento por clínica.",
   },
   {
-    title: "Planos e equipa",
+    title: "Planos e equipe",
     body: "Starter, Pro e Enterprise com features gated e convidados por organização.",
   },
 ] as const;
@@ -37,7 +37,7 @@ export function LandingCapabilities() {
             O que já trabalha na clínica
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Destacamos o que está entregue. O que ainda está a caminho fica
+            Destacamos o que está entregue. O que ainda está por vir fica
             marcado com honestidade.
           </p>
         </div>

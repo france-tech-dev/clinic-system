@@ -8,7 +8,7 @@ const DUAL = [
   },
   {
     title: "A liderança da clínica",
-    body: "Dashboard, caixa, equipa e planos — a visão de quem gere a organização.",
+    body: "Dashboard, caixa, equipe e planos — a visão de quem gerencia a organização.",
     label: "Mockup liderança · imagem a adicionar",
   },
 ] as const;

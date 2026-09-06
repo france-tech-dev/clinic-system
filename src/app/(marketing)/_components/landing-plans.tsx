@@ -87,7 +87,7 @@ export function LandingPlans() {
             Planos claros para a clínica crescer
           </h2>
           <p className="mt-4 text-muted-foreground">
-            {TRIAL_DAYS} dias com tudo libertado. Depois escolhes o plano — os
+            {TRIAL_DAYS} dias com tudo liberado. Depois você escolhe o plano — os
             preços abaixo são a mensalidade pública da Movi.
           </p>
         </div>

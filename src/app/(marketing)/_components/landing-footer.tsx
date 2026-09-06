@@ -9,7 +9,7 @@ export function LandingFooter() {
           <p className="font-serif text-lg text-foreground">Movi Clinicas</p>
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
             Gestão clínica multi-tenant para clínicas de terapia ocupacional e
-            equipas multi-profissionais.
+            equipes multi-profissionais.
           </p>
         </div>
         <nav
@@ -35,9 +35,7 @@ export function LandingFooter() {
       </div>
       <div className="border-t border-border">
         <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted-foreground sm:px-6">
-          © {new Date().getFullYear()} Movi Clinicas. Preços públicos sujeitos
-          à confirmação no checkout Stripe. Portal do responsável e WhatsApp
-          estão em evolução e não devem ser tratados como entregues.
+          © {new Date().getFullYear()} Movi Clinicas. Todos os direitos reservados.
         </p>
       </div>
     </footer>

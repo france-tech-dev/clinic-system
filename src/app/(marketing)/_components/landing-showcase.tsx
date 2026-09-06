@@ -12,11 +12,11 @@ export function LandingShowcase() {
           id="landing-showcase-title"
           className="mx-auto max-w-2xl text-center font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
         >
-          Simplifica o turno
+          Simplifique a gestão clínica
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
-          O dia da clínica num ecrã: agenda, paciente e o que falta registar —
-          sem saltar entre ferramentas.
+          O dia da clínica em uma tela: agenda, paciente e o que falta registrar —
+          sem saltar entre ferramentas ou plataformas.
         </p>
         <div className="mx-auto mt-14 max-w-4xl animate-[landing-fade-up_0.85s_ease-out_0.08s_both]">
           <MediaPlaceholder
@@ -24,10 +24,6 @@ export function LandingShowcase() {
             aspectClassName="aspect-[16/10]"
             className="rounded-3xl border-border bg-muted/50 shadow-sm dark:bg-card"
           />
-          <p className="mt-3 text-center text-xs text-muted-foreground">
-            Pré-visualização ilustrativa — espaço reservado para mockup do
-            produto.
-          </p>
         </div>
       </div>
     </section>

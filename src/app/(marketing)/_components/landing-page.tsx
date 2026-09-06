@@ -1,5 +1,5 @@
 import { LandingNav } from "./landing-nav";
-import { LandingHero } from "./landing-hero";
+import { LandingHero, LandingHeroBackdrop } from "./landing-hero";
 import { LandingShowcase } from "./landing-showcase";
 import { LandingTrack } from "./landing-track";
 import { LandingDual } from "./landing-dual";
@@ -14,14 +14,14 @@ export function LandingPage() {
       <LandingNav />
       <main>
         <section
+          id="top"
           aria-labelledby="landing-hero-title"
-          className="relative overflow-hidden border-b border-border"
+          className="relative -mt-14 overflow-hidden md:-mt-24"
         >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.92_0.04_171)_0%,_transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top,_oklch(0.28_0.04_171)_0%,_transparent_55%)]"
-          />
-          <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 lg:pb-24 lg:pt-10">
+          <div className="absolute inset-0" aria-hidden>
+            <LandingHeroBackdrop />
+          </div>
+          <div className="relative">
             <LandingHero />
           </div>
         </section>

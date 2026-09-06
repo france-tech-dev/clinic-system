@@ -2,18 +2,18 @@
 name: Movi Clinicas
 description: Gestão clínica multi-tenant — Operate claro no app; Persuade na landing com ritmo Origin e dual-theme.
 colors:
-  background: "oklch(0.965 0.02 82)"
+  background: "oklch(1 0 0)"
   foreground: "oklch(0.145 0.01 55)"
-  card: "oklch(0.985 0.012 82)"
+  card: "oklch(0.995 0.005 82)"
   primary: "oklch(58.813% 0.11371 171.371 / 0.781)"
-  primary-foreground: "oklch(0.975 0.01 82)"
-  secondary: "oklch(0.935 0.022 82)"
-  muted: "oklch(0.935 0.022 82)"
+  primary-foreground: "oklch(0.995 0.005 82)"
+  secondary: "oklch(0.96 0.01 82)"
+  muted: "oklch(0.96 0.01 82)"
   muted-foreground: "oklch(0.48 0.025 55)"
-  border: "oklch(0.875 0.024 78)"
+  border: "oklch(0.9 0.012 78)"
   destructive: "oklch(0.577 0.245 27.325)"
   ring: "oklch(0.68 0.028 70)"
-  sidebar: "oklch(0.95 0.022 82)"
+  sidebar: "oklch(0.985 0.006 82)"
 typography:
   body:
     fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -89,18 +89,18 @@ components:
 
 ## Overview
 
-**Creative North Star: "O Fichário Clínico"**
+**Creative North Star: "A clínica num só sistema"**
 
-A Movi é um sistema Operate para clínicas multi-profissionais: o ecrã autenticado deve ler-se como um fichário de consultório — papel creme, tinta escura, acento clínico contido — não como um dashboard SaaS genérico. Densidade alta o suficiente para o turno (agenda, paciente, avaliações), com hierarquia clara e copy em português do Brasil.
+A Movi é um sistema Operate para clínicas multi-profissionais: o ecrã autenticado deve ler-se como ferramenta de consultório — fundo branco limpo, tinta escura, acento clínico contido — não como um dashboard SaaS genérico. Densidade alta o suficiente para o turno (agenda, paciente, avaliações), com hierarquia clara e copy em português do Brasil.
 
-A **landing pública** (`/`, `src/app/(marketing)/`) é Persuade no **mesmo sistema de tokens**, com **ritmo tipo Origin**: hero → showcase (mockup) → grelha de produto → prova dual → capacidades honestas → planos → CTA circular → footer. Dual-theme via `ThemeSwitcher` / `next-themes`: light = fichário creme/teal; dark = zinc premium. Mockups usam `MediaPlaceholder` até existirem assets reais. Sem purple-glow SaaS, sem testemunhos inventados, sem claims de portal/WhatsApp como entregues.
+A **landing pública** (`/`, `src/app/(marketing)/`) é Persuade no **mesmo sistema de tokens**, com **ritmo tipo Origin**: hero → showcase (mockup) → grelha de produto → prova dual → capacidades honestas → planos → CTA circular → footer. Dual-theme via `ThemeSwitcher` / `next-themes`: light = branco/teal; dark = zinc premium. Mockups usam `MediaPlaceholder` até existirem assets reais. Sem purple-glow SaaS, sem testemunhos inventados, sem claims de portal/WhatsApp como entregues.
 
-A personalidade é **confiável e directa**: tokens semânticos Shadcn, tipografia serif nos títulos, acções destrutivas confirmadas. No app rejeita-se o “kit de landing” (eyebrows, gradient text, grelhas ícone+texto). Na marketing, o único glass intencional é o **nav pill líquido** (blur + saturação estilo iOS); não espalhar glass pelo resto da página.
+A personalidade é **confiável e directa**: tokens semânticos Shadcn, tipografia serif nos títulos, acções destrutivas confirmadas. No app rejeita-se o “kit de landing” (eyebrows, gradient text, grelhas ícone+texto). Na marketing, a nav é um **pill flutuante** com blur simples (`bg-card/75` ao scroll); não espalhar glass pelo resto da página.
 
 **Key Characteristics:**
 
 - Operate no app; Persuade na landing — tokens partilhados, composição distinta
-- Light creme/teal; dark zinc; primary teal clínico (não purple)
+- Light branco/teal; dark zinc; primary teal clínico (não purple)
 - Landing: nav pill flutuante + ritmo Origin + placeholders de imagem
 - `AppPage` + Shadcn + Tabler/Lucide conforme o sítio
 - PDF clínico / CREFITO e preços em `BILLING_PLAN_PRICES_BRL` fazem parte da verdade do produto
@@ -115,9 +115,9 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 ### Neutral
 
-- **Papel creme** (`oklch(0.965 0.02 82)`): fundo light (app e landing).
+- **Branco** (`oklch(1 0 0)`): fundo light (app e landing).
 - **Tinta** (`oklch(0.145 0.01 55)`): texto principal no light.
-- **Cartão** / **Muted** / **Linha**: tokens Shadcn habituais.
+- **Cartão** / **Muted** / **Linha**: tokens Shadcn com cinza muito leve para hierarquia sobre o branco.
 - **Dark**: fundo quase preto zinc (`globals.css` `.dark`); CTAs claros via `--primary` no dark.
 
 ### Destructive
@@ -173,7 +173,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 **Landing (Persuade):** secções e cards sobretudo flat (`border` + `bg-card` / tons); CTA final pode usar halo radial teal suave (não purple glow).
 
-**Glass na nav marketing:** o pill flutuante (`LandingNav`) aplica blur + saturate via classes Tailwind ao scroll (`data-scrolling=true`) — sem utilitário CSS dedicado.
+**Glass na nav marketing:** pill flutuante genérico — `backdrop-blur-xl` + `bg-card/75` ao scroll (padrão france-tech). Sem variante Liquid Glass.
 
 ### Named Rules
 
