@@ -88,12 +88,7 @@ export const guardianRepository = {
     });
   },
 
-  async update(organizationId: string, id: string, data: GuardianFormInput) {
-    const existing = await db.guardian.findFirst({
-      where: { id, organizationId },
-      select: { id: true },
-    });
-    if (!existing) return null;
+  async updateById(id: string, data: GuardianFormInput) {
     return db.guardian.update({
       where: { id },
       data: toWriteData(data),

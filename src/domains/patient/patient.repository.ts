@@ -163,17 +163,17 @@ export const patientRepository = {
     id: string,
     data: Omit<UpdatePatientInput, "id">,
   ) {
-    const existing = await db.patient.findFirst({
-      where: { id, organizationId },
-      select: { id: true },
-    });
-    if (!existing) return null;
-
-    const guardian = await db.guardian.findFirst({
-      where: { id: data.guardianId, organizationId },
-      select: { id: true },
-    });
-    if (!guardian) return null;
+    const [existing, guardian] = await Promise.all([
+      db.patient.findFirst({
+        where: { id, organizationId },
+        select: { id: true },
+      }),
+      db.guardian.findFirst({
+        where: { id: data.guardianId, organizationId },
+        select: { id: true },
+      }),
+    ]);
+    if (!existing || !guardian) return null;
 
     return db.patient.update({
       where: { id },

@@ -131,9 +131,13 @@ export async function updateGuardian(
   input: UpdateGuardianInput,
 ): Promise<GuardianDTO | null> {
   const { id, ...form } = input;
-  await assertCpfAvailable(organizationId, form.cpf, id);
-  const row = await guardianRepository.update(organizationId, id, form);
-  return row ? toGuardianDTO(row) : null;
+  const existing = await guardianRepository.findById(organizationId, id);
+  if (!existing) return null;
+  if (form.cpf && form.cpf !== existing.cpf) {
+    await assertCpfAvailable(organizationId, form.cpf, id);
+  }
+  const row = await guardianRepository.updateById(id, form);
+  return toGuardianDTO(row);
 }
 
 export async function enableGuardianPortalAccess(
