@@ -53,7 +53,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createGuardianAction } from "@/domains/guardian/guardian.actions";
+import { createPatientWithGuardianAction } from "@/application/patient";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import {
   EMPTY_GUARDIAN_DRAFT,
@@ -190,31 +190,44 @@ export function PacientesClient({
         guardianMode === "new" ? guardianForm.getValues() : undefined;
 
       startCreateTransition(async () => {
-        let guardianId = selectedGuardianId;
-
         if (guardianMode === "new" && guardianDraft) {
-          const guardianResult = await createGuardianAction(
-            guardianDraftToCreateInput(guardianDraft),
-          );
-          if (!guardianResult.success) {
-            applyActionFieldErrors(
-              guardianForm.setError,
-              guardianResult.fieldErrors,
-            );
-            toast.error(guardianResult.message);
+          const result = await createPatientWithGuardianAction({
+            guardian: guardianDraftToCreateInput(guardianDraft),
+            patient: {
+              name: patientDraft.name,
+              birthDate: patientDraft.birthDate || null,
+              sex: patientDraft.sex,
+              notes: patientDraft.notes,
+              pricingType: patientDraft.pricingType,
+              price: parseBrl(patientDraft.priceInput),
+              memberIds: isLeadership ? selectedMemberIds : [],
+            },
+          });
+          if (!result.success) {
+            applyActionFieldErrors(guardianForm.setError, result.fieldErrors);
+            applyActionFieldErrors(patientForm.setError, result.fieldErrors);
+            toast.error(result.message);
             return;
           }
-          guardianId = guardianResult.data.id;
           setGuardians((prev) =>
-            [...prev, guardianResult.data].sort((a, b) =>
+            [...prev, result.data.guardian].sort((a, b) =>
               a.name.localeCompare(b.name),
             ),
           );
-          if (guardianResult.data.mustChangePassword) {
+          if (result.data.guardian.mustChangePassword) {
             toast.message(
               "Acesso ao portal criado. O responsável deve alterar a senha no primeiro login.",
             );
           }
+          setPatients((prev) =>
+            [...prev, result.data.patient].sort((a, b) =>
+              a.name.localeCompare(b.name),
+            ),
+          );
+          toast.success("Paciente adicionado");
+          setOpen(false);
+          resetForm();
+          return;
         }
 
         const result = await createPatientAction({
@@ -224,7 +237,7 @@ export function PacientesClient({
           notes: patientDraft.notes,
           pricingType: patientDraft.pricingType,
           price: parseBrl(patientDraft.priceInput),
-          guardianId,
+          guardianId: selectedGuardianId,
           memberIds: isLeadership ? selectedMemberIds : [],
         });
         if (!result.success) {

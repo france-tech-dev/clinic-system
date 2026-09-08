@@ -1,14 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, useWatch, type Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import {
-  enableGuardianPortalAccessAction,
-  updateGuardianAction,
-} from "@/domains/guardian/guardian.actions";
-import type { GuardianDTO } from "@/domains/guardian/guardian.types";
+  saveGuardianAndEnablePortalAction,
+  updatePatientWithGuardianAction,
+} from "@/application/patient";
 import {
   EMPTY_GUARDIAN_DRAFT,
   guardianDraftToForm,
@@ -19,16 +14,20 @@ import {
   guardianDraftSchema,
   type GuardianDraftInput,
 } from "@/domains/guardian/guardian.schema";
-import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
-import { updatePatientAction } from "@/domains/patient/patient.actions";
+import type { GuardianDTO } from "@/domains/guardian/guardian.types";
+import { patientDtoToDraft } from "@/domains/patient/_lib/patient-form-defaults";
 import {
   patientDraftSchema,
   type PatientDraftInput,
 } from "@/domains/patient/patient.schema";
 import type { PatientDetailDTO } from "@/domains/patient/patient.types";
-import { patientDtoToDraft } from "@/domains/patient/_lib/patient-form-defaults";
-import { parseBrl } from "@/shared/lib/money-utils";
+import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
+import { parseBrl } from "@/shared/lib/money-utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
+import { toast } from "sonner";
 
 export function usePatientEdit({
   detail,
@@ -106,38 +105,32 @@ export function usePatientEdit({
       const draft = guardianForm.getValues();
 
       startTransition(async () => {
-        const guardianResult = await updateGuardianAction({
-          id: editGuardianId,
-          ...guardianDraftToForm(draft),
-        });
-        if (!guardianResult.success) {
-          applyActionFieldErrors(
-            guardianForm.setError,
-            guardianResult.fieldErrors,
-          );
-          toast.error(guardianResult.message);
-          return;
-        }
-
-        const result = await updatePatientAction({
-          id: detail.patient.id,
-          name: patientDraft.name,
-          birthDate: patientDraft.birthDate || null,
-          sex: patientDraft.sex,
-          notes: patientDraft.notes,
-          pricingType: patientDraft.pricingType,
-          price: parseBrl(patientDraft.priceInput),
-          guardianId: editGuardianId,
+        const result = await updatePatientWithGuardianAction({
+          guardian: {
+            id: editGuardianId,
+            ...guardianDraftToForm(draft),
+          },
+          patient: {
+            id: detail.patient.id,
+            name: patientDraft.name,
+            birthDate: patientDraft.birthDate || null,
+            sex: patientDraft.sex,
+            notes: patientDraft.notes,
+            pricingType: patientDraft.pricingType,
+            price: parseBrl(patientDraft.priceInput),
+            guardianId: editGuardianId,
+          },
         });
         if (!result.success) {
+          applyActionFieldErrors(guardianForm.setError, result.fieldErrors);
           applyActionFieldErrors(patientForm.setError, result.fieldErrors);
           toast.error(result.message);
           return;
         }
 
         setGuardians((prev) => {
-          const others = prev.filter((g) => g.id !== guardianResult.data.id);
-          return [...others, guardianResult.data].sort((a, b) =>
+          const others = prev.filter((g) => g.id !== result.data.guardian.id);
+          return [...others, result.data.guardian].sort((a, b) =>
             a.name.localeCompare(b.name),
           );
         });
@@ -145,14 +138,14 @@ export function usePatientEdit({
           ...d,
           patient: {
             ...d.patient,
-            ...result.data,
+            ...result.data.patient,
             guardian: {
-              ...guardianResult.data,
-              documentImageUrl: guardianResult.data.documentImageUrl,
+              ...result.data.guardian,
+              documentImageUrl: result.data.guardian.documentImageUrl,
             },
           },
         }));
-        setHasPortalAccess(guardianResult.data.hasPortalAccess);
+        setHasPortalAccess(result.data.guardian.hasPortalAccess);
         setEditPatientOpen(false);
         toast.success("Paciente atualizado");
       });
@@ -162,23 +155,16 @@ export function usePatientEdit({
   function enablePortal() {
     void guardianForm.handleSubmit((draft: GuardianFormDraft) => {
       startTransition(async () => {
-        const saveGuardian = await updateGuardianAction({
-          id: editGuardianId,
-          ...guardianDraftToForm(draft),
-        });
-        if (!saveGuardian.success) {
-          applyActionFieldErrors(
-            guardianForm.setError,
-            saveGuardian.fieldErrors,
-          );
-          toast.error(saveGuardian.message);
-          return;
-        }
-
-        const result = await enableGuardianPortalAccessAction({
-          id: editGuardianId,
-          password: DEFAULT_MEMBER_PASSWORD,
-          confirmPassword: DEFAULT_MEMBER_PASSWORD,
+        const result = await saveGuardianAndEnablePortalAction({
+          guardian: {
+            id: editGuardianId,
+            ...guardianDraftToForm(draft),
+          },
+          portal: {
+            id: editGuardianId,
+            password: DEFAULT_MEMBER_PASSWORD,
+            confirmPassword: DEFAULT_MEMBER_PASSWORD,
+          },
         });
         if (!result.success) {
           applyActionFieldErrors(guardianForm.setError, result.fieldErrors);
