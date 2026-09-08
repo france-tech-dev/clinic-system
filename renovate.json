@@ -22,11 +22,6 @@
       "groupName": "prisma"
     },
     {
-      "description": "TanStack Query no mesmo PR",
-      "matchPackageNames": ["@tanstack/**"],
-      "groupName": "tanstack"
-    },
-    {
       "description": "Tipos Node/React no mesmo PR",
       "matchPackageNames": ["@types/**"],
       "groupName": "types"
