@@ -68,7 +68,7 @@ export function LinksPublicosTab({
             </p>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Geração de links fora do plano actual.
+              Geração de links fora do plano atual.
             </p>
           )}
         </div>

@@ -30,6 +30,7 @@ import type { PublicInviteProtocolOption } from "@/features/protocol/components/
 import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import type { AiTrialQuotaDTO } from "@/shared/constants/ai-limits";
 import { PatientStatus } from "@prisma/enums";
+import { AssignPatientMembersDialog } from "@/features/patient/components/assign-patient-members-dialog";
 import { AnamneseTab } from "./_components/anamnese-tab";
 import { AvaliacaoTab } from "./_components/avaliacao-tab";
 import { EvolucoesTab } from "./_components/evolucoes-tab";
@@ -37,7 +38,9 @@ import { LinksPublicosTab } from "./_components/links-publicos-tab";
 import { usePatientDetail } from "./_components/hooks/use-patient-detail";
 import { PatientDetailDialogs } from "./_components/patient-detail-dialogs";
 import { PatientDetailHeader } from "./_components/patient-detail-header";
+import { PatientSummarySidebar } from "./_components/patient-summary-sidebar";
 import { PatientDetailTabs } from "./_components/patient-detail-tabs";
+import type { PatientDetailTab } from "./_components/patient-detail-types";
 
 type PendingStatusChange = {
   nextStatus: PatientStatus;
@@ -57,6 +60,7 @@ export function PacienteDetailClient({
   canWriteInvites,
   canUseAi,
   initialAiTrialQuota,
+  initialTab,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
@@ -71,6 +75,7 @@ export function PacienteDetailClient({
   canWriteInvites: boolean;
   canUseAi: boolean;
   initialAiTrialQuota: AiTrialQuotaDTO | null;
+  initialTab: PatientDetailTab;
 }) {
   const vm = usePatientDetail({
     initial,
@@ -79,6 +84,7 @@ export function PacienteDetailClient({
     initialAnamneseSections,
     professional,
     branding,
+    initialTab,
   });
 
   const [assignOpen, setAssignOpen] = useState(false);
@@ -132,55 +138,78 @@ export function PacienteDetailClient({
 
   return (
     <div className="flex flex-col gap-4">
-      <PatientDetailHeader
-        patient={vm.detail.patient}
-        orgMembers={orgMembers}
-        isLeadership={isLeadership}
-        pending={busy}
-        assignOpen={assignOpen}
-        onAssignOpenChange={setAssignOpen}
-        onEdit={vm.patientEdit.openEditPatient}
-        onPreviewReport={() => vm.previewReport("full")}
-        onRemove={vm.removePatient}
-        onRequestStatusChange={requestStatusChange}
-        onSaveMembers={saveMembers}
-      />
+      <div className="grid items-start gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="no-print order-2 xl:order-1">
+          <PatientSummarySidebar
+            patient={vm.detail.patient}
+            clinicalEvaluationsCount={vm.detail.clinicalEvaluations.length}
+            sessionNotesCount={vm.detail.sessionNotes.length}
+            canEditMembers={isLeadership}
+            pending={busy}
+            onEditMembers={() => setAssignOpen(true)}
+          />
+        </div>
 
-      <PatientDetailTabs tab={vm.tab} onTabChange={vm.setTab} />
+        <div className="order-1 flex min-w-0 flex-col gap-4 xl:order-2">
+          <PatientDetailHeader
+            patient={vm.detail.patient}
+            isLeadership={isLeadership}
+            pending={busy}
+            onEdit={vm.patientEdit.openEditPatient}
+            onPreviewReport={() => vm.previewReport("full")}
+            onRemove={vm.removePatient}
+            onRequestStatusChange={requestStatusChange}
+          />
 
-      {vm.tab === "avaliacao" && (
-        <AvaliacaoTab
-          clinicalEvaluations={vm.detail.clinicalEvaluations}
-          onNewEvaluation={vm.evaluations.openNewEvaluation}
-          onViewEvaluation={vm.evaluations.setViewEval}
+          <PatientDetailTabs tab={vm.tab} onTabChange={vm.setTab} />
+
+          {vm.tab === "avaliacao" ? (
+            <AvaliacaoTab
+              clinicalEvaluations={vm.detail.clinicalEvaluations}
+              onNewEvaluation={vm.evaluations.openNewEvaluation}
+              onViewEvaluation={vm.evaluations.setViewEval}
+            />
+          ) : null}
+
+          {vm.tab === "anamnese" ? (
+            <AnamneseTab
+              patientId={vm.detail.patient.id}
+              anamneses={vm.anamneses}
+            />
+          ) : null}
+
+          {vm.tab === "evolucoes" ? (
+            <EvolucoesTab
+              sessionNotes={vm.detail.sessionNotes}
+              onNewSession={vm.sessions.openNewSession}
+              onViewSession={vm.sessions.setViewSession}
+            />
+          ) : null}
+
+          <div hidden={vm.tab !== "links-publicos"}>
+            <LinksPublicosTab
+              patientId={vm.detail.patient.id}
+              initialInvites={initialProtocolInvites}
+              inviteProtocols={inviteProtocols}
+              canWriteInvites={canWriteInvites}
+              canUseAi={canUseAi}
+              initialAiTrialQuota={initialAiTrialQuota}
+            />
+          </div>
+        </div>
+      </div>
+
+      {isLeadership && assignOpen ? (
+        <AssignPatientMembersDialog
+          open
+          onOpenChange={setAssignOpen}
+          patientName={vm.detail.patient.name}
+          members={orgMembers}
+          initialMemberIds={vm.detail.patient.members.map((m) => m.id)}
+          pending={busy}
+          onSave={saveMembers}
         />
-      )}
-
-      {vm.tab === "anamnese" && (
-        <AnamneseTab
-          patientId={vm.detail.patient.id}
-          anamneses={vm.anamneses}
-        />
-      )}
-
-      {vm.tab === "evolucoes" && (
-        <EvolucoesTab
-          sessionNotes={vm.detail.sessionNotes}
-          onNewSession={vm.sessions.openNewSession}
-          onViewSession={vm.sessions.setViewSession}
-        />
-      )}
-
-      {vm.tab === "links-publicos" && (
-        <LinksPublicosTab
-          patientId={vm.detail.patient.id}
-          initialInvites={initialProtocolInvites}
-          inviteProtocols={inviteProtocols}
-          canWriteInvites={canWriteInvites}
-          canUseAi={canUseAi}
-          initialAiTrialQuota={initialAiTrialQuota}
-        />
-      )}
+      ) : null}
 
       <PatientDetailDialogs vm={vm} />
 

@@ -1,12 +1,5 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
-import { toast } from "sonner";
-import { deletePatientAction } from "@/domains/patient/patient.actions";
-import type {
-  ClinicalEvaluationDTO,
-  PatientDetailDTO,
-} from "@/domains/patient/patient.types";
 import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import { buildPatientReportPayload } from "@/domains/patient/_lib/pdf/build-patient-report-payload";
@@ -14,6 +7,11 @@ import type {
   PatientReportMode,
   PatientReportPayload,
 } from "@/domains/patient/_lib/pdf/types";
+import { deletePatientAction } from "@/domains/patient/patient.actions";
+import type {
+  ClinicalEvaluationDTO,
+  PatientDetailDTO,
+} from "@/domains/patient/patient.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -21,10 +19,12 @@ import type {
 import { formatProfessionalSignature } from "@/domains/settings/settings.types";
 import { paths } from "@/shared/constants/paths";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
+import { toast } from "sonner";
 import type { PatientDetailTab } from "../patient-detail-types";
-import { usePatientEdit } from "./use-patient-edit";
 import { usePatientClinicalEvaluations } from "./use-patient-clinical-evaluations";
+import { usePatientEdit } from "./use-patient-edit";
 import { usePatientSessions } from "./use-patient-sessions";
 
 export function usePatientDetail({
@@ -34,6 +34,7 @@ export function usePatientDetail({
   initialAnamneseSections,
   professional,
   branding,
+  initialTab,
 }: {
   initial: PatientDetailDTO;
   initialGuardians: GuardianDTO[];
@@ -41,15 +42,29 @@ export function usePatientDetail({
   initialAnamneseSections: PdfKeyValueSection[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
+  initialTab: PatientDetailTab;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [detail, setDetail] = useState(initial);
   const [guardians, setGuardians] = useState(initialGuardians);
   const [anamneses] = useState(initialAnamneses);
-  const [tab, setTab] = useState<PatientDetailTab>("avaliacao");
+  const [tab, setTabState] = useState<PatientDetailTab>(initialTab);
   const [pending, startTransition] = useTransition();
   const [previewPayload, setPreviewPayload] =
     useState<PatientReportPayload | null>(null);
+
+  function setTab(next: PatientDetailTab) {
+    setTabState(next);
+    const params = new URLSearchParams(window.location.search);
+    if (next === "avaliacao") {
+      params.delete("tab");
+    } else {
+      params.set("tab", next);
+    }
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
 
   function setPatient(patient: PatientDetailDTO["patient"]) {
     setDetail((prev) => ({ ...prev, patient }));

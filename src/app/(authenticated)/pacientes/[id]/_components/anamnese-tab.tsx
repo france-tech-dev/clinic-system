@@ -56,7 +56,7 @@ export function AnamneseTab({
                     {item.label}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Actualizada em {formatDateBR(item.updatedAt.slice(0, 10))}
+                    Atualizada em {formatDateBR(item.updatedAt.slice(0, 10))}
                   </p>
                 </div>
                 <span className="text-sm text-muted-foreground group-hover:text-primary">

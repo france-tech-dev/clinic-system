@@ -14,7 +14,7 @@ export function PatientDetailTabs({
   return (
     <div
       role="tablist"
-      aria-label="Secções do paciente"
+      aria-label="Seções do paciente"
       className="no-print -mx-1 flex gap-1 overflow-x-auto overscroll-x-contain border-b border-border px-1 sm:mx-0 sm:gap-4 sm:px-0"
     >
       {PATIENT_DETAIL_TABS.map(([id, label]) => {

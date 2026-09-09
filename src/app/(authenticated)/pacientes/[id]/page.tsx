@@ -35,13 +35,18 @@ import type { AiTrialQuotaDTO } from "@/shared/constants/ai-limits";
 import { getAiTrialQuota } from "@/shared/lib/ai/generation-limit";
 import { headers } from "next/headers";
 import { PacienteDetailClient } from "./paciente-detail-client";
+import { parsePatientDetailTab } from "./_components/patient-detail-types";
 
 export default async function PacienteDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string | string[] }>;
 }) {
   const { id } = await params;
+  const query = await searchParams;
+  const initialTab = parsePatientDetailTab(query.tab);
   let error: string | null = null;
   let detail: PatientDetailDTO | null = null;
   let guardians: GuardianDTO[] = [];
@@ -157,6 +162,7 @@ export default async function PacienteDetailPage({
         canWriteInvites={canWriteInvites}
         canUseAi={canUseAi}
         initialAiTrialQuota={aiTrialQuota}
+        initialTab={initialTab}
       />
     </AppPage>
   );
