@@ -56,6 +56,7 @@ export function LandingHeroBackdrop() {
         priority
         sizes="100vw"
         className="object-cover object-center"
+        unoptimized
       />
       <div
         aria-hidden
