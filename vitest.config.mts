@@ -1,7 +1,9 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
-const prismaGenerated = path.resolve(__dirname, "./prisma/generated/prisma");
+const root = path.dirname(fileURLToPath(import.meta.url));
+const prismaGenerated = path.resolve(root, "./prisma/generated/prisma");
 
 export default defineConfig({
   test: {
@@ -13,33 +15,33 @@ export default defineConfig({
     alias: [
       {
         find: "@/shared",
-        replacement: path.resolve(__dirname, "./src/shared"),
+        replacement: path.resolve(root, "./src/shared"),
       },
       {
         find: "@/features",
-        replacement: path.resolve(__dirname, "./src/features"),
+        replacement: path.resolve(root, "./src/features"),
       },
       {
         find: "@/domains",
-        replacement: path.resolve(__dirname, "./src/domains"),
+        replacement: path.resolve(root, "./src/domains"),
       },
       {
         find: "@/server",
-        replacement: path.resolve(__dirname, "./src/platform"),
+        replacement: path.resolve(root, "./src/platform"),
       },
       {
         find: "@/components",
-        replacement: path.resolve(__dirname, "./src/ui"),
+        replacement: path.resolve(root, "./src/ui"),
       },
       {
         find: "@/hooks",
-        replacement: path.resolve(__dirname, "./src/hooks"),
+        replacement: path.resolve(root, "./src/hooks"),
       },
       {
         find: new RegExp("^@prisma/(?!adapter-|client/runtime)(.+)$"),
         replacement: prismaGenerated + "/$1",
       },
-      { find: "@", replacement: path.resolve(__dirname, "./src") },
+      { find: "@", replacement: path.resolve(root, "./src") },
     ],
   },
 });
