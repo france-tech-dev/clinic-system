@@ -1,9 +1,10 @@
-import { addMinutes, format } from "date-fns";
 import {
   APPOINTMENT_WITH_EVOLUTION_COLOR,
   appointmentStatusInfo,
 } from "@/shared/constants/appointment";
+import { buildAppZonedDateTime } from "@/shared/lib/timezone-utils";
 import { AppointmentStatus } from "@prisma/enums";
+import { addMinutes } from "date-fns";
 import type { AppointmentDTO } from "../schedule.types";
 
 export type CalendarEvent = {
@@ -19,16 +20,8 @@ export type CalendarEvent = {
   hasSessionNote: boolean;
 };
 
-const DEFAULT_TIME = "09:00";
-
-/** Converte date (YYYY-MM-DD) + time (HH:MM) em Date local. */
 export function appointmentDateTime(date: string, time: string): Date {
-  const trimmed = time?.trim() ?? "";
-  const t =
-    trimmed && /^\d{1,2}:\d{2}/.test(trimmed)
-      ? trimmed.slice(0, 5).padStart(5, "0")
-      : DEFAULT_TIME;
-  return new Date(`${date}T${t}:00`);
+  return buildAppZonedDateTime(date, time);
 }
 
 export function appointmentsToCalendarEvents(
@@ -36,7 +29,7 @@ export function appointmentsToCalendarEvents(
 ): CalendarEvent[] {
   return appointments.map((a) => {
     const start = appointmentDateTime(a.date, a.time);
-    const end = addMinutes(start, a.duration > 0 ? a.duration : 50);
+    const end = addMinutes(start, a.duration);
     return {
       id: a.id,
       patientId: a.patientId,
@@ -50,14 +43,6 @@ export function appointmentsToCalendarEvents(
       hasSessionNote: a.hasSessionNote,
     };
   });
-}
-
-export function formatAppointmentDate(d: Date): string {
-  return format(d, "yyyy-MM-dd");
-}
-
-export function formatAppointmentTime(d: Date): string {
-  return format(d, "HH:mm");
 }
 
 export function calendarEventStyle(status: string, hasSessionNote = false) {

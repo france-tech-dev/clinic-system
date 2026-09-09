@@ -28,6 +28,7 @@
     "@ai-sdk/openai": "^4.0.59",
     "@ai-sdk/react": "^4.0.96",
     "@base-ui/react": "^1.8.0",
+    "@date-fns/tz": "^1.5.0",
     "@hookform/resolvers": "^5.9.1",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",

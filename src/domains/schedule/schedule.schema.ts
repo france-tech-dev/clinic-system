@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { APPOINTMENT_STATUSES } from "@/shared/constants/appointment";
+import { z } from "zod";
 
 const statusIds = APPOINTMENT_STATUSES.map((s) => s.id) as [
   string,
@@ -10,8 +10,8 @@ const appointmentFields = {
   patientId: z.string().min(1, "Selecione um paciente"),
   memberId: z.string().min(1, "Selecione um profissional"),
   date: z.string().min(1, "Informe a data"),
-  time: z.string().trim().default(""),
-  duration: z.number().int().min(0).max(480).default(50),
+  time: z.string().trim().min(1, "Informe o horário"),
+  duration: z.number().int().min(0).max(480).default(45),
   notes: z.string().trim().default(""),
 };
 
@@ -27,10 +27,7 @@ export const updateAppointmentSchema = z.object({
 });
 
 export const appointmentDialogSchema = z.object({
-  patientId: z.string().min(1, "Selecione um paciente"),
-  memberId: z.string().min(1, "Selecione um profissional"),
-  date: z.string().min(1, "Informe a data"),
-  time: z.string().trim().min(1, "Informe o horário"),
+  ...appointmentFields,
   duration: z
     .number()
     .int()
@@ -53,7 +50,7 @@ export const appointmentStatusSchema = z.object({
 export const rescheduleAppointmentSchema = z.object({
   id: z.string().min(1),
   date: z.string().min(1, "Informe a data"),
-  time: z.string().trim().default(""),
+  time: z.string().trim().min(1, "Informe o horário"),
 });
 
 export type AppointmentFormInput = z.infer<typeof appointmentFormSchema>;

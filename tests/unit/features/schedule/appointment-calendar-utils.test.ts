@@ -1,29 +1,32 @@
-import { describe, expect, it } from "vitest";
-import {
-  APPOINTMENT_WITH_EVOLUTION_COLOR,
-  appointmentStatusInfo,
-} from "@/shared/constants/appointment";
 import {
   appointmentDateTime,
   appointmentDisplayColor,
   calendarEventStyle,
 } from "@/domains/schedule/_lib/appointment-calendar-utils";
+import {
+  APPOINTMENT_WITH_EVOLUTION_COLOR,
+  appointmentStatusInfo,
+} from "@/shared/constants/appointment";
+import {
+  formatAppZonedDateParam,
+  formatAppZonedTimeParam,
+} from "@/shared/lib/timezone-utils";
 import { AppointmentStatus } from "@prisma/enums";
+import { describe, expect, it } from "vitest";
 
 describe("appointmentDateTime", () => {
-  it("combina data e hora", () => {
+  it("combina data e hora no fuso da app (não como UTC do servidor)", () => {
     const dt = appointmentDateTime("2026-07-13", "14:30");
-    expect(dt.getFullYear()).toBe(2026);
-    expect(dt.getMonth()).toBe(6);
-    expect(dt.getDate()).toBe(13);
-    expect(dt.getHours()).toBe(14);
-    expect(dt.getMinutes()).toBe(30);
+    // 14:30 America/Sao_Paulo = 17:30 UTC (sem DST)
+    expect(dt.toISOString()).toBe("2026-07-13T17:30:00.000Z");
+    expect(formatAppZonedDateParam(dt)).toBe("2026-07-13");
+    expect(formatAppZonedTimeParam(dt)).toBe("14:30");
   });
 
-  it("usa 09:00 quando hora está vazia", () => {
-    const dt = appointmentDateTime("2026-07-13", "");
-    expect(dt.getHours()).toBe(9);
-    expect(dt.getMinutes()).toBe(0);
+  it("12:00 na app não vira 09:00 em UTC (bug de prod)", () => {
+    const dt = appointmentDateTime("2026-09-07", "12:00");
+    expect(dt.toISOString()).toBe("2026-09-07T15:00:00.000Z");
+    expect(formatAppZonedTimeParam(dt)).toBe("12:00");
   });
 });
 

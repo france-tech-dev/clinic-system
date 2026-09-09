@@ -1,7 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 
-// O registry puxa `render` → actions → auth → email (`server-only`).
+// O registry puxa `render` → clients → actions/service → auth/prisma/env.
 vi.mock("server-only", () => ({}));
+vi.mock("@/domains/protocol/protocol.service", () => ({
+  listProtocolEvaluations: vi.fn(),
+}));
+vi.mock(
+  "@/features/protocol/evaluation-modules/_shared/item-protocol-client",
+  () => ({ ItemProtocolClient: () => null }),
+);
+vi.mock(
+  "@/features/protocol/evaluation-modules/fisioterapia/gmfm-88/components/protocol-client",
+  () => ({ GmfmProtocolClient: () => null }),
+);
 
 import { PROFESSION_EVALUATION_CATALOG } from "@/domains/protocol/evaluation-modules";
 import {

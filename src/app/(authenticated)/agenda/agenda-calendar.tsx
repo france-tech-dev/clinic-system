@@ -22,10 +22,12 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { rescheduleAppointmentAction } from "@/domains/schedule/schedule.actions";
 import {
+  formatAppZonedDateParam,
+  formatAppZonedTimeParam,
+} from "@/shared/lib/timezone-utils";
+import {
   type CalendarEvent,
   calendarEventStyle,
-  formatAppointmentDate,
-  formatAppointmentTime,
 } from "@/domains/schedule/_lib/appointment-calendar-utils";
 import { parseIsoDateParam } from "@/domains/schedule/_lib/schedule-appointments-range";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -137,7 +139,7 @@ export function AgendaCalendar({
       const loadedMonthDate =
         parseIsoDateParam(loadedViewDateIso) ??
         new Date(`${loadedViewDateIso}T12:00:00`);
-      const iso = formatAppointmentDate(newDate);
+      const iso = formatAppZonedDateParam(newDate);
       const needsServerFetch = !isSameCalendarMonth(newDate, loadedMonthDate);
       onViewDateChange(iso, needsServerFetch);
     },
@@ -188,8 +190,8 @@ export function AgendaCalendar({
       startTransition(async () => {
         const result = await rescheduleAppointmentAction({
           id: typed.id,
-          date: formatAppointmentDate(newStart),
-          time: formatAppointmentTime(newStart),
+          date: formatAppZonedDateParam(newStart),
+          time: formatAppZonedTimeParam(newStart),
         });
         if (!result.success) {
           setLocalEvents(previous);
