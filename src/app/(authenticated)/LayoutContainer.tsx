@@ -32,7 +32,10 @@ export default async function LayoutContainer({
   };
 
   return (
-    <SidebarProvider className="h-svh! min-h-0 overflow-hidden">
+    <SidebarProvider
+      defaultOpen={false}
+      className="h-svh! min-h-0 overflow-hidden"
+    >
       <AppSidebar
         user={sidebarUser}
         organizations={organizations.map((o) => ({
