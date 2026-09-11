@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 
 export const LANDING_NAV_LINKS = [
   { href: "#produto", label: "Produto" },
-  { href: "#como-funciona", label: "Como funciona" },
+  { href: "#recursos", label: "Recursos" },
   { href: "#planos", label: "Planos" },
+  { href: "#faq", label: "Dúvidas" },
 ] as const;
 
 const MIN_WIDTH = 640;

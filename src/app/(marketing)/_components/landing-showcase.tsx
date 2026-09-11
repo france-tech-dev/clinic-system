@@ -1,4 +1,4 @@
-import { MediaPlaceholder } from "./media-placeholder";
+import { LandingShot } from "./landing-shot";
 
 export function LandingShowcase() {
   return (
@@ -12,18 +12,23 @@ export function LandingShowcase() {
           id="landing-showcase-title"
           className="mx-auto max-w-2xl text-center font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
         >
-          Simplifique a gestão clínica
+          A rotina da clínica, sem troca de ferramenta
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
-          O dia da clínica em uma tela: agenda, paciente e o que falta registrar —
-          sem saltar entre ferramentas ou plataformas.
+          Veja o dia de atendimento, o paciente e o que ainda falta registrar —
+          tudo na mesma tela.
         </p>
-        <div className="mx-auto mt-14 max-w-4xl animate-[landing-fade-up_0.85s_ease-out_0.08s_both]">
-          <MediaPlaceholder
-            label="Mockup da agenda · imagem a adicionar"
-            aspectClassName="aspect-[16/10]"
-            className="rounded-3xl border-border bg-muted/50 shadow-sm dark:bg-card"
-          />
+        <div className="mt-14 animate-[landing-fade-up_0.85s_ease-out_0.08s_both]">
+          <div className="overflow-hidden rounded-2xl border border-border shadow-sm sm:rounded-3xl">
+            <LandingShot
+              name="calendario"
+              alt="Tela da agenda na Movi Clinicas"
+              priority
+            />
+          </div>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            Imagem ilustrativa da agenda no produto.
+          </p>
         </div>
       </div>
     </section>

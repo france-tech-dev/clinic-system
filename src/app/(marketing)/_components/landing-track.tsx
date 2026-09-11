@@ -1,27 +1,32 @@
 import Link from "next/link";
 import { paths } from "@/shared/constants/paths";
-import { MediaPlaceholder } from "./media-placeholder";
+import { LandingShot, type LandingShotName } from "./landing-shot";
 
-const TRACK_CARDS = [
+const TRACK_CARDS: readonly {
+  title: string;
+  body: string;
+  shot: LandingShotName;
+  alt: string;
+}[] = [
   {
     title: "Agenda do dia",
-    body: "Veja o turno, confirmações e o que ainda precisa de evolução.",
-    label: "UI agenda · imagem",
-    tone: "bg-[oklch(0.92_0.03_75)] dark:bg-[oklch(0.22_0.02_75)]",
+    body: "Organize o turno, acompanhe confirmações e veja o que ainda precisa de evolução.",
+    shot: "calendario",
+    alt: "Agenda do dia na Movi Clinicas",
   },
   {
     title: "Paciente e PDF",
-    body: "Prontuário, evoluções e documento com assinatura / CREFITO.",
-    label: "UI paciente · imagem",
-    tone: "bg-[oklch(0.91_0.04_171)] dark:bg-[oklch(0.22_0.03_171)]",
+    body: "Prontuário, evoluções e documento com assinatura e CREFITO do profissional.",
+    shot: "pacientes",
+    alt: "Ficha de paciente na Movi Clinicas",
   },
   {
-    title: "Caixa e números",
-    body: "Cobrança e visão de liderança no mesmo sistema da clínica.",
-    label: "UI caixa · imagem",
-    tone: "bg-[oklch(0.90_0.03_55)] dark:bg-[oklch(0.22_0.02_55)]",
+    title: "Caixa e indicadores",
+    body: "Registre cobranças e acompanhe os números da clínica no mesmo sistema.",
+    shot: "caixa",
+    alt: "Caixa na Movi Clinicas",
   },
-] as const;
+];
 
 export function LandingTrack() {
   return (
@@ -31,48 +36,44 @@ export function LandingTrack() {
       className="scroll-mt-24 border-b border-border"
     >
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-xl">
-            <h2
-              id="landing-track-title"
-              className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
-            >
-              Acompanhe tudo o que precisa
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Una o fluxo clínico ao administrativo: do atendimento ao
-              fechamento do mês, no mesmo sistema.
-            </p>
-          </div>
+        <div className="max-w-xl">
+          <h2
+            id="landing-track-title"
+            className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
+          >
+            Do atendimento ao fechamento do mês
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            O profissional cuida do turno. A liderança acompanha caixa e
+            indicadores. Sem planilha paralela.
+          </p>
         </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {TRACK_CARDS.map((card) => (
+        <div className="mt-14 space-y-10">
+          {TRACK_CARDS.map((card, index) => (
             <article
               key={card.title}
-              className={`flex flex-col overflow-hidden rounded-3xl border border-border/60 ${card.tone}`}
+              className="overflow-hidden rounded-2xl border border-border bg-card sm:rounded-3xl"
             >
-              <div className="flex flex-1 flex-col p-6 pb-4">
-                <h3 className="font-serif text-xl font-semibold tracking-tight">
+              <div className="flex flex-col gap-1 border-b border-border px-5 py-4 sm:px-6 sm:py-5">
+                <h3 className="font-serif text-xl font-semibold tracking-tight sm:text-2xl">
                   {card.title}
                 </h3>
-                <p className="mt-2 text-sm text-pretty text-muted-foreground">
+                <p className="text-sm text-pretty text-muted-foreground sm:text-base">
                   {card.body}
                 </p>
               </div>
-              <div className="px-4 pb-4">
-                <MediaPlaceholder
-                  label={card.label}
-                  aspectClassName="aspect-[5/4]"
-                  className="rounded-2xl border-border/50 bg-background/50 dark:bg-background/40"
-                />
-              </div>
+              <LandingShot
+                name={card.shot}
+                alt={card.alt}
+                priority={index === 0}
+              />
             </article>
           ))}
         </div>
 
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Prefere começar já?{" "}
+          Quer começar agora?{" "}
           <Link
             href={paths.auth.signup}
             className="font-medium text-foreground underline-offset-4 hover:underline"

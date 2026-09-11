@@ -83,7 +83,11 @@ export function LandingNavChrome({
                 />
                 <span className="max-sm:hidden">{link.label}</span>
                 <span className="sm:hidden">
-                  {link.href === "#como-funciona" ? "Como" : link.label}
+                  {link.href === "#recursos"
+                    ? "Recursos"
+                    : link.href === "#faq"
+                      ? "Dúvidas"
+                      : link.label}
                 </span>
               </a>
             </li>

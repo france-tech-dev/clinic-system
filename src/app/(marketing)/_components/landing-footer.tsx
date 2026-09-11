@@ -1,41 +1,66 @@
 import Link from "next/link";
 import { paths } from "@/shared/constants/paths";
 
+const COLUMNS = [
+  {
+    title: "Produto",
+    links: [
+      { href: "#produto", label: "Visão geral" },
+      { href: "#como-funciona", label: "Como funciona" },
+      { href: "#recursos", label: "Recursos" },
+      { href: "#planos", label: "Planos" },
+    ],
+  },
+  {
+    title: "Conta",
+    links: [
+      { href: paths.auth.login, label: "Entrar" },
+      { href: paths.auth.signup, label: "Criar conta" },
+      { href: "#faq", label: "Dúvidas" },
+    ],
+  },
+] as const;
+
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-muted/20">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 lg:flex-row lg:items-start lg:justify-between">
+    <footer className="border-t border-border bg-zinc-950 text-zinc-50">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
-          <p className="font-serif text-lg text-foreground">Movi Clinicas</p>
-          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            Gestão clínica multi-tenant para clínicas de terapia ocupacional e
-            equipes multi-profissionais.
+          <p className="font-serif text-xl">Movi Clinicas</p>
+          <p className="mt-3 max-w-sm text-sm text-zinc-400">
+            Gestão clínica para clínicas de terapia ocupacional e equipes
+            multi-profissionais — com dados isolados por organização.
           </p>
         </div>
-        <nav
-          aria-label="Rodapé"
-          className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted-foreground"
-        >
-          <a href="#produto" className="hover:text-foreground">
-            Produto
-          </a>
-          <a href="#como-funciona" className="hover:text-foreground">
-            Como funciona
-          </a>
-          <a href="#planos" className="hover:text-foreground">
-            Planos
-          </a>
-          <Link href={paths.auth.login} className="hover:text-foreground">
-            Entrar
-          </Link>
-          <Link href={paths.auth.signup} className="hover:text-foreground">
-            Criar conta
-          </Link>
-        </nav>
+
+        {COLUMNS.map((col) => (
+          <div key={col.title}>
+            <p className="text-sm font-semibold">{col.title}</p>
+            <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
+              {col.links.map((link) => (
+                <li key={link.href + link.label}>
+                  {link.href.startsWith("#") ? (
+                    <a href={link.href} className="hover:text-zinc-100">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.href} className="hover:text-zinc-100">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
-      <div className="border-t border-border">
-        <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted-foreground sm:px-6">
-          © {new Date().getFullYear()} Movi Clinicas. Todos os direitos reservados.
+
+      <div className="border-t border-white/10">
+        <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-zinc-500 sm:px-6">
+          © {new Date().getFullYear()} Movi Clinicas. Portal do responsável e
+          lembretes por WhatsApp estão em evolução e ainda não devem ser
+          tratados como recursos prontos. Valores públicos sujeitos à
+          confirmação no checkout.
         </p>
       </div>
     </footer>

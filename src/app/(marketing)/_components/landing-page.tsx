@@ -3,8 +3,10 @@ import { LandingHero, LandingHeroBackdrop } from "./landing-hero";
 import { LandingShowcase } from "./landing-showcase";
 import { LandingTrack } from "./landing-track";
 import { LandingDual } from "./landing-dual";
-import { LandingCapabilities } from "./landing-capabilities";
+import { LandingFeatures } from "./landing-features";
+import { LandingSecurity } from "./landing-security";
 import { LandingPlans } from "./landing-plans";
+import { LandingFaq } from "./landing-faq";
 import { LandingCta } from "./landing-cta";
 import { LandingFooter } from "./landing-footer";
 
@@ -29,8 +31,10 @@ export function LandingPage() {
         <LandingShowcase />
         <LandingTrack />
         <LandingDual />
-        <LandingCapabilities />
+        <LandingFeatures />
+        <LandingSecurity />
         <LandingPlans />
+        <LandingFaq />
         <LandingCta />
       </main>
       <LandingFooter />

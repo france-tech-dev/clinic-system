@@ -4,7 +4,7 @@ import { IconArrowUpRight } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
 import { paths } from "@/shared/constants/paths";
-import { MediaPlaceholder } from "./media-placeholder";
+import { LandingShot } from "./landing-shot";
 
 export function LandingCta() {
   return (
@@ -17,6 +17,8 @@ export function LandingCta() {
         alt=""
         fill
         sizes="100vw"
+        quality={100}
+        priority={false}
         className="object-cover object-center"
       />
       <div
@@ -24,16 +26,16 @@ export function LandingCta() {
         className="absolute inset-0 bg-linear-to-b from-black/45 via-black/35 to-black/55"
       />
 
-      <div className="relative mx-auto flex min-h-[min(90svh,44rem)] max-w-3xl flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:py-32">
+      <div className="relative mx-auto flex min-h-[min(90svh,48rem)] max-w-3xl flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:py-32">
         <h2
           id="landing-cta-title"
           className="font-serif text-4xl tracking-tight text-white sm:text-5xl"
         >
-          Leve a Movi para a sua clínica
+          Comece com a Movi na sua clínica
         </h2>
         <p className="mt-4 max-w-md text-base text-white/85">
-          Crie a organização, convide a equipe e use a Movi durante {TRIAL_DAYS}{" "}
-          dias.
+          Crie a organização, convide a equipe e use a Movi por {TRIAL_DAYS}{" "}
+          dias — sem cartão.
         </p>
         <Button
           size="lg"
@@ -46,11 +48,10 @@ export function LandingCta() {
           </Link>
         </Button>
 
-        <div className="mt-14 w-full max-w-xs">
-          <MediaPlaceholder
-            label="Mockup do app · imagem a adicionar"
-            aspectClassName="aspect-[9/16] max-h-72"
-            className="rounded-[2rem] border-white/25 bg-black/25 text-white/70 backdrop-blur-sm"
+        <div className="mt-14 w-full max-w-[320px] overflow-hidden rounded-[2rem] border border-white/30 bg-black/20 shadow-lg sm:max-w-[360px]">
+          <LandingShot
+            name="app"
+            alt="Aplicativo Movi Clinicas no celular"
           />
         </div>
       </div>
