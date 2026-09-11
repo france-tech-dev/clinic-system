@@ -305,7 +305,7 @@ export function PlataformaClient({
               >
                 <div className="flex min-w-0 flex-col gap-1.5">
                   <p className="truncate font-medium">{org.name}</p>
-                  <p className="truncate font-mono text-xs text-muted-foreground">
+                  <p className="truncate text-xs text-muted-foreground">
                     {org.slug}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
@@ -400,7 +400,7 @@ export function PlataformaClient({
               Isto remove permanentemente «{confirmDelete?.org.name}», membros,
               pacientes, agenda, caixa e faturação. Não dá para desfazer. Para
               confirmar, digite o slug{" "}
-              <span className="font-mono font-medium text-foreground">
+              <span className="font-medium text-foreground">
                 {confirmDelete?.org.slug}
               </span>
               .

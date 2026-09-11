@@ -238,7 +238,7 @@ export function CashTransactionFormDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif">
+          <DialogTitle>
             {initial ? "Editar lançamento" : createTitle}
           </DialogTitle>
         </DialogHeader>

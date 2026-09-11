@@ -116,7 +116,7 @@ export function GmfmEvaluationForm() {
           onSelect={setActiveDomainId}
         >
           <div>
-            <h3 className="font-serif text-lg font-semibold">
+            <h3 className="text-lg font-semibold">
               {activeDomain.id} — {activeDomain.title}
             </h3>
             {activeSummary ? (

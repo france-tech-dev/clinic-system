@@ -61,7 +61,7 @@ export function CashflowSummaryCards({
             </p>
             <p
               className={cn(
-                "mt-1 font-serif text-2xl font-semibold",
+                "mt-1 text-2xl font-semibold",
                 item.className,
               )}
             >
@@ -90,7 +90,7 @@ export function CashflowSummaryCards({
         <p className="text-sm text-muted-foreground">{saldoLabel}</p>
         <p
           className={cn(
-            "mt-2 font-serif text-3xl font-semibold tracking-tight sm:text-4xl",
+            "mt-2 text-3xl font-semibold tracking-tight sm:text-4xl",
             balanceClass,
           )}
         >
@@ -107,7 +107,7 @@ export function CashflowSummaryCards({
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Entradas
           </p>
-          <p className="mt-1 font-serif text-xl font-semibold text-emerald-700 dark:text-emerald-400">
+          <p className="mt-1 text-xl font-semibold text-emerald-700 dark:text-emerald-400">
             {formatBrl(summary.income)}
           </p>
           {projectedHint(summary.income, summary.forecastIncome) ? (
@@ -120,7 +120,7 @@ export function CashflowSummaryCards({
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Saídas
           </p>
-          <p className="mt-1 font-serif text-xl font-semibold text-destructive">
+          <p className="mt-1 text-xl font-semibold text-destructive">
             {formatBrl(summary.expense)}
           </p>
           {projectedHint(summary.expense, summary.forecastExpense) ? (

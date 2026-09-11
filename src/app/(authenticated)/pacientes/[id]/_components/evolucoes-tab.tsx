@@ -53,7 +53,7 @@ export function EvolucoesTab({
                   <span className="font-medium">
                     {SESSION_NOTE_STATUS_LABEL[s.status]}
                   </span>
-                  <span className="font-mono text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {formatDateBR(s.date)}
                     {s.time ? ` · ${formatTime(s.time)}` : ""}
                   </span>

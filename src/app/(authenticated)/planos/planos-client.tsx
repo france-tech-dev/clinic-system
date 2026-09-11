@@ -312,7 +312,7 @@ export function PlanosClient({
               aria-current={current ? "true" : undefined}
             >
               <CardHeader className="border-b">
-                <CardTitle className="font-serif text-lg">
+                <CardTitle className="text-lg">
                   {plan.name}
                 </CardTitle>
                 {current ? (

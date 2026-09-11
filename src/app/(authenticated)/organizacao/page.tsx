@@ -12,7 +12,7 @@ export default async function OrganizacaoPage() {
     <AppPage title="Nova clínica">
       <div className="flex flex-col gap-4">
         <div className="max-w-lg">
-          <h2 className="font-serif text-xl font-semibold tracking-tight">
+          <h2 className="text-xl font-semibold tracking-tight">
             {hasOrgs ? "Criar outra clínica" : "Crie a sua clínica"}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">

@@ -392,7 +392,7 @@ export function ItemProtocolClient({
       {assessments.length >= 2 ? (
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif text-lg">Comparativo</CardTitle>
+            <CardTitle className="text-lg">Comparativo</CardTitle>
             <CardDescription>
               Evolução do escore bruto (% do máximo por secção). Sem T-scores
               nem normas oficiais.

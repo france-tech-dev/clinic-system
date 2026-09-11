@@ -107,7 +107,7 @@ export function ClinicalWorkspaceShell({
                     : "border-border text-muted-foreground hover:border-primary/40",
                 )}
               >
-                <span className="font-mono text-[0.625rem] tracking-wide opacity-70">
+                <span className="text-[0.625rem] tracking-wide opacity-70">
                   {String(idx + 1).padStart(2, "0")}
                 </span>
                 <span className="min-w-0 flex-1 text-xs font-medium">

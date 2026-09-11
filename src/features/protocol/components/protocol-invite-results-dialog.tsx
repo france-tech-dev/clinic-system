@@ -53,7 +53,7 @@ export function ProtocolInviteResultsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[min(92dvh,100%)] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
         <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
-          <DialogTitle className="font-serif">
+          <DialogTitle>
             Respostas do responsável
           </DialogTitle>
           <DialogDescription className="text-pretty">

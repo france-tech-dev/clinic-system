@@ -46,7 +46,7 @@ export function AvaliacaoLista({
                   <span className="font-medium capitalize">
                     Avaliação {ev.type}
                   </span>
-                  <span className="font-mono text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {formatDateBR(ev.date)}
                   </span>
                 </div>

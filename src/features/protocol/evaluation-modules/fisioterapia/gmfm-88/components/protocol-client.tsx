@@ -256,7 +256,7 @@ export function GmfmProtocolClient({
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-serif text-lg">Paciente</CardTitle>
+          <CardTitle className="text-lg">Paciente</CardTitle>
           <CardDescription>
             5 domínios, 88 itens. Os resultados ficam no histórico deste
             protocolo.
@@ -289,7 +289,7 @@ export function GmfmProtocolClient({
         <>
           <Card>
             <CardHeader>
-              <CardTitle className="font-serif text-lg">Histórico</CardTitle>
+              <CardTitle className="text-lg">Histórico</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {assessments.map((a) => (
@@ -348,7 +348,7 @@ export function GmfmProtocolClient({
           {assessments.length >= 2 ? (
             <Card>
               <CardHeader>
-                <CardTitle className="font-serif text-lg">
+                <CardTitle className="text-lg">
                   Comparativo
                 </CardTitle>
                 <CardDescription>
@@ -426,7 +426,7 @@ export function GmfmProtocolClient({
       <Dialog open={formOpen} onOpenChange={handleFormOpenChange}>
         <DialogContent className="flex max-h-[92dvh] flex-col overflow-hidden sm:max-w-5xl">
           <DialogHeader>
-            <DialogTitle className="font-serif">
+            <DialogTitle>
               {editing ? "Editar GMFM-88" : "Nova GMFM-88"}
             </DialogTitle>
           </DialogHeader>

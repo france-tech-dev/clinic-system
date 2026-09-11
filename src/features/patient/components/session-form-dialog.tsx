@@ -159,7 +159,7 @@ export function SessionFormDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-serif">
+          <DialogTitle>
             {initial ? "Editar evolução" : "Nova evolução"}
           </DialogTitle>
         </DialogHeader>

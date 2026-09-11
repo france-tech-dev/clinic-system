@@ -111,7 +111,7 @@ export function ProtocolInterpretationAIPanel({
         onChange={(e) => setText(e.target.value)}
         readOnly={isGenerating}
         rows={12}
-        className="min-h-48 resize-y font-mono text-xs leading-relaxed"
+        className="min-h-48 resize-y text-xs leading-relaxed"
         placeholder={
           isGenerating
             ? "A escrever interpretação…"

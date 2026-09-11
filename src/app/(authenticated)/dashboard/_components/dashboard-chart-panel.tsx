@@ -23,7 +23,7 @@ export function DashboardChartPanel({
       )}
     >
       <header className="flex min-h-10 shrink-0 flex-col justify-center gap-0.5">
-        <h2 className="font-serif text-sm font-medium leading-snug tracking-tight">
+        <h2 className="text-sm font-medium leading-snug tracking-tight">
           {title}
         </h2>
         {meta != null ? (

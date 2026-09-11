@@ -166,7 +166,7 @@ export function AnamneseFormClient({
           }
         >
           <div>
-            <h3 className="font-serif text-lg font-semibold">
+            <h3 className="text-lg font-semibold">
               {activeSection.title}
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">

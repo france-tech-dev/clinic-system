@@ -57,7 +57,7 @@ export function PatientPdfPreviewDialog({
     <Dialog open={payload !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="flex h-[92dvh] max-h-[92dvh] max-w-7xl flex-col gap-0 overflow-hidden p-0 sm:max-w-7xl">
         <DialogHeader className="border-b border-border px-4 py-3">
-          <DialogTitle className="font-serif">
+          <DialogTitle>
             Pré-visualização do relatório
           </DialogTitle>
         </DialogHeader>

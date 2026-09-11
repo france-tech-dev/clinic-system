@@ -46,7 +46,7 @@ export function AppSidebar({
       <SidebarHeader>
         <div className="flex items-center gap-2.5 overflow-hidden px-2 py-2 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0">
           <ThemeLogo />
-          <span className="truncate font-serif text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+          <span className="truncate text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
             Movi Clinicas
           </span>
         </div>

@@ -45,7 +45,7 @@ export function ClinicalEvaluationViewDialog({
     <Dialog open={!!evaluation} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-serif">
+          <DialogTitle>
             Avaliação {evaluation.type} — {formatDateBR(evaluation.date)}
           </DialogTitle>
         </DialogHeader>

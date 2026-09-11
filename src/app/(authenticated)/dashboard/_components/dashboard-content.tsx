@@ -179,7 +179,7 @@ export function DashboardContent({
                     <span className="font-medium">{a.patientName}</span>
                     <span className="text-muted-foreground"> · {a.label}</span>
                   </span>
-                  <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
+                  <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                     {formatDateBR(a.date)}
                   </span>
                 </Link>
@@ -215,7 +215,7 @@ function DashboardSection({
           hasAside && "sm:flex-row sm:items-center sm:justify-between",
         )}
       >
-        <h2 id={id} className="font-serif text-lg font-medium tracking-tight">
+        <h2 id={id} className="text-lg font-medium tracking-tight">
           {title}
         </h2>
         {hasAside ? (
@@ -252,7 +252,7 @@ function KpiCard({
       className="rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-1 font-serif text-2xl font-semibold tracking-tight tabular-nums">
+      <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
         {value}
       </p>
       <p className="mt-1 text-xs text-muted-foreground">{hint}</p>

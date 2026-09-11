@@ -78,7 +78,7 @@ export function CashPeriodFilter({
           >
             <ChevronLeft className="size-4" />
           </Button>
-          <p className="min-w-36 text-center font-serif text-lg font-semibold capitalize">
+          <p className="min-w-36 text-center text-lg font-semibold capitalize">
             {period.label}
           </p>
           <Button
@@ -102,7 +102,7 @@ export function CashPeriodFilter({
           placeholder="De — até"
         />
       ) : (
-        <p className="min-w-36 font-serif text-lg font-semibold">
+        <p className="min-w-36 text-lg font-semibold">
           {period.label}
         </p>
       )}

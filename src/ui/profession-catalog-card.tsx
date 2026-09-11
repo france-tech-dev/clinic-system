@@ -100,7 +100,7 @@ export function ProfessionCatalogCard({
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <CardTitle className="font-serif text-lg">{label}</CardTitle>
+              <CardTitle className="text-lg">{label}</CardTitle>
               <Badge variant="outline">{council}</Badge>
               {highlightLabel ? (
                 <Badge variant="secondary">{highlightLabel}</Badge>
