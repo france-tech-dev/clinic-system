@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ListFilter,
   Plus,
   UserRound,
   X,
@@ -49,6 +50,7 @@ import type { AppointmentStatus } from "@prisma/enums";
 import { CashTransactionType } from "@prisma/enums";
 import { paths } from "@/shared/constants/paths";
 import { replacePathAndQuery } from "@/shared/lib/replace-path-and-query";
+import { cn } from "@/shared/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
 import { AgendaStatusLegend } from "./_components/agenda-status-legend";
@@ -138,6 +140,7 @@ export function AgendaClient({
   const [patientFilter, setPatientFilter] = useState(initialPatientFilter);
   const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [upcomingOpen, setUpcomingOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AppointmentDTO | null>(null);
   const [sessionAppointment, setSessionAppointment] =
@@ -154,6 +157,8 @@ export function AgendaClient({
     memberFilter.length > 0 ||
     patientFilter.length > 0 ||
     statusFilter.length > 0;
+  const activeFilterCount =
+    memberFilter.length + patientFilter.length + statusFilter.length;
   const isOnlyMeFilter =
     defaultMemberId.length > 0 &&
     memberFilter.length === 1 &&
@@ -426,8 +431,30 @@ export function AgendaClient({
             : "flex min-h-full flex-1 flex-col gap-4"
         }
       >
-        <div className="flex shrink-0 flex-col gap-2 sm:gap-3">
-          <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="order-1 min-w-0 flex-1 sm:hidden"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            <ListFilter data-icon="inline-start" />
+            Filtros
+            {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            <ChevronDown
+              data-icon="inline-end"
+              className={filtersOpen ? "rotate-180" : undefined}
+            />
+          </Button>
+
+          <div
+            className={cn(
+              "order-3 w-full flex-col gap-2 sm:order-1 sm:flex sm:w-auto sm:flex-1 sm:flex-row sm:flex-wrap sm:items-center",
+              filtersOpen ? "flex" : "hidden",
+            )}
+          >
             <EntityMultiCombobox
               options={STATUS_FILTER_OPTIONS}
               value={statusFilter}
@@ -457,31 +484,32 @@ export function AgendaClient({
                 aria-label="Filtrar por profissional"
               />
             ) : null}
-            {defaultMemberId ? (
-              <Button
-                type="button"
-                size="sm"
-                variant={isOnlyMeFilter ? "secondary" : "outline"}
-                className="w-full sm:w-auto"
-                onClick={isOnlyMeFilter ? clearFilters : filterOnlyMe}
-              >
-                <UserRound data-icon="inline-start" />
-                {isOnlyMeFilter ? "Ver toda a clínica" : "Só eu"}
-              </Button>
-            ) : null}
-            {hasActiveFilters ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                className="w-full sm:w-auto"
-                onClick={clearFilters}
-              >
-                <X data-icon="inline-start" />
-                Limpar filtros
-              </Button>
-            ) : null}
           </div>
+
+          {defaultMemberId ? (
+            <Button
+              type="button"
+              size="sm"
+              variant={isOnlyMeFilter ? "secondary" : "outline"}
+              className="order-1 shrink-0 sm:order-2"
+              onClick={isOnlyMeFilter ? clearFilters : filterOnlyMe}
+            >
+              <UserRound data-icon="inline-start" />
+              Só eu
+            </Button>
+          ) : null}
+          {hasActiveFilters ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="order-2 shrink-0 sm:order-3"
+              onClick={clearFilters}
+            >
+              <X data-icon="inline-start" />
+              <span className="hidden sm:inline">Limpar filtros</span>
+            </Button>
+          ) : null}
         </div>
 
         <Tabs
@@ -633,7 +661,9 @@ export function AgendaClient({
             value="calendario"
             className="mt-0 flex min-h-0 flex-1 flex-col gap-2 outline-none"
           >
-            <AgendaStatusLegend />
+            <div className="hidden sm:block">
+              <AgendaStatusLegend />
+            </div>
             <AgendaCalendar
               events={filteredCalendarEvents}
               viewDateIso={calendarViewDateIso}

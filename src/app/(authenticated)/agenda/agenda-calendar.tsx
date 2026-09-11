@@ -64,39 +64,43 @@ function isSameCalendarMonth(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
 }
 
+function eventTimeRange(event: CalendarEvent) {
+  return `${formatAppZonedTimeParam(event.start)} – ${formatAppZonedTimeParam(event.end)}`;
+}
+
 function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
   const canDrag = event.status === AppointmentStatus.SCHEDULED;
 
   return (
-    <div className="agenda-event-content flex w-full min-w-0 items-center gap-1">
-      <div className="agenda-event-text flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
-        {event.professionalName ? (
-          <>
-            <span className="agenda-event-professional max-w-[42%] shrink-0 truncate font-semibold opacity-90">
+    <div className="agenda-event-card flex h-full min-w-0 flex-col justify-between gap-0.5">
+      <div className="flex min-w-0 items-start gap-1">
+        <div className="min-w-0 flex-1">
+          <Link
+            href={paths.paciente(event.patientId)}
+            className="block truncate font-medium text-inherit hover:underline"
+            onClick={(e: MouseEvent) => e.stopPropagation()}
+          >
+            {event.patientName}
+          </Link>
+          {event.professionalName ? (
+            <p className="truncate text-[0.68rem] leading-tight opacity-85">
               {event.professionalName}
-            </span>
-            <span className="shrink-0 opacity-75" aria-hidden>
-              ·
-            </span>
-          </>
+            </p>
+          ) : null}
+        </div>
+        {canDrag ? (
+          <span
+            className="agenda-event-drag-handle hidden md:inline-flex"
+            title="Arrastar para remarcar"
+            aria-hidden
+          >
+            <GripVertical className="size-4 shrink-0" />
+          </span>
         ) : null}
-        <Link
-          href={paths.paciente(event.patientId)}
-          className="agenda-event-patient min-w-0 truncate text-inherit hover:underline"
-          onClick={(e: MouseEvent) => e.stopPropagation()}
-        >
-          {event.patientName}
-        </Link>
       </div>
-      {canDrag ? (
-        <span
-          className="agenda-event-drag-handle hidden md:inline-flex"
-          title="Arrastar para remarcar"
-          aria-hidden
-        >
-          <GripVertical className="size-4 shrink-0" />
-        </span>
-      ) : null}
+      <p className="agenda-event-time truncate text-[0.68rem] leading-tight tabular-nums opacity-85">
+        {eventTimeRange(event)}
+      </p>
     </div>
   );
 }

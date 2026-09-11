@@ -6,7 +6,7 @@ import { paths } from "@/shared/constants/paths";
 export default function PortalPage() {
   return (
     <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-12">
-      <h1 className="font-serif text-2xl">Portal do responsável</h1>
+      <h1 className="text-2xl">Portal do responsável</h1>
       <p className="text-sm text-muted-foreground">
         Em breve poderá acompanhar aqui o desenvolvimento dos pacientes sob a
         sua responsabilidade. A conta já está preparada com o papel de

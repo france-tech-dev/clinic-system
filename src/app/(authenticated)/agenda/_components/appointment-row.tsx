@@ -40,7 +40,7 @@ export function AppointmentRow({
         onClick={() => onEdit(appointment)}
       >
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-sm font-medium">
+          <span className="text-sm font-medium">
             {formatTime(appointment.time)}
           </span>
           {appointment.duration > 0 && (
@@ -85,7 +85,9 @@ export function AppointmentRow({
             size="sm"
             variant="secondary"
             disabled={pending}
-            onClick={() => onStatus(appointment.id, AppointmentStatus.COMPLETED)}
+            onClick={() =>
+              onStatus(appointment.id, AppointmentStatus.COMPLETED)
+            }
           >
             <Check data-icon="inline-start" />
             Realizado

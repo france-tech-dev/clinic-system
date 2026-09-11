@@ -3,8 +3,8 @@ import { AppointmentStatus } from "@prisma/enums";
 export const APPOINTMENT_STATUSES = [
   { id: AppointmentStatus.SCHEDULED, label: "Agendado", color: "#285C52" },
   { id: AppointmentStatus.COMPLETED, label: "Realizado", color: "#5C7A3E" },
-  { id: AppointmentStatus.ABSENT, label: "Faltou", color: "#A65D53" },
-  { id: AppointmentStatus.CANCELLED, label: "Cancelado", color: "#726C5E" },
+  { id: AppointmentStatus.ABSENT, label: "Faltou", color: "#C56A22" },
+  { id: AppointmentStatus.CANCELLED, label: "Cancelado", color: "#B83333" },
 ] as const;
 
 /** Agendamento com evolução registrada (SessionNote.appointmentId). */

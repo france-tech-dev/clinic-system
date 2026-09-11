@@ -63,7 +63,7 @@ function buildDefaults(
     patientId: initial?.patientId ?? patients[0]?.id ?? "",
     memberId: initial?.memberId ?? defaultMemberId ?? members[0]?.id ?? "",
     date: initial?.date ?? defaultDate,
-    time: initial?.time ?? "",
+    time: (initial?.time ?? "").trim().slice(0, 5),
     duration: initial?.duration ?? 45,
     notes: initial?.notes ?? "",
     status: initial?.status ?? AppointmentStatus.SCHEDULED,
@@ -173,7 +173,7 @@ export function AppointmentFormDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif">
+            <DialogTitle>
             {initial ? "Editar agendamento" : "Novo agendamento"}
           </DialogTitle>
         </DialogHeader>
@@ -229,7 +229,7 @@ export function AppointmentFormDialog({
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="min-w-0">
                     <FormLabel>Data *</FormLabel>
                     <FormControl>
                       <DatePicker
@@ -246,10 +246,16 @@ export function AppointmentFormDialog({
                 control={form.control}
                 name="time"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="min-w-0 overflow-hidden">
                     <FormLabel>Horário *</FormLabel>
                     <FormControl>
-                      <Input type="time" {...field} />
+                      <Input
+                        type="time"
+                        lang="pt-BR"
+                        step={60}
+                        className="min-w-0 max-w-full [&::-webkit-calendar-picker-indicator]:m-0 [&::-webkit-datetime-edit]:min-w-0 [&::-webkit-datetime-edit]:p-0"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

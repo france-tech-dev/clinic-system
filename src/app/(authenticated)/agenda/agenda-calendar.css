@@ -102,8 +102,7 @@
 
 .agenda-calendar .rbc-timeslot-group {
   border-bottom: 1px solid var(--border);
-  /* Mais altura útil na grelha quando o calendário preenche o viewport */
-  min-height: 3.5rem;
+  min-height: 5rem;
 }
 
 .agenda-calendar .rbc-time-gutter .rbc-timeslot-group {
@@ -145,13 +144,14 @@
 .agenda-calendar .rbc-event {
   min-width: 0;
   border: none;
-  border-left: 3px solid rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  padding: 2px 4px 2px 8px;
-  font-size: 0.78rem;
+  padding: 0.4rem 0.45rem 0.4rem 0.6rem;
+  font-size: 0.8rem;
   font-weight: 500;
+  line-height: 1.25;
   color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 1px 2px rgba(0, 0, 0, 0.14);
   transition:
     filter 0.15s ease,
     transform 0.05s ease,
@@ -168,10 +168,6 @@
 @container (max-width: 9rem) {
   .agenda-event-drag-handle {
     display: none;
-  }
-
-  .agenda-event-professional {
-    max-width: 100%;
   }
 }
 
@@ -202,28 +198,15 @@
   filter: brightness(0.95);
 }
 
-.agenda-calendar .rbc-event-label {
-  overflow: hidden;
-  font-size: 0.68rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: 0.85;
-}
-
-/* Horário abaixo dos nomes (padrão RBC: label → content) */
 .agenda-calendar .rbc-day-slot .rbc-event-content {
-  order: 1;
+  flex: 1;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
 }
 
 .agenda-calendar .rbc-day-slot .rbc-event-label {
-  order: 2;
-  margin-top: auto;
-}
-
-.agenda-calendar .agenda-event-professional {
-  max-width: 42%;
+  display: none;
 }
 
 .agenda-calendar .agenda-event-drag-handle {
@@ -272,11 +255,10 @@
 
 .rbc-overlay .rbc-event {
   border: none;
-  border-left: 3px solid rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  padding: 0.35rem 0.55rem;
-  font-size: 0.78rem;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.8rem;
   font-weight: 500;
+  line-height: 1.25;
   color: #fff;
 }
 
