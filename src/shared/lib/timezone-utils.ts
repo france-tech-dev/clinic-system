@@ -8,8 +8,10 @@ function inAppTz(date: Date): TZDate {
 }
 
 export function buildAppZonedDateTime(dateYmd: string, timeHm: string): Date {
+  const [year, month, day] = dateYmd.split("-").map(Number);
+  const [hours, minutes] = timeHm.split(":").map(Number);
   return new Date(
-    new TZDate(`${dateYmd}T${timeHm}:00`, APP_TIMEZONE).getTime(),
+    TZDate.tz(APP_TIMEZONE, year, month - 1, day, hours, minutes, 0).getTime(),
   );
 }
 
