@@ -69,11 +69,6 @@
   background-color: var(--card);
 }
 
-/* Sem eventos all-day na clínica — esconde a faixa vazia acima dos horários */
-.agenda-calendar .rbc-time-view .rbc-allday-cell {
-  display: none;
-}
-
 .agenda-calendar .rbc-header,
 .agenda-calendar .rbc-time-header-content,
 .agenda-calendar .rbc-time-header.rbc-overflowing,
@@ -121,6 +116,18 @@
   background-color: color-mix(in oklch, var(--muted) 25%, transparent);
 }
 
+.agenda-calendar .rbc-time-header-gutter {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0.25rem 0.4rem 0.35rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  color: var(--muted-foreground);
+  text-align: right;
+  white-space: normal;
+}
+
 .agenda-calendar .rbc-today {
   background-color: color-mix(in oklch, var(--foreground) 5%, transparent);
 }
@@ -136,6 +143,7 @@
 }
 
 .agenda-calendar .rbc-event {
+  min-width: 0;
   border: none;
   border-left: 3px solid rgba(0, 0, 0, 0.25);
   border-radius: 8px;
@@ -146,7 +154,31 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
   transition:
     filter 0.15s ease,
-    transform 0.05s ease;
+    transform 0.05s ease,
+    z-index 0.15s ease;
+}
+
+.agenda-calendar .rbc-day-slot .rbc-event {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@container (max-width: 9rem) {
+  .agenda-event-drag-handle {
+    display: none;
+  }
+
+  .agenda-event-professional {
+    max-width: 100%;
+  }
+}
+
+.agenda-calendar .rbc-day-slot .rbc-event:hover,
+.agenda-calendar .rbc-day-slot .rbc-event:focus-visible,
+.agenda-calendar .rbc-day-slot .rbc-event.rbc-selected {
+  z-index: 8;
 }
 
 .agenda-calendar .rbc-addons-dnd .rbc-event {
@@ -171,13 +203,18 @@
 }
 
 .agenda-calendar .rbc-event-label {
+  overflow: hidden;
   font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   opacity: 0.85;
 }
 
 /* Horário abaixo dos nomes (padrão RBC: label → content) */
 .agenda-calendar .rbc-day-slot .rbc-event-content {
   order: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .agenda-calendar .rbc-day-slot .rbc-event-label {
@@ -185,46 +222,8 @@
   margin-top: auto;
 }
 
-.agenda-calendar .agenda-event-content {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  min-width: 0;
-  width: 100%;
-}
-
-.agenda-calendar .agenda-event-text {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  align-items: baseline;
-  gap: 0.35rem;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
 .agenda-calendar .agenda-event-professional {
-  flex-shrink: 0;
   max-width: 42%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: 0.9;
-  font-weight: 600;
-}
-
-.agenda-calendar .agenda-event-professional::after {
-  content: "·";
-  margin-left: 0.35rem;
-  font-weight: 500;
-  opacity: 0.75;
-}
-
-.agenda-calendar .agenda-event-patient {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .agenda-calendar .agenda-event-drag-handle {
@@ -247,6 +246,42 @@
 
 .agenda-calendar .agenda-event-drag-handle:active {
   cursor: grabbing;
+}
+
+/* Overlay do “+N mais” é portal (fora de .agenda-calendar) */
+.rbc-overlay {
+  z-index: 50;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.rbc-overlay-header {
+  margin: -0.5rem -0.5rem 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: capitalize;
+}
+
+.rbc-overlay .rbc-event {
+  border: none;
+  border-left: 3px solid rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.rbc-overlay .agenda-event-drag-handle {
+  display: none;
 }
 
 .agenda-calendar .rbc-show-more {

@@ -43,8 +43,8 @@ const localizer = dateFnsLocalizer({
 });
 
 const CALENDAR_MESSAGES = {
-  today: "Hoje",
   previous: "Anterior",
+  today: "Hoje",
   next: "Próximo",
   month: "Mês",
   week: "Semana",
@@ -53,6 +53,7 @@ const CALENDAR_MESSAGES = {
   date: "Data",
   time: "Hora",
   event: "Evento",
+  allDay: "Dia",
   noEventsInRange: "Nenhum agendamento neste período.",
   showMore: (total: number) => `+${total} mais`,
 };
@@ -67,16 +68,21 @@ function CalendarEventLabel({ event }: EventProps<CalendarEvent>) {
   const canDrag = event.status === AppointmentStatus.SCHEDULED;
 
   return (
-    <div className="agenda-event-content">
-      <div className="agenda-event-text min-w-0 flex-1 truncate">
+    <div className="agenda-event-content flex w-full min-w-0 items-center gap-1">
+      <div className="agenda-event-text flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
         {event.professionalName ? (
-          <span className="agenda-event-professional">
-            {event.professionalName}
-          </span>
+          <>
+            <span className="agenda-event-professional max-w-[42%] shrink-0 truncate font-semibold opacity-90">
+              {event.professionalName}
+            </span>
+            <span className="shrink-0 opacity-75" aria-hidden>
+              ·
+            </span>
+          </>
         ) : null}
         <Link
           href={paths.paciente(event.patientId)}
-          className="agenda-event-patient truncate text-inherit hover:underline"
+          className="agenda-event-patient min-w-0 truncate text-inherit hover:underline"
           onClick={(e: MouseEvent) => e.stopPropagation()}
         >
           {event.patientName}
@@ -224,6 +230,7 @@ export function AgendaCalendar({
             view={displayView}
             onView={onView}
             views={availableViews}
+            dayLayoutAlgorithm="no-overlap"
             step={30}
             timeslots={2}
             min={set(new Date(), { hours: 7, minutes: 0, seconds: 0 })}
@@ -233,7 +240,9 @@ export function AgendaCalendar({
             culture="pt-BR"
             style={{ height: "100%" }}
             eventPropGetter={eventPropGetter}
-            components={{ event: CalendarEventLabel }}
+            components={{
+              event: CalendarEventLabel,
+            }}
             onEventDrop={isMobile ? undefined : moveEvent}
             draggableAccessor={(event) =>
               !isMobile &&
