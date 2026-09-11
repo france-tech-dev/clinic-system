@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
 import { Button } from "@/components/ui/button";
-import { buildCashDaySeries } from "@/domains/dashboard/_lib/build-cash-day-series";
 import { getDashboardData } from "@/domains/dashboard/dashboard.service";
 import type { DashboardPageData } from "@/domains/dashboard/dashboard.types";
-import { parseCashPeriodParams } from "@/domains/finance/_lib/period-utils";
+import {
+  cashPeriodToSearchParams,
+  parseCashPeriodParams,
+} from "@/domains/finance/_lib/period-utils";
 import { getCashflowPageData } from "@/domains/finance/finance.service";
 import { paths } from "@/shared/constants/paths";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -32,15 +34,11 @@ export default async function DashboardPage({
       getDashboardData(organizationId),
       getCashflowPageData(organizationId, period),
     ]);
+
     data = {
       ...dashboard,
       financeSummary: cashflow.summary,
       financePeriod: cashflow.period,
-      cashSeries: buildCashDaySeries(
-        cashflow.transactions,
-        cashflow.period.start,
-        cashflow.period.end,
-      ),
     };
   } catch (e) {
     error =
@@ -54,7 +52,9 @@ export default async function DashboardPage({
       title="Dashboard"
       rightContent={
         <Button asChild size="sm">
-          <Link href={`${paths.pacientes}?novo=1`}>Novo paciente</Link>
+          <Link href={`${paths.caixa}?${cashPeriodToSearchParams(period)}`}>
+            Abrir caixa
+          </Link>
         </Button>
       }
     >

@@ -2,11 +2,28 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Check, Download, Plus } from "lucide-react";
+import { toast } from "sonner";
+import { CashBalanceSidePanel } from "@/features/finance/components/cash-balance-side-panel";
+import { CashFlowChart } from "@/features/finance/components/cash-flow-chart";
 import { CashflowSummaryCards } from "@/features/finance/components/cashflow-summary-cards";
 import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
 import { CashPeriodFilter } from "@/features/finance/components/cash-period-filter";
+import { downloadCashTransactionsCsv } from "@/features/finance/_lib/cash-csv";
+import { buildCashDaySeries } from "@/domains/dashboard/_lib/build-cash-day-series";
+import {
+  CASH_LIST_VIEWS,
+  cashListViewLabel,
+  filterCashTransactionsByView,
+  type CashListView,
+} from "@/domains/finance/_lib/cash-list-view";
+import {
+  CASH_METHOD_FILTER_ALL,
+  filterCashTransactionsByMethod,
+  type CashMethodFilter,
+} from "@/domains/finance/_lib/cash-method-filter";
 import { cashPeriodToSearchParams } from "@/domains/finance/_lib/period-utils";
+import { markCashTransactionPostedAction } from "@/domains/finance/finance.actions";
 import type {
   CashflowPageData,
   CashMemberOption,
@@ -15,6 +32,7 @@ import type {
 } from "@/domains/finance/finance.types";
 import type { PatientDTO } from "@/domains/patient/patient.types";
 import {
+  CASH_PAYMENT_METHODS,
   cashPaymentMethodLabel,
   cashTransactionStatusLabel,
   cashTransactionTypeLabel,
@@ -26,6 +44,13 @@ import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntityCombobox } from "@/components/entity-combobox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import {
   CashTransactionStatus,
@@ -40,12 +65,16 @@ export function CaixaClient({
   patients,
   members,
   memberFilter,
+  listView,
+  methodFilter,
 }: {
   error: string | null;
   initial: CashflowPageData | null;
   patients: PatientDTO[];
   members: CashMemberOption[];
   memberFilter: string;
+  listView: CashListView;
+  methodFilter: CashMethodFilter;
 }) {
   if (error) {
     return <p className="text-sm text-destructive">{error}</p>;
@@ -59,6 +88,8 @@ export function CaixaClient({
       patients={patients}
       members={members}
       memberFilter={memberFilter}
+      listView={listView}
+      methodFilter={methodFilter}
     />
   );
 }
@@ -68,11 +99,15 @@ function CaixaClientBody({
   patients,
   members,
   memberFilter,
+  listView,
+  methodFilter,
 }: {
   initial: CashflowPageData;
   patients: PatientDTO[];
   members: CashMemberOption[];
   memberFilter: string;
+  listView: CashListView;
+  methodFilter: CashMethodFilter;
 }) {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -82,6 +117,7 @@ function CaixaClientBody({
   );
   const [pending, startTransition] = useTransition();
   const [navPending, startNavTransition] = useTransition();
+  const [postingId, setPostingId] = useState<string | null>(null);
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
@@ -90,9 +126,37 @@ function CaixaClientBody({
     return members.find((m) => m.id === memberFilter)?.name ?? null;
   }, [memberFilter, members]);
 
-  function buildUrl(period: CashPeriod, member: string) {
+  const visibleTransactions = useMemo(() => {
+    const byView = filterCashTransactionsByView(
+      initial.transactions,
+      listView,
+    );
+    return filterCashTransactionsByMethod(byView, methodFilter);
+  }, [initial.transactions, listView, methodFilter]);
+
+  const chartSeries = useMemo(
+    () =>
+      buildCashDaySeries(
+        visibleTransactions,
+        initial.period.start,
+        initial.period.end,
+      ),
+    [visibleTransactions, initial.period.start, initial.period.end],
+  );
+
+  const hasActiveFilters =
+    listView !== "all" || methodFilter !== CASH_METHOD_FILTER_ALL;
+
+  function buildUrl(
+    period: CashPeriod,
+    member: string,
+    view: CashListView = listView,
+    method: CashMethodFilter = methodFilter,
+  ) {
     return `${paths.caixa}?${cashPeriodToSearchParams(period, {
       member: member !== MEMBER_FILTER_ALL ? member : undefined,
+      view: view !== "all" ? view : undefined,
+      method: method !== CASH_METHOD_FILTER_ALL ? method : undefined,
     })}`;
   }
 
@@ -105,6 +169,31 @@ function CaixaClientBody({
   function changeMemberFilter(next: string) {
     startNavTransition(() => {
       router.push(buildUrl(initial.period, next || MEMBER_FILTER_ALL));
+    });
+  }
+
+  function changeListView(next: CashListView) {
+    startNavTransition(() => {
+      router.push(buildUrl(initial.period, memberFilter, next));
+    });
+  }
+
+  function changeMethodFilter(next: CashMethodFilter) {
+    startNavTransition(() => {
+      router.push(buildUrl(initial.period, memberFilter, listView, next));
+    });
+  }
+
+  function clearFilters() {
+    startNavTransition(() => {
+      router.push(
+        buildUrl(
+          initial.period,
+          memberFilter,
+          "all",
+          CASH_METHOD_FILTER_ALL,
+        ),
+      );
     });
   }
 
@@ -123,10 +212,45 @@ function CaixaClientBody({
     router.refresh();
   }
 
+  function handleMarkPosted(tx: CashTransactionDTO) {
+    setPostingId(tx.id);
+    startTransition(async () => {
+      const result = await markCashTransactionPostedAction({ id: tx.id });
+      setPostingId(null);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      toast.success("Lançamento marcado como realizado");
+      router.refresh();
+    });
+  }
+
+  function handleExportCsv() {
+    if (visibleTransactions.length === 0) {
+      toast.error("Não há lançamentos para exportar com estes filtros.");
+      return;
+    }
+    const stamp = initial.period.start.slice(0, 7);
+    downloadCashTransactionsCsv(
+      visibleTransactions,
+      `caixa-${stamp}${listView !== "all" ? `-${listView}` : ""}.csv`,
+    );
+    toast.success("CSV exportado");
+  }
+
+  const listTitle = hasActiveFilters
+    ? `Lançamentos · ${cashListViewLabel(listView)}${
+        methodFilter !== CASH_METHOD_FILTER_ALL
+          ? ` · ${cashPaymentMethodLabel(methodFilter)}`
+          : ""
+      }`
+    : "Lançamentos do período";
+
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 transition-opacity",
+        "flex flex-col gap-4 transition-opacity md:gap-5",
         navPending && "pointer-events-none opacity-60",
       )}
       aria-busy={navPending}
@@ -134,7 +258,7 @@ function CaixaClientBody({
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <span>
-            Conferência · {initial.period.label}
+            Visão geral · {initial.period.label}
             {filterMemberName ? ` · ${filterMemberName}` : " · Toda a clínica"}
           </span>
           {navPending ? (
@@ -150,25 +274,81 @@ function CaixaClientBody({
             onPeriodChange={navigatePeriod}
             pending={navPending}
             trailing={
-              members.length > 0 ? (
-                <EntityCombobox
-                  options={members}
-                  value={memberFilter}
-                  onValueChange={changeMemberFilter}
-                  placeholder="Profissional"
-                  emptyText="Nenhum profissional encontrado"
-                  extraOption={{
-                    id: MEMBER_FILTER_ALL,
-                    name: "Todos os profissionais",
+              <>
+                <Select
+                  value={listView}
+                  onValueChange={(v) => {
+                    if (v) changeListView(v as CashListView);
                   }}
-                  className="w-56"
-                  aria-label="Filtrar por profissional"
                   disabled={navPending}
-                />
-              ) : null
+                >
+                  <SelectTrigger
+                    className="w-[10.5rem]"
+                    aria-label="Filtrar por tipo"
+                  >
+                    <SelectValue placeholder="Tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CASH_LIST_VIEWS.map((v) => (
+                      <SelectItem key={v.id} value={v.id}>
+                        {v.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={methodFilter}
+                  onValueChange={(v) => {
+                    if (v) changeMethodFilter(v as CashMethodFilter);
+                  }}
+                  disabled={navPending}
+                >
+                  <SelectTrigger
+                    className="w-[10.5rem]"
+                    aria-label="Filtrar por método"
+                  >
+                    <SelectValue placeholder="Método" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={CASH_METHOD_FILTER_ALL}>
+                      Todos os métodos
+                    </SelectItem>
+                    {CASH_PAYMENT_METHODS.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {members.length > 0 ? (
+                  <EntityCombobox
+                    options={members}
+                    value={memberFilter}
+                    onValueChange={changeMemberFilter}
+                    placeholder="Profissional"
+                    emptyText="Nenhum profissional encontrado"
+                    extraOption={{
+                      id: MEMBER_FILTER_ALL,
+                      name: "Todos os profissionais",
+                    }}
+                    className="w-56"
+                    aria-label="Filtrar por profissional"
+                    disabled={navPending}
+                  />
+                ) : null}
+              </>
             }
           />
           <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={navPending || visibleTransactions.length === 0}
+              onClick={handleExportCsv}
+            >
+              <Download data-icon="inline-start" />
+              CSV
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -193,12 +373,42 @@ function CaixaClientBody({
       <CashflowSummaryCards
         summary={initial.summary}
         periodLabel={initial.period.label}
-        variant="hero"
+        variant="overview"
+        activeView={listView}
+        onViewChange={changeListView}
       />
 
-      <div className="rounded-md border border-border bg-card">
-        <div className="border-b border-border px-4 py-3">
-          <p className="text-sm font-medium">Lançamentos do período</p>
+      <div className="grid items-stretch gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
+        <CashFlowChart
+          data={chartSeries}
+          periodLabel={
+            hasActiveFilters
+              ? `${initial.period.label} · filtrado`
+              : initial.period.label
+          }
+          bodyClassName="h-[260px] w-full sm:h-[300px]"
+          emptyMessage="Sem lançamentos para estes filtros."
+        />
+        <CashBalanceSidePanel
+          summary={initial.summary}
+          periodLabel={initial.period.label}
+        />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
+          <p className="text-sm font-medium">{listTitle}</p>
+          {hasActiveFilters ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              disabled={navPending}
+              onClick={clearFilters}
+            >
+              Limpar filtros
+            </Button>
+          ) : null}
         </div>
 
         {initial.transactions.length === 0 ? (
@@ -220,68 +430,113 @@ function CaixaClientBody({
                 <Plus data-icon="inline-start" />
                 Saída
               </Button>
-              <Button size="sm" onClick={() => openCreate(CashTransactionType.INCOME)}>
+              <Button
+                size="sm"
+                onClick={() => openCreate(CashTransactionType.INCOME)}
+              >
                 <Plus data-icon="inline-start" />
                 Entrada
               </Button>
             </div>
           </div>
+        ) : visibleTransactions.length === 0 ? (
+          <div className="space-y-3 px-4 py-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              Nenhum lançamento com estes filtros.
+            </p>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={clearFilters}
+            >
+              Ver todos
+            </Button>
+          </div>
         ) : (
           <ul className="divide-y divide-border">
-            {initial.transactions.map((tx) => (
-              <li key={tx.id}>
-                <button
-                  type="button"
-                  className="flex w-full items-start gap-4 px-4 py-3 text-left transition-colors hover:bg-muted/40"
-                  onClick={() => openEdit(tx)}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge
-                        variant="outline"
+            {visibleTransactions.map((tx) => {
+              const isPosting = postingId === tx.id && pending;
+              return (
+                <li key={tx.id}>
+                  <div className="flex items-start gap-2 px-2 py-2 sm:gap-3 sm:px-4 sm:py-3">
+                    <button
+                      type="button"
+                      className="flex min-w-0 flex-1 items-start gap-4 rounded-lg px-2 py-1 text-left transition-colors hover:bg-muted/40"
+                      onClick={() => openEdit(tx)}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              tx.type === CashTransactionType.INCOME
+                                ? "border-primary/30 text-primary"
+                                : "border-destructive/30 text-destructive",
+                            )}
+                          >
+                            {cashTransactionTypeLabel(tx.type)}
+                          </Badge>
+                          {tx.status === CashTransactionStatus.FORECAST ? (
+                            <Badge variant="secondary">
+                              {cashTransactionStatusLabel(tx.status)}
+                            </Badge>
+                          ) : null}
+                          <span className="font-medium">{tx.description}</span>
+                        </div>
+                        <p className="mt-1.5 text-xs text-muted-foreground">
+                          {formatDateBR(tx.date)}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {cashPaymentMethodLabel(tx.paymentMethod)}
+                          {tx.professionalName
+                            ? ` · ${tx.professionalName}`
+                            : ""}
+                          {tx.patientName ? ` · ${tx.patientName}` : ""}
+                        </p>
+                      </div>
+                      <span
                         className={cn(
+                          "shrink-0 font-medium tabular-nums",
+                          tx.status === CashTransactionStatus.FORECAST &&
+                            "opacity-70",
                           tx.type === CashTransactionType.INCOME
-                            ? "border-emerald-700/30 text-emerald-800 dark:text-emerald-400"
-                            : "border-destructive/30 text-destructive",
+                            ? "text-primary"
+                            : "text-destructive",
                         )}
                       >
-                        {cashTransactionTypeLabel(tx.type)}
-                      </Badge>
-                      {tx.status === CashTransactionStatus.FORECAST ? (
-                        <Badge variant="secondary">
-                          {cashTransactionStatusLabel(tx.status)}
-                        </Badge>
-                      ) : null}
-                      <span className="font-medium">{tx.description}</span>
-                    </div>
-                    <p className="mt-1.5 text-xs text-muted-foreground">
-                      {formatDateBR(tx.date)}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {cashPaymentMethodLabel(tx.paymentMethod)}
-                      {tx.professionalName ? ` · ${tx.professionalName}` : ""}
-                      {tx.patientName ? ` · ${tx.patientName}` : ""}
-                    </p>
+                        <span className="sr-only">
+                          {tx.type === CashTransactionType.INCOME
+                            ? "Entrada "
+                            : "Saída "}
+                        </span>
+                        {tx.type === CashTransactionType.INCOME ? "+" : "−"}
+                        {formatBrl(tx.amount)}
+                      </span>
+                    </button>
+
+                    {tx.status === CashTransactionStatus.FORECAST ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        className="mt-1 shrink-0"
+                        disabled={pending || navPending}
+                        aria-label={`Marcar ${tx.description} como realizado`}
+                        onClick={() => handleMarkPosted(tx)}
+                      >
+                        {isPosting ? (
+                          <Spinner data-icon="inline-start" />
+                        ) : (
+                          <Check data-icon="inline-start" />
+                        )}
+                        <span className="hidden sm:inline">Realizar</span>
+                      </Button>
+                    ) : null}
                   </div>
-                  <span
-                    className={cn(
-                      "shrink-0 font-medium tabular-nums",
-                      tx.status === CashTransactionStatus.FORECAST &&
-                        "opacity-70",
-                      tx.type === CashTransactionType.INCOME
-                        ? "text-emerald-700 dark:text-emerald-400"
-                        : "text-destructive",
-                    )}
-                  >
-                    <span className="sr-only">
-                      {tx.type === CashTransactionType.INCOME ? "Entrada " : "Saída "}
-                    </span>
-                    {tx.type === CashTransactionType.INCOME ? "+" : "−"}
-                    {formatBrl(tx.amount)}
-                  </span>
-                </button>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

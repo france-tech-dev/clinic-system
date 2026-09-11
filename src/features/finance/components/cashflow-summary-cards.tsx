@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { formatBrl } from "@/shared/lib/money-utils";
 import type { CashflowSummary } from "@/domains/finance/finance.types";
+import type { CashListView } from "@/domains/finance/_lib/cash-list-view";
 import { cn } from "@/shared/lib/utils";
 
 function projectedHint(real: number, forecast: number) {
@@ -8,14 +10,23 @@ function projectedHint(real: number, forecast: number) {
   return `de ${formatBrl(projected)} previstos`;
 }
 
+type OverviewViewId = Exclude<CashListView, "all">;
+
 export function CashflowSummaryCards({
   summary,
   periodLabel,
   variant = "hero",
+  activeView = "all",
+  onViewChange,
+  viewHref,
 }: {
   summary: CashflowSummary;
   periodLabel?: string;
-  variant?: "hero" | "equal";
+  variant?: "hero" | "equal" | "overview";
+  activeView?: CashListView;
+  onViewChange?: (view: CashListView) => void;
+  /** Dashboard: cada card navega para o caixa com o filtro correspondente. */
+  viewHref?: (view: OverviewViewId) => string;
 }) {
   const balanceClass =
     summary.balance >= 0 ? "text-foreground" : "text-destructive";
@@ -24,13 +35,124 @@ export function CashflowSummaryCards({
       ? "text-muted-foreground"
       : "text-destructive/80";
 
+  if (variant === "overview") {
+    const items: {
+      id: OverviewViewId;
+      label: string;
+      value: string;
+      hint: string | null;
+      className: string;
+    }[] = [
+      {
+        id: "income",
+        label: "Entradas",
+        value: formatBrl(summary.income),
+        hint:
+          summary.forecastIncome > 0
+            ? `Previsto: ${formatBrl(summary.income + summary.forecastIncome)}`
+            : null,
+        className: "text-primary",
+      },
+      {
+        id: "expense",
+        label: "Saídas",
+        value: formatBrl(summary.expense),
+        hint:
+          summary.forecastExpense > 0
+            ? `Previsto: ${formatBrl(summary.expense + summary.forecastExpense)}`
+            : null,
+        className: "text-destructive",
+      },
+      {
+        id: "receber",
+        label: "A receber",
+        value: formatBrl(summary.forecastIncome),
+        hint: "Lançamentos previstos de entrada",
+        className: "text-foreground",
+      },
+      {
+        id: "pagar",
+        label: "A pagar",
+        value: formatBrl(summary.forecastExpense),
+        hint: "Lançamentos previstos de saída",
+        className: "text-foreground",
+      },
+    ];
+
+    return (
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {items.map((item) => {
+          const active = activeView === item.id;
+          const asButton = Boolean(onViewChange);
+          const href = viewHref?.(item.id);
+          const className = cn(
+            "rounded-xl border bg-card p-4 text-left transition-colors",
+            active
+              ? "border-primary ring-1 ring-primary/30"
+              : "border-border",
+            (asButton || href) && !active && "hover:bg-muted/40",
+            (asButton || href) &&
+              "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          );
+
+          const body = (
+            <>
+              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                {item.label}
+              </p>
+              <p
+                className={cn(
+                  "mt-1 text-2xl font-semibold tabular-nums",
+                  item.className,
+                )}
+              >
+                {item.value}
+              </p>
+              {item.hint ? (
+                <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>
+              ) : null}
+            </>
+          );
+
+          if (asButton) {
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={className}
+                aria-pressed={active}
+                onClick={() => onViewChange?.(active ? "all" : item.id)}
+              >
+                {body}
+              </button>
+            );
+          }
+
+          if (href) {
+            return (
+              <Link key={item.id} href={href} className={className}>
+                {body}
+              </Link>
+            );
+          }
+
+          return (
+            <div key={item.id} className={className}>
+              {body}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   if (variant === "equal") {
     const items = [
       {
         label: "Entradas",
         value: formatBrl(summary.income),
         hint: projectedHint(summary.income, summary.forecastIncome),
-        className: "text-emerald-700 dark:text-emerald-400",
+        className: "text-primary",
       },
       {
         label: "Saídas",
@@ -59,12 +181,7 @@ export function CashflowSummaryCards({
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
               {item.label}
             </p>
-            <p
-              className={cn(
-                "mt-1 text-2xl font-semibold",
-                item.className,
-              )}
-            >
+            <p className={cn("mt-1 text-2xl font-semibold", item.className)}>
               {item.value}
             </p>
             {item.hint ? (
@@ -107,7 +224,7 @@ export function CashflowSummaryCards({
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Entradas
           </p>
-          <p className="mt-1 text-xl font-semibold text-emerald-700 dark:text-emerald-400">
+          <p className="mt-1 text-xl font-semibold text-primary">
             {formatBrl(summary.income)}
           </p>
           {projectedHint(summary.income, summary.forecastIncome) ? (

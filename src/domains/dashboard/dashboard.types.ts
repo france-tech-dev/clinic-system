@@ -81,5 +81,4 @@ export type DashboardData = {
 export type DashboardPageData = DashboardData & {
   financeSummary: CashflowSummary;
   financePeriod: CashPeriod;
-  cashSeries: CashDayPoint[];
 };

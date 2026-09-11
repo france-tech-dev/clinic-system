@@ -23,7 +23,7 @@ export function BusiestHoursHeatmap({ data }: { data: BusiestSlots }) {
 
   return (
     <DashboardChartPanel
-      className="w-fit max-w-full justify-self-start"
+      className="w-fit max-w-full"
       title="Horários mais movimentados"
       meta={`Últimos ${BUSIEST_LOOKBACK_DAYS} dias`}
     >

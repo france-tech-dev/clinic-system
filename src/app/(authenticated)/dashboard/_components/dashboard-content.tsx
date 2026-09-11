@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CashflowSummaryCards } from "@/features/finance/components/cashflow-summary-cards";
+import { cashPeriodToSearchParams } from "@/domains/finance/_lib/period-utils";
+import type { CashListView } from "@/domains/finance/_lib/cash-list-view";
 import type { DashboardPageData } from "@/domains/dashboard/dashboard.types";
 import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/format-date-br";
@@ -10,12 +12,23 @@ import { cn } from "@/shared/lib/utils";
 import { ActivityTrendChart } from "./activity-trend-chart";
 import { BusiestDaysChart } from "./busiest-days-chart";
 import { BusiestHoursHeatmap } from "./busiest-hours-heatmap";
-import { CashMonthChart } from "./cash-month-chart";
 import { DashboardPeriodNav } from "./dashboard-period-nav";
 
 function alertKindLabel(kind: "sem_avaliacao" | "reavaliacao") {
   return kind === "sem_avaliacao" ? "Sem avaliação" : "Reavaliação";
 }
+
+function caixaHref(
+  period: DashboardPageData["financePeriod"],
+  view?: Exclude<CashListView, "all">,
+) {
+  return `${paths.caixa}?${cashPeriodToSearchParams(period, {
+    view,
+  })}`;
+}
+
+const listLinkClass =
+  "flex flex-col gap-1 rounded-xl border border-border px-3 py-2.5 text-sm transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function DashboardContent({
   data,
@@ -47,23 +60,36 @@ export function DashboardContent({
 
   if (!data) return null;
 
+  const openCaixa = (
+    <Button asChild size="sm" variant="outline">
+      <Link href={caixaHref(data.financePeriod)}>Abrir caixa</Link>
+    </Button>
+  );
+
   return (
     <div className="flex flex-col gap-8 md:gap-10">
-      {/* 1 — Dinheiro (job de liderança) */}
+      {/* 1 — Caixa: KPIs */}
       <DashboardSection
         id="dash-caixa"
         title="Caixa"
+        description={data.financePeriod.label}
         meta={<DashboardPeriodNav period={data.financePeriod} />}
+        action={openCaixa}
       >
         <CashflowSummaryCards
           summary={data.financeSummary}
           periodLabel={data.financePeriod.label}
-          variant="hero"
+          variant="overview"
+          viewHref={(view) => caixaHref(data.financePeriod, view)}
         />
       </DashboardSection>
 
-      {/* 2 — Pulso clínico */}
-      <DashboardSection id="dash-operacao" title="Operação">
+      {/* 2 — Operação */}
+      <DashboardSection
+        id="dash-operacao"
+        title="Operação"
+        description="Pulso clínico"
+      >
         <div className="grid gap-3 sm:grid-cols-3">
           <KpiCard
             href={paths.pacientes}
@@ -86,29 +112,35 @@ export function DashboardContent({
         </div>
       </DashboardSection>
 
-      {/* 3 — Tendências e padrões */}
-      <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
-        <CashMonthChart
-          data={data.cashSeries}
-          periodLabel={data.financePeriod.label}
-        />
-        <ActivityTrendChart data={data.activitySeries} />
-        <BusiestDaysChart data={data.busiestSlots.weekdays} />
-        <BusiestHoursHeatmap data={data.busiestSlots} />
-      </div>
+      {/* 3 — Gráficos */}
+      <DashboardSection
+        id="dash-padroes"
+        title="Padrões"
+        description="Atividade e horários mais ocupados"
+      >
+        <div className="flex flex-col gap-3 md:flex-row md:items-stretch">
+          <div className="min-w-0 flex-1">
+            <ActivityTrendChart data={data.activitySeries} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <BusiestDaysChart data={data.busiestSlots.weekdays} />
+          </div>
+          <BusiestHoursHeatmap data={data.busiestSlots} />
+        </div>
+      </DashboardSection>
 
       {/* 4 — Atenção */}
-      <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-6">
-        <DashboardSection id="dash-alertas" title="Alertas clínicos">
+      <div className="grid items-start gap-8 sm:grid-cols-2 md:gap-6">
+        <DashboardSection id="dash-alertas" title="Alertas">
           {data.alerts.length === 0 ? (
             <EmptyNote>Nenhum alerta no momento.</EmptyNote>
           ) : (
             <ul className="flex flex-col gap-2">
-              {data.alerts.map((a) => (
+              {data.alerts.slice(0, 5).map((a) => (
                 <li key={`${a.kind}-${a.patientId}`}>
                   <Link
                     href={paths.paciente(a.patientId)}
-                    className="flex flex-col gap-1 rounded-xl border border-border px-3 py-2.5 text-sm transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className={listLinkClass}
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium">{a.patientName}</span>
@@ -128,18 +160,14 @@ export function DashboardContent({
           )}
         </DashboardSection>
 
-        <DashboardSection
-          id="dash-aniversarios"
-          title="Próximos aniversariantes"
-        >
+        <DashboardSection id="dash-aniversarios" title="Aniversários">
           {data.upcomingBirthdays.length === 0 ? (
             <EmptyNote>
-              Nenhum aniversário nos próximos 30 dias (ou data de nascimento em
-              falta).
+              Nenhum nos próximos 30 dias (ou data em falta).
             </EmptyNote>
           ) : (
             <ul className="flex flex-col gap-2">
-              {data.upcomingBirthdays.map((b) => (
+              {data.upcomingBirthdays.slice(0, 5).map((b) => (
                 <li key={b.patientId}>
                   <Link
                     href={paths.paciente(b.patientId)}
@@ -168,14 +196,14 @@ export function DashboardContent({
         {data.recentActivity.length === 0 ? (
           <EmptyNote>Ainda sem registros.</EmptyNote>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="divide-y divide-border rounded-xl border border-border bg-card">
             {data.recentActivity.map((a) => (
               <li key={`${a.kind}-${a.id}`}>
                 <Link
                   href={paths.paciente(a.patientId)}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2 text-sm transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span>
+                  <span className="min-w-0 truncate">
                     <span className="font-medium">{a.patientName}</span>
                     <span className="text-muted-foreground"> · {a.label}</span>
                   </span>
@@ -195,12 +223,14 @@ export function DashboardContent({
 function DashboardSection({
   id,
   title,
+  description,
   meta,
   action,
   children,
 }: {
   id: string;
   title: string;
+  description?: string;
   meta?: ReactNode;
   action?: ReactNode;
   children: ReactNode;
@@ -212,14 +242,25 @@ function DashboardSection({
       <div
         className={cn(
           "flex flex-col gap-2",
-          hasAside && "sm:flex-row sm:items-center sm:justify-between",
+          hasAside && "sm:flex-row sm:items-start sm:justify-between",
         )}
       >
-        <h2 id={id} className="text-lg font-medium tracking-tight">
-          {title}
-        </h2>
+        <div className="min-w-0">
+          <h2
+            id={id}
+            className="font-serif text-xl font-semibold tracking-tight"
+          >
+            {title}
+          </h2>
+          {description ? (
+            <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+          ) : null}
+        </div>
         {hasAside ? (
-          <div className="flex flex-wrap items-center gap-3">{meta}{action}</div>
+          <div className="flex flex-wrap items-center gap-3 sm:pt-0.5">
+            {meta}
+            {action}
+          </div>
         ) : null}
       </div>
       {children}
@@ -229,7 +270,7 @@ function DashboardSection({
 
 function EmptyNote({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-xl border border-dashed border-border px-3 py-6 text-sm text-muted-foreground">
+    <p className="rounded-xl border border-dashed border-border px-3 py-5 text-sm text-muted-foreground">
       {children}
     </p>
   );
@@ -251,7 +292,9 @@ function KpiCard({
       href={href}
       className="rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
       <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
         {value}
       </p>

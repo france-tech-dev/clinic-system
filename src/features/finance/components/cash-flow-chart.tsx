@@ -11,31 +11,33 @@ import {
 } from "@/components/ui/chart";
 import type { CashDayPoint } from "@/domains/dashboard/dashboard.types";
 import { formatBrl } from "@/shared/lib/money-utils";
-import {
-  DASHBOARD_CHART_BODY,
-  DashboardChartEmpty,
-  DashboardChartPanel,
-} from "./dashboard-chart-panel";
+import { cn } from "@/shared/lib/utils";
 
 const chartConfig = {
-  income: { label: "Entradas", color: "var(--chart-2)" },
+  income: { label: "Entradas", color: "var(--primary)" },
   forecastIncome: {
-    label: "Previstas",
-    color: "color-mix(in oklab, var(--chart-2) 45%, transparent)",
+    label: "Entradas previstas",
+    color: "color-mix(in oklab, var(--primary) 45%, transparent)",
   },
-  expense: { label: "Saídas", color: "var(--chart-5)" },
+  expense: { label: "Saídas", color: "var(--destructive)" },
   forecastExpense: {
-    label: "Previstas",
-    color: "color-mix(in oklab, var(--chart-5) 45%, transparent)",
+    label: "Saídas previstas",
+    color: "color-mix(in oklab, var(--destructive) 45%, transparent)",
   },
 } satisfies ChartConfig;
 
-export function CashMonthChart({
+export function CashFlowChart({
   data,
   periodLabel,
+  emptyMessage = "Ainda não há lançamentos neste período.",
+  bodyClassName = "h-[220px] w-full",
+  className,
 }: {
   data: CashDayPoint[];
   periodLabel: string;
+  emptyMessage?: string;
+  bodyClassName?: string;
+  className?: string;
 }) {
   const hasValues = data.some(
     (d) =>
@@ -46,11 +48,25 @@ export function CashMonthChart({
   );
 
   return (
-    <DashboardChartPanel title="Fluxo de caixa" meta={periodLabel}>
+    <section
+      className={cn(
+        "flex h-full min-w-0 flex-col gap-2 rounded-xl border border-border bg-card p-3",
+        className,
+      )}
+    >
+      <header className="flex min-h-10 shrink-0 flex-col justify-center gap-0.5">
+        <h2 className="text-sm font-medium leading-snug tracking-tight">
+          Fluxo de caixa
+        </h2>
+        <p className="text-[11px] leading-none text-muted-foreground">
+          {periodLabel}
+        </p>
+      </header>
+
       {hasValues ? (
         <ChartContainer
           config={chartConfig}
-          className={`aspect-auto ${DASHBOARD_CHART_BODY}`}
+          className={cn("aspect-auto", bodyClassName)}
         >
           <BarChart data={data} margin={{ left: 0, right: 0, top: 4, bottom: 0 }}>
             <CartesianGrid vertical={false} />
@@ -76,7 +92,28 @@ export function CashMonthChart({
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  formatter={(value) => formatBrl(Number(value))}
+                  formatter={(value, name, item) => {
+                    const key = String(name) as keyof typeof chartConfig;
+                    const seriesLabel = chartConfig[key]?.label ?? String(name);
+                    const color = item.color ?? item.payload?.fill;
+
+                    return (
+                      <>
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          style={{ backgroundColor: color }}
+                        />
+                        <div className="flex flex-1 items-center justify-between gap-6 leading-none">
+                          <span className="text-muted-foreground">
+                            {seriesLabel}
+                          </span>
+                          <span className="font-medium text-foreground tabular-nums">
+                            {formatBrl(Number(value))}
+                          </span>
+                        </div>
+                      </>
+                    );
+                  }}
                 />
               }
             />
@@ -110,10 +147,15 @@ export function CashMonthChart({
           </BarChart>
         </ChartContainer>
       ) : (
-        <DashboardChartEmpty>
-          Ainda não há lançamentos neste mês.
-        </DashboardChartEmpty>
+        <p
+          className={cn(
+            "flex items-center justify-center rounded-lg border border-dashed border-border px-3 text-center text-xs text-muted-foreground",
+            bodyClassName,
+          )}
+        >
+          {emptyMessage}
+        </p>
       )}
-    </DashboardChartPanel>
+    </section>
   );
 }

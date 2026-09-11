@@ -1,4 +1,12 @@
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
+import {
+  parseCashListView,
+  type CashListView,
+} from "@/domains/finance/_lib/cash-list-view";
+import {
+  parseCashMethodFilter,
+  type CashMethodFilter,
+} from "@/domains/finance/_lib/cash-method-filter";
 import { parseCashPeriodParams } from "@/domains/finance/_lib/period-utils";
 import { getCashflowPageData } from "@/domains/finance/finance.service";
 import type {
@@ -30,10 +38,14 @@ export default async function CaixaPage({
     to?: string;
     month?: string;
     member?: string;
+    view?: string;
+    method?: string;
   }>;
 }) {
   const params = await searchParams;
   const period = parseCashPeriodParams(params);
+  const listView: CashListView = parseCashListView(params.view);
+  const methodFilter: CashMethodFilter = parseCashMethodFilter(params.method);
 
   let error: string | null = null;
   let pageData: CashflowPageData | null = null;
@@ -62,12 +74,14 @@ export default async function CaixaPage({
   return (
     <AppPage title="Caixa">
       <CaixaClient
-        key={`${period.preset}-${period.start}-${period.end}-${memberFilter}`}
+        key={`${period.preset}-${period.start}-${period.end}-${memberFilter}-${listView}-${methodFilter}`}
         error={error}
         initial={pageData}
         patients={patients}
         members={members}
         memberFilter={memberFilter}
+        listView={listView}
+        methodFilter={methodFilter}
       />
     </AppPage>
   );
