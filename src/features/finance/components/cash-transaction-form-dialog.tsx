@@ -13,6 +13,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { EntityCombobox } from "@/components/entity-combobox";
@@ -33,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/shared/lib/utils";
 import {
   createCashTransactionAction,
   deleteCashTransactionAction,
@@ -236,8 +241,8 @@ export function CashTransactionFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-md")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>
             {initial ? "Editar lançamento" : createTitle}
           </DialogTitle>
@@ -247,7 +252,7 @@ export function CashTransactionFormDialog({
           <form
             id="cash-transaction-form"
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4"
+            className={cn(dialogScrollBodyClassName, "grid gap-4")}
           >
             <FormField
               control={form.control}
@@ -451,7 +456,9 @@ export function CashTransactionFormDialog({
           </form>
         </Form>
 
-        <DialogFooter className="gap-2 sm:justify-between">
+        <DialogFooter
+          className={cn(dialogScrollFooterClassName, "gap-2 sm:justify-between")}
+        >
           {initial ? (
             <DeleteConfirmDialog onConfirm={handleDelete} disabled={pending}>
               <Button

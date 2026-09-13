@@ -12,6 +12,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
@@ -50,6 +54,7 @@ import {
 } from "@/shared/constants/member-role";
 import { MEMBER_STATUS_OPTIONS } from "@/shared/constants/member-status";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
+import { cn } from "@/shared/lib/utils";
 import { MemberStatus, Role } from "@prisma/enums";
 
 function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
@@ -144,8 +149,8 @@ export function EditProfessionalDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>Editar profissional</DialogTitle>
         </DialogHeader>
 
@@ -153,7 +158,7 @@ export function EditProfessionalDialog({
           <form
             id="edit-professional-form"
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-3"
+            className={cn(dialogScrollBodyClassName, "grid gap-3")}
           >
             <FormField
               control={form.control}
@@ -345,7 +350,7 @@ export function EditProfessionalDialog({
           </form>
         </Form>
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           <Button
             type="button"
             variant="outline"

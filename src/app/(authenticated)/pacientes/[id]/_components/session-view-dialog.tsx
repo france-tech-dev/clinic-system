@@ -7,12 +7,17 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogScrollBody,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
 import type { SessionNoteDTO } from "@/domains/patient/patient.types";
 import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
+import { cn } from "@/shared/lib/utils";
 
 export function SessionViewDialog({
   note,
@@ -30,14 +35,16 @@ export function SessionViewDialog({
   if (!note) return null;
   return (
     <Dialog open={!!note} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent
+        className={cn(dialogScrollableClassName, "sm:max-w-2xl")}
+      >
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>
             {SESSION_NOTE_STATUS_LABEL[note.status]} — {formatDateBR(note.date)}
             {note.time ? ` às ${formatTime(note.time)}` : ""}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-2 text-sm">
+        <DialogScrollBody className="flex flex-col gap-2 text-sm">
           <p>
             <strong>Atividades:</strong>
           </p>
@@ -46,8 +53,10 @@ export function SessionViewDialog({
             <strong>Observações:</strong>
           </p>
           <p className="whitespace-pre-line">{note.observations || "—"}</p>
-        </div>
-        <DialogFooter className="gap-2 sm:justify-between">
+        </DialogScrollBody>
+        <DialogFooter
+          className={cn(dialogScrollFooterClassName, "gap-2 sm:justify-between")}
+        >
           <DeleteConfirmDialog
             onConfirm={() => onDelete(note.id)}
             disabled={pending}

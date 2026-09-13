@@ -15,6 +15,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { EntityCombobox } from "@/components/entity-combobox";
@@ -171,8 +175,8 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-md")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
             <DialogTitle>
             {initial ? "Editar agendamento" : "Novo agendamento"}
           </DialogTitle>
@@ -182,7 +186,7 @@ export function AppointmentFormDialog({
           <form
             id="appointment-form"
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-3"
+            className={cn(dialogScrollBodyClassName, "grid gap-3")}
           >
             <FormField
               control={form.control}
@@ -386,7 +390,12 @@ export function AppointmentFormDialog({
           </form>
         </Form>
 
-        <DialogFooter className="flex-col gap-3 sm:flex-col sm:justify-stretch">
+        <DialogFooter
+          className={cn(
+            dialogScrollFooterClassName,
+            "flex-col gap-3 sm:flex-col sm:justify-stretch",
+          )}
+        >
           {canEvolve && (
             <Button
               type="button"

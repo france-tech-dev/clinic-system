@@ -11,6 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -47,6 +51,7 @@ import {
 } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
+import { cn } from "@/shared/lib/utils";
 import { SessionNoteStatus } from "@prisma/enums";
 
 type SessionDialogValues = {
@@ -157,8 +162,10 @@ export function SessionFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent
+        className={cn(dialogScrollableClassName, "sm:max-w-2xl")}
+      >
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>
             {initial ? "Editar evolução" : "Nova evolução"}
           </DialogTitle>
@@ -169,7 +176,7 @@ export function SessionFormDialog({
             id={formId}
             key={`${initial?.id ?? "new"}-${open}`}
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4"
+            className={cn(dialogScrollBodyClassName, "grid gap-4")}
           >
             <FormField
               control={form.control}
@@ -257,7 +264,11 @@ export function SessionFormDialog({
                       : "Atividades realizadas"}
                   </FormLabel>
                   <FormControl>
-                    <Textarea rows={6} {...field} />
+                    <Textarea
+                      rows={4}
+                      className="min-h-24 resize-y sm:min-h-32"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -271,7 +282,11 @@ export function SessionFormDialog({
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea rows={5} {...field} />
+                    <Textarea
+                      rows={3}
+                      className="min-h-20 resize-y sm:min-h-28"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -280,7 +295,7 @@ export function SessionFormDialog({
           </form>
         </Form>
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           <Button
             type="button"
             variant="outline"

@@ -12,7 +12,11 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogScrollBody,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import {
   InputGroup,
@@ -22,6 +26,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { createProtocolInviteAction } from "@/domains/protocol/invite/protocol-invite.actions";
 import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
+import { cn } from "@/shared/lib/utils";
 
 export type PublicInviteProtocolOption = {
   id: string;
@@ -100,8 +105,8 @@ export function CreateProtocolInviteDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>Enviar link para o responsável</DialogTitle>
           <DialogDescription>
             Crie um link com uma ou mais avaliações. O responsável preenche sem
@@ -110,7 +115,7 @@ export function CreateProtocolInviteDialog({
         </DialogHeader>
 
         {createdUrl ? (
-          <div className="grid gap-3">
+          <DialogScrollBody className="grid gap-3">
             <p className="text-sm text-muted-foreground">
               Partilhe este link com o responsável:
             </p>
@@ -121,9 +126,9 @@ export function CreateProtocolInviteDialog({
               <Link2 data-icon="inline-start" />
               Copiar link
             </Button>
-          </div>
+          </DialogScrollBody>
         ) : (
-          <div className="grid gap-3">
+          <DialogScrollBody className="grid gap-3">
             {protocols.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Nenhum instrumento disponível para link público.
@@ -147,7 +152,7 @@ export function CreateProtocolInviteDialog({
                     Nenhuma avaliação encontrada.
                   </p>
                 ) : (
-                  <div className="grid max-h-[50dvh] gap-3 overflow-y-auto">
+                  <div className="grid gap-3">
                     {filtered.map((protocol) => {
                       const checked = selected.includes(protocol.id);
                       return (
@@ -175,10 +180,10 @@ export function CreateProtocolInviteDialog({
                 )}
               </>
             )}
-          </div>
+          </DialogScrollBody>
         )}
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           {createdUrl ? (
             <Button
               type="button"

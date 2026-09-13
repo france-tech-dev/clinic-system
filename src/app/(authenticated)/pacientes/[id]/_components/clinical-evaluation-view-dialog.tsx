@@ -8,7 +8,11 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogScrollBody,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
@@ -43,13 +47,13 @@ export function ClinicalEvaluationViewDialog({
 
   return (
     <Dialog open={!!evaluation} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>
             Avaliação {evaluation.type} — {formatDateBR(evaluation.date)}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 text-sm">
+        <DialogScrollBody className="flex flex-col gap-3 text-sm">
           {evaluation.diagnosis && (
             <p>
               <strong>Diagnóstico:</strong> {evaluation.diagnosis}
@@ -187,8 +191,10 @@ export function ClinicalEvaluationViewDialog({
               )}
             </p>
           )}
-        </div>
-        <DialogFooter className="gap-2 sm:justify-between">
+        </DialogScrollBody>
+        <DialogFooter
+          className={cn(dialogScrollFooterClassName, "gap-2 sm:justify-between")}
+        >
           <DeleteConfirmDialog
             onConfirm={() => onDelete(evaluation.id)}
             disabled={pending}

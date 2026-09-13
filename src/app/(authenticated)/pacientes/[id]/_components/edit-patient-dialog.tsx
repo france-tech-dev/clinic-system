@@ -9,6 +9,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { EntityCombobox } from "@/components/entity-combobox";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -19,6 +23,7 @@ import type { GuardianDraftInput } from "@/domains/guardian/guardian.schema";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import { PatientFormFields } from "@/features/patient/components/patient-form-fields";
 import type { PatientDraftInput } from "@/domains/patient/patient.schema";
+import { cn } from "@/shared/lib/utils";
 
 function guardianOptionLabel(g: GuardianDTO) {
   return [g.name, g.cpf || null].filter(Boolean).join(" · ");
@@ -53,14 +58,14 @@ export function EditPatientDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>Editar paciente</DialogTitle>
         </DialogHeader>
 
         <form
           id="edit-patient-form"
-          className="flex flex-col gap-6"
+          className={cn(dialogScrollBodyClassName, "flex flex-col gap-6")}
           onSubmit={(e) => {
             e.preventDefault();
             onSave();
@@ -115,7 +120,7 @@ export function EditPatientDialog({
           )}
         </form>
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           <Button
             type="button"
             variant="outline"

@@ -12,6 +12,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
@@ -46,6 +50,7 @@ import {
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
+import { cn } from "@/shared/lib/utils";
 
 const DEFAULT_VALUES: CreateProfessionalInput = {
   name: "",
@@ -114,8 +119,8 @@ export function CreateProfessionalDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>Novo profissional</DialogTitle>
         </DialogHeader>
 
@@ -123,7 +128,7 @@ export function CreateProfessionalDialog({
           <form
             id="create-professional-form"
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-3"
+            className={cn(dialogScrollBodyClassName, "grid gap-3")}
           >
             <FormField
               control={form.control}
@@ -310,7 +315,7 @@ export function CreateProfessionalDialog({
           </form>
         </Form>
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           <Button
             type="button"
             variant="outline"

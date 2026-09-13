@@ -11,6 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import {
@@ -23,6 +27,7 @@ import {
 } from "@/domains/patient/patient.schema";
 import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
 import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
+import { cn } from "@/shared/lib/utils";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { ClinicalEvaluationFormClinicalFields } from "./clinical-evaluation-form/clinical-evaluation-form-clinical-fields";
 import { ClinicalEvaluationFormDomainsSection } from "./clinical-evaluation-form/clinical-evaluation-form-domains-section";
@@ -134,8 +139,10 @@ export function ClinicalEvaluationFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent
+        className={cn(dialogScrollableClassName, "sm:max-w-2xl")}
+      >
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>
             {initial ? "Editar avaliação" : "Nova avaliação"}
           </DialogTitle>
@@ -145,7 +152,7 @@ export function ClinicalEvaluationFormDialog({
           <form
             id="evaluation-form"
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-3"
+            className={cn(dialogScrollBodyClassName, "grid gap-3")}
           >
             <ClinicalEvaluationFormMetaFields />
             <ClinicalEvaluationFormClinicalFields />
@@ -154,7 +161,7 @@ export function ClinicalEvaluationFormDialog({
           </form>
         </Form>
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
             Cancelar
           </Button>

@@ -9,6 +9,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  dialogScrollableClassName,
+  dialogScrollBodyClassName,
+  dialogScrollFooterClassName,
+  dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
 import {
   Field,
@@ -34,6 +38,7 @@ import type { PatientDraftInput } from "@/domains/patient/patient.schema";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { TeamMemberDTO } from "@/domains/team/team.types";
+import { cn } from "@/shared/lib/utils";
 import { MemberStatus } from "@prisma/enums";
 
 function guardianOptionLabel(g: GuardianDTO) {
@@ -91,14 +96,14 @@ export function CreatePatientDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
+        <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>Novo paciente</DialogTitle>
         </DialogHeader>
 
         <form
           id="create-patient-form"
-          className="flex flex-col gap-6"
+          className={cn(dialogScrollBodyClassName, "flex flex-col gap-6")}
           onSubmit={(e) => {
             e.preventDefault();
             onSubmit();
@@ -203,7 +208,7 @@ export function CreatePatientDialog({
           ) : null}
         </form>
 
-        <DialogFooter>
+        <DialogFooter className={dialogScrollFooterClassName}>
           <Button
             type="button"
             variant="outline"
