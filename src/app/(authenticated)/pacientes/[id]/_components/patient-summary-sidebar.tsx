@@ -182,7 +182,6 @@ export function PatientSummaryIdentity({
         patientId={patient.id}
         name={patient.name}
         photoUrl={patient.photoUrl}
-        size="xl"
         disabled={pending}
         onChanged={onPhotoChanged}
       />

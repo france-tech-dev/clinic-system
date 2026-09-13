@@ -30,7 +30,6 @@ export function PatientPhotoControl({
   name,
   photoUrl,
   disabled,
-  size = "md",
   className,
   onChanged,
 }: {
@@ -38,8 +37,6 @@ export function PatientPhotoControl({
   name: string;
   photoUrl: string | null;
   disabled?: boolean;
-  /** md = 64px · lg = 96px · xl ≈ full sidebar (~224px) */
-  size?: "md" | "lg" | "xl";
   className?: string;
   onChanged?: (patient: PatientDTO) => void;
 }) {
@@ -55,20 +52,6 @@ export function PatientPhotoControl({
     ? `${photoUrl}${photoUrl.includes("?") ? "&" : "?"}v=${cacheKey}`
     : null;
   const busy = disabled || pending;
-
-  // Não passar `size` ao Avatar: `data-[size=lg]:size-10` sobrepõe size-* custom.
-  const avatarSizeClass =
-    size === "xl" ? "size-56" : size === "lg" ? "size-24" : "size-16";
-  const fallbackTextClass =
-    size === "xl" ? "text-4xl" : size === "lg" ? "text-lg" : "text-sm";
-  const cameraBadgeClass =
-    size === "xl" ? "size-11" : size === "lg" ? "size-9" : "size-7";
-  const cameraIconClass =
-    size === "xl" ? "size-5" : size === "lg" ? "size-5" : "size-3.5";
-  const removeClass =
-    size === "xl" ? "size-9" : size === "lg" ? "size-7" : "size-6";
-  const trashIconClass =
-    size === "xl" ? "size-4" : size === "lg" ? "size-3.5" : "size-3";
 
   function clearCropSrc() {
     setCropSrc((prev) => {
@@ -145,24 +128,20 @@ export function PatientPhotoControl({
         }
         onClick={() => inputRef.current?.click()}
       >
-        <Avatar className={avatarSizeClass}>
+        <Avatar className="size-40">
           {previewUrl ? <AvatarImage src={previewUrl} alt={name} /> : null}
-          <AvatarFallback className={fallbackTextClass}>
+          <AvatarFallback className="text-3xl">
             {initialsFromName(name)}
           </AvatarFallback>
         </Avatar>
         <span
           aria-hidden
-          className={cn(
-            "pointer-events-none absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full",
-            "border-2 border-background bg-card text-foreground shadow-sm",
-            cameraBadgeClass,
-          )}
+          className="pointer-events-none absolute right-0 bottom-0 z-10 inline-flex size-10 items-center justify-center rounded-full border-2 border-background bg-card text-foreground shadow-sm"
         >
           {pending ? (
-            <Spinner className={cameraIconClass} />
+            <Spinner className="size-4" />
           ) : (
-            <IconCamera className={cameraIconClass} />
+            <IconCamera className="size-4" />
           )}
         </span>
       </button>
@@ -172,15 +151,12 @@ export function PatientPhotoControl({
           type="button"
           variant="outline"
           size="icon-sm"
-          className={cn(
-            "absolute -top-1 -right-1 rounded-full border-border bg-card shadow-sm",
-            removeClass,
-          )}
+          className="absolute -top-1 -right-1 size-9 rounded-full border-border bg-card shadow-sm"
           disabled={busy}
           aria-label={`Remover foto de ${name}`}
           onClick={removePhoto}
         >
-          <IconTrash className={trashIconClass} />
+          <IconTrash className="size-4" />
         </Button>
       ) : null}
 
@@ -211,4 +187,3 @@ export function PatientPhotoControl({
     </div>
   );
 }
-
