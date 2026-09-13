@@ -24,12 +24,12 @@ export function ClinicalEvaluationFormMetaFields() {
 
   return (
     <>
-      <div className="grid grid-cols-2 items-start gap-3">
+      <div className="grid items-start gap-3 sm:grid-cols-2">
         <FormField
           control={control}
           name="type"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Tipo *</FormLabel>
               <Select
                 value={field.value}
@@ -53,7 +53,7 @@ export function ClinicalEvaluationFormMetaFields() {
           control={control}
           name="date"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Data *</FormLabel>
               <FormControl>
                 <DatePicker value={field.value} onChange={field.onChange} />
@@ -63,12 +63,12 @@ export function ClinicalEvaluationFormMetaFields() {
           )}
         />
       </div>
-      <div className="grid grid-cols-2 items-start gap-3">
+      <div className="grid items-start gap-3 sm:grid-cols-2">
         <FormField
           control={control}
           name="diagnosis"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Diagnóstico / CID</FormLabel>
               <FormControl>
                 <Input
@@ -84,7 +84,7 @@ export function ClinicalEvaluationFormMetaFields() {
           control={control}
           name="referredBy"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Encaminhado por</FormLabel>
               <FormControl>
                 <Input placeholder="Médico, escola, família…" {...field} />

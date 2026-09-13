@@ -69,12 +69,12 @@ export function ClinicalEvaluationFormClinicalFields() {
           </FormItem>
         )}
       />
-      <div className="grid grid-cols-2 items-start gap-3">
+      <div className="grid items-start gap-3 sm:grid-cols-2">
         <FormField
           control={control}
           name="medications"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Medicações em uso</FormLabel>
               <FormControl>
                 <Input {...field} />
@@ -87,7 +87,7 @@ export function ClinicalEvaluationFormClinicalFields() {
           control={control}
           name="precautions"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Precauções / contraindicações</FormLabel>
               <FormControl>
                 <Input {...field} />

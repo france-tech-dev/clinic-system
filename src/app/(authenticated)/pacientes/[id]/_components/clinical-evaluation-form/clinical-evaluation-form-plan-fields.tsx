@@ -56,12 +56,12 @@ export function ClinicalEvaluationFormPlanFields() {
           </FormItem>
         )}
       />
-      <div className="grid grid-cols-2 items-start gap-3">
+      <div className="grid items-start gap-3 sm:grid-cols-2">
         <FormField
           control={control}
           name="frequency"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Frequência proposta</FormLabel>
               <FormControl>
                 <Input
@@ -77,7 +77,7 @@ export function ClinicalEvaluationFormPlanFields() {
           control={control}
           name="dischargeCriteria"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-0">
               <FormLabel>Critérios de alta</FormLabel>
               <FormControl>
                 <Input {...field} />
