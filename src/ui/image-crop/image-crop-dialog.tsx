@@ -4,6 +4,7 @@ import { useCallback, useState, useTransition } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import "react-easy-crop/react-easy-crop.css";
 import { toast } from "sonner";
+import type { MediaKind } from "@/shared/lib/media/media.constants";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,30 +33,30 @@ export type ImageCropDialogProps = {
   imageSrc: string | null;
   onOpenChange: (open: boolean) => void;
   onConfirm: (file: File) => void;
+  kind: MediaKind;
   title?: string;
   description?: string;
   defaultAspect?: ImageCropAspectId;
-  outputFileName?: string;
 };
 
 type ImageCropDialogBodyProps = {
   imageSrc: string;
   onOpenChange: (open: boolean) => void;
   onConfirm: (file: File) => void;
+  kind: MediaKind;
   title: string;
   description: string;
   defaultAspect: ImageCropAspectId;
-  outputFileName: string;
 };
 
 function ImageCropDialogBody({
   imageSrc,
   onOpenChange,
   onConfirm,
+  kind,
   title,
   description,
   defaultAspect,
-  outputFileName,
 }: ImageCropDialogBodyProps) {
   const [aspectId, setAspectId] = useState<ImageCropAspectId>(defaultAspect);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -77,11 +78,7 @@ function ImageCropDialogBody({
 
     startTransition(async () => {
       try {
-        const file = await cropImageToFile(
-          imageSrc,
-          croppedAreaPixels,
-          outputFileName,
-        );
+        const file = await cropImageToFile(imageSrc, croppedAreaPixels, kind);
         onConfirm(file);
         onOpenChange(false);
       } catch (error) {
@@ -181,10 +178,10 @@ export function ImageCropDialog({
   imageSrc,
   onOpenChange,
   onConfirm,
+  kind,
   title = "Ajustar imagem",
   description = "Enquadra a área e confirma.",
   defaultAspect = "free",
-  outputFileName = "crop.png",
 }: ImageCropDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -194,10 +191,10 @@ export function ImageCropDialog({
           imageSrc={imageSrc}
           onOpenChange={onOpenChange}
           onConfirm={onConfirm}
+          kind={kind}
           title={title}
           description={description}
           defaultAspect={defaultAspect}
-          outputFileName={outputFileName}
         />
       ) : null}
     </Dialog>

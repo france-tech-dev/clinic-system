@@ -1,11 +1,14 @@
 # Media / object storage
 
-Política de ficheiros de imagem (logo, avatares):
+Política de ficheiros de imagem (logo, avatares, foto de paciente):
 
-| Tipo                  | Formato | Tamanho           |
-| --------------------- | ------- | ----------------- |
-| Avatar (`User.image`) | WebP    | 256×256 (crop)    |
-| Logo da clínica       | WebP    | lado maior ≤ 1024 |
+| Tipo              | Formato final | Tamanho final     | Original (picker) |
+| ----------------- | ------------- | ----------------- | ----------------- |
+| Avatar / paciente | WebP          | 256×256           | até 20 MB         |
+| Logo da clínica   | WebP          | lado maior ≤ 1024 | até 20 MB         |
+
+**Fluxo:** crop + resize JPEG no browser → Server Action (corpo pequeno) → Sharp → WebP no storage.  
+Não subir o `serverActions.bodySizeLimit` para caber fotos de telemóvel.
 
 ## Uso na app
 

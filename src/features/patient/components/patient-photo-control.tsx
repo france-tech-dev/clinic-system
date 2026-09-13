@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { ImageCropDialog } from "@/components/image-crop";
 import {
   Avatar,
-  AvatarBadge,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
@@ -21,7 +20,8 @@ import { initialsFromName } from "@/shared/lib/initials-from-name";
 import {
   isManagedUploadUrl,
   isMediaUploadMimeType,
-  MEDIA_KIND,
+  MEDIA_MAX_SOURCE_BYTES,
+  mediaMaxBytesError,
 } from "@/shared/lib/media/media.constants";
 import { cn } from "@/shared/lib/utils";
 
@@ -30,6 +30,7 @@ export function PatientPhotoControl({
   name,
   photoUrl,
   disabled,
+  size = "md",
   className,
   onChanged,
 }: {
@@ -37,6 +38,8 @@ export function PatientPhotoControl({
   name: string;
   photoUrl: string | null;
   disabled?: boolean;
+  /** md = 64px · lg = 96px · xl ≈ full sidebar (~224px) */
+  size?: "md" | "lg" | "xl";
   className?: string;
   onChanged?: (patient: PatientDTO) => void;
 }) {
@@ -52,7 +55,20 @@ export function PatientPhotoControl({
     ? `${photoUrl}${photoUrl.includes("?") ? "&" : "?"}v=${cacheKey}`
     : null;
   const busy = disabled || pending;
-  const maxMb = MEDIA_KIND.avatar.maxUploadBytes / (1024 * 1024);
+
+  // Não passar `size` ao Avatar: `data-[size=lg]:size-10` sobrepõe size-* custom.
+  const avatarSizeClass =
+    size === "xl" ? "size-56" : size === "lg" ? "size-24" : "size-16";
+  const fallbackTextClass =
+    size === "xl" ? "text-4xl" : size === "lg" ? "text-lg" : "text-sm";
+  const cameraBadgeClass =
+    size === "xl" ? "size-11" : size === "lg" ? "size-9" : "size-7";
+  const cameraIconClass =
+    size === "xl" ? "size-5" : size === "lg" ? "size-5" : "size-3.5";
+  const removeClass =
+    size === "xl" ? "size-9" : size === "lg" ? "size-7" : "size-6";
+  const trashIconClass =
+    size === "xl" ? "size-4" : size === "lg" ? "size-3.5" : "size-3";
 
   function clearCropSrc() {
     setCropSrc((prev) => {
@@ -87,8 +103,8 @@ export function PatientPhotoControl({
       toast.error("Escolha uma imagem PNG, JPEG ou WebP");
       return;
     }
-    if (file.size > MEDIA_KIND.avatar.maxUploadBytes) {
-      toast.error(`A foto pode ter no máximo ${maxMb} MB`);
+    if (file.size > MEDIA_MAX_SOURCE_BYTES) {
+      toast.error(mediaMaxBytesError(MEDIA_MAX_SOURCE_BYTES));
       return;
     }
 
@@ -120,7 +136,7 @@ export function PatientPhotoControl({
         type="button"
         disabled={busy}
         className={cn(
-          "rounded-full outline-none transition-opacity",
+          "relative rounded-full outline-none transition-opacity",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           busy ? "opacity-70" : "hover:opacity-90",
         )}
@@ -129,15 +145,26 @@ export function PatientPhotoControl({
         }
         onClick={() => inputRef.current?.click()}
       >
-        <Avatar size="lg" className="size-16">
+        <Avatar className={avatarSizeClass}>
           {previewUrl ? <AvatarImage src={previewUrl} alt={name} /> : null}
-          <AvatarFallback className="text-sm">
+          <AvatarFallback className={fallbackTextClass}>
             {initialsFromName(name)}
           </AvatarFallback>
-          <AvatarBadge className="size-6 bg-background text-foreground ring-background [&>svg]:size-3.5">
-            {pending ? <Spinner className="size-3.5" /> : <IconCamera />}
-          </AvatarBadge>
         </Avatar>
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full",
+            "border-2 border-background bg-card text-foreground shadow-sm",
+            cameraBadgeClass,
+          )}
+        >
+          {pending ? (
+            <Spinner className={cameraIconClass} />
+          ) : (
+            <IconCamera className={cameraIconClass} />
+          )}
+        </span>
       </button>
 
       {hasCustomPhoto ? (
@@ -145,12 +172,15 @@ export function PatientPhotoControl({
           type="button"
           variant="outline"
           size="icon-sm"
-          className="absolute -top-1 -right-1 size-6 rounded-full border-border bg-card shadow-sm"
+          className={cn(
+            "absolute -top-1 -right-1 rounded-full border-border bg-card shadow-sm",
+            removeClass,
+          )}
           disabled={busy}
           aria-label={`Remover foto de ${name}`}
           onClick={removePhoto}
         >
-          <IconTrash className="size-3" />
+          <IconTrash className={trashIconClass} />
         </Button>
       ) : null}
 
@@ -173,11 +203,12 @@ export function PatientPhotoControl({
         imageSrc={cropSrc}
         onOpenChange={handleCropOpenChange}
         onConfirm={uploadPhoto}
+        kind="avatar"
         title="Ajustar foto"
         description="Enquadra o rosto no quadrado e confirma."
         defaultAspect="1:1"
-        outputFileName="patient-photo.png"
       />
     </div>
   );
 }
+

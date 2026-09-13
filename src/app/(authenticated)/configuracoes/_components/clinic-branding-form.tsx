@@ -21,7 +21,8 @@ import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import {
   isManagedUploadUrl,
   isMediaUploadMimeType,
-  MEDIA_KIND,
+  MEDIA_MAX_SOURCE_BYTES,
+  mediaMaxBytesError,
 } from "@/shared/lib/media/media.constants";
 import { ImageCropDialog } from "@/components/image-crop";
 import { Button } from "@/components/ui/button";
@@ -103,10 +104,8 @@ export function ClinicBrandingForm({
       toast.error("Use PNG, JPEG ou WebP");
       return;
     }
-    if (file.size > MEDIA_KIND.logo.maxUploadBytes) {
-      toast.error(
-        `A imagem deve ter no máximo ${MEDIA_KIND.logo.maxUploadBytes / (1024 * 1024)} MB`,
-      );
+    if (file.size > MEDIA_MAX_SOURCE_BYTES) {
+      toast.error(mediaMaxBytesError(MEDIA_MAX_SOURCE_BYTES));
       return;
     }
 
@@ -212,7 +211,7 @@ export function ClinicBrandingForm({
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <p className="text-xs text-muted-foreground">
                   PNG, JPEG ou WebP · máx.{" "}
-                  {MEDIA_KIND.logo.maxUploadBytes / (1024 * 1024)} MB · podes
+                  {MEDIA_MAX_SOURCE_BYTES / (1024 * 1024)} MB · podes
                   recortar antes de enviar
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -291,10 +290,10 @@ export function ClinicBrandingForm({
         onConfirm={(file) => {
           uploadLogo(file);
         }}
+        kind="logo"
         title="Recortar logo"
         description="Escolhe a proporção e a área antes de enviar. A imagem será convertida para WebP no servidor."
         defaultAspect="free"
-        outputFileName="organization-logo.png"
       />
     </div>
   );

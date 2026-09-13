@@ -1,8 +1,8 @@
 import "server-only";
 import {
   isMediaUploadMimeType,
-  MEDIA_KIND,
-  mediaMaxUploadError,
+  MEDIA_MAX_UPLOAD_BYTES,
+  mediaMaxBytesError,
   organizationLogoKey,
   patientPhotoKey,
   userAvatarKey,
@@ -19,8 +19,8 @@ async function saveProcessedImage(opts: {
   if (!isMediaUploadMimeType(opts.file.type)) {
     throw new Error("Use PNG, JPEG ou WebP");
   }
-  if (opts.file.size > MEDIA_KIND[opts.kind].maxUploadBytes) {
-    throw new Error(mediaMaxUploadError(opts.kind));
+  if (opts.file.size > MEDIA_MAX_UPLOAD_BYTES) {
+    throw new Error(mediaMaxBytesError(MEDIA_MAX_UPLOAD_BYTES));
   }
 
   const input = Buffer.from(await opts.file.arrayBuffer());

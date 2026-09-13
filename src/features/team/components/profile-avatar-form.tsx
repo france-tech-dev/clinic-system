@@ -17,7 +17,8 @@ import { initialsFromName } from "@/shared/lib/initials-from-name";
 import {
   isManagedUploadUrl,
   isMediaUploadMimeType,
-  MEDIA_KIND,
+  MEDIA_MAX_SOURCE_BYTES,
+  mediaMaxBytesError,
 } from "@/shared/lib/media/media.constants";
 
 export function ProfileAvatarForm({
@@ -41,7 +42,7 @@ export function ProfileAvatarForm({
   const previewUrl = imageUrl
     ? `${imageUrl}${imageUrl.includes("?") ? "&" : "?"}v=${cacheKey}`
     : null;
-  const maxMb = MEDIA_KIND.avatar.maxUploadBytes / (1024 * 1024);
+  const maxSourceMb = MEDIA_MAX_SOURCE_BYTES / (1024 * 1024);
 
   function clearCropSrc() {
     setCropSrc((prev) => {
@@ -76,8 +77,8 @@ export function ProfileAvatarForm({
       toast.error("Escolha uma imagem PNG, JPEG ou WebP");
       return;
     }
-    if (file.size > MEDIA_KIND.avatar.maxUploadBytes) {
-      toast.error(`A foto pode ter no máximo ${maxMb} MB`);
+    if (file.size > MEDIA_MAX_SOURCE_BYTES) {
+      toast.error(mediaMaxBytesError(MEDIA_MAX_SOURCE_BYTES));
       return;
     }
 
@@ -122,7 +123,7 @@ export function ProfileAvatarForm({
 
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <p className="text-xs text-muted-foreground">
-            JPG ou PNG · até {maxMb} MB
+            JPG ou PNG · até {maxSourceMb} MB
           </p>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -178,10 +179,10 @@ export function ProfileAvatarForm({
         imageSrc={cropSrc}
         onOpenChange={handleCropOpenChange}
         onConfirm={uploadAvatar}
+        kind="avatar"
         title="Ajustar foto"
         description="Enquadra o rosto no quadrado e confirma."
         defaultAspect="1:1"
-        outputFileName="user-avatar.png"
       />
     </div>
   );

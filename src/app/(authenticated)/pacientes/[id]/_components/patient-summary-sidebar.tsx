@@ -176,20 +176,23 @@ export function PatientSummaryIdentity({
   onPhotoChanged?: (patient: PatientDTO) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col items-center gap-3 text-center">
       <PatientPhotoControl
         key={patient.id}
         patientId={patient.id}
         name={patient.name}
         photoUrl={patient.photoUrl}
+        size="xl"
         disabled={pending}
         onChanged={onPhotoChanged}
       />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 w-full">
         <p className="truncate text-base font-medium text-foreground">
           {patient.name}
         </p>
-        <PatientStatusBadge status={patient.status} className="mt-1.5" />
+        <div className="mt-1.5 flex justify-center">
+          <PatientStatusBadge status={patient.status} />
+        </div>
       </div>
     </div>
   );

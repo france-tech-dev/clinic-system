@@ -13,34 +13,30 @@ export type MediaUploadMimeType = (typeof MEDIA_UPLOAD_MIME_TYPES)[number];
 
 export type MediaKind = "avatar" | "logo";
 
+/** Original no picker (fotos de telemóvel). */
+export const MEDIA_MAX_SOURCE_BYTES = 20 * 1024 * 1024;
+
+/** Após resize no cliente; alinhado ao default das Server Actions (~1 MB). */
+export const MEDIA_MAX_UPLOAD_BYTES = 1 * 1024 * 1024;
+
 export const MEDIA_KIND = {
   avatar: {
-    /** Lado do quadrado (crop cover). */
     sizePx: 256,
     square: true,
-    maxUploadBytes: 5 * 1024 * 1024,
     webpQuality: 82,
   },
   logo: {
-    /** Lado maior (fit inside, sem upscale). */
     sizePx: 1024,
     square: false,
-    maxUploadBytes: 5 * 1024 * 1024,
     webpQuality: 85,
   },
 } as const satisfies Record<
   MediaKind,
-  {
-    sizePx: number;
-    square: boolean;
-    maxUploadBytes: number;
-    webpQuality: number;
-  }
+  { sizePx: number; square: boolean; webpQuality: number }
 >;
 
-export function mediaMaxUploadError(kind: MediaKind): string {
-  const mb = MEDIA_KIND[kind].maxUploadBytes / (1024 * 1024);
-  return `A imagem deve ter no máximo ${mb} MB`;
+export function mediaMaxBytesError(maxBytes: number): string {
+  return `A imagem deve ter no máximo ${maxBytes / (1024 * 1024)} MB`;
 }
 
 /** Prefixo local em /public e key prefix no R2. */
@@ -48,7 +44,6 @@ export const MEDIA_UPLOADS_PREFIX = "uploads";
 
 export type ManagedUploadScope = "organizations" | "avatars" | "patients";
 
-/** URL gerida pela app (path local ou R2) para um scope de upload. */
 export function isManagedUploadUrl(
   url: string | null | undefined,
   scope: ManagedUploadScope,
