@@ -95,9 +95,14 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-/** Shell for long dialogs: sticky header/footer + scrollable body. */
+/** Shell for long dialogs: sticky header/footer + scrollable body.
+ *  Mobile: bottom sheet (avoids center+translate clipping). Desktop: centered. */
 const dialogScrollableClassName =
-  "flex max-h-[min(90dvh,100%)] w-full flex-col gap-0 overflow-hidden p-0"
+  "flex min-h-0 w-full flex-col gap-0 overflow-hidden p-0 " +
+  "max-sm:top-auto max-sm:bottom-0 max-sm:left-0 max-sm:right-0 " +
+  "max-sm:max-h-[min(92dvh,100%)] max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 " +
+  "max-sm:rounded-b-none max-sm:data-open:slide-in-from-bottom-10 " +
+  "sm:max-h-[min(90dvh,100%)]"
 
 const dialogScrollHeaderClassName =
   "shrink-0 border-b border-border px-4 py-4 pr-12 sm:px-6"
@@ -105,7 +110,8 @@ const dialogScrollHeaderClassName =
 const dialogScrollBodyClassName =
   "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6"
 
-const dialogScrollFooterClassName = "mx-0 mb-0 shrink-0"
+const dialogScrollFooterClassName =
+  "mx-0 mb-0 shrink-0 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))]"
 
 function DialogScrollBody({
   className,

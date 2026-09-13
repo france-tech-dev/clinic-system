@@ -351,7 +351,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 - Tokens semânticos (`bg-background`, `text-muted-foreground`) — não cores fixas
 - Altura viewport: **`dvh`**, não `vh` (mobile)
-- Dialogs longos: shell scrollável (`dialogScrollableClassName` + header/body/footer em `@/components/ui/dialog`) — não `overflow-y-auto` no `DialogContent` inteiro
+- Dialogs longos: shell scrollável (`dialogScrollableClassName` + header/body/footer em `@/components/ui/dialog`; no mobile ancora em baixo como sheet) — não `overflow-y-auto` no `DialogContent` inteiro
 - Deletes destrutivos: `DeleteConfirmDialog`
 - Ver: `.cursor/rules/ux.mdc`, `.cursor/rules/frontend.mdc`, `.cursor/rules/shadcn-components.mdc`
 
