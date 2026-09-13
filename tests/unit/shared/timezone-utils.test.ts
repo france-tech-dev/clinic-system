@@ -2,7 +2,7 @@ import {
   buildAppZonedDateTime,
   formatAppZonedDateParam,
   formatAppZonedTimeParam,
-} from "@/shared/lib/timezone-utils";
+} from "@/shared/lib/date/timezone-utils";
 import { describe, expect, it } from "vitest";
 
 describe("buildAppZonedDateTime", () => {

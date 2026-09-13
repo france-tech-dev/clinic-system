@@ -10,7 +10,7 @@ import {
 import {
   formatAppZonedDateParam,
   formatAppZonedTimeParam,
-} from "@/shared/lib/timezone-utils";
+} from "@/shared/lib/date/timezone-utils";
 import { AppointmentStatus } from "@prisma/enums";
 import { describe, expect, it } from "vitest";
 
