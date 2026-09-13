@@ -23,14 +23,12 @@ type CashPeriodFilterProps = {
   period: CashPeriod;
   onPeriodChange: (period: CashPeriod) => void;
   pending?: boolean;
-  trailing?: React.ReactNode;
 };
 
 export function CashPeriodFilter({
   period,
   onPeriodChange,
   pending = false,
-  trailing,
 }: CashPeriodFilterProps) {
   const isMonth = period.preset === "month";
   const isCurrentMonth =
@@ -118,8 +116,6 @@ export function CashPeriodFilter({
           Este mês
         </Button>
       ) : null}
-
-      {trailing}
     </div>
   );
 }

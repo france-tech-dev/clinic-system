@@ -52,14 +52,36 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export function PatientSummarySidebar({
+export function PatientStatusBadge({
+  status,
+  className,
+}: {
+  status: PatientDTO["status"];
+  className?: string;
+}) {
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        status === PatientStatus.ACTIVE && "border-primary text-primary",
+        status === PatientStatus.DISCHARGED && "border-muted-foreground",
+        status === PatientStatus.PAUSED &&
+          "border-fichario-patient text-fichario-patient",
+        className,
+      )}
+    >
+      {PATIENT_STATUS_LABEL[status]}
+    </Badge>
+  );
+}
+
+export function PatientSummaryFields({
   patient,
   clinicalEvaluationsCount,
   sessionNotesCount,
   canEditMembers,
   pending,
   onEditMembers,
-  onPhotoChanged,
 }: {
   patient: PatientDTO;
   clinicalEvaluationsCount: number;
@@ -67,46 +89,12 @@ export function PatientSummarySidebar({
   canEditMembers: boolean;
   pending: boolean;
   onEditMembers: () => void;
-  onPhotoChanged?: (patient: PatientDTO) => void;
 }) {
   const age = ageFromBirthDate(patient.birthDate);
   const notes = patient.notes.trim();
 
   return (
-    <aside className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-3.5 xl:sticky xl:top-0 xl:self-start">
-      <div className="flex items-start gap-3">
-        <PatientPhotoControl
-          key={patient.id}
-          patientId={patient.id}
-          name={patient.name}
-          photoUrl={patient.photoUrl}
-          disabled={pending}
-          onChanged={onPhotoChanged}
-        />
-
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="truncate text-base font-medium text-foreground">
-            {patient.name}
-          </p>
-          <Badge
-            variant="outline"
-            className={cn(
-              "mt-1.5",
-              patient.status === PatientStatus.ACTIVE &&
-                "border-primary text-primary",
-              patient.status === PatientStatus.DISCHARGED &&
-                "border-muted-foreground",
-              patient.status === PatientStatus.PAUSED &&
-                "border-fichario-patient text-fichario-patient",
-            )}
-          >
-            {PATIENT_STATUS_LABEL[patient.status]}
-          </Badge>
-        </div>
-      </div>
-
-      <Separator />
-
+    <div className="flex flex-col gap-3.5">
       <Section title="Identificação">
         <div className="flex flex-col gap-2">
           <Field label="Nascimento">
@@ -174,6 +162,72 @@ export function PatientSummarySidebar({
           {patient.price != null ? formatBrl(patient.price) : "Não definido"}
         </Field>
       </Section>
+    </div>
+  );
+}
+
+export function PatientSummaryIdentity({
+  patient,
+  pending,
+  onPhotoChanged,
+}: {
+  patient: PatientDTO;
+  pending: boolean;
+  onPhotoChanged?: (patient: PatientDTO) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <PatientPhotoControl
+        key={patient.id}
+        patientId={patient.id}
+        name={patient.name}
+        photoUrl={patient.photoUrl}
+        disabled={pending}
+        onChanged={onPhotoChanged}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-base font-medium text-foreground">
+          {patient.name}
+        </p>
+        <PatientStatusBadge status={patient.status} className="mt-1.5" />
+      </div>
+    </div>
+  );
+}
+
+export function PatientSummarySidebar({
+  patient,
+  clinicalEvaluationsCount,
+  sessionNotesCount,
+  canEditMembers,
+  pending,
+  onEditMembers,
+  onPhotoChanged,
+}: {
+  patient: PatientDTO;
+  clinicalEvaluationsCount: number;
+  sessionNotesCount: number;
+  canEditMembers: boolean;
+  pending: boolean;
+  onEditMembers: () => void;
+  onPhotoChanged?: (patient: PatientDTO) => void;
+}) {
+  return (
+    <aside className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-3.5 xl:sticky xl:top-0 xl:self-start">
+      <PatientSummaryIdentity
+        patient={patient}
+        pending={pending}
+        onPhotoChanged={onPhotoChanged}
+      />
+      <Separator />
+      <PatientSummaryFields
+        patient={patient}
+        clinicalEvaluationsCount={clinicalEvaluationsCount}
+        sessionNotesCount={sessionNotesCount}
+        canEditMembers={canEditMembers}
+        pending={pending}
+        onEditMembers={onEditMembers}
+      />
     </aside>
   );
 }

@@ -38,6 +38,7 @@ import { LinksPublicosTab } from "./_components/links-publicos-tab";
 import { usePatientDetail } from "./_components/hooks/use-patient-detail";
 import { PatientDetailDialogs } from "./_components/patient-detail-dialogs";
 import { PatientDetailHeader } from "./_components/patient-detail-header";
+import { PatientMobileSummary } from "./_components/patient-mobile-summary";
 import { PatientSummarySidebar } from "./_components/patient-summary-sidebar";
 import { PatientDetailTabs } from "./_components/patient-detail-tabs";
 import type { PatientDetailTab } from "./_components/patient-detail-types";
@@ -139,7 +140,7 @@ export function PacienteDetailClient({
   return (
     <div className="flex flex-col gap-4">
       <div className="grid items-start gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <div className="no-print order-2 xl:order-1">
+        <div className="no-print hidden xl:block">
           <PatientSummarySidebar
             patient={vm.detail.patient}
             clinicalEvaluationsCount={vm.detail.clinicalEvaluations.length}
@@ -151,7 +152,7 @@ export function PacienteDetailClient({
           />
         </div>
 
-        <div className="order-1 flex min-w-0 flex-col gap-4 xl:order-2">
+        <div className="flex min-w-0 flex-col gap-4">
           <PatientDetailHeader
             patient={vm.detail.patient}
             isLeadership={isLeadership}
@@ -161,6 +162,18 @@ export function PacienteDetailClient({
             onRemove={vm.removePatient}
             onRequestStatusChange={requestStatusChange}
           />
+
+          <div className="no-print xl:hidden">
+            <PatientMobileSummary
+              patient={vm.detail.patient}
+              clinicalEvaluationsCount={vm.detail.clinicalEvaluations.length}
+              sessionNotesCount={vm.detail.sessionNotes.length}
+              canEditMembers={isLeadership}
+              pending={busy}
+              onEditMembers={() => setAssignOpen(true)}
+              onPhotoChanged={vm.setPatient}
+            />
+          </div>
 
           <PatientDetailTabs tab={vm.tab} onTabChange={vm.setTab} />
 

@@ -2,7 +2,14 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Download, Plus } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  Download,
+  ListFilter,
+  Plus,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { CashBalanceSidePanel } from "@/features/finance/components/cash-balance-side-panel";
 import { CashFlowChart } from "@/features/finance/components/cash-flow-chart";
@@ -115,6 +122,7 @@ function CaixaClientBody({
   const [defaultType, setDefaultType] = useState<CashTransactionType>(
     CashTransactionType.INCOME,
   );
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [navPending, startNavTransition] = useTransition();
   const [postingId, setPostingId] = useState<string | null>(null);
@@ -145,7 +153,13 @@ function CaixaClientBody({
   );
 
   const hasActiveFilters =
-    listView !== "all" || methodFilter !== CASH_METHOD_FILTER_ALL;
+    listView !== "all" ||
+    methodFilter !== CASH_METHOD_FILTER_ALL ||
+    memberFilter !== MEMBER_FILTER_ALL;
+  const activeFilterCount =
+    (listView !== "all" ? 1 : 0) +
+    (methodFilter !== CASH_METHOD_FILTER_ALL ? 1 : 0) +
+    (memberFilter !== MEMBER_FILTER_ALL ? 1 : 0);
 
   function buildUrl(
     period: CashPeriod,
@@ -189,7 +203,7 @@ function CaixaClientBody({
       router.push(
         buildUrl(
           initial.period,
-          memberFilter,
+          MEMBER_FILTER_ALL,
           "all",
           CASH_METHOD_FILTER_ALL,
         ),
@@ -244,7 +258,7 @@ function CaixaClientBody({
         methodFilter !== CASH_METHOD_FILTER_ALL
           ? ` · ${cashPaymentMethodLabel(methodFilter)}`
           : ""
-      }`
+      }${filterMemberName ? ` · ${filterMemberName}` : ""}`
     : "Lançamentos do período";
 
   return (
@@ -273,71 +287,6 @@ function CaixaClientBody({
             period={initial.period}
             onPeriodChange={navigatePeriod}
             pending={navPending}
-            trailing={
-              <>
-                <Select
-                  value={listView}
-                  onValueChange={(v) => {
-                    if (v) changeListView(v as CashListView);
-                  }}
-                  disabled={navPending}
-                >
-                  <SelectTrigger
-                    className="w-[10.5rem]"
-                    aria-label="Filtrar por tipo"
-                  >
-                    <SelectValue placeholder="Tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CASH_LIST_VIEWS.map((v) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={methodFilter}
-                  onValueChange={(v) => {
-                    if (v) changeMethodFilter(v as CashMethodFilter);
-                  }}
-                  disabled={navPending}
-                >
-                  <SelectTrigger
-                    className="w-[10.5rem]"
-                    aria-label="Filtrar por método"
-                  >
-                    <SelectValue placeholder="Método" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={CASH_METHOD_FILTER_ALL}>
-                      Todos os métodos
-                    </SelectItem>
-                    {CASH_PAYMENT_METHODS.map((m) => (
-                      <SelectItem key={m.id} value={m.id}>
-                        {m.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {members.length > 0 ? (
-                  <EntityCombobox
-                    options={members}
-                    value={memberFilter}
-                    onValueChange={changeMemberFilter}
-                    placeholder="Profissional"
-                    emptyText="Nenhum profissional encontrado"
-                    extraOption={{
-                      id: MEMBER_FILTER_ALL,
-                      name: "Todos os profissionais",
-                    }}
-                    className="w-56"
-                    aria-label="Filtrar por profissional"
-                    disabled={navPending}
-                  />
-                ) : null}
-              </>
-            }
           />
           <div className="flex flex-wrap gap-2">
             <Button
@@ -367,6 +316,109 @@ function CaixaClientBody({
               Entrada
             </Button>
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="order-1 min-w-0 flex-1 sm:hidden"
+            aria-expanded={filtersOpen}
+            disabled={navPending}
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            <ListFilter data-icon="inline-start" />
+            Filtros
+            {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            <ChevronDown
+              data-icon="inline-end"
+              className={filtersOpen ? "rotate-180" : undefined}
+            />
+          </Button>
+
+          <div
+            className={cn(
+              "order-3 w-full flex-col gap-2 sm:order-1 sm:flex sm:w-auto sm:flex-1 sm:flex-row sm:flex-wrap sm:items-center",
+              filtersOpen ? "flex" : "hidden",
+            )}
+          >
+            <Select
+              value={listView}
+              onValueChange={(v) => {
+                if (v) changeListView(v as CashListView);
+              }}
+              disabled={navPending}
+            >
+              <SelectTrigger
+                className="w-full sm:w-[10.5rem]"
+                aria-label="Filtrar por tipo"
+              >
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                {CASH_LIST_VIEWS.map((v) => (
+                  <SelectItem key={v.id} value={v.id}>
+                    {v.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={methodFilter}
+              onValueChange={(v) => {
+                if (v) changeMethodFilter(v as CashMethodFilter);
+              }}
+              disabled={navPending}
+            >
+              <SelectTrigger
+                className="w-full sm:w-[10.5rem]"
+                aria-label="Filtrar por método"
+              >
+                <SelectValue placeholder="Método" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={CASH_METHOD_FILTER_ALL}>
+                  Todos os métodos
+                </SelectItem>
+                {CASH_PAYMENT_METHODS.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {members.length > 0 ? (
+              <EntityCombobox
+                options={members}
+                value={memberFilter}
+                onValueChange={changeMemberFilter}
+                placeholder="Profissional"
+                emptyText="Nenhum profissional encontrado"
+                extraOption={{
+                  id: MEMBER_FILTER_ALL,
+                  name: "Todos os profissionais",
+                }}
+                className="w-full sm:w-56"
+                aria-label="Filtrar por profissional"
+                disabled={navPending}
+              />
+            ) : null}
+          </div>
+
+          {hasActiveFilters ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="order-2 shrink-0 sm:order-3"
+              disabled={navPending}
+              onClick={clearFilters}
+            >
+              <X data-icon="inline-start" />
+              <span className="hidden sm:inline">Limpar filtros</span>
+            </Button>
+          ) : null}
         </div>
       </div>
 
@@ -398,17 +450,6 @@ function CaixaClientBody({
       <div className="rounded-xl border border-border bg-card">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
           <p className="text-sm font-medium">{listTitle}</p>
-          {hasActiveFilters ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={navPending}
-              onClick={clearFilters}
-            >
-              Limpar filtros
-            </Button>
-          ) : null}
         </div>
 
         {initial.transactions.length === 0 ? (

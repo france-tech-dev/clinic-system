@@ -4,7 +4,12 @@ import { useId, useRef, useState, useTransition } from "react";
 import { IconCamera, IconTrash } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { ImageCropDialog } from "@/components/image-crop";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -18,18 +23,21 @@ import {
   isMediaUploadMimeType,
   MEDIA_KIND,
 } from "@/shared/lib/media/media.constants";
+import { cn } from "@/shared/lib/utils";
 
 export function PatientPhotoControl({
   patientId,
   name,
   photoUrl,
   disabled,
+  className,
   onChanged,
 }: {
   patientId: string;
   name: string;
   photoUrl: string | null;
   disabled?: boolean;
+  className?: string;
   onChanged?: (patient: PatientDTO) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -107,45 +115,44 @@ export function PatientPhotoControl({
   }
 
   return (
-    <div className="flex flex-col items-start gap-2">
-      <div className="relative">
-        <Avatar size="lg" className="size-14">
+    <div className={cn("relative shrink-0", className)}>
+      <button
+        type="button"
+        disabled={busy}
+        className={cn(
+          "rounded-full outline-none transition-opacity",
+          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          busy ? "opacity-70" : "hover:opacity-90",
+        )}
+        aria-label={
+          hasCustomPhoto ? `Alterar foto de ${name}` : `Adicionar foto de ${name}`
+        }
+        onClick={() => inputRef.current?.click()}
+      >
+        <Avatar size="lg" className="size-16">
           {previewUrl ? <AvatarImage src={previewUrl} alt={name} /> : null}
-          <AvatarFallback>{initialsFromName(name)}</AvatarFallback>
+          <AvatarFallback className="text-sm">
+            {initialsFromName(name)}
+          </AvatarFallback>
+          <AvatarBadge className="size-6 bg-background text-foreground ring-background [&>svg]:size-3.5">
+            {pending ? <Spinner className="size-3.5" /> : <IconCamera />}
+          </AvatarBadge>
         </Avatar>
-        {pending ? (
-          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/70">
-            <Spinner className="size-4" />
-          </span>
-        ) : null}
-      </div>
+      </button>
 
-      <div className="flex flex-wrap gap-1.5">
+      {hasCustomPhoto ? (
         <Button
           type="button"
           variant="outline"
-          size="sm"
-          className="h-7 px-2 text-xs"
+          size="icon-sm"
+          className="absolute -top-1 -right-1 size-6 rounded-full border-border bg-card shadow-sm"
           disabled={busy}
-          onClick={() => inputRef.current?.click()}
+          aria-label={`Remover foto de ${name}`}
+          onClick={removePhoto}
         >
-          <IconCamera data-icon="inline-start" />
-          Foto
+          <IconTrash className="size-3" />
         </Button>
-        {hasCustomPhoto ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 text-xs"
-            disabled={busy}
-            onClick={removePhoto}
-          >
-            <IconTrash data-icon="inline-start" />
-            Remover
-          </Button>
-        ) : null}
-      </div>
+      ) : null}
 
       <input
         id={fileInputId}
@@ -153,7 +160,7 @@ export function PatientPhotoControl({
         type="file"
         accept="image/png,image/jpeg,image/webp"
         className="sr-only"
-        aria-label={`Escolher foto de ${name}`}
+        tabIndex={-1}
         onChange={(e) => {
           const file = e.target.files?.[0];
           e.target.value = "";
