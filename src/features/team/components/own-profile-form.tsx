@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MemberPatientsIndicator } from "@/features/team/components/member-patients-indicator";
+import { ProfileAvatarForm } from "@/features/team/components/profile-avatar-form";
 import { updateOwnProfileAction } from "@/domains/team/team.actions";
 import {
   updateOwnProfileSchema,
@@ -81,6 +82,12 @@ export function OwnProfileForm({
 
   return (
     <div className="flex max-w-lg flex-col gap-6">
+      <ProfileAvatarForm
+        imageUrl={member.imageUrl}
+        name={watchedName || member.name}
+        onChanged={setMember}
+      />
+
       <div className="flex flex-col gap-4 rounded-md border border-border bg-card p-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-sm font-medium">Dados pessoais</h2>

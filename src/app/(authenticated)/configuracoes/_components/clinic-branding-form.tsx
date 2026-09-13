@@ -18,7 +18,12 @@ import {
 import type { PrintBranding } from "@/domains/settings/settings.types";
 import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
-import { isCustomOrganizationLogo, ORGANIZATION_LOGO_MAX_BYTES } from "@/shared/lib/organization-logo";
+import {
+  isManagedUploadUrl,
+  isMediaUploadMimeType,
+  MEDIA_KIND,
+} from "@/shared/lib/media/media.constants";
+import { ImageCropDialog } from "@/components/image-crop";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -40,6 +45,8 @@ export function ClinicBrandingForm({
   const fileInputId = useId();
   const [branding, setBranding] = useState(initial);
   const [logoVersion, setLogoVersion] = useState(0);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [savePending, startSaveTransition] = useTransition();
   const [logoPending, startLogoTransition] = useTransition();
 
@@ -50,9 +57,16 @@ export function ClinicBrandingForm({
 
   const clinicNameWatch =
     useWatch({ control: form.control, name: "clinicName" }) ?? "";
-  const hasCustomLogo = isCustomOrganizationLogo(branding.logoUrl);
+  const hasCustomLogo = isManagedUploadUrl(branding.logoUrl, "organizations");
   const previewUrl = `${branding.logoUrl}?v=${logoVersion}`;
   const isDirty = form.formState.isDirty;
+
+  function clearCropSrc() {
+    setCropSrc((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  }
 
   function onSubmit(data: OrganizationBrandingInput) {
     startSaveTransition(async () => {
@@ -82,6 +96,28 @@ export function ClinicBrandingForm({
       setLogoVersion(Date.now());
       toast.success("Logo atualizada");
     });
+  }
+
+  function openCropForFile(file: File) {
+    if (!isMediaUploadMimeType(file.type)) {
+      toast.error("Use PNG, JPEG ou WebP");
+      return;
+    }
+    if (file.size > MEDIA_KIND.logo.maxUploadBytes) {
+      toast.error(
+        `A imagem deve ter no máximo ${MEDIA_KIND.logo.maxUploadBytes / (1024 * 1024)} MB`,
+      );
+      return;
+    }
+
+    clearCropSrc();
+    setCropSrc(URL.createObjectURL(file));
+    setCropOpen(true);
+  }
+
+  function handleCropOpenChange(open: boolean) {
+    setCropOpen(open);
+    if (!open) clearCropSrc();
   }
 
   function removeLogo() {
@@ -176,7 +212,8 @@ export function ClinicBrandingForm({
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <p className="text-xs text-muted-foreground">
                   PNG, JPEG ou WebP · máx.{" "}
-                  {ORGANIZATION_LOGO_MAX_BYTES / (1024 * 1024)} MB
+                  {MEDIA_KIND.logo.maxUploadBytes / (1024 * 1024)} MB · podes
+                  recortar antes de enviar
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Button
@@ -228,7 +265,7 @@ export function ClinicBrandingForm({
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 e.target.value = "";
-                if (file) uploadLogo(file);
+                if (file) openCropForFile(file);
               }}
             />
           </div>
@@ -246,6 +283,19 @@ export function ClinicBrandingForm({
           </div>
         </form>
       </Form>
+
+      <ImageCropDialog
+        open={cropOpen}
+        imageSrc={cropSrc}
+        onOpenChange={handleCropOpenChange}
+        onConfirm={(file) => {
+          uploadLogo(file);
+        }}
+        title="Recortar logo"
+        description="Escolhe a proporção e a área antes de enviar. A imagem será convertida para WebP no servidor."
+        defaultAspect="free"
+        outputFileName="organization-logo.png"
+      />
     </div>
   );
 }

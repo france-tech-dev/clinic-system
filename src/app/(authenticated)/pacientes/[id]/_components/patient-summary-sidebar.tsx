@@ -2,15 +2,14 @@
 
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { PatientPhotoControl } from "@/features/patient/components/patient-photo-control";
 import { PatientProfessionalsIndicator } from "@/features/patient/components/patient-professionals-indicator";
 import type { PatientDTO } from "@/domains/patient/patient.types";
 import { PATIENT_STATUS_LABEL } from "@/shared/constants/patient-status";
 import { patientPricingTypeLabel } from "@/shared/constants/patient-pricing";
 import { PATIENT_SEX_LABEL } from "@/shared/constants/patient-sex";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
-import { initialsFromName } from "@/shared/lib/initials-from-name";
 import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";
 import { PatientStatus } from "@prisma/enums";
@@ -60,6 +59,7 @@ export function PatientSummarySidebar({
   canEditMembers,
   pending,
   onEditMembers,
+  onPhotoChanged,
 }: {
   patient: PatientDTO;
   clinicalEvaluationsCount: number;
@@ -67,6 +67,7 @@ export function PatientSummarySidebar({
   canEditMembers: boolean;
   pending: boolean;
   onEditMembers: () => void;
+  onPhotoChanged?: (patient: PatientDTO) => void;
 }) {
   const age = ageFromBirthDate(patient.birthDate);
   const notes = patient.notes.trim();
@@ -74,14 +75,16 @@ export function PatientSummarySidebar({
   return (
     <aside className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-3.5 xl:sticky xl:top-0 xl:self-start">
       <div className="flex items-start gap-3">
-        <Avatar size="lg">
-          {patient.photoUrl ? (
-            <AvatarImage src={patient.photoUrl} alt={patient.name} />
-          ) : null}
-          <AvatarFallback>{initialsFromName(patient.name)}</AvatarFallback>
-        </Avatar>
+        <PatientPhotoControl
+          key={patient.id}
+          patientId={patient.id}
+          name={patient.name}
+          photoUrl={patient.photoUrl}
+          disabled={pending}
+          onChanged={onPhotoChanged}
+        />
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 pt-0.5">
           <p className="truncate text-base font-medium text-foreground">
             {patient.name}
           </p>

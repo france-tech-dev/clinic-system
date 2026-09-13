@@ -28,11 +28,20 @@ import {
   deleteProfessional,
   getOwnTeamMember,
   listTeamMembers,
+  removeOwnAvatar,
+  saveOwnAvatar,
   setMemberPatients,
   updateOwnProfile,
   updateProfessional,
 } from "./team.service";
 import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
+
+function revalidateOwnProfilePaths() {
+  revalidatePath(paths.perfil);
+  revalidatePath(paths.profissionais);
+  revalidatePath(paths.pacientes, "layout");
+  revalidatePath("/", "layout");
+}
 
 export async function listTeamMembersAction(): Promise<
   ActionResult<TeamMemberDTO[]>
@@ -69,9 +78,40 @@ export async function updateOwnProfileAction(
     const payload = AppError.parse(updateOwnProfileSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const data = await updateOwnProfile(organizationId, userId, payload);
-    revalidatePath(paths.perfil);
-    revalidatePath(paths.profissionais);
-    revalidatePath(paths.pacientes, "layout");
+    revalidateOwnProfilePaths();
+    return ok(data);
+  } catch (error) {
+    return AppError.result(error);
+  }
+}
+
+export async function uploadOwnAvatarAction(
+  formData: FormData,
+): Promise<ActionResult<TeamMemberDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const file = formData.get("avatar");
+    if (!(file instanceof File) || file.size === 0) {
+      throw new AppError("Selecione uma imagem");
+    }
+
+    const { organizationId, userId } = await requireOrgWrite();
+    const data = await saveOwnAvatar(organizationId, userId, file);
+    revalidateOwnProfilePaths();
+    return ok(data);
+  } catch (error) {
+    return AppError.result(error);
+  }
+}
+
+export async function removeOwnAvatarAction(): Promise<
+  ActionResult<TeamMemberDTO>
+> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const { organizationId, userId } = await requireOrgWrite();
+    const data = await removeOwnAvatar(organizationId, userId);
+    revalidateOwnProfilePaths();
     return ok(data);
   } catch (error) {
     return AppError.result(error);

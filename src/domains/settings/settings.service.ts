@@ -4,9 +4,9 @@ import {
   saveOrganizationLogoImage,
 } from "@/shared/lib/media";
 import {
-  isCustomOrganizationLogo,
-  isOrganizationLogoMimeType,
-} from "@/shared/lib/organization-logo";
+  isManagedUploadUrl,
+  isMediaUploadMimeType,
+} from "@/shared/lib/media/media.constants";
 import { settingsRepository } from "./settings.repository";
 import {
   EMPTY_PROFESSIONAL,
@@ -155,7 +155,7 @@ export async function saveOrganizationLogo(
   organizationId: string,
   file: File,
 ): Promise<PrintBranding> {
-  if (!isOrganizationLogoMimeType(file.type)) {
+  if (!isMediaUploadMimeType(file.type)) {
     throw new Error("Use PNG, JPEG ou WebP");
   }
 
@@ -170,7 +170,10 @@ export async function saveOrganizationLogo(
     logoUrl,
   );
 
-  if (isCustomOrganizationLogo(previousLogo) && previousLogo !== logoUrl) {
+  if (
+    isManagedUploadUrl(previousLogo, "organizations") &&
+    previousLogo !== logoUrl
+  ) {
     await deleteManagedImage(previousLogo);
   }
 
@@ -189,7 +192,7 @@ export async function removeOrganizationLogo(
     null,
   );
 
-  if (isCustomOrganizationLogo(previousLogo)) {
+  if (isManagedUploadUrl(previousLogo, "organizations")) {
     await deleteManagedImage(previousLogo);
   }
 

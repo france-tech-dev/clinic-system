@@ -31,7 +31,9 @@ import {
   deleteSessionNote,
   getPatientDetail,
   listPatients,
+  removePatientPhoto,
   resolveAuthorMemberId,
+  savePatientPhoto,
   setPatientMembers,
   setPatientStatus,
   updateClinicalEvaluation,
@@ -178,6 +180,46 @@ export async function deletePatientAction(
     const data = await deletePatient(organizationId, id);
     if (!data) throw new AppError("Paciente não encontrado");
     revalidatePatient();
+    return ok(data);
+  } catch (error) {
+    return AppError.result(error);
+  }
+}
+
+export async function uploadPatientPhotoAction(
+  formData: FormData,
+): Promise<ActionResult<PatientDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const patientId = formData.get("patientId");
+    const file = formData.get("photo");
+    if (typeof patientId !== "string" || !patientId.trim()) {
+      throw new AppError("Paciente inválido");
+    }
+    if (!(file instanceof File) || file.size === 0) {
+      throw new AppError("Selecione uma imagem");
+    }
+
+    const { organizationId } = await requireOrgWrite();
+    const data = await savePatientPhoto(organizationId, patientId.trim(), file);
+    if (!data) throw new AppError("Paciente não encontrado");
+    revalidatePatient(data.id);
+    return ok(data);
+  } catch (error) {
+    return AppError.result(error);
+  }
+}
+
+export async function removePatientPhotoAction(
+  input: unknown,
+): Promise<ActionResult<PatientDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const { id } = AppError.parse(patientIdSchema, input);
+    const { organizationId } = await requireOrgWrite();
+    const data = await removePatientPhoto(organizationId, id);
+    if (!data) throw new AppError("Paciente não encontrado");
+    revalidatePatient(id);
     return ok(data);
   } catch (error) {
     return AppError.result(error);

@@ -90,7 +90,7 @@ export async function purgeOrphanManagedUploadsAction(): Promise<
   try {
     await requirePlatformAdmin();
 
-    const [organizations, users] = await Promise.all([
+    const [organizations, users, patients] = await Promise.all([
       db.organization.findMany({
         where: { logo: { not: null } },
         select: { logo: true },
@@ -99,11 +99,16 @@ export async function purgeOrphanManagedUploadsAction(): Promise<
         where: { image: { not: null } },
         select: { image: true },
       }),
+      db.patient.findMany({
+        where: { photoUrl: { not: null } },
+        select: { photoUrl: true },
+      }),
     ]);
 
     const result = await purgeOrphanManagedUploads([
       ...organizations.map((row) => row.logo),
       ...users.map((row) => row.image),
+      ...patients.map((row) => row.photoUrl),
     ]);
 
     return ok(result);

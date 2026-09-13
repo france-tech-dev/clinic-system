@@ -1,6 +1,11 @@
 import { getHealthProfession } from "@/shared/constants/professions";
 import { auth } from "@/shared/lib/auth";
 import { formatCivilDateParam } from "@/shared/lib/date/civil-date-param";
+import { deleteManagedImage, saveUserAvatarImage } from "@/shared/lib/media";
+import {
+  isManagedUploadUrl,
+  isMediaUploadMimeType,
+} from "@/shared/lib/media/media.constants";
 import { serializeMemberProfessionalMetadata } from "@/shared/types/professional";
 import { MemberStatus, Role } from "@prisma/enums";
 import { teamRepository } from "./team.repository";
@@ -314,6 +319,62 @@ export async function updateOwnProfile(
     throw new Error("Não foi possível atualizar o perfil");
   }
   return toTeamMemberDTO(updated);
+}
+
+export async function saveOwnAvatar(
+  organizationId: string,
+  userId: string,
+  file: File,
+): Promise<TeamMemberDTO> {
+  if (!isMediaUploadMimeType(file.type)) {
+    throw new Error("Use PNG, JPEG ou WebP");
+  }
+
+  const member = await getOwnTeamMember(organizationId, userId);
+  if (!member) {
+    throw new Error("Membro não encontrado nesta clínica");
+  }
+
+  const previous = member.imageUrl;
+  const imageUrl = await saveUserAvatarImage(userId, file);
+  await teamRepository.updateUserImage(userId, imageUrl);
+
+  if (
+    previous &&
+    isManagedUploadUrl(previous, "avatars") &&
+    previous !== imageUrl
+  ) {
+    await deleteManagedImage(previous);
+  }
+
+  const updated = await getOwnTeamMember(organizationId, userId);
+  if (!updated) {
+    throw new Error("Não foi possível atualizar a foto");
+  }
+  return updated;
+}
+
+export async function removeOwnAvatar(
+  organizationId: string,
+  userId: string,
+): Promise<TeamMemberDTO> {
+  const member = await getOwnTeamMember(organizationId, userId);
+  if (!member) {
+    throw new Error("Membro não encontrado nesta clínica");
+  }
+
+  const previous = member.imageUrl;
+  await teamRepository.updateUserImage(userId, null);
+
+  if (previous && isManagedUploadUrl(previous, "avatars")) {
+    await deleteManagedImage(previous);
+  }
+
+  const updated = await getOwnTeamMember(organizationId, userId);
+  if (!updated) {
+    throw new Error("Não foi possível remover a foto");
+  }
+  return updated;
 }
 
 export async function changeForcedPassword(

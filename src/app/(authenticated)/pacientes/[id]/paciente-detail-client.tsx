@@ -147,6 +147,7 @@ export function PacienteDetailClient({
             canEditMembers={isLeadership}
             pending={busy}
             onEditMembers={() => setAssignOpen(true)}
+            onPhotoChanged={vm.setPatient}
           />
         </div>
 

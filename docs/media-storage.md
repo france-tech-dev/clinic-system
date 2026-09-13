@@ -20,7 +20,9 @@ import {
 - Driver default: **local** → `public/uploads/...`
 - Com `OBJECT_STORAGE_DRIVER=r2` → Cloudflare R2 (mesmo contrato `ObjectStorage`)
 - Logo em `/configuracoes` já passa por `processImageToWebp` + storage
-- Plataforma (`/plataforma`): botão **Limpar órfãos** — apaga `uploads/` sem referência em `Organization.logo` / `User.image`
+- Plataforma (`/plataforma`): botão **Limpar órfãos** — apaga `uploads/` sem referência em `Organization.logo` / `User.image` / `Patient.photoUrl`
+- Perfil (`/perfil`): foto com crop 1:1 → WebP 256² → `User.image`
+- Paciente (sidebar): foto com crop 1:1 → WebP 256² → `Patient.photoUrl`
 
 ## Ligar Cloudflare R2
 

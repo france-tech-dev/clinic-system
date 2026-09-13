@@ -182,11 +182,28 @@ export const patientRepository = {
         name: data.name,
         birthDate: parseCivilDateParam(data.birthDate),
         sex: data.sex ?? PatientSex.NOT_INFORMED,
-        photoUrl: data.photoUrl ?? null,
         notes: data.notes ?? "",
         pricingType: data.pricingType ?? PatientPricingType.SESSION,
         price: data.price ?? null,
       },
+      include: patientListInclude,
+    });
+  },
+
+  async updatePhotoUrl(
+    organizationId: string,
+    id: string,
+    photoUrl: string | null,
+  ) {
+    const existing = await db.patient.findFirst({
+      where: { id, organizationId },
+      select: { id: true, photoUrl: true },
+    });
+    if (!existing) return null;
+
+    return db.patient.update({
+      where: { id },
+      data: { photoUrl },
       include: patientListInclude,
     });
   },

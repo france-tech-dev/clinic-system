@@ -46,6 +46,17 @@ export function mediaMaxUploadError(kind: MediaKind): string {
 /** Prefixo local em /public e key prefix no R2. */
 export const MEDIA_UPLOADS_PREFIX = "uploads";
 
+export type ManagedUploadScope = "organizations" | "avatars" | "patients";
+
+/** URL gerida pela app (path local ou R2) para um scope de upload. */
+export function isManagedUploadUrl(
+  url: string | null | undefined,
+  scope: ManagedUploadScope,
+): boolean {
+  if (!url) return false;
+  return url.includes(`/${MEDIA_UPLOADS_PREFIX}/${scope}/`);
+}
+
 export function isMediaUploadMimeType(
   mime: string,
 ): mime is MediaUploadMimeType {
@@ -58,4 +69,8 @@ export function organizationLogoKey(organizationId: string): string {
 
 export function userAvatarKey(userId: string): string {
   return `${MEDIA_UPLOADS_PREFIX}/avatars/${userId}${MEDIA_OUTPUT_EXTENSION}`;
+}
+
+export function patientPhotoKey(patientId: string): string {
+  return `${MEDIA_UPLOADS_PREFIX}/patients/${patientId}${MEDIA_OUTPUT_EXTENSION}`;
 }

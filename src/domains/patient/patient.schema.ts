@@ -1,7 +1,6 @@
-import { z } from "zod";
 import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
-import { PATIENT_STATUSES } from "@/shared/constants/patient-status";
 import { PATIENT_SEXES } from "@/shared/constants/patient-sex";
+import { PATIENT_STATUSES } from "@/shared/constants/patient-status";
 import { SESSION_STATUSES } from "@/shared/constants/session-note-status";
 import { parseBrl } from "@/shared/lib/money-utils";
 import {
@@ -9,8 +8,9 @@ import {
   PatientSex,
   SessionNoteStatus,
 } from "@prisma/enums";
+import { z } from "zod";
 
-export { PATIENT_STATUSES, SESSION_STATUSES, PATIENT_SEXES };
+export { PATIENT_SEXES, PATIENT_STATUSES, SESSION_STATUSES };
 
 const optionalDateParam = z
   .union([z.string(), z.null(), z.undefined()])
@@ -54,9 +54,11 @@ export const patientFormSchema = patientFieldsSchema.extend({
   memberIds: z.array(z.string().min(1)).max(50).optional().default([]),
 });
 
-export const updatePatientSchema = patientFieldsSchema.extend({
-  id: z.string().min(1),
-});
+export const updatePatientSchema = patientFieldsSchema
+  .omit({ photoUrl: true })
+  .extend({
+    id: z.string().min(1),
+  });
 
 /** Schema do diálogo UI: preço em string BRL (sem guardianId). */
 export const patientDraftSchema = z.object({
@@ -64,10 +66,7 @@ export const patientDraftSchema = z.object({
   birthDate: z.string(),
   sex: z.enum(PATIENT_SEXES),
   notes: z.string(),
-  pricingType: z.enum([
-    PatientPricingType.SESSION,
-    PatientPricingType.PACKAGE,
-  ]),
+  pricingType: z.enum([PatientPricingType.SESSION, PatientPricingType.PACKAGE]),
   priceInput: z
     .string()
     .refine(

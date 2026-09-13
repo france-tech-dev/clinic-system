@@ -267,8 +267,8 @@ export function PlataformaClient({
         <div className="flex flex-col gap-1">
           <p className="text-sm font-medium">Imagens no storage</p>
           <p className="text-xs text-muted-foreground">
-            Remove ficheiros em uploads/ que já não estão ligados a logo ou
-            avatar na base de dados.
+            Remove ficheiros em uploads/ que já não estão ligados a logo,
+            avatar ou foto de paciente na base de dados.
           </p>
         </div>
         <Button
@@ -403,9 +403,9 @@ export function PlataformaClient({
           <AlertDialogHeader>
             <AlertDialogTitle>Limpar imagens órfãs?</AlertDialogTitle>
             <AlertDialogDescription>
-              Compara o storage com logos e avatares na base de dados e apaga
-              só os ficheiros sem referência. Logos e avatares em uso não são
-              removidos.
+              Compara o storage com logos, avatares e fotos de paciente na
+              base de dados e apaga só os ficheiros sem referência. Imagens em
+              uso não são removidas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

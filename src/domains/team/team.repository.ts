@@ -210,6 +210,14 @@ export const teamRepository = {
     });
   },
 
+  async updateUserImage(userId: string, image: string | null) {
+    return db.user.update({
+      where: { id: userId },
+      data: { image },
+      select: { id: true, image: true },
+    });
+  },
+
   async findUserMustChangePassword(userId: string) {
     return db.user.findUnique({
       where: { id: userId },

@@ -1,4 +1,5 @@
 export {
+  isManagedUploadUrl,
   isMediaUploadMimeType,
   MEDIA_KIND,
   MEDIA_OUTPUT_EXTENSION,
@@ -6,7 +7,9 @@ export {
   MEDIA_UPLOAD_MIME_TYPES,
   MEDIA_UPLOADS_PREFIX,
   organizationLogoKey,
+  patientPhotoKey,
   userAvatarKey,
+  type ManagedUploadScope,
   type MediaKind,
   type MediaUploadMimeType,
 } from "./media.constants";
@@ -26,5 +29,6 @@ export {
   deleteManagedImage,
   isManagedMediaUrl,
   saveOrganizationLogoImage,
+  savePatientPhotoImage,
   saveUserAvatarImage,
 } from "./save-managed-image";

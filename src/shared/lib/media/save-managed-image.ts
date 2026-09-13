@@ -4,6 +4,7 @@ import {
   MEDIA_KIND,
   mediaMaxUploadError,
   organizationLogoKey,
+  patientPhotoKey,
   userAvatarKey,
   type MediaKind,
 } from "./media.constants";
@@ -45,10 +46,7 @@ export async function saveOrganizationLogoImage(
   });
 }
 
-/**
- * Avatar de utilizador (profissional / paciente portal) → WebP 256².
- * Pronto para ligar a `User.image` quando existir o fluxo de upload.
- */
+/** Avatar de utilizador → WebP 256². */
 export async function saveUserAvatarImage(
   userId: string,
   file: File,
@@ -56,6 +54,18 @@ export async function saveUserAvatarImage(
   return saveProcessedImage({
     kind: "avatar",
     key: userAvatarKey(userId),
+    file,
+  });
+}
+
+/** Foto do paciente → WebP 256². */
+export async function savePatientPhotoImage(
+  patientId: string,
+  file: File,
+): Promise<string> {
+  return saveProcessedImage({
+    kind: "avatar",
+    key: patientPhotoKey(patientId),
     file,
   });
 }

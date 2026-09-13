@@ -1,3 +1,14 @@
+import { deleteManagedImage, savePatientPhotoImage } from "@/shared/lib/media";
+import {
+  isManagedUploadUrl,
+  isMediaUploadMimeType,
+} from "@/shared/lib/media/media.constants";
+import {
+  toClinicalEvaluationDTO,
+  toLinkableAppointmentDTO,
+  toPatientDTO,
+  toSessionDTO,
+} from "./_lib/mappers";
 import { patientRepository } from "./patient.repository";
 import type {
   ClinicalEvaluationFormInput,
@@ -6,12 +17,6 @@ import type {
   UpdatePatientInput,
 } from "./patient.schema";
 import type { PatientDetailDTO, PatientStatus } from "./patient.types";
-import {
-  toClinicalEvaluationDTO,
-  toLinkableAppointmentDTO,
-  toPatientDTO,
-  toSessionDTO,
-} from "./_lib/mappers";
 
 export async function listPatients(
   organizationId: string,
@@ -78,9 +83,68 @@ export async function setPatientMembers(
   return row ? toPatientDTO(row) : null;
 }
 
+export async function savePatientPhoto(
+  organizationId: string,
+  patientId: string,
+  file: File,
+) {
+  if (!isMediaUploadMimeType(file.type)) {
+    throw new Error("Escolha uma imagem PNG, JPEG ou WebP");
+  }
+
+  const existing = await patientRepository.findById(organizationId, patientId);
+  if (!existing) return null;
+
+  const previous = existing.photoUrl?.trim() || null;
+  const photoUrl = await savePatientPhotoImage(patientId, file);
+  const row = await patientRepository.updatePhotoUrl(
+    organizationId,
+    patientId,
+    photoUrl,
+  );
+
+  if (
+    previous &&
+    isManagedUploadUrl(previous, "patients") &&
+    previous !== photoUrl
+  ) {
+    await deleteManagedImage(previous);
+  }
+
+  return row ? toPatientDTO(row) : null;
+}
+
+export async function removePatientPhoto(
+  organizationId: string,
+  patientId: string,
+) {
+  const existing = await patientRepository.findById(organizationId, patientId);
+  if (!existing) return null;
+
+  const previous = existing.photoUrl?.trim() || null;
+  const row = await patientRepository.updatePhotoUrl(
+    organizationId,
+    patientId,
+    null,
+  );
+
+  if (previous && isManagedUploadUrl(previous, "patients")) {
+    await deleteManagedImage(previous);
+  }
+
+  return row ? toPatientDTO(row) : null;
+}
+
 export async function deletePatient(organizationId: string, id: string) {
   const row = await patientRepository.delete(organizationId, id);
-  return row ? toPatientDTO(row) : null;
+  if (!row) return null;
+
+  const previous = row.photoUrl?.trim() || null;
+  if (previous && isManagedUploadUrl(previous, "patients")) {
+    await deleteManagedImage(previous).catch(() => undefined);
+  }
+
+  return toPatientDTO(row);
 }
 
 export async function resolveAuthorMemberId(
