@@ -1,6 +1,6 @@
 import { Text, View } from "@react-pdf/renderer";
 import type { PatientReportSessionNote } from "@/domains/patient/_lib/pdf/types";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { formatTime } from "@/shared/constants/appointment";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 

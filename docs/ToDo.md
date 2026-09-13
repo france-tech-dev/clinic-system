@@ -55,7 +55,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Futuro
 
-- [ ] **Logo / media em produção:** pipeline pronto em `shared/lib/media` (WebP + local). Migrar driver para R2 — ver [`docs/media-storage.md`](media-storage.md)
+- [ ] **Logo / media em produção:** driver R2 pronto em código. Configurar Custom Domain no bucket + env `OBJECT_STORAGE_DRIVER=r2` — ver [`docs/media-storage.md`](media-storage.md)
 
 ---
 

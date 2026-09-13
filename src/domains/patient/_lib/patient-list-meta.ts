@@ -1,5 +1,5 @@
 import type { PatientDTO } from "@/domains/patient/patient.types";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 type PatientListMetaInput = Pick<
   PatientDTO,

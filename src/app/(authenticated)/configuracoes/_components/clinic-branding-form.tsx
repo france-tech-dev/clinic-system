@@ -18,7 +18,7 @@ import {
 import type { PrintBranding } from "@/domains/settings/settings.types";
 import { DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
-import { isCustomOrganizationLogo } from "@/shared/lib/organization-logo";
+import { isCustomOrganizationLogo, ORGANIZATION_LOGO_MAX_BYTES } from "@/shared/lib/organization-logo";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -175,7 +175,8 @@ export function ClinicBrandingForm({
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <p className="text-xs text-muted-foreground">
-                  PNG, JPEG ou WebP · máx. 2 MB
+                  PNG, JPEG ou WebP · máx.{" "}
+                  {ORGANIZATION_LOGO_MAX_BYTES / (1024 * 1024)} MB
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Button

@@ -7,7 +7,7 @@ import { cashPeriodToSearchParams } from "@/domains/finance/_lib/period-utils";
 import type { CashListView } from "@/domains/finance/_lib/cash-list-view";
 import type { DashboardPageData } from "@/domains/dashboard/dashboard.types";
 import { paths } from "@/shared/constants/paths";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { cn } from "@/shared/lib/utils";
 import { ActivityTrendChart } from "./activity-trend-chart";
 import { BusiestDaysChart } from "./busiest-days-chart";

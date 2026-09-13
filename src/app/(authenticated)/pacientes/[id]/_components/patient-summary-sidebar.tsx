@@ -9,7 +9,7 @@ import type { PatientDTO } from "@/domains/patient/patient.types";
 import { PATIENT_STATUS_LABEL } from "@/shared/constants/patient-status";
 import { patientPricingTypeLabel } from "@/shared/constants/patient-pricing";
 import { PATIENT_SEX_LABEL } from "@/shared/constants/patient-sex";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { initialsFromName } from "@/shared/lib/initials-from-name";
 import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";

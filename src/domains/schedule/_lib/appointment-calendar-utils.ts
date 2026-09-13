@@ -2,7 +2,7 @@ import {
   APPOINTMENT_WITH_EVOLUTION_COLOR,
   appointmentStatusInfo,
 } from "@/shared/constants/appointment";
-import { buildAppZonedDateTime } from "@/shared/lib/timezone-utils";
+import { buildAppZonedDateTime } from "@/shared/lib/date/timezone-utils";
 import { AppointmentStatus } from "@prisma/enums";
 import { addMinutes } from "date-fns";
 import type { AppointmentDTO } from "../schedule.types";

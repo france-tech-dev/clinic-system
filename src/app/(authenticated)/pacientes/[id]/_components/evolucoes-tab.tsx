@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
 import type { SessionNoteDTO } from "@/domains/patient/patient.types";
 import { formatTime } from "@/shared/constants/appointment";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 export function EvolucoesTab({
   sessionNotes,

@@ -15,6 +15,9 @@ export type PutObjectResult = {
 export type ObjectStorage = {
   put(input: PutObjectInput): Promise<PutObjectResult>;
   deleteByUrl(url: string): Promise<void>;
+  deleteByKey(key: string): Promise<void>;
+  /** Keys relativas sob o prefixo (ex. uploads/…). */
+  listKeys(prefix?: string): Promise<string[]>;
   isManagedUrl(url: string | null | undefined): boolean;
 };
 

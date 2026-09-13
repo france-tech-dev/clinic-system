@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/native-select";
 import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
 import type { ProtocolInviteItemDTO } from "@/domains/protocol/invite/protocol-invite.types";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { ProtocolInterpretationAIPanel } from "./protocol-interpretation-ai-panel";
 
 export function ProtocolInviteResultsDialog({

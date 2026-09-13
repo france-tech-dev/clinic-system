@@ -4,8 +4,8 @@
  */
 
 import { addDaysIso } from "@/shared/constants/appointment";
-import { formatCivilDateParam } from "@/shared/lib/civil-date-param";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatCivilDateParam } from "@/shared/lib/date/civil-date-param";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import type { UpcomingBirthday } from "../dashboard.types";
 
 export type BirthdaySource = {

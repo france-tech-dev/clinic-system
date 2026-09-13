@@ -81,7 +81,7 @@ import { formatPatientListMeta } from "@/domains/patient/_lib/patient-list-meta"
 import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { parseBrl } from "@/shared/lib/money-utils";
 import { paths } from "@/shared/constants/paths";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { AssignPatientMembersDialog } from "@/features/patient/components/assign-patient-members-dialog";

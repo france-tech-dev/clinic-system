@@ -1,5 +1,5 @@
-import { parseCivilDateParam } from "@/shared/lib/civil-date-param";
 import { createCredentialUser } from "@/shared/lib/create-credential-user";
+import { parseCivilDateParam } from "@/shared/lib/date/civil-date-param";
 import { db } from "@/shared/lib/prisma";
 import { MemberStatus, Role } from "@prisma/enums";
 import { hashPassword } from "better-auth/crypto";

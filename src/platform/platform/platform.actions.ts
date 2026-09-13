@@ -10,7 +10,11 @@ import {
 import { requirePlatformAdmin } from "@/server/platform/require-platform-admin";
 import { paths } from "@/shared/constants/paths";
 import { AppError } from "@/shared/lib/app-error";
-import { deleteManagedImage } from "@/shared/lib/media";
+import {
+  deleteManagedImage,
+  purgeOrphanManagedUploads,
+} from "@/shared/lib/media";
+import { db } from "@/shared/lib/prisma";
 import { getStripe } from "@/shared/lib/stripe";
 import { ok, type ActionResult } from "@/shared/types/action-result";
 import { revalidatePath } from "next/cache";
@@ -75,6 +79,34 @@ export async function setOrganizationBillingExemptAction(
     );
     revalidatePath(paths.plataforma);
     return ok(undefined);
+  } catch (error) {
+    return AppError.result(error);
+  }
+}
+
+export async function purgeOrphanManagedUploadsAction(): Promise<
+  ActionResult<{ scanned: number; deleted: number }>
+> {
+  try {
+    await requirePlatformAdmin();
+
+    const [organizations, users] = await Promise.all([
+      db.organization.findMany({
+        where: { logo: { not: null } },
+        select: { logo: true },
+      }),
+      db.user.findMany({
+        where: { image: { not: null } },
+        select: { image: true },
+      }),
+    ]);
+
+    const result = await purgeOrphanManagedUploads([
+      ...organizations.map((row) => row.logo),
+      ...users.map((row) => row.image),
+    ]);
+
+    return ok(result);
   } catch (error) {
     return AppError.result(error);
   }

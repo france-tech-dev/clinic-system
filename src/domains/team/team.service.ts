@@ -1,6 +1,6 @@
 import { getHealthProfession } from "@/shared/constants/professions";
 import { auth } from "@/shared/lib/auth";
-import { formatCivilDateParam } from "@/shared/lib/civil-date-param";
+import { formatCivilDateParam } from "@/shared/lib/date/civil-date-param";
 import { serializeMemberProfessionalMetadata } from "@/shared/types/professional";
 import { MemberStatus, Role } from "@prisma/enums";
 import { teamRepository } from "./team.repository";

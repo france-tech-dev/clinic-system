@@ -1,4 +1,4 @@
-import { parseCivilDateParam } from "@/shared/lib/civil-date-param";
+import { parseCivilDateParam } from "@/shared/lib/date/civil-date-param";
 import { db } from "@/shared/lib/prisma";
 import { PatientPricingType, PatientSex, Role } from "@prisma/enums";
 import type {

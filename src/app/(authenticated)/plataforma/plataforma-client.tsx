@@ -23,6 +23,7 @@ import {
 } from "@/shared/constants/billing-plans";
 import {
   deletePlatformOrganizationAction,
+  purgeOrphanManagedUploadsAction,
   setOrganizationBillingExemptAction,
 } from "@/server/platform/platform.actions";
 import type { PlatformOrganizationDTO } from "@/server/platform/platform.actions";
@@ -133,6 +134,8 @@ export function PlataformaClient({
   const [confirmDelete, setConfirmDelete] = useState<ConfirmDelete | null>(
     null,
   );
+  const [confirmPurgeOrphans, setConfirmPurgeOrphans] = useState(false);
+  const [purgePending, setPurgePending] = useState(false);
   const [deleteSlugInput, setDeleteSlugInput] = useState("");
   const [, startTransition] = useTransition();
 
@@ -239,16 +242,53 @@ export function PlataformaClient({
     });
   }
 
-  if (organizations.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Ainda não há clínicas registadas.
-      </p>
-    );
+  function applyPurgeOrphans() {
+    setConfirmPurgeOrphans(false);
+    setPurgePending(true);
+    startTransition(async () => {
+      const result = await purgeOrphanManagedUploadsAction();
+      setPurgePending(false);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      const { scanned, deleted } = result.data;
+      toast.success(
+        deleted === 0
+          ? `Nenhum órfão. ${scanned} ficheiro(s) analisado(s).`
+          : `${deleted} órfão(s) removido(s) de ${scanned} ficheiro(s).`,
+      );
+    });
   }
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium">Imagens no storage</p>
+          <p className="text-xs text-muted-foreground">
+            Remove ficheiros em uploads/ que já não estão ligados a logo ou
+            avatar na base de dados.
+          </p>
+        </div>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={purgePending}
+          onClick={() => setConfirmPurgeOrphans(true)}
+        >
+          {purgePending ? <Spinner className="size-3.5" /> : null}
+          Limpar órfãos
+        </Button>
+      </div>
+
+      {organizations.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          Ainda não há clínicas registadas.
+        </p>
+      ) : (
+        <>
       <div className="rounded-md border border-border bg-muted/30 px-4 py-3">
         <p className="text-sm font-medium">
           {counts.total} clínicas · {counts.exempt} isentas · {counts.trial} em
@@ -352,6 +392,33 @@ export function PlataformaClient({
           })}
         </ul>
       )}
+        </>
+      )}
+
+      <AlertDialog
+        open={confirmPurgeOrphans}
+        onOpenChange={setConfirmPurgeOrphans}
+      >
+        <AlertDialogContent size="default">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Limpar imagens órfãs?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Compara o storage com logos e avatares na base de dados e apaga
+              só os ficheiros sem referência. Logos e avatares em uso não são
+              removidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={applyPurgeOrphans}
+            >
+              Limpar órfãos
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={confirmExempt != null}

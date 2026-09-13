@@ -24,7 +24,7 @@ import { rescheduleAppointmentAction } from "@/domains/schedule/schedule.actions
 import {
   formatAppZonedDateParam,
   formatAppZonedTimeParam,
-} from "@/shared/lib/timezone-utils";
+} from "@/shared/lib/date/timezone-utils";
 import {
   type CalendarEvent,
   calendarEventStyle,

@@ -1,4 +1,4 @@
-/** Política de imagens geridas (local hoje, R2 quando OBJECT_STORAGE_DRIVER=r2). */
+/** Política de imagens geridas (local ou R2 via OBJECT_STORAGE_DRIVER). */
 
 export const MEDIA_OUTPUT_MIME = "image/webp" as const;
 export const MEDIA_OUTPUT_EXTENSION = ".webp" as const;
@@ -18,14 +18,14 @@ export const MEDIA_KIND = {
     /** Lado do quadrado (crop cover). */
     sizePx: 256,
     square: true,
-    maxUploadBytes: 2 * 1024 * 1024,
+    maxUploadBytes: 5 * 1024 * 1024,
     webpQuality: 82,
   },
   logo: {
     /** Lado maior (fit inside, sem upscale). */
     sizePx: 1024,
     square: false,
-    maxUploadBytes: 2 * 1024 * 1024,
+    maxUploadBytes: 5 * 1024 * 1024,
     webpQuality: 85,
   },
 } as const satisfies Record<
@@ -37,6 +37,11 @@ export const MEDIA_KIND = {
     webpQuality: number;
   }
 >;
+
+export function mediaMaxUploadError(kind: MediaKind): string {
+  const mb = MEDIA_KIND[kind].maxUploadBytes / (1024 * 1024);
+  return `A imagem deve ter no máximo ${mb} MB`;
+}
 
 /** Prefixo local em /public e key prefix no R2. */
 export const MEDIA_UPLOADS_PREFIX = "uploads";

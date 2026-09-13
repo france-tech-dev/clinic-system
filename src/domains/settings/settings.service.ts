@@ -1,7 +1,4 @@
-import {
-  DEFAULT_APP_NAME,
-  DEFAULT_PRINT_LOGO,
-} from "@/shared/constants/brand";
+import { DEFAULT_APP_NAME, DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import {
   deleteManagedImage,
   saveOrganizationLogoImage,
@@ -9,8 +6,8 @@ import {
 import {
   isCustomOrganizationLogo,
   isOrganizationLogoMimeType,
-  ORGANIZATION_LOGO_MAX_BYTES,
 } from "@/shared/lib/organization-logo";
+import { settingsRepository } from "./settings.repository";
 import {
   EMPTY_PROFESSIONAL,
   memberToProfessionalProfile,
@@ -19,7 +16,6 @@ import {
   type PrintBranding,
   type ProfessionalProfile,
 } from "./settings.types";
-import { settingsRepository } from "./settings.repository";
 
 type OrgMeta = {
   fichario?: ClinicSettings;
@@ -161,9 +157,6 @@ export async function saveOrganizationLogo(
 ): Promise<PrintBranding> {
   if (!isOrganizationLogoMimeType(file.type)) {
     throw new Error("Use PNG, JPEG ou WebP");
-  }
-  if (file.size > ORGANIZATION_LOGO_MAX_BYTES) {
-    throw new Error("A imagem deve ter no máximo 2 MB");
   }
 
   const org = await settingsRepository.findOrganizationBranding(organizationId);

@@ -1,4 +1,4 @@
-import { formatCivilDateParam } from "@/shared/lib/civil-date-param";
+import { formatCivilDateParam } from "@/shared/lib/date/civil-date-param";
 import { memberToProfessionalProfile } from "@/shared/types/professional";
 import { PatientSex } from "@prisma/enums";
 import type {

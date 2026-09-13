@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { cn } from "@/shared/lib/utils";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;

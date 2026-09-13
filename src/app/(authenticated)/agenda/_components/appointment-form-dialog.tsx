@@ -224,7 +224,7 @@ export function AppointmentFormDialog({
               )}
             />
 
-            <div className="grid grid-cols-2 items-start gap-3">
+            <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="date"
@@ -246,14 +246,14 @@ export function AppointmentFormDialog({
                 control={form.control}
                 name="time"
                 render={({ field }) => (
-                  <FormItem className="min-w-0 overflow-hidden">
+                  <FormItem className="min-w-0">
                     <FormLabel>Horário *</FormLabel>
                     <FormControl>
                       <Input
                         type="time"
                         lang="pt-BR"
                         step={60}
-                        className="min-w-0 max-w-full [&::-webkit-calendar-picker-indicator]:m-0 [&::-webkit-datetime-edit]:min-w-0 [&::-webkit-datetime-edit]:p-0"
+                        className="w-full min-w-0 appearance-none [&::-webkit-calendar-picker-indicator]:m-0 [&::-webkit-datetime-edit]:min-w-0 [&::-webkit-datetime-edit]:p-0"
                         {...field}
                       />
                     </FormControl>

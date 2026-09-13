@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 export function AvaliacaoLista({
   clinicalEvaluations,

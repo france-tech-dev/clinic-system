@@ -38,7 +38,7 @@ import {
   cashTransactionTypeLabel,
 } from "@/shared/constants/cash";
 import { paths } from "@/shared/constants/paths";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/components/ui/badge";

@@ -45,7 +45,7 @@ import {
   appointmentStatusInfo,
   formatTime,
 } from "@/shared/constants/appointment";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { SessionNoteStatus } from "@prisma/enums";
 

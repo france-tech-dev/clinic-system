@@ -34,7 +34,7 @@ const envSchema = z
     R2_ACCESS_KEY_ID: z.string().optional(),
     R2_SECRET_ACCESS_KEY: z.string().optional(),
     R2_BUCKET: z.string().optional(),
-    R2_PUBLIC_BASE_URL: z.string().optional(),
+    R2_PUBLIC_BASE_URL: z.url().optional(),
 
     OPENAI_API_KEY: z.string().optional(),
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),

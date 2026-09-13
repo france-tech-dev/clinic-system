@@ -2,6 +2,7 @@ import "server-only";
 import {
   isMediaUploadMimeType,
   MEDIA_KIND,
+  mediaMaxUploadError,
   organizationLogoKey,
   userAvatarKey,
   type MediaKind,
@@ -18,7 +19,7 @@ async function saveProcessedImage(opts: {
     throw new Error("Use PNG, JPEG ou WebP");
   }
   if (opts.file.size > MEDIA_KIND[opts.kind].maxUploadBytes) {
-    throw new Error("A imagem deve ter no máximo 2 MB");
+    throw new Error(mediaMaxUploadError(opts.kind));
   }
 
   const input = Buffer.from(await opts.file.arrayBuffer());

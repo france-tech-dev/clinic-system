@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
 import { paths } from "@/shared/constants/paths";
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 export function AnamneseTab({
   patientId,

@@ -88,7 +88,17 @@ GOOGLE_CLIENT_SECRET=""
 ```
 
 Obrigatórias no boot: `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.  
-Brevo, Stripe, R2 e OpenAI são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2`).
+Brevo, Stripe, R2 e OpenAI são opcionais até serem usados (R2 exige o bloco completo se `OBJECT_STORAGE_DRIVER=r2` — ver [`docs/media-storage.md`](docs/media-storage.md)).
+
+```bash
+# Object storage (default: local → public/uploads)
+# OBJECT_STORAGE_DRIVER=r2
+# R2_ACCOUNT_ID=
+# R2_ACCESS_KEY_ID=
+# R2_SECRET_ACCESS_KEY=
+# R2_BUCKET=
+# R2_PUBLIC_BASE_URL=https://r2.teu-dominio.com   # Custom Domain do bucket, NÃO o endpoint S3
+```
 
 ```bash
 pnpm exec prisma generate

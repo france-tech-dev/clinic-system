@@ -1,10 +1,10 @@
 export {
+  isMediaUploadMimeType,
   MEDIA_KIND,
   MEDIA_OUTPUT_EXTENSION,
   MEDIA_OUTPUT_MIME,
   MEDIA_UPLOAD_MIME_TYPES,
   MEDIA_UPLOADS_PREFIX,
-  isMediaUploadMimeType,
   organizationLogoKey,
   userAvatarKey,
   type MediaKind,
@@ -18,6 +18,10 @@ export {
   type PutObjectResult,
 } from "./object-storage.types";
 export { processImageToWebp } from "./process-image";
+export {
+  purgeOrphanManagedUploads,
+  type PurgeOrphanManagedUploadsResult,
+} from "./purge-orphan-uploads";
 export {
   deleteManagedImage,
   isManagedMediaUrl,

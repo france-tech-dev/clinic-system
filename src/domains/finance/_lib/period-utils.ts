@@ -1,4 +1,4 @@
-import { formatDateBR } from "@/shared/lib/format-date-br";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import type { CashPeriod, PeriodPreset } from "@/shared/types/cash-period";
 import {
   endOfMonth,
