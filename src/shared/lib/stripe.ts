@@ -1,9 +1,6 @@
-import Stripe from "stripe";
 import { env } from "@/shared/env";
-import {
-  BillingPlan,
-  BillingStatus,
-} from "@prisma/enums";
+import { BillingPlan, BillingStatus } from "@prisma/enums";
+import Stripe from "stripe";
 
 let client: Stripe | null | undefined;
 
@@ -22,7 +19,7 @@ export function requireStripe(): Stripe {
 }
 
 const priceByPlan: Record<BillingPlan, string | undefined> = {
-  [BillingPlan.STARTER]: env.STRIPE_PRICE_STARTER,
+  [BillingPlan.SOLO]: env.STRIPE_PRICE_SOLO,
   [BillingPlan.PRO]: env.STRIPE_PRICE_PRO,
   [BillingPlan.ENTERPRISE]: env.STRIPE_PRICE_ENTERPRISE,
 };
@@ -34,7 +31,21 @@ export function getStripePriceId(plan: BillingPlan): string | null {
 export function requireStripePriceId(plan: BillingPlan): string {
   const priceId = priceByPlan[plan];
   if (!priceId) {
-    throw new Error(`Preço Stripe em falta para o plano ${plan}.`);
+    throw new Error(`Preço Stripe não configurado para o plano ${plan}.`);
+  }
+  return priceId;
+}
+
+export function getExtraSeatPriceId(): string | null {
+  return env.STRIPE_PRICE_EXTRA_SEAT ?? null;
+}
+
+export function requireExtraSeatPriceId(): string {
+  const priceId = getExtraSeatPriceId();
+  if (!priceId) {
+    throw new Error(
+      "Preço Stripe não configurado para profissional adicional.",
+    );
   }
   return priceId;
 }
@@ -44,6 +55,17 @@ export function planFromStripePriceId(priceId: string): BillingPlan | null {
     Object.entries(priceByPlan) as [BillingPlan, string | undefined][]
   ).find(([, id]) => id === priceId);
   return entry?.[0] ?? null;
+}
+
+export function extraSeatsFromSubscription(
+  subscription: Stripe.Subscription,
+): number {
+  const extraPriceId = getExtraSeatPriceId();
+  if (!extraPriceId) return 0;
+  const item = subscription.items.data.find(
+    (entry) => entry.price.id === extraPriceId,
+  );
+  return item?.quantity ?? 0;
 }
 
 /** Stripe: lowercase / `canceled`. App: UPPERCASE / `CANCELLED`. */

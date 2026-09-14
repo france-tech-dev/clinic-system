@@ -1,7 +1,8 @@
 import "server-only";
 
 import { requirePermission } from "@/server/auth/permissions";
-import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
+import { getBillingAccess } from "@/server/billing/access";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import type { BillingAccess } from "@/shared/constants/billing-plans";
 import {
   AiConfigError,
@@ -22,16 +23,21 @@ export type AiGenerationContext = {
   billing: BillingAccess;
 };
 
-/** Auth, billing (feature `ai`) e rate limit — partilhado por rotas `/api/ai/*`. */
+/** Auth, billing em escrita e rate limit — partilhado por rotas `/api/ai/*`. */
 export async function prepareAiGeneration(): Promise<AiGenerationContext> {
   await requirePermission({ project: ["read"] });
-  const ctx = await requireOrgFeatureWrite("ai");
+  const ctx = await requireOrgWrite();
+  const billing = await getBillingAccess(ctx.organizationId);
   await assertAiGenerationAllowed({
     organizationId: ctx.organizationId,
     userId: ctx.userId,
-    billing: ctx.billing,
+    billing,
   });
-  return ctx;
+  return {
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    billing,
+  };
 }
 
 export function createAiTextStreamResponse(
