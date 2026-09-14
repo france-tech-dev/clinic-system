@@ -41,7 +41,7 @@ Tudo-em-um para clínicas multi-profissionais (com ênfase em TO), com funcional
 - UI e copy em **português (BR)**.
 - Acessibilidade mínima: uso viável em **desktop e mobile**.
 - Superfícies: Dashboard (liderança: KPIs/gráficos), Agenda (turno clínico do dia), Pacientes, Anamnese, Avaliações, Caixa, Profissionais, Perfil, Configurações, Organização, Planos; Portal do responsável em evolução.
-- Planos: Starter / Pro / Enterprise com features gated (anamnese, caixa, avaliações, portal).
+- Planos: Solo / Professional / Enterprise — tudo incluído; diferença = nº de profissionais (+ extras R$ 59 só no Enterprise).
 
 **Em evolução / não inventar como pronto**
 

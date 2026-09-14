@@ -71,9 +71,10 @@ GOOGLE_CLIENT_SECRET=""
 # Stripe Billing (produção — restricted key)
 # STRIPE_SECRET_KEY="rk_..."
 # STRIPE_WEBHOOK_SECRET="whsec_..."
-# STRIPE_PRICE_STARTER="price_..."
+# STRIPE_PRICE_SOLO="price_..."
 # STRIPE_PRICE_PRO="price_..."
 # STRIPE_PRICE_ENTERPRISE="price_..."
+# STRIPE_PRICE_EXTRA_SEAT="price_..."
 
 # IA — interpretação de protocolos (opcional; ver docs/ai.md)
 # AI_PROVIDER="google"
