@@ -1,8 +1,5 @@
 import { db } from "@/shared/lib/prisma";
-import type {
-  BillingPlan,
-  BillingStatus,
-} from "@prisma/enums";
+import type { BillingPlan, BillingStatus } from "@prisma/enums";
 
 export type BillingUpsertInput = {
   organizationId: string;
@@ -10,6 +7,7 @@ export type BillingUpsertInput = {
   stripeSubscriptionId: string;
   status: BillingStatus;
   plan: BillingPlan | null;
+  extraSeats: number;
   trialEndsAt: Date | null;
   currentPeriodEnd: Date | null;
 };

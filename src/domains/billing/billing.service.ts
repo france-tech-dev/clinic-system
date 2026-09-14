@@ -1,23 +1,23 @@
-import { randomBytes } from "node:crypto";
-import type Stripe from "stripe";
-import { paths } from "@/shared/constants/paths";
-import { billingRepository } from "./billing.repository";
-import type { BillingSnapshotDTO, CheckoutSessionDTO } from "./billing.types";
 import { getBillingAccess } from "@/server/billing/access";
+import { BILLING_PLANS, planDef } from "@/shared/constants/billing-plans";
+import { paths } from "@/shared/constants/paths";
+import { env } from "@/shared/env";
 import {
+  extraSeatsFromSubscription,
+  getExtraSeatPriceId,
   getStripe,
   getStripePriceId,
   mapStripeSubscriptionStatus,
   planFromStripePriceId,
+  requireExtraSeatPriceId,
   requireStripe,
   requireStripePriceId,
 } from "@/shared/lib/stripe";
-import { BILLING_PLANS } from "@/shared/constants/billing-plans";
-import {
-  BillingPlan,
-  BillingStatus,
-} from "@prisma/enums";
-import { env } from "@/shared/env";
+import { BillingPlan, BillingStatus } from "@prisma/enums";
+import { randomBytes } from "node:crypto";
+import type Stripe from "stripe";
+import { billingRepository } from "./billing.repository";
+import type { BillingSnapshotDTO, CheckoutSessionDTO } from "./billing.types";
 
 const WRITABLE_STATUSES: BillingStatus[] = [
   BillingStatus.TRIALING,
@@ -62,8 +62,27 @@ function resolvePlan(
   const metaPlan = parsePlan(subscription.metadata?.plan);
   if (metaPlan) return metaPlan;
   if (subscription.status === "trialing") return previousPlan;
-  const priceId = subscription.items.data[0]?.price?.id;
-  return priceId ? planFromStripePriceId(priceId) : previousPlan;
+  for (const item of subscription.items.data) {
+    const plan = planFromStripePriceId(item.price.id);
+    if (plan) return plan;
+  }
+  return previousPlan;
+}
+
+function findPlanSubscriptionItem(
+  subscription: Stripe.Subscription,
+): Stripe.SubscriptionItem | undefined {
+  return subscription.items.data.find((item) =>
+    Boolean(planFromStripePriceId(item.price.id)),
+  );
+}
+
+function findExtraSeatSubscriptionItem(
+  subscription: Stripe.Subscription,
+): Stripe.SubscriptionItem | undefined {
+  const extraPriceId = getExtraSeatPriceId();
+  if (!extraPriceId) return undefined;
+  return subscription.items.data.find((item) => item.price.id === extraPriceId);
 }
 
 async function findOrganizationId(
@@ -89,11 +108,12 @@ export async function getBillingSnapshot(
   const access = await getBillingAccess(organizationId);
   const org = await billingRepository.findOrgBillingSnapshot(organizationId);
   const row = org?.billing;
+  const plan = (row?.plan as BillingPlan | null | undefined) ?? access.plan;
 
   return {
     mode: access.mode,
     status: (row?.status as BillingStatus | undefined) ?? access.status,
-    plan: (row?.plan as BillingPlan | null | undefined) ?? access.plan,
+    plan,
     trialEndsAt:
       row?.trialEndsAt?.toISOString() ??
       access.trialEndsAt?.toISOString() ??
@@ -102,6 +122,7 @@ export async function getBillingSnapshot(
     billingExempt: org?.billingExempt ?? false,
     canManageBilling: Boolean(row?.stripeCustomerId),
     maxProfessionals: access.maxProfessionals,
+    extraSeats: access.extraSeats,
   };
 }
 
@@ -111,7 +132,7 @@ export async function createBillingPortalSession(
   const stripe = requireStripe();
   const row = await billingRepository.findByOrganizationId(organizationId);
   if (!row?.stripeCustomerId) {
-    throw new Error("Esta clínica ainda não tem faturação Stripe.");
+    throw new Error("Esta clínica ainda não tem faturamento Stripe.");
   }
 
   const session = await stripe.billingPortal.sessions.create({
@@ -119,7 +140,7 @@ export async function createBillingPortalSession(
     return_url: `${appBaseUrl()}${paths.planos}`,
   });
   if (!session.url) {
-    throw new Error("Não foi possível abrir o portal de faturação.");
+    throw new Error("Não foi possível abrir o portal de faturamento.");
   }
   return { url: session.url };
 }
@@ -197,11 +218,23 @@ async function updateSubscriptionPlan(
 ) {
   const stripe = requireStripe();
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const itemId = subscription.items.data[0]?.id;
-  if (!itemId) throw new Error("Assinatura Stripe sem itens.");
+  const planItem = findPlanSubscriptionItem(subscription);
+  const extraItem = findExtraSeatSubscriptionItem(subscription);
+  const allowsExtra = planDef(plan).extraSeatAllowed;
+
+  const items: Stripe.SubscriptionUpdateParams.Item[] = [];
+  if (planItem) {
+    items.push({ id: planItem.id, price: priceId });
+  } else {
+    items.push({ price: priceId, quantity: 1 });
+  }
+
+  if (!allowsExtra && extraItem) {
+    items.push({ id: extraItem.id, deleted: true });
+  }
 
   await stripe.subscriptions.update(subscriptionId, {
-    items: [{ id: itemId, price: priceId }],
+    items,
     metadata: {
       ...subscription.metadata,
       plan,
@@ -209,6 +242,62 @@ async function updateSubscriptionPlan(
     ...(paymentMethodId ? { default_payment_method: paymentMethodId } : {}),
     proration_behavior: "none",
   });
+
+  const updated = await stripe.subscriptions.retrieve(subscriptionId);
+  await syncSubscription(updated);
+}
+
+/** Define quantity de profissionais adicionais (só Enterprise). */
+export async function setExtraSeats(
+  organizationId: string,
+  quantity: number,
+): Promise<BillingSnapshotDTO> {
+  if (!Number.isInteger(quantity) || quantity < 0) {
+    throw new Error("Quantidade de profissionais adicionais inválida.");
+  }
+
+  const stripe = requireStripe();
+  const extraPriceId = requireExtraSeatPriceId();
+  const row = await billingRepository.findByOrganizationId(organizationId);
+  if (!row?.stripeSubscriptionId) {
+    throw new Error("Esta clínica ainda não tem assinatura Stripe.");
+  }
+  if (
+    row.status !== BillingStatus.ACTIVE &&
+    row.status !== BillingStatus.PAST_DUE
+  ) {
+    throw new Error("Só é possível gerenciar adicionais com assinatura ativa.");
+  }
+  if (!row.plan || !planDef(row.plan).extraSeatAllowed) {
+    throw new Error(
+      "Profissionais adicionais só estão disponíveis no plano Enterprise.",
+    );
+  }
+
+  const subscription = await stripe.subscriptions.retrieve(
+    row.stripeSubscriptionId,
+  );
+  const extraItem = findExtraSeatSubscriptionItem(subscription);
+  const items: Stripe.SubscriptionUpdateParams.Item[] = [];
+
+  if (quantity === 0) {
+    if (extraItem) items.push({ id: extraItem.id, deleted: true });
+  } else if (extraItem) {
+    items.push({ id: extraItem.id, quantity });
+  } else {
+    items.push({ price: extraPriceId, quantity });
+  }
+
+  if (items.length > 0) {
+    await stripe.subscriptions.update(row.stripeSubscriptionId, {
+      items,
+      proration_behavior: "create_prorations",
+    });
+  }
+
+  const updated = await stripe.subscriptions.retrieve(row.stripeSubscriptionId);
+  await syncSubscription(updated);
+  return getBillingSnapshot(organizationId);
 }
 
 async function syncSubscription(subscription: Stripe.Subscription) {
@@ -216,13 +305,17 @@ async function syncSubscription(subscription: Stripe.Subscription) {
   if (!organizationId) return;
 
   const existing = await billingRepository.findByOrganizationId(organizationId);
+  const plan = resolvePlan(subscription, existing?.plan ?? null);
+  const rawExtras = extraSeatsFromSubscription(subscription);
+  const extraSeats = plan && planDef(plan).extraSeatAllowed ? rawExtras : 0;
 
   await billingRepository.upsertByOrganizationId({
     organizationId,
     stripeCustomerId: customerIdOf(subscription),
     stripeSubscriptionId: subscription.id,
     status: mapStripeSubscriptionStatus(subscription.status),
-    plan: resolvePlan(subscription, existing?.plan ?? null),
+    plan,
+    extraSeats,
     trialEndsAt: unixToDate(subscription.trial_end),
     currentPeriodEnd: subscriptionPeriodEnd(subscription),
   });
@@ -320,7 +413,7 @@ export async function handleStripeWebhookEvent(event: Stripe.Event) {
 export function isStripeConfigured(): boolean {
   return Boolean(
     getStripe() &&
-    getStripePriceId(BillingPlan.STARTER) &&
+    getStripePriceId(BillingPlan.SOLO) &&
     getStripePriceId(BillingPlan.PRO) &&
     getStripePriceId(BillingPlan.ENTERPRISE),
   );

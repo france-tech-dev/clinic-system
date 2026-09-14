@@ -6,3 +6,9 @@ export const subscribePlanSchema = z.object({
 });
 
 export type SubscribePlanInput = z.infer<typeof subscribePlanSchema>;
+
+export const setExtraSeatsSchema = z.object({
+  quantity: z.number().int().min(0).max(50),
+});
+
+export type SetExtraSeatsInput = z.infer<typeof setExtraSeatsSchema>;

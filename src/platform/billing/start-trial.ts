@@ -1,6 +1,4 @@
-import {
-  TRIAL_DAYS,
-} from "@/shared/constants/billing-plans";
+import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
 import { db } from "@/shared/lib/prisma";
 import {
   getStripe,
@@ -23,8 +21,8 @@ export async function startOrganizationTrial(
   if (!org || org.billingExempt || org.billing) return;
 
   const stripe = getStripe();
-  const starterPriceId = getStripePriceId(BillingPlan.STARTER);
-  if (!stripe || !starterPriceId) {
+  const soloPriceId = getStripePriceId(BillingPlan.SOLO);
+  if (!stripe || !soloPriceId) {
     console.warn(
       "[billing] Stripe não configurado — trial não iniciado para",
       organizationId,
@@ -39,7 +37,7 @@ export async function startOrganizationTrial(
 
   const subscription = await stripe.subscriptions.create({
     customer: customer.id,
-    items: [{ price: starterPriceId }],
+    items: [{ price: soloPriceId }],
     trial_period_days: TRIAL_DAYS,
     trial_settings: {
       end_behavior: { missing_payment_method: "cancel" },
@@ -59,6 +57,7 @@ export async function startOrganizationTrial(
       stripeSubscriptionId: subscription.id,
       status,
       plan: null,
+      extraSeats: 0,
       trialEndsAt,
     },
   });

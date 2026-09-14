@@ -1,8 +1,5 @@
 import type { BillingAccessMode } from "@/shared/constants/billing-plans";
-import type {
-  BillingPlan,
-  BillingStatus,
-} from "@prisma/enums";
+import type { BillingPlan, BillingStatus } from "@prisma/enums";
 
 export type BillingSnapshotDTO = {
   mode: BillingAccessMode;
@@ -11,9 +8,9 @@ export type BillingSnapshotDTO = {
   trialEndsAt: string | null;
   isLegacy: boolean;
   billingExempt: boolean;
-  /** Tem Customer Stripe — pode abrir o Customer Portal. */
   canManageBilling: boolean;
   maxProfessionals: number | null;
+  extraSeats: number;
 };
 
 export type CheckoutSessionDTO = {

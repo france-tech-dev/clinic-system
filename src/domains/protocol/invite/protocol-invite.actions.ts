@@ -1,7 +1,7 @@
 "use server";
 
 import { requirePermission } from "@/server/auth/permissions";
-import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
 import { AppError } from "@/shared/lib/app-error";
 import { requireOrgId } from "@/shared/lib/org-context";
@@ -37,7 +37,7 @@ export async function createProtocolInviteAction(
     const payload = AppError.parse(createProtocolInviteSchema, input);
 
     const { organizationId, userId } =
-      await requireOrgFeatureWrite("avaliacoes");
+      await requireOrgWrite();
     const origin = await requestOrigin();
     const data = await createProtocolInvite(
       organizationId,
@@ -81,7 +81,7 @@ export async function revokeProtocolInviteAction(
     await requirePermission({ project: ["update"] });
     const payload = AppError.parse(protocolInviteIdSchema, input);
 
-    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
+    const { organizationId } = await requireOrgWrite();
     const origin = await requestOrigin();
     const data = await revokeProtocolInvite(organizationId, payload.id, origin);
     if (!data) throw new AppError("Convite não encontrado");
@@ -100,7 +100,7 @@ export async function deleteProtocolInviteAction(
     await requirePermission({ project: ["delete"] });
     const payload = AppError.parse(protocolInviteIdSchema, input);
 
-    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
+    const { organizationId } = await requireOrgWrite();
     const origin = await requestOrigin();
     const data = await deleteProtocolInvite(organizationId, payload.id, origin);
     if (!data) throw new AppError("Convite não encontrado");

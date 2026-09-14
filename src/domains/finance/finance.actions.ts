@@ -1,7 +1,7 @@
 "use server";
 
 import { requirePermission } from "@/server/auth/permissions";
-import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
 import { AppError } from "@/shared/lib/app-error";
 import { requireOrgId } from "@/shared/lib/org-context";
@@ -52,7 +52,7 @@ export async function createCashTransactionAction(
   try {
     await requirePermission({ project: ["create"] });
     const payload = AppError.parse(cashTransactionFormSchema, input);
-    const { organizationId } = await requireOrgFeatureWrite("caixa");
+    const { organizationId } = await requireOrgWrite();
 
     const data = await createCashTransaction(organizationId, payload);
     revalidateCashflow();
@@ -68,7 +68,7 @@ export async function updateCashTransactionAction(
   try {
     await requirePermission({ project: ["update"] });
     const payload = AppError.parse(updateCashTransactionSchema, input);
-    const { organizationId } = await requireOrgFeatureWrite("caixa");
+    const { organizationId } = await requireOrgWrite();
 
     const data = await updateCashTransaction(organizationId, payload);
     if (!data) throw new AppError("Lançamento não encontrado");
@@ -85,7 +85,7 @@ export async function markCashTransactionPostedAction(
   try {
     await requirePermission({ project: ["update"] });
     const { id } = AppError.parse(cashTransactionIdSchema, input);
-    const { organizationId } = await requireOrgFeatureWrite("caixa");
+    const { organizationId } = await requireOrgWrite();
 
     const data = await markCashTransactionPosted(organizationId, id);
     if (!data) throw new AppError("Lançamento não encontrado");
@@ -102,7 +102,7 @@ export async function deleteCashTransactionAction(
   try {
     await requirePermission({ project: ["delete"] });
     const { id } = AppError.parse(cashTransactionIdSchema, input);
-    const { organizationId } = await requireOrgFeatureWrite("caixa");
+    const { organizationId } = await requireOrgWrite();
 
     const data = await deleteCashTransaction(organizationId, id);
     if (!data) throw new AppError("Lançamento não encontrado");
