@@ -67,8 +67,8 @@ A quota de trial é carregada no servidor (página do paciente), injectada via `
 - Texto é **rascunho assistido** — o profissional deve rever antes de uso clínico.
 - Prompt: instrumento, data, primeiro nome, idade (se houver), somas brutas, itens. Sem CPF/contacto.
 - Auditoria: `organizationId`, `userId`, `kind`, `evaluationId`, `createdAt` — **sem** texto do prompt/resposta.
-- Feature gated: `"ai"` no plano **Enterprise** (trial/legado têm todas as gated features).
+- IA incluída em todos os planos pagos (e no trial); quotas de trial em `generation-limit.ts`.
 
 ## Billing
 
-Gate fino só em actions / route + UI (`canUseAi`). Não no proxy.
+Escrita exige assinatura activa (`requireOrgWrite`). Gate fino de quota no trial; UI usa `canUseAi` = modo full. Não no proxy.

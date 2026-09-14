@@ -42,7 +42,7 @@ export function ProtocolInterpretationAIPanel({
       <div className="rounded-xl border border-dashed border-border bg-muted/20 px-3 py-4">
         <p className="text-sm font-medium">Interpretação assistida por IA</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Disponível no plano Enterprise (ou durante o período de teste).
+          Disponível com assinatura ativa (e durante o período de teste).
         </p>
       </div>
     );
@@ -57,8 +57,8 @@ export function ProtocolInterpretationAIPanel({
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-medium">Interpretação clínica</p>
           <p className="text-xs text-muted-foreground">
-            Interpretação por IA — rever antes de usar clinicamente. A IA não
-            inventa T-scores; usa respostas item a item e somas brutas.
+            Interpretação por IA — revise antes de usar clinicamente. A IA não
+            inventa scores; usa respostas item a item e somas brutas.
           </p>
           {trialQuotaHint ? (
             <p className="text-xs text-muted-foreground">{trialQuotaHint}</p>
@@ -101,8 +101,8 @@ export function ProtocolInterpretationAIPanel({
 
       {quota && !quota.canGenerate ? (
         <p className="text-xs text-muted-foreground">
-          Limite do período de teste atingido. Assine o plano Enterprise para
-          continuar a gerar interpretações.
+          Limite do período de teste atingido. Assine um plano para continuar
+          gerando interpretações.
         </p>
       ) : null}
 
@@ -114,7 +114,7 @@ export function ProtocolInterpretationAIPanel({
         className="min-h-48 resize-y text-xs leading-relaxed"
         placeholder={
           isGenerating
-            ? "A escrever interpretação…"
+            ? "Escrevendo interpretação…"
             : "Gere um rascunho ou escreva a interpretação manualmente."
         }
         aria-label="Texto da interpretação clínica"

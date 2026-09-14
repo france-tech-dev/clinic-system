@@ -51,7 +51,7 @@ export function LandingCta() {
         <div className="mt-14 w-full max-w-[320px] overflow-hidden rounded-[2rem] border border-white/30 bg-black/20 shadow-lg sm:max-w-[360px]">
           <LandingShot
             name="app"
-            alt="Aplicativo Movi Clinicas no celular"
+            alt="Aplicativo Movi Clínicas no celular"
           />
         </div>
       </div>

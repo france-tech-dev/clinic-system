@@ -106,9 +106,8 @@ export default async function PacienteDetailPage({
     orgMembers = members;
     isLeadership = isLeadershipRole(memberGate?.role ?? null);
     protocolInvites = invites;
-    canWriteInvites =
-      billing.mode === "full" && billing.features.includes("avaliacoes");
-    canUseAi = billing.mode === "full" && billing.features.includes("ai");
+    canWriteInvites = billing.mode === "full";
+    canUseAi = billing.mode === "full";
     if (canUseAi) {
       aiTrialQuota = await getAiTrialQuota({
         organizationId,

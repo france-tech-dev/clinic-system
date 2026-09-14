@@ -10,13 +10,13 @@ const DUAL: readonly {
     title: "Para quem atende",
     body: "Agenda, paciente, anamnese e avaliações no fluxo do profissional — sem perder o contexto do atendimento.",
     shot: "lista",
-    alt: "Lista de pacientes na Movi Clinicas",
+    alt: "Lista de pacientes na Movi Clínicas",
   },
   {
     title: "Para quem gerencia",
     body: "Dashboard, caixa, equipe e planos — a visão da liderança sobre a clínica.",
     shot: "dash",
-    alt: "Dashboard da clínica na Movi Clinicas",
+    alt: "Dashboard da clínica na Movi Clínicas",
   },
 ];
 

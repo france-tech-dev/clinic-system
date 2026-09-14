@@ -10,16 +10,16 @@ import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
 
 const FAQ = [
   {
-    q: "O que é a Movi Clinicas?",
-    a: "É um sistema de gestão para clínicas de terapia ocupacional e equipes multi-profissionais. Reúne agenda, pacientes, prontuário com PDF, anamnese, avaliações, caixa e dashboard em um só produto.",
+    q: "O que é a Movi Clínicas?",
+    a: "É um sistema de gestão para clínicas de terapia ocupacional e equipes multiprofissionais. Reúne agenda, pacientes, prontuário com PDF, anamnese, avaliações, caixa e dashboard em um só produto.",
   },
   {
     q: "O que está incluído?",
-    a: "Agenda, pacientes, evoluções e PDF com assinatura e CREFITO. Nos planos Pro e Enterprise entram anamnese e caixa; no Enterprise, avaliações estruturadas e recursos avançados do plano. Portal do responsável e WhatsApp ainda estão em evolução.",
+    a: "Tudo: agenda, pacientes, evoluções e PDF com assinatura e CREFITO, anamnese, avaliações, caixa, portal do responsável e interpretação assistida por IA. Os planos Solo, Professional e Enterprise diferem só no número de profissionais.",
   },
   {
     q: "Serve para o tamanho da minha clínica?",
-    a: "Sim. Starter, Pro e Enterprise mudam o número de profissionais e os recursos incluídos — escolha o que faz sentido para a sua equipe.",
+    a: "Sim. Solo (1 profissional), Professional (até 3) e Enterprise (até 9, com profissionais adicionais). Todos os módulos estão incluídos em qualquer plano.",
   },
   {
     q: "Como testar antes de assinar?",
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: "Tem inteligência artificial?",
-    a: "No plano Enterprise há interpretação assistida por IA em protocolos de avaliação. Lembretes por WhatsApp ainda estão em evolução — não tratamos como recurso pronto.",
+    a: "Sim — a interpretação assistida por IA em protocolos de avaliação está incluída em todos os planos. Lembretes por WhatsApp ainda estão em evolução — não tratamos como recurso pronto.",
   },
 ] as const;
 

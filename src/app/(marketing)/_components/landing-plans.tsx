@@ -3,6 +3,7 @@ import { IconCheck } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   BILLING_PLAN_DEFS,
+  EXTRA_SEAT_PRICE_BRL,
   TRIAL_DAYS,
   type BillingPlanDef,
 } from "@/shared/constants/billing-plans";
@@ -12,8 +13,9 @@ import { cn } from "@/shared/lib/utils";
 import { BillingPlan } from "@prisma/enums";
 
 function seatLabel(plan: BillingPlanDef): string {
-  if (plan.maxProfessionals == null) return "Profissionais ilimitados";
-  return `Até ${plan.maxProfessionals} profissionais`;
+  const base = `Até ${plan.includedProfessionals} profissionais`;
+  if (!plan.extraSeatAllowed) return base;
+  return `${base} · adicional ${formatBrl(EXTRA_SEAT_PRICE_BRL)}/mês`;
 }
 
 function PlanCard({
@@ -35,7 +37,7 @@ function PlanCard({
           <h3 className="font-serif text-2xl font-semibold">{plan.name}</h3>
           {featured ? (
             <span className="text-xs font-medium text-primary">
-              Mais completo
+              Para equipes maiores
             </span>
           ) : null}
         </div>
@@ -87,8 +89,9 @@ export function LandingPlans() {
             Planos claros para a clínica crescer
           </h2>
           <p className="mt-4 text-muted-foreground">
-            {TRIAL_DAYS} dias com acesso completo. Depois você escolhe o plano —
-            os valores abaixo são a mensalidade pública da Movi.
+            {TRIAL_DAYS} dias com acesso completo a todos os módulos. Depois
+            você escolhe Solo, Professional ou Enterprise — a diferença é o
+            número de profissionais.
           </p>
         </div>
 

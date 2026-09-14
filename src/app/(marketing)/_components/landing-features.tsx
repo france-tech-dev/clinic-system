@@ -60,7 +60,7 @@ const FEATURES: readonly Feature[] = [
   },
   {
     title: "Planos claros",
-    subtitle: "Starter, Pro e Enterprise",
+    subtitle: "Solo, Professional e Enterprise",
     Icon: IconShieldCheck,
   },
 ] as const;

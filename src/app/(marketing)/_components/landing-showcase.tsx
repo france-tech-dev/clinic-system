@@ -22,7 +22,7 @@ export function LandingShowcase() {
           <div className="overflow-hidden rounded-2xl border border-border shadow-sm sm:rounded-3xl">
             <LandingShot
               name="calendario"
-              alt="Tela da agenda na Movi Clinicas"
+              alt="Tela da agenda na Movi Clínicas"
               priority
             />
           </div>

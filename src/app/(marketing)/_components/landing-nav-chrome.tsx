@@ -33,7 +33,7 @@ function HeaderLogo({
       onClick={(event) => onNavigate(event, "#top")}
       className="relative shrink-0"
       style={{ width: size, height: size }}
-      aria-label="Movi Clinicas — início"
+      aria-label="Movi Clínicas — início"
     >
       <Image
         src="/logo.png"

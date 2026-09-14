@@ -16,7 +16,7 @@ export function LandingHero() {
       </h1>
       <p className="mx-auto mt-5 max-w-xl animate-[landing-fade-up_0.7s_ease-out_0.06s_both] text-pretty text-base text-white/85 sm:text-lg">
         Agenda, prontuário, anamnese, avaliações, financeiro e equipe — feito
-        para clínicas de terapia ocupacional e equipes multi-profissionais.
+        para clínicas de terapia ocupacional e equipes multiprofissionais.
       </p>
       <div className="mt-9 flex animate-[landing-fade-up_0.7s_ease-out_0.1s_both] flex-col items-center justify-center gap-3 sm:flex-row">
         <Button

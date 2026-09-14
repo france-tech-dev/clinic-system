@@ -12,19 +12,19 @@ const TRACK_CARDS: readonly {
     title: "Agenda do dia",
     body: "Organize o turno, acompanhe confirmações e veja o que ainda precisa de evolução.",
     shot: "calendario",
-    alt: "Agenda do dia na Movi Clinicas",
+    alt: "Agenda do dia na Movi Clínicas",
   },
   {
     title: "Paciente e PDF",
     body: "Prontuário, evoluções e documento com assinatura e CREFITO do profissional.",
     shot: "pacientes",
-    alt: "Ficha de paciente na Movi Clinicas",
+    alt: "Ficha de paciente na Movi Clínicas",
   },
   {
     title: "Caixa e indicadores",
     body: "Registre cobranças e acompanhe os números da clínica no mesmo sistema.",
     shot: "caixa",
-    alt: "Caixa na Movi Clinicas",
+    alt: "Caixa na Movi Clínicas",
   },
 ];
 

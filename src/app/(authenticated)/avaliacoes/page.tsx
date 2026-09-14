@@ -69,7 +69,7 @@ export default async function AvaliacoesPage() {
       viewerProfessionId,
     );
     canWriteEvaluations =
-      access.mode === "full" && access.features.includes("avaliacoes");
+      access.mode === "full";
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -96,11 +96,10 @@ export default async function AvaliacoesPage() {
           <>
             {canWriteEvaluations ? null : (
               <Alert>
-                <AlertTitle>Fora do plano atual</AlertTitle>
+                <AlertTitle>Assinatura inativa</AlertTitle>
                 <AlertDescription>
-                  Avaliações estruturadas (GMFM-88) fazem parte do Enterprise.
-                  Pode consultar o catálogo; para registrar,{" "}
-                  <Link href={paths.planos}>mude de plano</Link>.
+                  Você pode consultar o catálogo. Para registrar,{" "}
+                  <Link href={paths.planos}>assine um plano</Link>.
                 </AlertDescription>
               </Alert>
             )}
