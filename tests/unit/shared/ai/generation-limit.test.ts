@@ -27,10 +27,10 @@ const userId = "user-1";
 const trialBilling: BillingAccess = {
   mode: "full",
   status: BillingStatus.TRIALING,
-  plan: BillingPlan.STARTER,
+  plan: BillingPlan.SOLO,
   trialEndsAt: new Date("2026-09-08"),
-  features: ["ai", "anamnese", "caixa", "avaliacoes", "portal"],
   maxProfessionals: null,
+  extraSeats: 0,
   isLegacy: false,
 };
 
@@ -39,8 +39,8 @@ const paidBilling: BillingAccess = {
   status: BillingStatus.ACTIVE,
   plan: BillingPlan.ENTERPRISE,
   trialEndsAt: null,
-  features: ["ai", "anamnese", "caixa", "avaliacoes", "portal"],
-  maxProfessionals: null,
+  maxProfessionals: 9,
+  extraSeats: 0,
   isLegacy: false,
 };
 
