@@ -19,7 +19,12 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   BILLING_PLAN_DEFS,
   EXTRA_SEAT_PRICE_BRL,
+  INCLUDED_IN_ALL_PLANS,
+  INCLUDED_SECTION_DESCRIPTION,
+  INCLUDED_SECTION_TITLE,
   planDef,
+  planSeatLabel,
+  type BillingPlanDef,
 } from "@/shared/constants/billing-plans";
 import {
   createBillingPortalSessionAction,
@@ -128,10 +133,10 @@ function subscribeLabel(
   return "Assinar agora";
 }
 
-function seatDescription(plan: (typeof BILLING_PLAN_DEFS)[number]): string {
-  const base = `até ${plan.includedProfessionals} profissionais`;
-  if (!plan.extraSeatAllowed) return base;
-  return `${base} · adicional ${formatBrl(EXTRA_SEAT_PRICE_BRL)}/mês`;
+function pricePerProfessionalHint(plan: BillingPlanDef): string | null {
+  if (plan.id !== BillingPlan.PRO) return null;
+  const per = Math.round(plan.priceMonthlyBrl / plan.includedProfessionals);
+  return `Equivalente a aproximadamente ${formatBrl(per)} por profissional`;
 }
 
 function FeatureItem({ item }: { item: string }) {
@@ -306,28 +311,55 @@ export function PlanosClient({
         ) : null}
       </Card>
 
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>{INCLUDED_SECTION_TITLE}</CardTitle>
+          <CardDescription>{INCLUDED_SECTION_DESCRIPTION}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {INCLUDED_IN_ALL_PLANS.map((item) => (
+              <FeatureItem key={item} item={item} />
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+
       <div className="grid items-stretch gap-4 lg:grid-cols-3">
         {BILLING_PLAN_DEFS.map((plan) => {
           const current = isCurrentPlan(snapshot, plan.id);
           const pending = pendingPlan === plan.id;
+          const recommended = Boolean(plan.recommended);
+          const perHint = pricePerProfessionalHint(plan);
           return (
             <Card
               key={plan.id}
-              className={cn("h-full", current && "ring-2 ring-primary")}
+              className={cn(
+                "h-full",
+                current && "ring-2 ring-primary",
+                !current && recommended && "border-primary/40",
+              )}
               aria-current={current ? "true" : undefined}
             >
               <CardHeader className="border-b">
                 <CardTitle className="text-lg">{plan.name}</CardTitle>
-                {current ? (
-                  <CardAction>
-                    <Badge>Atual</Badge>
+                {current || recommended ? (
+                  <CardAction className="flex flex-wrap gap-1">
+                    {current ? <Badge>Atual</Badge> : null}
+                    {!current && recommended ? (
+                      <Badge variant="secondary">Mais indicado</Badge>
+                    ) : null}
                   </CardAction>
                 ) : null}
-                <CardDescription>
-                  {formatBrl(plan.priceMonthlyBrl)}
-                  /mês
-                  {" · "}
-                  {seatDescription(plan)}
+                <CardDescription className="flex flex-col gap-1">
+                  <span>{plan.tagline}</span>
+                  <span>
+                    {formatBrl(plan.priceMonthlyBrl)}
+                    /mês · {planSeatLabel(plan)}
+                  </span>
+                  {perHint ? (
+                    <span className="text-xs">{perHint}</span>
+                  ) : null}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 pt-(--card-spacing)">

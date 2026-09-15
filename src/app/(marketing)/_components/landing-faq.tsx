@@ -15,23 +15,23 @@ const FAQ = [
   },
   {
     q: "O que está incluído?",
-    a: "Tudo: agenda, pacientes, evoluções e PDF com assinatura e CREFITO, anamnese, avaliações, caixa, portal do responsável e interpretação assistida por IA. Os planos Solo, Professional e Enterprise diferem só no número de profissionais.",
+    a: "Todas as funcionalidades estão disponíveis em todos os planos: agenda, pacientes, evoluções e PDF com assinatura e registro profissional, anamnese, avaliações, caixa, portal do responsável e interpretação assistida por IA. Os planos diferenciam-se pelo número de profissionais incluídos.",
   },
   {
     q: "Serve para o tamanho da minha clínica?",
-    a: "Sim. Solo (1 profissional), Professional (até 3) e Enterprise (até 9, com profissionais adicionais). Todos os módulos estão incluídos em qualquer plano.",
+    a: "Sim. Solo contempla 1 profissional; Professional, até 3 (indicado para equipes de pequeno porte); Enterprise, até 9, com possibilidade de profissionais adicionais.",
   },
   {
     q: "Como testar antes de assinar?",
-    a: `Crie a conta e use o teste de ${TRIAL_DAYS} dias sem cartão. Depois escolha o plano no checkout.`,
+    a: `Crie a conta e utilize o período de teste de ${TRIAL_DAYS} dias, sem cartão. Em seguida, selecione o plano no checkout.`,
   },
   {
     q: "Os dados dos pacientes ficam isolados?",
-    a: "Sim. Cada clínica só acessa os próprios dados. As permissões separam quem atende de quem gerencia.",
+    a: "Sim. Cada clínica acessa exclusivamente os próprios dados. As permissões distinguem quem atende de quem gerencia.",
   },
   {
     q: "Tem inteligência artificial?",
-    a: "Sim — a interpretação assistida por IA em protocolos de avaliação está incluída em todos os planos. Lembretes por WhatsApp ainda estão em evolução — não tratamos como recurso pronto.",
+    a: "Sim. A interpretação assistida por IA em protocolos de avaliação está disponível em todos os planos. Lembretes por WhatsApp encontram-se em desenvolvimento e não devem ser considerados recurso concluído.",
   },
 ] as const;
 
@@ -51,7 +51,7 @@ export function LandingFaq() {
             Dúvidas frequentes
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Respostas diretas sobre o produto, o período de teste e a proteção
+            Respostas objetivas sobre o produto, o período de teste e a proteção
             dos dados.
           </p>
         </div>

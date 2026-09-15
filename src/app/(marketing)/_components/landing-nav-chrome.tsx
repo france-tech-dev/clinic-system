@@ -114,7 +114,7 @@ export function LandingNavChrome({
         >
           <Link href={paths.auth.signup}>
             <span className="hidden md:inline">
-              Teste de {TRIAL_DAYS} dias
+              Período de teste de {TRIAL_DAYS} dias
             </span>
             <span className="md:hidden">Teste</span>
           </Link>

@@ -19,53 +19,60 @@ export const BILLING_PLAN_PRICES_BRL = {
 export type BillingPlanDef = {
   id: BillingPlan;
   name: string;
+  tagline: string;
   includedProfessionals: number;
   extraSeatAllowed: boolean;
+  /** Diferenciais de tamanho/assentos — features comuns ficam em INCLUDED_IN_ALL_PLANS. */
   highlights: readonly string[];
   priceMonthlyBrl: number;
+  recommended?: boolean;
 };
 
-/** Highlights partilhados — todos os planos incluem o produto completo. */
-export const SHARED_PLAN_HIGHLIGHTS = [
+/** Funcionalidades comuns a todos os planos — apresentar uma vez acima dos cards. */
+export const INCLUDED_IN_ALL_PLANS = [
   "Agenda, pacientes, prontuário, evoluções e PDF",
   "Anamnese, avaliações, caixa e portal do responsável",
   "Interpretação assistida por IA (protocolos)",
   "Dashboard, busca e configurações da clínica",
 ] as const;
 
+/** Título do bloco de recursos comuns (landing e /planos). */
+export const INCLUDED_SECTION_TITLE =
+  "Funcionalidades disponíveis em todos os planos";
+
+export const INCLUDED_SECTION_DESCRIPTION =
+  "A distinção entre os planos refere-se exclusivamente ao número de profissionais.";
+
 export const BILLING_PLAN_DEFS: readonly BillingPlanDef[] = [
   {
     id: BillingPlan.SOLO,
     name: "Solo",
+    tagline: "Atendimento individual",
     includedProfessionals: 1,
     extraSeatAllowed: false,
-    highlights: [
-      ...SHARED_PLAN_HIGHLIGHTS,
-      "1 profissional (sem adicionais — atualize para o Professional)",
-    ],
+    highlights: ["Capacidade limitada a 1 profissional"],
     priceMonthlyBrl: BILLING_PLAN_PRICES_BRL[BillingPlan.SOLO],
   },
   {
     id: BillingPlan.PRO,
     name: "Professional",
+    tagline: "Equipes de pequeno porte",
     includedProfessionals: 3,
     extraSeatAllowed: false,
     highlights: [
-      ...SHARED_PLAN_HIGHLIGHTS,
-      "Até 3 profissionais (sem adicionais — atualize para o Enterprise)",
+      "Indicada para equipes de até 3 profissionais",
+      "Capacidade limitada aos profissionais incluídos",
     ],
     priceMonthlyBrl: BILLING_PLAN_PRICES_BRL[BillingPlan.PRO],
+    recommended: true,
   },
   {
     id: BillingPlan.ENTERPRISE,
     name: "Enterprise",
+    tagline: "Clínicas de maior porte",
     includedProfessionals: 9,
     extraSeatAllowed: true,
-    highlights: [
-      ...SHARED_PLAN_HIGHLIGHTS,
-      "Até 9 profissionais incluídos",
-      `Profissional adicional por R$ ${EXTRA_SEAT_PRICE_BRL}/mês`,
-    ],
+    highlights: [`Profissional adicional por R$ ${EXTRA_SEAT_PRICE_BRL}/mês`],
     priceMonthlyBrl: BILLING_PLAN_PRICES_BRL[BillingPlan.ENTERPRISE],
   },
 ];
@@ -86,6 +93,16 @@ export function planDef(plan: BillingPlan): BillingPlanDef {
   const def = BILLING_PLAN_DEFS.find((item) => item.id === plan);
   if (!def) throw new Error(`Plano desconhecido: ${plan}`);
   return def;
+}
+
+/** Rótulo curto de assentos para UI (pt-BR). */
+export function planSeatLabel(plan: BillingPlanDef): string {
+  const n = plan.includedProfessionals;
+  if (n === 1) return "1 profissional";
+  if (plan.extraSeatAllowed) {
+    return `Até ${n} profissionais · adicional R$ ${EXTRA_SEAT_PRICE_BRL}/mês`;
+  }
+  return `Até ${n} profissionais`;
 }
 
 export function resolveBillingAccess(

@@ -12,11 +12,11 @@ export function LandingShowcase() {
           id="landing-showcase-title"
           className="mx-auto max-w-2xl text-center font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
         >
-          A rotina da clínica, sem troca de ferramenta
+          A rotina da clínica, sem alternar entre sistemas
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
-          Veja o dia de atendimento, o paciente e o que ainda falta registrar —
-          tudo na mesma tela.
+          Visualize a agenda do dia, o paciente e os registros pendentes — no
+          mesmo ambiente.
         </p>
         <div className="mt-14 animate-[landing-fade-up_0.85s_ease-out_0.08s_both]">
           <div className="overflow-hidden rounded-2xl border border-border shadow-sm sm:rounded-3xl">

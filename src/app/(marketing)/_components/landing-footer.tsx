@@ -58,9 +58,9 @@ export function LandingFooter() {
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-zinc-500 sm:px-6">
           © {new Date().getFullYear()} Movi Clínicas. Portal do responsável e
-          lembretes por WhatsApp estão em evolução e ainda não devem ser
-          tratados como recursos prontos. Valores públicos sujeitos à
-          confirmação no checkout.
+          lembretes por WhatsApp encontram-se em desenvolvimento e ainda não
+          devem ser considerados recursos concluídos. Valores públicos sujeitos
+          à confirmação no checkout.
         </p>
       </div>
     </footer>

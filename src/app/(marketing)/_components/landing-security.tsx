@@ -8,22 +8,22 @@ import {
 const POINTS = [
   {
     title: "Dados separados por clínica",
-    body: "Cada organização só vê as próprias informações — sem misturar clínicas.",
+    body: "Cada organização acessa exclusivamente as próprias informações, sem compartilhar dados entre clínicas.",
     Icon: IconDatabase,
   },
   {
     title: "Acesso por função",
-    body: "Quem atende usa o turno; a liderança vê dashboard, caixa e equipe.",
+    body: "O profissional utiliza o fluxo de atendimento; a liderança acompanha dashboard, caixa e equipe.",
     Icon: IconUserCheck,
   },
   {
     title: "Controle da equipe",
-    body: "Convites e permissões ficam dentro da sua organização.",
+    body: "Convites e permissões permanecem no âmbito da sua organização.",
     Icon: IconLock,
   },
   {
-    title: "Privacidade na prática",
-    body: "Pensado para a realidade da LGPD: menos exposição, mais controle.",
+    title: "Privacidade e LGPD",
+    body: "Projetado com foco em menor exposição de dados e maior controle de acesso.",
     Icon: IconShieldLock,
   },
 ] as const;
@@ -40,11 +40,11 @@ export function LandingSecurity() {
             id="landing-security-title"
             className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
           >
-            Sua clínica isolada e sob controle
+            Dados isolados por clínica, com controle de acesso
           </h2>
           <p className="mt-4 text-zinc-400">
-            Cada clínica tem o seu espaço. Privacidade e permissões fazem parte
-            do produto — não são um extra.
+            Cada clínica possui o seu espaço. Privacidade e permissões integram
+            o produto — não constituem um complemento opcional.
           </p>
         </div>
 

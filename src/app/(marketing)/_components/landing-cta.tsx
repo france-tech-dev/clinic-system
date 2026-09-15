@@ -31,11 +31,11 @@ export function LandingCta() {
           id="landing-cta-title"
           className="font-serif text-4xl tracking-tight text-white sm:text-5xl"
         >
-          Comece com a Movi na sua clínica
+          Leve a Movi Clínicas para a sua clínica
         </h2>
         <p className="mt-4 max-w-md text-base text-white/85">
-          Crie a organização, convide a equipe e use a Movi por {TRIAL_DAYS}{" "}
-          dias — sem cartão.
+          Crie a organização, convide a equipe e utilize a plataforma por{" "}
+          {TRIAL_DAYS} dias — sem cartão.
         </p>
         <Button
           size="lg"
@@ -43,7 +43,7 @@ export function LandingCta() {
           asChild
         >
           <Link href={paths.auth.signup}>
-            Começar agora
+            Iniciar período de teste
             <IconArrowUpRight data-icon="inline-end" />
           </Link>
         </Button>
