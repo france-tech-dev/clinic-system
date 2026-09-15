@@ -132,6 +132,9 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [ ] **Filtros** — por data, nome, idade, etc. nas listagens
 - [ ] **Exportação** — PDF/CSV das listagens
 
+- [ ] **Termos e condições de uso** — página para os termos e condições de uso do sistema
+- [ ] **Política de privacidade** — página para a política de privacidade do sistema
+
 ### Futuro
 
 [ ] **Envio de WhatsApp pelo sistema** — lembrete de consulta para o responsável
@@ -142,6 +145,10 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [ ] Relatório de acessos (dispositivo: computador, celular, tablet, …)
 - [ ] Relatório de erros (sistema, utilizador, rede, …)
 - [ ] Relatório de performance (tempo de resposta / processamento)
+
+### Testes de performance e carga
+
+- [ ] Teste com k6 (stress, performance, carga)
 
 ---
 
