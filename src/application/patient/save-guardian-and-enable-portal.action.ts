@@ -17,8 +17,7 @@ import { ok, type ActionResult } from "@/shared/types/action-result";
 import { revalidatePatientPaths } from "./_lib/revalidate-patient-paths";
 
 /**
- * Guarda o responsável e activa o portal num único round-trip.
- * Requer feature `portal` do plano.
+ * Guarda o responsável e ativa o portal num único round-trip.
  */
 export async function saveGuardianAndEnablePortalAction(
   input: unknown,

@@ -6,14 +6,6 @@ export const BILLING_PLANS = [
   BillingPlan.ENTERPRISE,
 ] as const;
 
-export const BILLING_STATUSES = [
-  BillingStatus.TRIALING,
-  BillingStatus.ACTIVE,
-  BillingStatus.PAST_DUE,
-  BillingStatus.CANCELLED,
-  BillingStatus.UNPAID,
-] as const;
-
 export const TRIAL_DAYS = 7;
 
 export const EXTRA_SEAT_PRICE_BRL = 59;
