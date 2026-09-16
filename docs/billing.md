@@ -9,7 +9,7 @@ Cobrança da **Movi** às clínicas pelo uso do sistema. Não é Stripe Connect:
 | Tema                          | Escolha                                                                            |
 | ----------------------------- | ---------------------------------------------------------------------------------- |
 | Produto                       | Stripe Billing (assinatura), não Connect                                           |
-| Trial                         | 7 dias, sem cartão, tudo libertado                                                 |
+| Trial                         | 7 dias, sem cartão, tudo incluído                                                  |
 | Sem cartão no dia 7           | Stripe cancela (`missing_payment_method: cancel`)                                  |
 | App após cancel               | **Read-only** (consulta; criar/editar bloqueado)                                   |
 | Assinar no trial              | Update da **mesma** assinatura; cobra no fim dos 7 dias                            |
@@ -34,7 +34,7 @@ Trial ignora plano e limite de profissionais. `OrganizationBilling.extraSeats` s
 2. No trial, **Assinar agora** → Checkout `mode: setup` + update do preço na assinatura existente. Cartão fica na sub; primeira cobrança no fim do trial.
 3. Dia 7 sem cartão → `customer.subscription.deleted` → `canceled` → app read-only.
 4. Depois do cancel → Checkout `mode: subscription` no mesmo Customer; webhook faz **update** da linha, não cria segunda.
-5. Enterprise → botão em `/planos` para +1 profissional extra (actualiza quantity do add-on).
+5. Enterprise → botão em `/planos` para +1 profissional extra (atualiza quantity do add-on).
 
 ## Webhooks
 
@@ -51,7 +51,7 @@ Endpoint: `POST /api/stripe/webhook`
 - Trial na criação da org: `src/platform/billing/start-trial.ts` (hook Better Auth)
 - Gates nas **actions**: `requireOrgWrite` (escrita) + `requireSeatAvailable` (seats) — o proxy não consulta billing
 - Isenção a dedo: `Organization.billingExempt` + `/plataforma` (allowlist `PLATFORM_ADMIN_USER_IDS`)
-- Customer Portal em `/planos` (`billingPortal.sessions`) — cartão + cancelar (activar no Dashboard Stripe)
+- Customer Portal em `/planos` (`billingPortal.sessions`) — cartão + cancelar (ativar no Dashboard Stripe)
 
 ## Env (produção)
 
@@ -66,4 +66,4 @@ STRIPE_PRICE_EXTRA_SEAT="price_..."  # profissional adicional R$ 59
 
 Dashboard Stripe: 3 Products (Solo, Professional, Enterprise) + 1 Product “Profissional extra”, um Price mensal cada. Webhook apontar para `https://movi-clinicas.francetech.com.br/api/stripe/webhook`.
 
-Customer Portal: Settings → Billing → Customer portal — activar actualização de método de pagamento e cancelamento de assinatura (o botão em `/planos` abre esta sessão).
+Customer Portal: Settings → Billing → Customer portal — ativar atualização de método de pagamento e cancelamento de assinatura (o botão em `/planos` abre esta sessão).

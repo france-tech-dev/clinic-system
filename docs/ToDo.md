@@ -38,7 +38,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] **P6.3** — Caixa por profissional (`CashTransaction.memberId` + filtro `/caixa`)
 - [x] **P6.4** — Autoria em Evaluation/SessionNote (autor = membro da sessão)
 - [x] **P6.5** — Limpezas (`patient-price-input`, shared types, migration baseline)
-- [x] ProtocolEvaluation autor + PDF multi-CREFITO (Member.metadata + fallback org)
+- [x] ProtocolEvaluation autor + PDF com registro profissional (Member.metadata + fallback org)
 
 ---
 
@@ -49,7 +49,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] `@react-pdf/renderer` — templates refatorados (`shared/lib/pdf/` + `features/patient/_lib/pdf/`)
 - [x] Preview (`PDFViewer`) + download
 - [x] Cabeçalho: logo + nome da organização + título
-- [x] Rodapé: assinatura CREFITO + data de emissão + numeração
+- [x] Rodapé: assinatura e registro profissional + data de emissão + numeração
 - [x] Upload de logo em `/configuracoes`
 - [x] Nome da clínica unificado em **`Organization.name`** (PDF e configurações)
 
@@ -160,7 +160,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] `OrganizationBilling` + trial 7 dias na criação da org (+ `extraSeats`)
 - [x] Checkout (setup no trial / subscription após cancel) + webhook
 - [x] `/plataforma` — isentar clínicas (`billingExempt` + `PLATFORM_ADMIN_USER_IDS`)
-- [x] `/planos` — plano actual + Customer Portal + extras (só Enterprise)
+- [x] `/planos` — plano atual + Customer Portal + extras (só Enterprise)
 - [ ] Preços e `STRIPE_PRICE_SOLO|PRO|ENTERPRISE|EXTRA_SEAT` / `STRIPE_SECRET_KEY` em produção (live)
 - [ ] Ativar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
 
