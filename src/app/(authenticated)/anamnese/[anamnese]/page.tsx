@@ -47,7 +47,7 @@ export default async function AnamneseWorkspacePage({
       getProfessionalProfile(organizationId),
       getBillingAccess(organizationId),
     ]);
-    canWrite = access.mode === "full" && access.features.includes("anamnese");
+    canWrite = access.mode === "full";
     content = await form.render({
       organizationId,
       patients,
@@ -79,10 +79,10 @@ export default async function AnamneseWorkspacePage({
         <div className="flex min-h-0 flex-1 flex-col gap-4">
           {canWrite ? null : (
             <Alert className="shrink-0">
-              <AlertTitle>Fora do plano atual</AlertTitle>
+              <AlertTitle>Assinatura inativa</AlertTitle>
               <AlertDescription>
-                Pode consultar o histórico. Para preencher ou gravar,{" "}
-                <Link href={paths.planos}>mude de plano</Link>.
+                Você pode consultar o histórico. Para preencher ou salvar,{" "}
+                <Link href={paths.planos}>assine um plano</Link>.
               </AlertDescription>
             </Alert>
           )}

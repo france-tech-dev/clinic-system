@@ -42,7 +42,7 @@ export default async function AvaliacaoPage({
       listPatients(organizationId),
       getBillingAccess(organizationId),
     ]);
-    canWrite = access.mode === "full" && access.features.includes("avaliacoes");
+    canWrite = access.mode === "full";
     content = await ui.render({
       organizationId,
       patients,
@@ -81,10 +81,10 @@ export default async function AvaliacaoPage({
           </Link>
           {canWrite ? null : (
             <Alert>
-              <AlertTitle>Fora do plano atual</AlertTitle>
+              <AlertTitle>Assinatura inativa</AlertTitle>
               <AlertDescription>
-                Pode consultar o histórico. Para registrar ou editar,{" "}
-                <Link href={paths.planos}>mude de plano</Link>.
+                Você pode consultar o histórico. Para registrar ou editar,{" "}
+                <Link href={paths.planos}>assine um plano</Link>.
               </AlertDescription>
             </Alert>
           )}

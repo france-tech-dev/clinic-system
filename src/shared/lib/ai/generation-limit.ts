@@ -1,14 +1,14 @@
 import "server-only";
 
-import { BillingStatus } from "@prisma/enums";
+import { AI_LIMITS, type AiTrialQuotaDTO } from "@/shared/constants/ai-limits";
 import {
   TRIAL_DAYS,
   type BillingAccess,
 } from "@/shared/constants/billing-plans";
-import { AI_LIMITS, type AiTrialQuotaDTO } from "@/shared/constants/ai-limits";
-import { countAiGenerationsSince } from "@/shared/lib/ai/audit";
 import { buildTrialAiQuota } from "@/shared/lib/ai/_lib/quota";
+import { countAiGenerationsSince } from "@/shared/lib/ai/audit";
 import { assertRateLimit } from "@/shared/lib/rate-limit";
+import { BillingStatus } from "@prisma/enums";
 
 const TRIAL_MS = TRIAL_DAYS * 24 * 60 * 60 * 1000;
 
@@ -59,7 +59,7 @@ async function assertTrialAiLimits(opts: {
 
   if (orgUsed >= trial.orgMax) {
     throw new AiGenerationLimitError(
-      `Limite de gerações da clínica no período de teste atingido (${trial.orgMax}). Assine o plano Enterprise para continuar.`,
+      `Limite de gerações da clínica no período de teste atingido (${trial.orgMax}). Assine um plano para continuar.`,
     );
   }
   if (userUsed >= trial.userMax) {
@@ -123,7 +123,7 @@ export async function getAiTrialQuota(opts: {
   userId: string;
   billing: BillingAccess;
 }): Promise<AiTrialQuotaDTO | null> {
-  if (opts.billing.mode !== "full" || !opts.billing.features.includes("ai")) {
+  if (opts.billing.mode !== "full") {
     return null;
   }
   if (!isTrialBilling(opts.billing)) return null;

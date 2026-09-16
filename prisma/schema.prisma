@@ -76,7 +76,7 @@ enum PatientSex {
 }
 
 enum BillingPlan {
-  STARTER
+  SOLO
   PRO
   ENTERPRISE
 }
@@ -217,6 +217,7 @@ model OrganizationBilling {
   stripeSubscriptionId String        @unique
   status               BillingStatus
   plan                 BillingPlan?
+  extraSeats           Int           @default(0)
   trialEndsAt          DateTime?
   currentPeriodEnd     DateTime?
   createdAt            DateTime      @default(now())

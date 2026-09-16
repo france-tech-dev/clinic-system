@@ -11,14 +11,13 @@ import {
 } from "@/domains/guardian/guardian.service";
 import type { CreatedGuardianDTO } from "@/domains/guardian/guardian.types";
 import { requirePermission } from "@/server/auth/permissions";
-import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { AppError } from "@/shared/lib/app-error";
 import { ok, type ActionResult } from "@/shared/types/action-result";
 import { revalidatePatientPaths } from "./_lib/revalidate-patient-paths";
 
 /**
- * Guarda o responsável e activa o portal num único round-trip.
- * Requer feature `portal` do plano.
+ * Guarda o responsável e ativa o portal num único round-trip.
  */
 export async function saveGuardianAndEnablePortalAction(
   input: unknown,
@@ -38,7 +37,7 @@ export async function saveGuardianAndEnablePortalAction(
       throw new AppError("Dados inválidos");
     }
 
-    const { organizationId } = await requireOrgFeatureWrite("portal");
+    const { organizationId } = await requireOrgWrite();
 
     const saved = await updateGuardian(organizationId, guardianPayload);
     if (!saved) throw new AppError("Responsável não encontrado");

@@ -30,7 +30,7 @@ const FEATURES: readonly Feature[] = [
   },
   {
     title: "PDF clínico",
-    subtitle: "Assinatura e CREFITO do profissional",
+    subtitle: "Assinatura e registro profissional",
     Icon: IconFileDescription,
   },
   {
@@ -55,19 +55,19 @@ const FEATURES: readonly Feature[] = [
   },
   {
     title: "Equipe",
-    subtitle: "Convites e acesso só da sua clínica",
+    subtitle: "Convites e acesso restrito à sua clínica",
     Icon: IconUsers,
   },
   {
-    title: "Planos claros",
-    subtitle: "Starter, Pro e Enterprise",
+    title: "Planos",
+    subtitle: "Funcionalidades comuns; planos por tamanho de equipe",
     Icon: IconShieldCheck,
   },
 ] as const;
 
 const COMING = [
-  "Portal do responsável — em evolução",
-  "Lembretes de consulta por WhatsApp — em evolução",
+  "Portal do responsável — em desenvolvimento",
+  "Lembretes de consulta por WhatsApp — em desenvolvimento",
 ] as const;
 
 export function LandingFeatures() {
@@ -83,11 +83,11 @@ export function LandingFeatures() {
             id="landing-features-title"
             className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
           >
-            O essencial da gestão clínica, junto
+            O essencial da gestão clínica, em um só lugar
           </h2>
           <p className="mt-4 text-muted-foreground">
             Agenda, prontuário, anamnese, avaliações, caixa e equipe no mesmo
-            produto — sem montar um quebra-cabeça de softwares.
+            produto — sem depender de múltiplos softwares.
           </p>
         </div>
 
@@ -107,7 +107,7 @@ export function LandingFeatures() {
 
         <div className="mx-auto mt-14 max-w-xl">
           <h3 className="text-center text-sm font-medium text-muted-foreground">
-            Em evolução
+            Em desenvolvimento
           </h3>
           <ul className="mt-3 space-y-2 text-center">
             {COMING.map((item) => (

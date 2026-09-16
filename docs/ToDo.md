@@ -38,7 +38,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] **P6.3** — Caixa por profissional (`CashTransaction.memberId` + filtro `/caixa`)
 - [x] **P6.4** — Autoria em Evaluation/SessionNote (autor = membro da sessão)
 - [x] **P6.5** — Limpezas (`patient-price-input`, shared types, migration baseline)
-- [x] ProtocolEvaluation autor + PDF multi-CREFITO (Member.metadata + fallback org)
+- [x] ProtocolEvaluation autor + PDF com registro profissional (Member.metadata + fallback org)
 
 ---
 
@@ -49,13 +49,13 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] `@react-pdf/renderer` — templates refatorados (`shared/lib/pdf/` + `features/patient/_lib/pdf/`)
 - [x] Preview (`PDFViewer`) + download
 - [x] Cabeçalho: logo + nome da organização + título
-- [x] Rodapé: assinatura CREFITO + data de emissão + numeração
+- [x] Rodapé: assinatura e registro profissional + data de emissão + numeração
 - [x] Upload de logo em `/configuracoes`
 - [x] Nome da clínica unificado em **`Organization.name`** (PDF e configurações)
 
 ### Futuro
 
-- [ ] **Logo / media em produção:** driver R2 pronto em código. Configurar Custom Domain no bucket + env `OBJECT_STORAGE_DRIVER=r2` — ver [`docs/media-storage.md`](media-storage.md)
+- [x] **Logo / media em produção:** driver R2 pronto em código. Configurar Custom Domain no bucket + env `OBJECT_STORAGE_DRIVER=r2` — ver [`docs/media-storage.md`](media-storage.md)
 
 ---
 
@@ -132,24 +132,13 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [ ] **Filtros** — por data, nome, idade, etc. nas listagens
 - [ ] **Exportação** — PDF/CSV das listagens
 
+- [ ] **Termos e condições de uso** — página para os termos e condições de uso do sistema
+- [ ] **Política de privacidade** — página para a política de privacidade do sistema
+
 ### Futuro
 
-Prioridade (acordada — widgets de liderança antes de ERP):
-
-1. [x] **Filtro de período partilhado** — dashboard + caixa (presets Hoje/semana/mês/7d/30d/custom + `from`/`to`)
-   - ![Filtro de Caixa](<../public/ideas/filtro de caixa.png>)
-   - ![Filtro de Financeiro](../public/ideas/Financeiro.png)
-2. [x] **Próximos aniversariantes** — widget no dashboard
-3. [x] **Dias mais movimentados** e **Horários mais movimentados** — ![Filtros](<../public/ideas/mais movimentados.png>)
-4. [x] **Fluxo de caixa: previsto** — Entradas/Saídas previstas + Saldo previsto (`status` POSTED|FORECAST)
-5. [x] **Agenda: filtros avançados** — status/profissional/paciente na vista actual (não clonar calendário paralelo) — ref. ![Agendamentos](../public/ideas/agendamentos.png)
-6. [ ] **Envio de WhatsApp pelo sistema** — lembrete de consulta para o responsável
-
-Adiado (não copiar o ERP agora):
-
-- [ ] **Financeiro completo** — contas a pagar/receber, rankings, comissões — ![Pagina do Financeiro](<../public/ideas/pagina do financeiro.png>)
-- [ ] **Configurações mega-menu** — ![Configurações](../public/ideas/configs.png)
-- [ ] **Estoque** — Nome, Quantidade, Preço, Preço de venda, Total, Validade, Compra, Fornecedor, Observações
+[ ] **Envio de WhatsApp pelo sistema** — lembrete de consulta para o responsável
+[ ] **Estoque** — Nome, Quantidade, Preço, Preço de venda, Total, Validade, Compra, Fornecedor, Observações
 
 ### Observabilidade (futuro)
 
@@ -157,18 +146,22 @@ Adiado (não copiar o ERP agora):
 - [ ] Relatório de erros (sistema, utilizador, rede, …)
 - [ ] Relatório de performance (tempo de resposta / processamento)
 
+### Testes de performance e carga
+
+- [ ] Teste com k6 (stress, performance, carga)
+
 ---
 
 ## Billing — mensalidade Stripe
 
-**Status:** schema + trial + webhook + gates no código · preços e keys Stripe pendentes
+**Status:** schema + trial + webhook + seats/extras · prices live Stripe pendentes
 
-- [x] Plano em [`billing.md`](./billing.md)
-- [x] `OrganizationBilling` + trial 7 dias na criação da org
+- [x] Plano em [`billing.md`](./billing.md) — Solo / Professional / Enterprise, tudo incluído
+- [x] `OrganizationBilling` + trial 7 dias na criação da org (+ `extraSeats`)
 - [x] Checkout (setup no trial / subscription após cancel) + webhook
 - [x] `/plataforma` — isentar clínicas (`billingExempt` + `PLATFORM_ADMIN_USER_IDS`)
-- [x] `/planos` — plano actual + Customer Portal (cartão / cancelar)
-- [ ] Preços e `STRIPE_PRICE_*` / `STRIPE_SECRET_KEY` em produção (live)
+- [x] `/planos` — plano atual + Customer Portal + extras (só Enterprise)
+- [ ] Preços e `STRIPE_PRICE_SOLO|PRO|ENTERPRISE|EXTRA_SEAT` / `STRIPE_SECRET_KEY` em produção (live)
 - [ ] Ativar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
 
 ---

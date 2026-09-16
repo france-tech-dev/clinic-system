@@ -103,7 +103,7 @@ A personalidade é **confiável e directa**: tokens semânticos Shadcn, tipograf
 - Light branco/teal; dark zinc; primary teal clínico (não purple)
 - Landing: nav pill flutuante + ritmo Origin + placeholders de imagem
 - `AppPage` + Shadcn + Tabler/Lucide conforme o sítio
-- PDF clínico / CREFITO e preços em `BILLING_PLAN_PRICES_BRL` fazem parte da verdade do produto
+- PDF clínico / registro profissional e preços em `BILLING_PLAN_PRICES_BRL` fazem parte da verdade do produto
 
 ## Colors
 
@@ -163,7 +163,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 3. Showcase (`#produto`) — placeholder grande
 4. Track (`#como-funciona`) — 3 cards tonais
 5. Dual — turno clínico vs liderança
-6. Capacidades — 2×2 pronto + lista “em evolução”
+6. Capacidades — 2×2 pronto + lista “em desenvolvimento”
 7. Planos (`#planos`) — `BILLING_PLAN_DEFS`
 8. CTA circular + footer
 
@@ -223,8 +223,8 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 - **Do** seguir `AppPage`, tokens semânticos e rotas semelhantes no Operate.
 - **Do** dual-theme na landing; testar light e dark.
-- **Do** manter honestidade de produto (trial, preços públicos, “em evolução”).
-- **Do** empty states com próxima acção quando o utilizador pode criar.
+- **Do** manter honestidade de produto (trial, preços públicos, “em desenvolvimento”).
+- **Do** empty states com próxima ação quando o usuário pode criar.
 - **Do** confirmar acções que apagam dados ou invalidam links.
 - **Do** copy PT-BR de domínio (paciente, responsável, instrumento, evolução).
 
@@ -234,5 +234,5 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 - **Don't** usar eyebrow/kicker, gradient text, purple-glow ou cards ícone+texto como estrutura.
 - **Don't** espalhar glass fora do nav pill da landing.
 - **Don't** inventar testemunhos, logos de clientes ou features como prontas (portal/WhatsApp).
-- **Don't** ejectar o utilizador do contexto do paciente sem necessidade.
+- **Don't** ejetar o usuário do contexto do paciente sem necessidade.
 - **Don't** hardcodar `vh` em modais/drawers.

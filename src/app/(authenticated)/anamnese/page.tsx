@@ -69,7 +69,7 @@ export default async function AnamneseHubPage() {
       viewerProfessionId,
     );
     canWriteAnamnese =
-      access.mode === "full" && access.features.includes("anamnese");
+      access.mode === "full";
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -96,11 +96,10 @@ export default async function AnamneseHubPage() {
           <>
             {canWriteAnamnese ? null : (
               <Alert>
-                <AlertTitle>Fora do plano atual</AlertTitle>
+                <AlertTitle>Assinatura inativa</AlertTitle>
                 <AlertDescription>
-                  Anamnese por especialidade faz parte do Pro. Pode consultar o
-                  catálogo; para preencher,{" "}
-                  <Link href={paths.planos}>mude de plano</Link>.
+                  Você pode consultar o catálogo. Para preencher,{" "}
+                  <Link href={paths.planos}>assine um plano</Link>.
                 </AlertDescription>
               </Alert>
             )}

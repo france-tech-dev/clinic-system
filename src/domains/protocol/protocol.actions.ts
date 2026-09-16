@@ -1,7 +1,7 @@
 "use server";
 
 import { requirePermission } from "@/server/auth/permissions";
-import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
 import { AppError } from "@/shared/lib/app-error";
 import { requireOrgId } from "@/shared/lib/org-context";
@@ -95,7 +95,7 @@ export async function saveProtocolInterpretationAIAction(
     await requirePermission({ project: ["update"] });
     const payload = AppError.parse(saveProtocolInterpretationAISchema, input);
 
-    const { organizationId } = await requireOrgFeatureWrite("ai");
+    const { organizationId } = await requireOrgWrite();
     const data = await saveProtocolInterpretationAI(
       organizationId,
       payload.id,
@@ -118,7 +118,7 @@ export async function createProtocolEvaluationAction(
     const payload = AppError.parse(protocolEvaluationFormSchema, input);
 
     const { organizationId, userId } =
-      await requireOrgFeatureWrite("avaliacoes");
+      await requireOrgWrite();
     const memberId = await resolveProtocolAuthorMemberId(
       organizationId,
       userId,
@@ -144,7 +144,7 @@ export async function updateProtocolEvaluationAction(
     await requirePermission({ project: ["update"] });
     const payload = AppError.parse(updateProtocolEvaluationSchema, input);
 
-    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
+    const { organizationId } = await requireOrgWrite();
     const data = await updateProtocolEvaluation(organizationId, payload);
     if (!data) throw new AppError("Avaliação não encontrada");
 
@@ -162,7 +162,7 @@ export async function deleteProtocolEvaluationAction(
     await requirePermission({ project: ["delete"] });
     const payload = AppError.parse(protocolEvaluationIdSchema, input);
 
-    const { organizationId } = await requireOrgFeatureWrite("avaliacoes");
+    const { organizationId } = await requireOrgWrite();
     const existing = await getProtocolEvaluation(organizationId, payload.id);
     if (!existing) throw new AppError("Avaliação não encontrada");
 

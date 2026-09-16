@@ -1,10 +1,9 @@
-import { db } from "@/shared/lib/prisma";
 import {
-  GATED_FEATURES,
   resolveBillingAccess,
   type BillingAccess,
 } from "@/shared/constants/billing-plans";
 import { canAccessClinicPanel } from "@/shared/lib/member-role";
+import { db } from "@/shared/lib/prisma";
 import {
   BillingPlan,
   BillingStatus,
@@ -17,8 +16,8 @@ const EXEMPT_ACCESS: BillingAccess = {
   status: null,
   plan: null,
   trialEndsAt: null,
-  features: GATED_FEATURES,
   maxProfessionals: null,
+  extraSeats: 0,
   isLegacy: false,
 };
 
@@ -30,7 +29,12 @@ export async function getBillingAccess(
     select: {
       billingExempt: true,
       billing: {
-        select: { status: true, plan: true, trialEndsAt: true },
+        select: {
+          status: true,
+          plan: true,
+          trialEndsAt: true,
+          extraSeats: true,
+        },
       },
     },
   });
@@ -44,6 +48,7 @@ export async function getBillingAccess(
           status: org.billing.status as BillingStatus,
           plan: org.billing.plan as BillingPlan | null,
           trialEndsAt: org.billing.trialEndsAt,
+          extraSeats: org.billing.extraSeats,
         }
       : null,
   );

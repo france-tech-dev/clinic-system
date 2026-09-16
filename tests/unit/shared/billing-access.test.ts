@@ -1,67 +1,57 @@
-import { describe, expect, it } from "vitest";
 import { resolveBillingAccess } from "@/shared/constants/billing-plans";
-import {
-  BillingPlan,
-  BillingStatus,
-} from "@prisma/enums";
+import { BillingPlan, BillingStatus } from "@prisma/enums";
+import { describe, expect, it } from "vitest";
 
 describe("resolveBillingAccess", () => {
   it("sem linha de billing trata como legado com tudo libertado", () => {
     const access = resolveBillingAccess(null);
     expect(access.isLegacy).toBe(true);
     expect(access.mode).toBe("full");
-    expect(access.features).toContain("avaliacoes");
     expect(access.maxProfessionals).toBeNull();
   });
 
   it("trial ignora plano e limite de profissionais", () => {
     const access = resolveBillingAccess({
       status: BillingStatus.TRIALING,
-      plan: BillingPlan.STARTER,
+      plan: BillingPlan.SOLO,
       trialEndsAt: new Date("2026-08-18"),
     });
     expect(access.mode).toBe("full");
     expect(access.maxProfessionals).toBeNull();
-    expect(access.features).toEqual(
-      expect.arrayContaining(["anamnese", "portal"]),
-    );
   });
 
-  it("Starter activo bloqueia anamnese e caixa", () => {
+  it("Solo activo limita a 1 profissional sem extras", () => {
     const access = resolveBillingAccess({
       status: BillingStatus.ACTIVE,
-      plan: BillingPlan.STARTER,
+      plan: BillingPlan.SOLO,
       trialEndsAt: null,
+      extraSeats: 5,
     });
     expect(access.mode).toBe("full");
-    expect(access.maxProfessionals).toBe(3);
-    expect(access.features).toEqual([]);
+    expect(access.maxProfessionals).toBe(1);
+    expect(access.extraSeats).toBe(0);
   });
 
-  it("Pro activo inclui anamnese e caixa, sem avaliações", () => {
+  it("Professional activo limita a 3 sem extras", () => {
     const access = resolveBillingAccess({
       status: BillingStatus.ACTIVE,
       plan: BillingPlan.PRO,
       trialEndsAt: null,
+      extraSeats: 2,
     });
-    expect(access.features).toEqual(["anamnese", "caixa"]);
-    expect(access.maxProfessionals).toBe(9);
+    expect(access.maxProfessionals).toBe(3);
+    expect(access.extraSeats).toBe(0);
   });
 
-  it("Enterprise activo inclui avaliações, portal e IA", () => {
+  it("Enterprise activo inclui 9 + extras", () => {
     const access = resolveBillingAccess({
       status: BillingStatus.ACTIVE,
       plan: BillingPlan.ENTERPRISE,
       trialEndsAt: null,
+      extraSeats: 1,
     });
-    expect(access.features).toEqual([
-      "anamnese",
-      "caixa",
-      "avaliacoes",
-      "portal",
-      "ai",
-    ]);
-    expect(access.maxProfessionals).toBeNull();
+    expect(access.maxProfessionals).toBe(10);
+    expect(access.extraSeats).toBe(1);
   });
 
   it("CANCELLED fica read-only", () => {

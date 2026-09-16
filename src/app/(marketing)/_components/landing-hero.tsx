@@ -12,11 +12,11 @@ export function LandingHero() {
         id="landing-hero-title"
         className="animate-[landing-fade-up_0.7s_ease-out_both] font-serif text-4xl leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl"
       >
-        Tudo o que a clínica precisa, em um só sistema
+        Gestão clínica integrada em um único sistema
       </h1>
       <p className="mx-auto mt-5 max-w-xl animate-[landing-fade-up_0.7s_ease-out_0.06s_both] text-pretty text-base text-white/85 sm:text-lg">
-        Agenda, prontuário, anamnese, avaliações, financeiro e equipe — feito
-        para clínicas de terapia ocupacional e equipes multi-profissionais.
+        Agenda, prontuário, anamnese, avaliações, financeiro e equipe — voltado
+        a clínicas de terapia ocupacional e equipes multiprofissionais.
       </p>
       <div className="mt-9 flex animate-[landing-fade-up_0.7s_ease-out_0.1s_both] flex-col items-center justify-center gap-3 sm:flex-row">
         <Button
@@ -25,7 +25,7 @@ export function LandingHero() {
           asChild
         >
           <Link href={paths.auth.signup}>
-            Começar teste de {TRIAL_DAYS} dias
+            Iniciar período de teste de {TRIAL_DAYS} dias
             <IconArrowUpRight data-icon="inline-end" />
           </Link>
         </Button>
@@ -35,11 +35,12 @@ export function LandingHero() {
           className="border-white/40 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 hover:text-white"
           asChild
         >
-          <Link href={paths.auth.login}>Já tenho conta</Link>
+          <Link href={paths.auth.login}>Acessar minha conta</Link>
         </Button>
       </div>
       <p className="mt-4 animate-[landing-fade-up_0.7s_ease-out_0.14s_both] text-xs text-white/70">
-        Sem cartão nos primeiros {TRIAL_DAYS} dias. Depois você escolhe o plano.
+        Sem cartão nos primeiros {TRIAL_DAYS} dias. Em seguida, selecione o
+        plano.
       </p>
     </div>
   );

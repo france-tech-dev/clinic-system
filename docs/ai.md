@@ -51,10 +51,10 @@ Novas rotas `/api/ai/*`: reutilizar `prepareAiGeneration`, `logAiGeneration` e `
 
 Dois regimes, conforme billing da clínica:
 
-| Regime                      | Clínica    | Utilizador | Janela                                                                                                               |
-| --------------------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Período de teste**        | 5 gerações | 5 gerações | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` (todas as rotas `/api/ai/*`) |
-| **Plano pago (Enterprise)** | 40         | 20         | 1 hora (`rate_limit`)                                                                                                |
+| Regime                    | Clínica    | Usuário    | Janela                                                                                                               |
+| ------------------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Período de teste**      | 5 gerações | 5 gerações | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` (todas as rotas `/api/ai/*`) |
+| **Plano pago** (qualquer) | 40         | 20         | 1 hora (`rate_limit`)                                                                                                |
 
 Constantes: [`src/shared/constants/ai-limits.ts`](../src/shared/constants/ai-limits.ts)  
 Enforcement: [`src/shared/lib/ai/generation-limit.ts`](../src/shared/lib/ai/generation-limit.ts)
@@ -67,8 +67,8 @@ A quota de trial é carregada no servidor (página do paciente), injectada via `
 - Texto é **rascunho assistido** — o profissional deve rever antes de uso clínico.
 - Prompt: instrumento, data, primeiro nome, idade (se houver), somas brutas, itens. Sem CPF/contacto.
 - Auditoria: `organizationId`, `userId`, `kind`, `evaluationId`, `createdAt` — **sem** texto do prompt/resposta.
-- Feature gated: `"ai"` no plano **Enterprise** (trial/legado têm todas as gated features).
+- IA incluída em todos os planos pagos (e no trial); quotas de trial em `generation-limit.ts`.
 
 ## Billing
 
-Gate fino só em actions / route + UI (`canUseAi`). Não no proxy.
+Escrita exige assinatura ativa (`requireOrgWrite`). Gate fino de quota no trial; UI usa `canUseAi` = modo full. Não no proxy.

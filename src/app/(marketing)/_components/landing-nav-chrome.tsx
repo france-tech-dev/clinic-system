@@ -33,7 +33,7 @@ function HeaderLogo({
       onClick={(event) => onNavigate(event, "#top")}
       className="relative shrink-0"
       style={{ width: size, height: size }}
-      aria-label="Movi Clinicas — início"
+      aria-label="Movi Clínicas — início"
     >
       <Image
         src="/logo.png"
@@ -114,7 +114,7 @@ export function LandingNavChrome({
         >
           <Link href={paths.auth.signup}>
             <span className="hidden md:inline">
-              Teste de {TRIAL_DAYS} dias
+              Período de teste de {TRIAL_DAYS} dias
             </span>
             <span className="md:hidden">Teste</span>
           </Link>

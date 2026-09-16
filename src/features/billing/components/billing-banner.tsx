@@ -48,7 +48,7 @@ export function BillingBanner({ snapshot }: { snapshot: BillingSnapshotDTO }) {
       <Alert>
         <AlertTitle>Teste encerrado</AlertTitle>
         <AlertDescription>
-          Pode consultar os dados. Para criar ou editar, escolha um plano.{" "}
+          Você pode consultar os dados. Para criar ou editar, escolha um plano.{" "}
           <Link href={paths.planos}>Ver planos</Link>
         </AlertDescription>
       </Alert>

@@ -42,7 +42,7 @@ Evitar imports profundos (`repository` / ficheiros internos) entre contextos.
 | Contexto                  | Pasta                                                          | Linguagem (exemplos)                                      | Não é dono de                                           |
 | ------------------------- | -------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------- |
 | **Identity & access**     | `src/platform` (`auth`, `organizations`, …) — alias `@/server` | sessão, member, role, convite, platform admin             | pacientes, agenda, caixa                                |
-| **Billing (SaaS)**        | `src/domains/billing` + `src/platform/billing`                 | trial, plano, feature gated (`ai`, …), Stripe             | conteúdo clínico                                        |
+| **Billing (SaaS)**        | `src/domains/billing` + `src/platform/billing`                 | trial, plano, seats/extras, Stripe                        | conteúdo clínico                                        |
 | **Patient care**          | `src/domains` → `patient`, `guardian`, `anamnese`              | paciente, responsável, evolução, anamnese, PDF prontuário | preços de plano SaaS                                    |
 | **Protocol & evaluation** | `src/domains/protocol` (+ módulos GMFM, etc.)                  | ProtocolEvaluation, item bruto, interpretationAI, secção  | T-scores inventados; billing                            |
 | **Schedule**              | `src/domains/schedule`                                         | Appointment, memberId (profissional da sessão), status    | lançamentos de caixa (só dispara fluxo em `app/`)       |
@@ -78,24 +78,24 @@ Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./archi
 
 ## Integrações típicas (anti-corruption em `app/`)
 
-| Fluxo                             | Quem orquestra               | Como                                                              |
-| --------------------------------- | ---------------------------- | ----------------------------------------------------------------- |
-| Agenda → sugerir entrada no caixa | `app/` (página/dialog)       | chama actions de `schedule` e `finance`                           |
-| Paciente + anamnese no PDF        | `app/`                       | junta DTOs planos; tipos partilhados em `shared/types` se preciso |
-| Protocolo + interpretação IA      | `protocol` + `shared/lib/ai` | prompt/scores no protocol; motor em shared                        |
-| Feature gated (`ai`, …)           | action/API                   | `requireOrgFeatureWrite` / access — sem query pesada no proxy     |
+| Fluxo                             | Quem orquestra               | Como                                                                   |
+| --------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| Agenda → sugerir entrada no caixa | `app/` (página/dialog)       | chama actions de `schedule` e `finance`                                |
+| Paciente + anamnese no PDF        | `app/`                       | junta DTOs planos; tipos partilhados em `shared/types` se preciso      |
+| Protocolo + interpretação IA      | `protocol` + `shared/lib/ai` | prompt/scores no protocol; motor em shared                             |
+| Billing (write / seats)           | action/API                   | `requireOrgWrite` / `requireSeatAvailable` — sem query pesada no proxy |
 
 ---
 
 ## Glossário curto (evitar ambiguidade)
 
-| Termo                   | Significa                                                                   |
-| ----------------------- | --------------------------------------------------------------------------- |
-| `interpretationAI`      | Texto de apoio à leitura do protocolo; **não** score normativo              |
-| Somas brutas por secção | Determinístico a partir das respostas; **não** T-score                      |
-| `Appointment.memberId`  | Profissional **da sessão** (Member)                                         |
-| `Organization.name`     | Nome da clínica (PDF / branding)                                            |
-| Feature de plano        | Só o que o billing **corta** (`GATED_FEATURES`), não “tudo o que a app tem” |
+| Termo                   | Significa                                                               |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `interpretationAI`      | Texto de apoio à leitura do protocolo; **não** score normativo          |
+| Somas brutas por secção | Determinístico a partir das respostas; **não** T-score                  |
+| `Appointment.memberId`  | Profissional **da sessão** (Member)                                     |
+| `Organization.name`     | Nome da clínica (PDF / branding)                                        |
+| Limite de plano         | Seats (`maxProfessionals` / extras) — módulos não são gated por feature |
 
 ---
 

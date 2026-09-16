@@ -23,9 +23,10 @@ const envSchema = z
 
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
-    STRIPE_PRICE_STARTER: z.string().optional(),
+    STRIPE_PRICE_SOLO: z.string().optional(),
     STRIPE_PRICE_PRO: z.string().optional(),
     STRIPE_PRICE_ENTERPRISE: z.string().optional(),
+    STRIPE_PRICE_EXTRA_SEAT: z.string().optional(),
 
     PLATFORM_ADMIN_USER_IDS: z.string().optional().default(""),
 

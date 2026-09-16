@@ -29,12 +29,15 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 - **Anamnese** (`/anamnese`) — hub por especialidade (formulários filtrados pelas profissões activas da clínica)
 - **Avaliações** (`/avaliacoes`) — protocolos estruturados (ex.: GMFM-88)
 - **Caixa** (`/caixa`) — entradas/saídas, resumo mensal, filtro por profissional; sugestão ao marcar agendamento como realizado
-- **Profissionais** (`/profissionais`) — equipa da clínica (profissão, status)
+- **Profissionais** (`/profissionais`) — equipe da clínica (profissão, status)
 - **Perfil** (`/perfil`) — dados do profissional (editáveis) e consulta de profissão, papel e pacientes
 - **Configurações** (`/configuracoes`) — identidade da clínica (nome, logo, assinatura padrão); liderança
 - **Organização** (`/organizacao`) — gestão da clínica e membros
-- **Portal do responsável** (`/portal`) — stub para `Role.CLIENT` (em evolução)
+- **Planos** (`/planos`) — assinatura Stripe (Solo / Professional / Enterprise); tudo incluído; diferença = nº de profissionais (+ extras só no Enterprise)
+- **Portal do responsável** (`/portal`) — stub para `Role.CLIENT` (em desenvolvimento)
 - **Multi-tenant** — dados isolados por `organizationId`
+
+Billing: trial 7 dias, depois read-only sem cartão — detalhe em [`docs/billing.md`](docs/billing.md).
 
 ## Pré-requisitos
 
@@ -49,7 +52,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 pnpm install
 ```
 
-Crie um ficheiro `.env` na raiz (validadas em `src/shared/env.ts` no boot):
+Crie um arquivo `.env` na raiz (validadas em `src/shared/env.ts` no boot):
 
 ```env
 BETTER_AUTH_URL="http://localhost:3000"
@@ -71,9 +74,10 @@ GOOGLE_CLIENT_SECRET=""
 # Stripe Billing (produção — restricted key)
 # STRIPE_SECRET_KEY="rk_..."
 # STRIPE_WEBHOOK_SECRET="whsec_..."
-# STRIPE_PRICE_STARTER="price_..."
+# STRIPE_PRICE_SOLO="price_..."
 # STRIPE_PRICE_PRO="price_..."
 # STRIPE_PRICE_ENTERPRISE="price_..."
+# STRIPE_PRICE_EXTRA_SEAT="price_..."
 
 # IA — interpretação de protocolos (opcional; ver docs/ai.md)
 # AI_PROVIDER="google"

@@ -15,15 +15,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import {
   BILLING_PLAN_DEFS,
-  STARTER_HIGHLIGHTS,
+  EXTRA_SEAT_PRICE_BRL,
+  INCLUDED_IN_ALL_PLANS,
+  INCLUDED_SECTION_DESCRIPTION,
+  INCLUDED_SECTION_TITLE,
+  planDef,
+  planSeatLabel,
+  type BillingPlanDef,
 } from "@/shared/constants/billing-plans";
 import {
   createBillingPortalSessionAction,
   createSubscribeCheckoutAction,
+  setExtraSeatsAction,
 } from "@/domains/billing/billing.actions";
 import type { BillingSnapshotDTO } from "@/domains/billing/billing.types";
 import { formatBrl } from "@/shared/lib/money-utils";
@@ -40,8 +46,6 @@ const STATUS_LABEL: Record<BillingStatus, string> = {
   [BillingStatus.CANCELLED]: "Cancelado",
   [BillingStatus.UNPAID]: "Não pago",
 };
-
-const STARTER_HIGHLIGHT_SET = new Set<string>(STARTER_HIGHLIGHTS);
 
 function planName(plan: BillingPlan | null): string {
   if (!plan) return "Nenhum plano escolhido";
@@ -101,7 +105,7 @@ function subscriptionDescription(snapshot: BillingSnapshotDTO): string {
     return "A assinatura desta clínica foi encerrada.";
   }
   if (snapshot.status === BillingStatus.ACTIVE) {
-    return "Mensalidade em dia.";
+    return "Mensalidade em dia. Todos os módulos estão incluídos.";
   }
   return "Ainda não há plano escolhido.";
 }
@@ -129,68 +133,26 @@ function subscribeLabel(
   return "Assinar agora";
 }
 
-function FeatureItem({ item, emphasis }: { item: string; emphasis: boolean }) {
+function pricePerProfessionalHint(plan: BillingPlanDef): string | null {
+  if (plan.id !== BillingPlan.PRO) return null;
+  const per = Math.round(plan.priceMonthlyBrl / plan.includedProfessionals);
+  return `Equivalente a aproximadamente ${formatBrl(per)} por profissional`;
+}
+
+function FeatureItem({ item }: { item: string }) {
   return (
     <li className="flex items-start gap-2">
       <IconCheck
         aria-hidden
-        className={cn(
-          "mt-0.5 size-4 shrink-0",
-          emphasis ? "text-foreground" : "text-muted-foreground",
-        )}
+        className="mt-0.5 size-4 shrink-0 text-muted-foreground"
       />
-      <span className={emphasis ? "text-foreground" : "text-muted-foreground"}>
-        {item}
-      </span>
+      <span className="text-muted-foreground">{item}</span>
     </li>
   );
 }
 
-function PlanHighlights({
-  planId,
-  highlights,
-}: {
-  planId: BillingPlan;
-  highlights: readonly string[];
-}) {
-  if (planId === BillingPlan.STARTER) {
-    return (
-      <ul className="flex flex-col gap-2">
-        {highlights.map((item) => (
-          <FeatureItem key={item} item={item} emphasis={false} />
-        ))}
-      </ul>
-    );
-  }
-
-  const inherited = highlights.filter((item) =>
-    STARTER_HIGHLIGHT_SET.has(item),
-  );
-  const extras = highlights.filter((item) => !STARTER_HIGHLIGHT_SET.has(item));
-
-  return (
-    <div className="flex flex-col gap-3">
-      <ul className="flex flex-col gap-2">
-        {inherited.map((item) => (
-          <FeatureItem key={item} item={item} emphasis={false} />
-        ))}
-      </ul>
-      {extras.length > 0 ? (
-        <>
-          <Separator />
-          <ul className="flex flex-col gap-2">
-            {extras.map((item) => (
-              <FeatureItem key={item} item={item} emphasis />
-            ))}
-          </ul>
-        </>
-      ) : null}
-    </div>
-  );
-}
-
 export function PlanosClient({
-  snapshot,
+  snapshot: initialSnapshot,
   stripeReady,
   checkoutSuccess,
 }: {
@@ -198,8 +160,10 @@ export function PlanosClient({
   stripeReady: boolean;
   checkoutSuccess: boolean;
 }) {
+  const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [pendingPlan, setPendingPlan] = useState<string | null>(null);
   const [portalPending, setPortalPending] = useState(false);
+  const [extraPending, setExtraPending] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleSubscribe(plan: BillingPlan) {
@@ -228,11 +192,35 @@ export function PlanosClient({
     });
   }
 
+  function handleAddExtraSeat() {
+    startTransition(async () => {
+      setExtraPending(true);
+      const result = await setExtraSeatsAction({
+        quantity: snapshot.extraSeats + 1,
+      });
+      setExtraPending(false);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      setSnapshot(result.data);
+      toast.success("Profissional adicional incluído na assinatura.");
+    });
+  }
+
   const trialEndLabel = formatTrialEnd(snapshot.trialEndsAt);
   const hint = subscriptionHint(snapshot);
   const canSubscribe =
     stripeReady && !snapshot.billingExempt && !snapshot.isLegacy;
   const showSubscribe = !snapshot.billingExempt && !snapshot.isLegacy;
+  const canManageExtras =
+    canSubscribe &&
+    snapshot.plan != null &&
+    planDef(snapshot.plan).extraSeatAllowed &&
+    (snapshot.status === BillingStatus.ACTIVE ||
+      snapshot.status === BillingStatus.PAST_DUE);
+
+  const currentPlanDef = snapshot.plan ? planDef(snapshot.plan) : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -276,6 +264,15 @@ export function PlanosClient({
               </Badge>
             ) : null}
           </div>
+          {snapshot.maxProfessionals != null ? (
+            <p className="text-sm text-muted-foreground">
+              Até {snapshot.maxProfessionals} profissionais
+              {currentPlanDef && snapshot.extraSeats > 0
+                ? ` (${currentPlanDef.includedProfessionals} incluídos + ${snapshot.extraSeats} adicionais)`
+                : ""}
+              .
+            </p>
+          ) : null}
           {snapshot.status === BillingStatus.TRIALING && trialEndLabel ? (
             <p className="text-sm text-muted-foreground">
               Teste gratuito até {trialEndLabel}. A cobrança só começa depois
@@ -286,51 +283,91 @@ export function PlanosClient({
             <p className="text-sm text-muted-foreground">{hint}</p>
           ) : null}
         </CardContent>
-        {snapshot.canManageBilling ? (
-          <CardFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!stripeReady || isPending}
-              onClick={handleManageBilling}
-            >
-              {portalPending ? <Spinner data-icon="inline-start" /> : null}
-              Gerenciar pagamento ou cancelar
-            </Button>
+        {snapshot.canManageBilling || canManageExtras ? (
+          <CardFooter className="flex flex-wrap gap-2">
+            {snapshot.canManageBilling ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!stripeReady || isPending}
+                onClick={handleManageBilling}
+              >
+                {portalPending ? <Spinner data-icon="inline-start" /> : null}
+                Gerenciar pagamento ou cancelar
+              </Button>
+            ) : null}
+            {canManageExtras ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!stripeReady || isPending}
+                onClick={handleAddExtraSeat}
+              >
+                {extraPending ? <Spinner data-icon="inline-start" /> : null}
+                +1 profissional ({formatBrl(EXTRA_SEAT_PRICE_BRL)}/mês)
+              </Button>
+            ) : null}
           </CardFooter>
         ) : null}
+      </Card>
+
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>{INCLUDED_SECTION_TITLE}</CardTitle>
+          <CardDescription>{INCLUDED_SECTION_DESCRIPTION}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {INCLUDED_IN_ALL_PLANS.map((item) => (
+              <FeatureItem key={item} item={item} />
+            ))}
+          </ul>
+        </CardContent>
       </Card>
 
       <div className="grid items-stretch gap-4 lg:grid-cols-3">
         {BILLING_PLAN_DEFS.map((plan) => {
           const current = isCurrentPlan(snapshot, plan.id);
           const pending = pendingPlan === plan.id;
+          const recommended = Boolean(plan.recommended);
+          const perHint = pricePerProfessionalHint(plan);
           return (
             <Card
               key={plan.id}
-              className={cn("h-full", current && "ring-2 ring-primary")}
+              className={cn(
+                "h-full",
+                current && "ring-2 ring-primary",
+                !current && recommended && "border-primary/40",
+              )}
               aria-current={current ? "true" : undefined}
             >
               <CardHeader className="border-b">
-                <CardTitle className="text-lg">
-                  {plan.name}
-                </CardTitle>
-                {current ? (
-                  <CardAction>
-                    <Badge>Atual</Badge>
+                <CardTitle className="text-lg">{plan.name}</CardTitle>
+                {current || recommended ? (
+                  <CardAction className="flex flex-wrap gap-1">
+                    {current ? <Badge>Atual</Badge> : null}
+                    {!current && recommended ? (
+                      <Badge variant="secondary">Mais indicado</Badge>
+                    ) : null}
                   </CardAction>
                 ) : null}
-                <CardDescription>
-                  {formatBrl(plan.priceMonthlyBrl)}
-                  /mês
-                  {" · "}
-                  {plan.maxProfessionals
-                    ? `até ${plan.maxProfessionals} profissionais`
-                    : "profissionais ilimitados"}
+                <CardDescription className="flex flex-col gap-1">
+                  <span>{plan.tagline}</span>
+                  <span>
+                    {formatBrl(plan.priceMonthlyBrl)}
+                    /mês · {planSeatLabel(plan)}
+                  </span>
+                  {perHint ? (
+                    <span className="text-xs">{perHint}</span>
+                  ) : null}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 pt-(--card-spacing)">
-                <PlanHighlights planId={plan.id} highlights={plan.highlights} />
+                <ul className="flex flex-col gap-2">
+                  {plan.highlights.map((item) => (
+                    <FeatureItem key={item} item={item} />
+                  ))}
+                </ul>
               </CardContent>
               {showSubscribe ? (
                 <CardFooter className="mt-auto">

@@ -1,7 +1,7 @@
 "use server";
 
 import { requirePermission } from "@/server/auth/permissions";
-import { requireOrgFeatureWrite } from "@/server/billing/require-billing";
+import { requireOrgWrite } from "@/server/billing/require-billing";
 import { paths } from "@/shared/constants/paths";
 import { AppError } from "@/shared/lib/app-error";
 import { requireOrgId } from "@/shared/lib/org-context";
@@ -41,7 +41,7 @@ export async function saveAnamneseAction(
   try {
     await requirePermission({ project: ["create"] });
     const payload = AppError.parse(anamneseSaveSchema, input);
-    const { organizationId } = await requireOrgFeatureWrite("anamnese");
+    const { organizationId } = await requireOrgWrite();
     const saved = await saveAnamnese(
       organizationId,
       payload.patientId,

@@ -4,12 +4,13 @@ import { requirePermission } from "@/server/auth/permissions";
 import { AppError } from "@/shared/lib/app-error";
 import { requireOrgId } from "@/shared/lib/org-context";
 import { ok, type ActionResult } from "@/shared/types/action-result";
-import { subscribePlanSchema } from "./billing.schema";
+import { setExtraSeatsSchema, subscribePlanSchema } from "./billing.schema";
 import {
   createBillingPortalSession,
   createSubscribeCheckout,
   getBillingSnapshot,
   isStripeConfigured,
+  setExtraSeats,
 } from "./billing.service";
 import type { BillingSnapshotDTO, CheckoutSessionDTO } from "./billing.types";
 
@@ -37,6 +38,23 @@ export async function createSubscribeCheckoutAction(
 
     const { organizationId } = await requireOrgId();
     return ok(await createSubscribeCheckout(organizationId, payload.plan));
+  } catch (error) {
+    return AppError.result(error);
+  }
+}
+
+export async function setExtraSeatsAction(
+  input: unknown,
+): Promise<ActionResult<BillingSnapshotDTO>> {
+  try {
+    await requirePermission({ project: ["update"] });
+    const payload = AppError.parse(setExtraSeatsSchema, input);
+    if (!isStripeConfigured()) {
+      throw new AppError("Billing ainda não está configurado neste ambiente.");
+    }
+
+    const { organizationId } = await requireOrgId();
+    return ok(await setExtraSeats(organizationId, payload.quantity));
   } catch (error) {
     return AppError.result(error);
   }

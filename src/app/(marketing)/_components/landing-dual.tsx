@@ -8,15 +8,15 @@ const DUAL: readonly {
 }[] = [
   {
     title: "Para quem atende",
-    body: "Agenda, paciente, anamnese e avaliações no fluxo do profissional — sem perder o contexto do atendimento.",
+    body: "Agenda, paciente, anamnese e avaliações no fluxo do profissional, preservando o contexto do atendimento.",
     shot: "lista",
-    alt: "Lista de pacientes na Movi Clinicas",
+    alt: "Lista de pacientes na Movi Clínicas",
   },
   {
     title: "Para quem gerencia",
-    body: "Dashboard, caixa, equipe e planos — a visão da liderança sobre a clínica.",
+    body: "Dashboard, caixa, equipe e planos — visão consolidada da liderança sobre a clínica.",
     shot: "dash",
-    alt: "Dashboard da clínica na Movi Clinicas",
+    alt: "Dashboard da clínica na Movi Clínicas",
   },
 ];
 
@@ -27,7 +27,7 @@ export function LandingDual() {
       className="scroll-mt-24 border-b border-border"
     >
       <h2 id="landing-dual-title" className="sr-only">
-        Dois modos no mesmo sistema
+        Visões de atendimento e gestão no mesmo sistema
       </h2>
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-6 lg:py-28">
         {DUAL.map((item) => (

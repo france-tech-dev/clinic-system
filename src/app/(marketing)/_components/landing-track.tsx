@@ -10,21 +10,21 @@ const TRACK_CARDS: readonly {
 }[] = [
   {
     title: "Agenda do dia",
-    body: "Organize o turno, acompanhe confirmações e veja o que ainda precisa de evolução.",
+    body: "Organize o turno, acompanhe confirmações e identifique evoluções pendentes.",
     shot: "calendario",
-    alt: "Agenda do dia na Movi Clinicas",
+    alt: "Agenda do dia na Movi Clínicas",
   },
   {
     title: "Paciente e PDF",
-    body: "Prontuário, evoluções e documento com assinatura e CREFITO do profissional.",
+    body: "Prontuário, evoluções e documento com assinatura e registro profissional.",
     shot: "pacientes",
-    alt: "Ficha de paciente na Movi Clinicas",
+    alt: "Ficha de paciente na Movi Clínicas",
   },
   {
     title: "Caixa e indicadores",
-    body: "Registre cobranças e acompanhe os números da clínica no mesmo sistema.",
+    body: "Registre cobranças e acompanhe os indicadores da clínica no mesmo sistema.",
     shot: "caixa",
-    alt: "Caixa na Movi Clinicas",
+    alt: "Caixa na Movi Clínicas",
   },
 ];
 
@@ -44,8 +44,8 @@ export function LandingTrack() {
             Do atendimento ao fechamento do mês
           </h2>
           <p className="mt-4 text-muted-foreground">
-            O profissional cuida do turno. A liderança acompanha caixa e
-            indicadores. Sem planilha paralela.
+            O profissional conduz o atendimento. A liderança acompanha caixa e
+            indicadores — sem planilhas paralelas.
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export function LandingTrack() {
         </div>
 
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Quer começar agora?{" "}
+          Pronto para iniciar?{" "}
           <Link
             href={paths.auth.signup}
             className="font-medium text-foreground underline-offset-4 hover:underline"
