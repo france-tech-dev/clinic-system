@@ -28,7 +28,6 @@ export async function createCredentialUser(data: {
         userId: user.id,
         accountId: user.id,
         providerId: "credential",
-        issuer: "local:credential",
         password: hashed,
       },
     });
