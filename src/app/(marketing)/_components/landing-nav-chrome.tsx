@@ -52,20 +52,20 @@ export function LandingNavChrome({
   onNavClick,
 }: LandingNavChromeProps) {
   return (
-    <div className="relative z-10 mx-auto flex items-center gap-2 px-3 py-2.5 md:gap-4 md:p-2.5">
+    <div className="relative z-10 mx-auto flex min-w-0 items-center gap-2 px-3 py-2.5 md:gap-3 md:px-3 md:py-2.5 lg:gap-4">
       <HeaderLogo onNavigate={onNavClick} />
 
-      <ul className="flex flex-1 items-center justify-center gap-2 sm:gap-4 md:gap-8">
+      <ul className="flex min-w-0 flex-1 items-center justify-center gap-2 sm:gap-3 md:gap-5 lg:gap-8">
         {LANDING_NAV_LINKS.map((link) => {
           const active = activeHref === link.href;
 
           return (
-            <li key={link.href}>
+            <li key={link.href} className="shrink-0">
               <a
                 href={link.href}
                 onClick={(event) => onNavClick(event, link.href)}
                 className={cn(
-                  "group relative text-xs transition-colors sm:text-sm",
+                  "group relative whitespace-nowrap text-xs transition-colors sm:text-sm",
                   "group-data-[scrolling=false]/nav:text-white/80 group-data-[scrolling=false]/nav:hover:text-white",
                   active
                     ? "group-data-[scrolling=false]/nav:text-white group-data-[scrolling=true]/nav:text-foreground"
@@ -109,14 +109,14 @@ export function LandingNavChrome({
         </Button>
         <Button
           size="sm"
-          className="group-data-[scrolling=false]/nav:border-transparent group-data-[scrolling=false]/nav:bg-white group-data-[scrolling=false]/nav:text-neutral-950 group-data-[scrolling=false]/nav:hover:bg-white/90"
+          className="shrink-0 whitespace-nowrap group-data-[scrolling=false]/nav:border-transparent group-data-[scrolling=false]/nav:bg-white group-data-[scrolling=false]/nav:text-neutral-950 group-data-[scrolling=false]/nav:hover:bg-white/90"
           asChild
         >
           <Link href={paths.auth.signup}>
-            <span className="hidden md:inline">
-              Período de teste de {TRIAL_DAYS} dias
+            <span className="hidden lg:inline">
+              Teste de {TRIAL_DAYS} dias
             </span>
-            <span className="md:hidden">Teste</span>
+            <span className="lg:hidden">Teste</span>
           </Link>
         </Button>
       </div>

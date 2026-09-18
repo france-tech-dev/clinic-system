@@ -5,7 +5,7 @@ import { LandingNavChrome } from "./landing-nav-chrome";
 import { useLandingNavBehavior } from "./use-landing-nav-behavior";
 
 const SHELL =
-  "group/nav fixed top-0 left-1/2 z-40 -translate-x-1/2 overflow-hidden rounded-full border border-transparent transition-[background-color,border-color,border-radius,box-shadow,backdrop-filter] duration-300 ease-in-out md:top-6 max-md:w-full! max-md:rounded-none";
+  "group/nav fixed top-0 left-1/2 z-40 -translate-x-1/2 overflow-visible rounded-full border border-transparent transition-[background-color,border-color,border-radius,box-shadow,backdrop-filter] duration-300 ease-in-out md:top-6 max-md:w-full! max-md:rounded-none max-md:overflow-hidden";
 
 export function LandingNav() {
   const { navRef, activeHref, onNavClick } = useLandingNavBehavior();

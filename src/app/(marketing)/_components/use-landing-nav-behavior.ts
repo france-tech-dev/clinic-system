@@ -9,7 +9,7 @@ export const LANDING_NAV_LINKS = [
   { href: "#faq", label: "Dúvidas" },
 ] as const;
 
-const MIN_WIDTH = 640;
+const MIN_WIDTH = 820;
 const MAX_SCROLL = 1000;
 
 export function useLandingNavBehavior() {
