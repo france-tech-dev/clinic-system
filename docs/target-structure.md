@@ -1,6 +1,6 @@
 # Estrutura-alvo — hoje `src/` → depois Fastify
 
-**Decisão (actualizada):** até existir API Fastify, o alvo é **um app Next na raiz** com pastas claras em `src/` + `worker/` — **sem** monorepo pnpm (`apps/` + `packages/`) como objectivo imediato.
+**Decisão (atualizada):** até existir API Fastify, o alvo é **um app Next na raiz** com pastas claras em `src/` + `worker/` — **sem** monorepo pnpm (`apps/` + `packages/`) como objetivo imediato.
 
 Complementa [`architecture.md`](./architecture.md), [`bounded-contexts.md`](./bounded-contexts.md) e [`jobs-queues.md`](./jobs-queues.md).
 

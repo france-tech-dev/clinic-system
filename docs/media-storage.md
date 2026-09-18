@@ -1,6 +1,6 @@
 # Media / object storage
 
-Política de ficheiros de imagem (logo, avatares, foto de paciente):
+Política de arquivos de imagem (logo, avatares, foto de paciente):
 
 | Tipo              | Formato final | Tamanho final     | Original (picker) |
 | ----------------- | ------------- | ----------------- | ----------------- |
@@ -29,7 +29,7 @@ import {
 
 ## Ligar Cloudflare R2
 
-Dependência: `@aws-sdk/client-s3` (já no projecto).
+Dependência: `@aws-sdk/client-s3` (já no projeto).
 
 ### 1. Credenciais (API S3)
 
@@ -46,9 +46,9 @@ O **endpoint S3** (`https://{accountId}.r2.cloudflarestorage.com`) serve **só**
 
 ### 2. Domínio público (obrigatório para o browser)
 
-**Não** criar um CNAME manual para `*.r2.cloudflarestorage.com` — isso aponta para a API autenticada, não para servir ficheiros.
+**Não** criar um CNAME manual para `*.r2.cloudflarestorage.com` — isso aponta para a API autenticada, não para servir arquivos.
 
-Passos correctos:
+Passos corretos:
 
 1. R2 → bucket (`movi-clinicas`) → **Settings** → **Custom Domains**
 2. Adicionar `r2.francetech.com.br` (domínio na mesma conta Cloudflare)

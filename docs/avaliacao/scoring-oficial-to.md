@@ -4,17 +4,17 @@
 **Objectivo:** mapear fontes oficiais, o que é público vs. licenciado, e o alinhamento com os templates em `src/domains/protocol/evaluation-modules/terapia-ocupacional/`.  
 **Aviso:** este documento **não** reproduz tabelas de conversão (raw → scaled/T-score). Essas tabelas são propriedade intelectual dos editores; copiá-las para o código sem licença é risco legal e clínico.
 
-Relacionado: [`docs/ai.md`](../ai.md) · [`docs/bounded-contexts.md`](../bounded-contexts.md) · código actual `computeItemProtocolRawScores` (só bruto).
+Relacionado: [`docs/ai.md`](../ai.md) · [`docs/bounded-contexts.md`](../bounded-contexts.md) · código atual `computeItemProtocolRawScores` (só bruto).
 
 ---
 
 ## Templates actuais vs manuais
 
-Os `template.json` / rotas de avaliação TO deste projecto foram digitalizados a partir de formulários em uso clínico; **não** foram digitados directamente a partir dos manuais Pearson/WPS/Hogrefe. Por isso a estrutura do app pode divergir do papel oficial.
+Os `template.json` / rotas de avaliação TO deste projeto foram digitalizados a partir de formulários em uso clínico; **não** foram digitados diretamente a partir dos manuais Pearson/WPS/Hogrefe. Por isso a estrutura do app pode divergir do papel oficial.
 
 | Implicação                                    | Detalhe                                                                                                       |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Estrutura (itens, secções, Casa/Escola 2/3/5) | Pode divergir do papel oficial (ex. PEDI mobilidade **69** no app vs **59** no manual)                        |
+| Estrutura (itens, seções, Casa/Escola 2/3/5) | Pode divergir do papel oficial (ex. PEDI mobilidade **69** no app vs **59** no manual)                        |
 | Scoring / gráficos “oficiais”                 | Tabelas normativas **não** estão no código; embutir scaled/T-score/bandas exige licença dos editores          |
 | Próximo passo prático                         | Auditar item-a-item com o **manual** que a clínica usa; corrigir templates; só então fechar scoring + gráfico |
 
@@ -26,10 +26,10 @@ Os `template.json` / rotas de avaliação TO deste projecto foram digitalizados 
 | ---------------------------------------- | -------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | **PEDI** (Functional Skills)             | Pearson (US); versão BR Mancini/UFMG 2005          | Raw → **scaled** (0–100) + standard score por idade   | **Não** (manual)                                         | 3 protocolos; raw possível; mobilidade **69 vs 59 oficiais**                             |
 | **SPM / SPM-P** (legado)                 | WPS                                                | Raw → **T-score** + bandas                            | **Não** (manual); bandas descritas em materiais oficiais | 6 formulários Casa/Escola × 2/3/5 anos; contagens ≈ SPM legado, **não** SPM-2 (80 itens) |
-| **SPM-2** (actual)                       | WPS (2021)                                         | Raw → T-score + bandas (rótulos actualizados)         | **Não** (manual / OES)                                   | **Não implementado** como produto actual                                                 |
-| **Perfil Sensorial 2 — Criança Pequena** | Pearson (Dunn); BR **Hogrefe CETEPP** (desde 2022) | Raw por secção/quadrante → **cut scores** / percentis | **Não** (manual / Q-global / Q Plataforma)               | 54 itens / 7 secções — **alinha** ao Toddler SP2                                         |
+| **SPM-2** (atual)                       | WPS (2021)                                         | Raw → T-score + bandas (rótulos atualizados)         | **Não** (manual / OES)                                   | **Não implementado** como produto atual                                                 |
+| **Perfil Sensorial 2 — Criança Pequena** | Pearson (Dunn); BR **Hogrefe CETEPP** (desde 2022) | Raw por seção/quadrante → **cut scores** / percentis | **Não** (manual / Q-global / Q Plataforma)               | 54 itens / 7 seções — **alinha** ao Toddler SP2                                         |
 
-**Conclusão para o produto:** a referência normativa é o **manual** (Pearson / WPS / Hogrefe / Mancini). Podemos implementar **raw + gráfico de evolução** alinhados à estrutura actual (ou à estrutura corrigida após auditoria). **Scaled / T-score / bandas** exigem licença do editor (ou API oficial).
+**Conclusão para o produto:** a referência normativa é o **manual** (Pearson / WPS / Hogrefe / Mancini). Podemos implementar **raw + gráfico de evolução** alinhados à estrutura atual (ou à estrutura corrigida após auditoria). **Scaled / T-score / bandas** exigem licença do editor (ou API oficial).
 
 **Contactos de licenciamento (pesquisa 2026-08-27):** Pearson `pas.licensing@pearson.com` · WPS `rights@wpspublish.com` · Terms Pearson proíbem explicitamente meter conteúdo em scoring engines de terceiros sem autorização escrita.
 
@@ -40,7 +40,7 @@ Os `template.json` / rotas de avaliação TO deste projecto foram digitalizados 
 Usar esta lista ao decidir a fase seguinte:
 
 - [ ] Confirmar com a clínica qual edição física/digital possuem: PEDI US vs **PEDI BR (Mancini 2005)**; SPM vs SPM-P vs **SPM-2**; Perfil Sensorial 1 vs **Perfil Sensorial 2**.
-- [ ] Auditar `pedi-mobilidade/template.json` (69 itens) vs manual (59 itens) — ver secção PEDI.
+- [ ] Auditar `pedi-mobilidade/template.json` (69 itens) vs manual (59 itens) — ver seção PEDI.
 - [ ] Auditar SPM Casa/Escola 2/3/5 anos vs formulários do kit (item counts 75/62 vs SPM-2 = 80).
 - [ ] Decidir caminho normativo: (A) só bruto + evolução; (B) tabelas após licença do editor; (C) Q-global / WPS OES.
 - [ ] Não rotular UI como “T-score / scaled oficial” enquanto as tabelas não estiverem licenciadas e validadas.
@@ -90,7 +90,7 @@ Usar esta lista ao decidir a fase seguinte:
 
 ### Implicações para o Clinic System
 
-1. Implementar **raw oficial** por escala (e por secção A, B, C… como no formulário) é correcto e útil.
+1. Implementar **raw oficial** por escala (e por seção A, B, C… como no formulário) é correto e útil.
 2. **Corrigir/auditar mobilidade** antes de qualquer “score oficial” — 10 itens a mais invalidam raw vs manual.
 3. Scaled/standard: só com manual licenciado + autorização de uso digital (`pas.licensing@pearson.com`), Q-global API (se elegível), ou o clínico introduz o scaled já obtido do manual.
 4. Gráfico GMFM-like: eixo natural = **scaled** (quando existir) ou, interinamente, **raw** / % do máximo da escala, **rotulado como bruto**.
@@ -160,15 +160,15 @@ Os módulos `*-2anos` / `*-3anos` / `*-5anos` no app são **organização clíni
 | Fonte                                  | URL                                                                                                                                    | Notas                                                   |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | Pearson US — Sensory Profile 2         | https://www.pearsonassessments.com/en-us/Store/Professional-Assessments/Motor-Sensory/Sensory-Profile-2/p/100000822                    | Manual + Q-global                                       |
-| Q-global — Entering SP2 Scores         | https://qglobal.pearsonclinical.com/qg/static/Product/en/SP2/SP2_Enter_Scores.htm                                                      | Toddler: 7–35 m; **54** itens; 7 secções + 4 quadrantes |
+| Q-global — Entering SP2 Scores         | https://qglobal.pearsonclinical.com/qg/static/Product/en/SP2/SP2_Enter_Scores.htm                                                      | Toddler: 7–35 m; **54** itens; 7 seções + 4 quadrantes |
 | Technical Summary SP2 (PDF)            | https://www.pearsonassessments.com/content/dam/school/global/clinical/us/assets/sensoyprofile2/sensory-profile-2-technical-summary.pdf | Psicometria; **sem** cut brutos                         |
 | Brasil Assessments (Pearson → Hogrefe) | https://www.pearsonassessments.com/professional-assessments/ordering/brasil-assessments.html                                           | Desde **2022**: **Hogrefe CETEPP** + Q Plataforma Web   |
-| Hogrefe BR — Perfil Sensorial 2        | https://hogrefe.com.br/perfil-sensorial.html                                                                                           | Distribuidor oficial BR actual                          |
+| Hogrefe BR — Perfil Sensorial 2        | https://hogrefe.com.br/perfil-sensorial.html                                                                                           | Distribuidor oficial BR atual                          |
 
 ### Algoritmo público
 
 1. Escala de frequência (no app: 5→1; 0 = N/A excluído da soma) — alinhada ao modelo Dunn / SP2.
-2. **Raw** por secção e, no scoring oficial, por **quadrantes** (Seeking, Avoiding, Sensitivity, Registration).
+2. **Raw** por seção e, no scoring oficial, por **quadrantes** (Seeking, Avoiding, Sensitivity, Registration).
 3. Classificação SP2 (linguagem dos reports — **não** usar rótulos ITSP): Much Less / Less / **Just Like the Majority of Others** / More / Much More Than Others. Valores exactos **só** no manual.
 
 ### Alinhamento com o app
@@ -179,14 +179,14 @@ Os módulos `*-2anos` / `*-3anos` / `*-5anos` no app são **organização clíni
 | Itens   | 54                                                                 | **54** ✓                           |
 | Secções | 7 (Geral, Auditivo, Visual, Tato, Movimento, Oral, Comportamental) | **7** com títulos equivalentes ✓   |
 
-**Lacuna:** scoring oficial também produz **quadrantes**; o template actual só agrega por secção.
+**Lacuna:** scoring oficial também produz **quadrantes**; o template atual só agrega por seção.
 
 ### Implicações
 
 1. Melhor candidato estrutural após compra do manual Hogrefe/Pearson: item count já bate.
 2. UI de bandas: linguagem **SP2**, não “Typical / Probable / Definite” (ITSP).
 3. Preferir Q-global / Q Plataforma Web ou classificação introduzida pelo clínico — **não** hardcodar cuts.
-4. Enquanto isso: raw por secção + gráfico bruto, sem bandas inventadas.
+4. Enquanto isso: raw por seção + gráfico bruto, sem bandas inventadas.
 
 ---
 
@@ -198,7 +198,7 @@ Os módulos `*-2anos` / `*-3anos` / `*-5anos` no app são **organização clíni
 | Comprar manual e digitar tabelas “porque somos a clínica” | **Zona cinzenta** — tipicamente o manual **não** autoriza redistribuição em SaaS multi-tenant | Consultar jurídico + editor                                       |
 | Pearson **Q-global API**                                  | Preferível para produtos Pearson                                                              | Scoring no lado Pearson; confirmar elegibilidade (SP2 / PEDI-CAT) |
 | WPS **OES** + licença comercial                           | Preferível para SPM-2                                                                         | `rights@wpspublish.com`                                           |
-| Só raw + UI de evolução                                   | **OK**                                                                                        | Alinhado a `docs/ai.md` e ao código actual                        |
+| Só raw + UI de evolução                                   | **OK**                                                                                        | Alinhado a `docs/ai.md` e ao código atual                        |
 
 Referências:
 
@@ -214,7 +214,7 @@ Referências:
 ### Fase A — seguro agora (recomendado)
 
 1. Auditar e corrigir templates face ao **manual** (prioridade: **PEDI mobilidade** 69 → 59).
-2. Scoring determinístico **raw** por secção/escala (estender `computeItemProtocolRawScores` / novo `item-protocol-scoring.ts`).
+2. Scoring determinístico **raw** por seção/escala (estender `computeItemProtocolRawScores` / novo `item-protocol-scoring.ts`).
 3. Popular `summary` no DTO (generalizar além do GMFM).
 4. UI: totais no formulário + gráfico comparativo **bruto** (rótulo explícito).
 5. Manter IA sem inventar T-scores.
@@ -241,13 +241,13 @@ Referências:
 
 ---
 
-## 7. Mapa rápido: ficheiros do projecto
+## 7. Mapa rápido: arquivos do projeto
 
 | Papel               | Path                                                                             |
 | ------------------- | -------------------------------------------------------------------------------- |
 | Templates TO        | `src/domains/protocol/evaluation-modules/terapia-ocupacional/**/template.json`   |
 | Escalas de resposta | `src/domains/protocol/evaluation-modules/_shared/item-scale.ts`                  |
-| Raw actual (IA)     | `src/domains/protocol/_lib/interpretationAI/raw-section-scores.ts`               |
+| Raw atual (IA)     | `src/domains/protocol/_lib/interpretationAI/raw-section-scores.ts`               |
 | Summary só GMFM     | `src/domains/protocol/protocol.service.ts` (`toDTO`)                             |
 | Chart referência    | `src/features/protocol/evaluation-modules/_shared/protocol-comparison-chart.tsx` |
 | Client TO           | `src/features/protocol/evaluation-modules/_shared/item-protocol-client.tsx`      |
@@ -262,6 +262,6 @@ Pesquisa 2026-08-27 via WebSearch/WebFetch + agentes:
 - [Research SPM official norms](1aadedc6-7f53-488a-8213-2fc20b122a26)
 - [Research Sensory Profile norms](8610be5d-3c47-419e-879a-e934eacb74e0)
 
-URLs oficiais nas secções 1–4. Estudos BR só para **contagens de itens** e referência Mancini — não como substituto das tabelas normativas. PDFs não oficiais (ex. PDFCoffee) **não** são fonte.
+URLs oficiais nas seções 1–4. Estudos BR só para **contagens de itens** e referência Mancini — não como substituto das tabelas normativas. PDFs não oficiais (ex. PDFCoffee) **não** são fonte.
 
 **Próximo passo sugerido:** a clínica preenche o checklist; depois Fase A (bruto + gráfico, com reversão SOC se SPM) e/ou caminho B (licença / API).

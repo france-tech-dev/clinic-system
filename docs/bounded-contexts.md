@@ -9,14 +9,14 @@ Complementa [`architecture.md`](./architecture.md).
 
 Cada contexto tem **linguagem própria** e **dono do código**.  
 Cruzar contextos = `application/` ou import via `domains/X/index.ts` (ver [`target-structure.md`](./target-structure.md)).  
-Evitar imports profundos (`repository` / ficheiros internos) entre contextos.
+Evitar imports profundos (`repository` / arquivos internos) entre contextos.
 
 ```
                     ┌─────────────────────────┐
                     │  Platform / Auth / Org  │  src/platform (@/server)
                     │  (Better Auth, membership, platform admin)
                     └───────────┬─────────────┘
-                                │ sessão + org activa
+                                │ sessão + org ativa
           ┌─────────────────────┼─────────────────────┐
           ▼                     ▼                     ▼
    ┌─────────────┐      ┌─────────────┐       ┌─────────────┐
@@ -44,7 +44,7 @@ Evitar imports profundos (`repository` / ficheiros internos) entre contextos.
 | **Identity & access**     | `src/platform` (`auth`, `organizations`, …) — alias `@/server` | sessão, member, role, convite, platform admin             | pacientes, agenda, caixa                                |
 | **Billing (SaaS)**        | `src/domains/billing` + `src/platform/billing`                 | trial, plano, seats/extras, Stripe                        | conteúdo clínico                                        |
 | **Patient care**          | `src/domains` → `patient`, `guardian`, `anamnese`              | paciente, responsável, evolução, anamnese, PDF prontuário | preços de plano SaaS                                    |
-| **Protocol & evaluation** | `src/domains/protocol` (+ módulos GMFM, etc.)                  | ProtocolEvaluation, item bruto, interpretationAI, secção  | T-scores inventados; billing                            |
+| **Protocol & evaluation** | `src/domains/protocol` (+ módulos GMFM, etc.)                  | ProtocolEvaluation, item bruto, interpretationAI, seção  | T-scores inventados; billing                            |
 | **Schedule**              | `src/domains/schedule`                                         | Appointment, memberId (profissional da sessão), status    | lançamentos de caixa (só dispara fluxo em `app/`)       |
 | **Finance**               | `src/domains/finance`                                          | CashTransaction, preço paciente, resumo                   | regras de agenda                                        |
 | **Clinic ops**            | `settings`, `team`, `dashboard` (em `src/domains`)             | branding, profissionais, painel                           | domínio clínico fino                                    |
@@ -92,7 +92,7 @@ Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./archi
 | Termo                   | Significa                                                               |
 | ----------------------- | ----------------------------------------------------------------------- |
 | `interpretationAI`      | Texto de apoio à leitura do protocolo; **não** score normativo          |
-| Somas brutas por secção | Determinístico a partir das respostas; **não** T-score                  |
+| Somas brutas por seção | Determinístico a partir das respostas; **não** T-score                  |
 | `Appointment.memberId`  | Profissional **da sessão** (Member)                                     |
 | `Organization.name`     | Nome da clínica (PDF / branding)                                        |
 | Limite de plano         | Seats (`maxProfessionals` / extras) — módulos não são gated por feature |

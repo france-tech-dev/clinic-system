@@ -1,11 +1,11 @@
-# Auditoria de arquitectura
+# Auditoria de arquitetura
 
 Estado consolidado dos refactors estruturais do Clinic System.
 
 **Última revisão:** 25/07/2026  
 **Referência normativa:** [`architecture.md`](./architecture.md)
 
-## Resultado actual
+## Resultado atual
 
 - [x] Fronteiras automatizadas com `dependency-cruiser` (`pnpm arch`)
 - [x] Sem imports entre features distintas
@@ -31,14 +31,14 @@ Estado consolidado dos refactors estruturais do Clinic System.
 ### P1 — UI e dados
 
 - [x] Leitura inicial em Server Components
-- [x] Interacções client via actions e handlers
+- [x] Interações client via actions e handlers
 - [x] Componentes reutilizados promovidos para a feature correspondente
 - [x] Formulários clínicos e catálogos organizados por domínio
 
 ### P4 — Higiene transversal
 
 - [x] Dialogs sem efeitos para sincronizar props
-- [x] Confirmação em acções destrutivas
+- [x] Confirmação em ações destrutivas
 - [x] Migration Prisma baseline versionada
 - [x] Dependências circulares eliminadas e bloqueadas
 - [x] Actions e schemas sem consumidores removidos
@@ -64,4 +64,4 @@ npx tsc --noEmit
 pnpm test
 ```
 
-Novos desvios devem ser corrigidos no código; não adicionar excepções à configuração sem decisão arquitectural documentada.
+Novos desvios devem ser corrigidos no código; não adicionar exceções à configuração sem decisão arquitetural documentada.

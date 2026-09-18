@@ -36,7 +36,7 @@ GOOGLE_GENERATIVE_AI_API_KEY="..."
 # AI_MODEL="gpt-5-mini"
 ```
 
-Chave em [Google AI Studio](https://aistudio.google.com/apikey). Sem a chave do provider activo, a rota devolve 503. As chaves são opcionais no boot da app.
+Chave em [Google AI Studio](https://aistudio.google.com/apikey). Sem a chave do provider ativo, a rota devolve 503. As chaves são opcionais no boot da app.
 
 ## Fluxo (interpretação de protocolo)
 
@@ -59,13 +59,13 @@ Dois regimes, conforme billing da clínica:
 Constantes: [`src/shared/constants/ai-limits.ts`](../src/shared/constants/ai-limits.ts)  
 Enforcement: [`src/shared/lib/ai/generation-limit.ts`](../src/shared/lib/ai/generation-limit.ts)
 
-A quota de trial é carregada no servidor (página do paciente), injectada via `AiTrialQuotaProvider` na tab de links públicos e mostrada no painel de interpretação.
+A quota de trial é carregada no servidor (página do paciente), injetada via `AiTrialQuotaProvider` na tab de links públicos e mostrada no painel de interpretação.
 
 ## Limites clínicos e privacidade
 
 - **Não inventa T-scores / bandas normativas** — só somas brutas determinísticas + itens; normas oficiais exigem tabelas licenciadas — ver [`avaliacao/scoring-oficial-to.md`](./avaliacao/scoring-oficial-to.md).
 - Texto é **rascunho assistido** — o profissional deve rever antes de uso clínico.
-- Prompt: instrumento, data, primeiro nome, idade (se houver), somas brutas, itens. Sem CPF/contacto.
+- Prompt: instrumento, data, primeiro nome, idade (se houver), somas brutas, itens. Sem CPF/contato.
 - Auditoria: `organizationId`, `userId`, `kind`, `evaluationId`, `createdAt` — **sem** texto do prompt/resposta.
 - IA incluída em todos os planos pagos (e no trial); quotas de trial em `generation-limit.ts`.
 

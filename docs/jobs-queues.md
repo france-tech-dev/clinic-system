@@ -2,7 +2,7 @@
 
 Documento de decisão para **não esquecer** quando a Movi escalar (profissionais autónomos + clínicas, WhatsApp, PDFs, media).
 
-**Estado actual:** processamento síncrono (ex. logo via media). Stub BullMQ em `shared/lib/jobs` + processo `worker` (no-op sem `REDIS_URL`). Alvo de pastas: [`target-structure.md`](./target-structure.md) (fase 1 em `src/` + `worker/`; monorepo só com Fastify).
+**Estado atual:** processamento síncrono (ex. logo via media). Stub BullMQ em `shared/lib/jobs` + processo `worker` (no-op sem `REDIS_URL`). Alvo de pastas: [`target-structure.md`](./target-structure.md) (fase 1 em `src/` + `worker/`; monorepo só com Fastify).
 
 **Relacionados:** [`media-storage.md`](./media-storage.md) · [`architecture.md`](./architecture.md) · [`ToDo.md`](./ToDo.md)
 
@@ -34,7 +34,7 @@ Padrão: **muitos jobs pequenos**, não event streaming de alto volume.
 
 ### Porquê Redis + BullMQ
 
-- Stack actual: Next.js no Dokploy + Neon
+- Stack atual: Next.js no Dokploy + Neon
 - Um contentor Redis (ou Redis gerido) basta no início
 - API natural: `queue.add('whatsapp.reminder', { organizationId, ... }, { delay })`
 - Escala para milhares de clínicas com jobs pequenos sem Kafka
@@ -51,7 +51,7 @@ Padrão: **muitos jobs pequenos**, não event streaming de alto volume.
 ## 3. Forma de implementar (quando for a hora)
 
 1. Extrair trabalho para funções de job, ex. `processManagedImageJob`, `sendAppointmentReminderJob`.
-2. Manter API da app estável: actions chamam `enqueue(...)` ou, no início, a função directa.
+2. Manter API da app estável: actions chamam `enqueue(...)` ou, no início, a função direta.
 3. Introduzir BullMQ:
    - `REDIS_URL`
    - `apps/worker` (processo separado no Dokploy) + `packages/shared` jobs
@@ -86,7 +86,7 @@ await enqueue("media.process", {
 
 ---
 
-## 5. Checklist de activação
+## 5. Checklist de ativação
 
 Alinhado a [`target-structure.md`](./target-structure.md):
 

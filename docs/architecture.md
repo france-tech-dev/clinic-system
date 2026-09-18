@@ -1,4 +1,4 @@
-# Arquitetura e regras do projecto — Clinic System
+# Arquitetura e regras do projeto — Clinic System
 
 Documento de referência para a estrutura, camadas e boas práticas que seguimos neste repositório.
 
@@ -22,7 +22,7 @@ Documentos relacionados:
 
 ## 1. Por que esta arquitetura
 
-Este projecto é um monólito Next.js multi-tenant (`Organization`) para gestão clínica de Terapia Ocupacional, organizado por domínio em `src/`. A escala e complexidade justificam **organização por domínio**, mas **não** a cerimónia de DDD tático (aggregates, domain events, entidades ricas).
+Este projeto é um monólito Next.js multi-tenant (`Organization`) para gestão clínica de Terapia Ocupacional, organizado por domínio em `src/`. A escala e complexidade justificam **organização por domínio**, mas **não** a cerimônia de DDD tático (aggregates, domain events, entidades ricas).
 
 | Critério                   | Escolha                                     |
 | -------------------------- | ------------------------------------------- |
@@ -36,7 +36,7 @@ Este projecto é um monólito Next.js multi-tenant (`Organization`) para gestão
 
 ## 2. Estrutura de pastas
 
-Layout físico actual (fase 1). Aliases em `tsconfig` (ver abaixo). Evolução para Fastify: [`target-structure.md`](./target-structure.md).
+Layout físico atual (fase 1). Aliases em `tsconfig` (ver abaixo). Evolução para Fastify: [`target-structure.md`](./target-structure.md).
 
 ```
 clinic-system/
@@ -180,9 +180,9 @@ Regras aplicadas (todas `error`):
 - `components-no-features` — `ui/` não importa `domains/`
 - `no-circular` — sem dependências circulares em `src/`
 
-Para quebrar ciclos: extrair tipos partilhados para um ficheiro próprio (ex.: `evaluation-form-types.ts`), separar leitura de dados da configuração, ou resolver metadados no boundary (ex.: `toAnamneseSummary(dto, label)` recebe o `label` do catálogo em vez de o service importar o registry).
+Para quebrar ciclos: extrair tipos partilhados para um arquivo próprio (ex.: `evaluation-form-types.ts`), separar leitura de dados da configuração, ou resolver metadados no boundary (ex.: `toAnamneseSummary(dto, label)` recebe o `label` do catálogo em vez de o service importar o registry).
 
-Não há excepções activas às fronteiras. UI específica de uma rota fica no `_components/` local, mesmo quando consome actions de um domínio.
+Não há exceções ativas às fronteiras. UI específica de uma rota fica no `_components/` local, mesmo quando consome actions de um domínio.
 
 Partilhar dados finos entre domínios sem acoplar: usar tipos planos em `shared/types/` (ex.: `PatientOption` no diálogo de caixa em vez de `PatientDTO` de `domains/patient`).
 
@@ -190,7 +190,7 @@ Partilhar dados finos entre domínios sem acoplar: usar tipos planos em `shared/
 
 ## 5. Onde colocar UI e hooks
 
-Checklist **antes** de criar ficheiro em `src/app/.../_components/`:
+Checklist **antes** de criar arquivo em `src/app/.../_components/`:
 
 1. Será usado **só nesta rota**? → `_components/` local
 2. Outra rota do **mesmo domínio** precisa? → `src/features/[domínio]/components/` ou `hooks/` (`@/features/…`)
@@ -203,7 +203,7 @@ Checklist **antes** de criar ficheiro em `src/app/.../_components/`:
 import { X } from "@/app/(authenticated)/caixa/_components/...";
 ```
 
-### Exemplos neste projecto
+### Exemplos neste projeto
 
 | Componente                  | Destino                                |
 | --------------------------- | -------------------------------------- |
@@ -252,7 +252,7 @@ Regras:
 Cliente:
 
 - Formulários: `useActionState` + `<form action={formAction}>`
-- Botões: `useTransition` + chamada directa à action
+- Botões: `useTransition` + chamada direta à action
 
 ---
 
@@ -270,7 +270,7 @@ Ver também: `.cursor/rules/react-effects-and-data.mdc`
 
 ## 9. SOLID (versão pragmática)
 
-Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
+Aplicamos SOLID onde traz valor, sem cerimônia enterprise.
 
 | Princípio                     | Como aplicamos                                                               |
 | ----------------------------- | ---------------------------------------------------------------------------- |
@@ -278,7 +278,7 @@ Aplicamos SOLID onde traz valor, sem cerimónia enterprise.
 | **O** — Open/Closed           | Estender service/repository existente antes de criar caminho paralelo        |
 | **L** — Liskov                | Pouco relevante (sem hierarquias de classes)                                 |
 | **I** — Interface Segregation | DTOs e schemas Zod focados por operação                                      |
-| **D** — Dependency Inversion  | `app/` depende de abstracções (services); Prisma isolado nos repositories    |
+| **D** — Dependency Inversion  | `app/` depende de abstrações (services); Prisma isolado nos repositories     |
 
 ---
 
@@ -360,7 +360,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 ## 15. Checklist rápido (nova funcionalidade)
 
 1. Existe feature semelhante? Copiar o padrão (nomes, pastas, exports)
-2. Onde fica o ficheiro? (secção 5 — UI; secção 2 — camadas)
+2. Onde fica o arquivo? (seção 5 — UI; seção 2 — camadas)
 3. Dá para buscar no Server Component? Fazer lá
 4. Precisa de `useEffect`? Só se for sistema externo
 5. Vai passar de 300 linhas? Planear split em `_lib/` ou sub-componentes
@@ -374,8 +374,8 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 | Abordagem                           | Por quê                                        |
 | ----------------------------------- | ---------------------------------------------- |
-| DDD completo (aggregates, events)   | Overhead desproporcional para este projecto    |
-| Microserviços                       | Um deploy, uma DB, equipa pequena              |
+| DDD completo (aggregates, events)   | Overhead desproporcional para este projeto     |
+| Microserviços                       | Um deploy, uma DB, equipe pequena              |
 | Hexagonal em todo o código          | Mappers duplicados sem ganho com Prisma        |
 | Import profundo entre `domains/`    | Acoplamento; orquestrar em `app/`              |
 | Import entre rotas (`_components/`) | Quebra isolamento de UI                        |
@@ -390,7 +390,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 | Área                      | Ficheiro                     |
 | ------------------------- | ---------------------------- |
-| Core (sempre activo)      | `project-core.mdc`           |
+| Core (sempre ativo)       | `project-core.mdc`           |
 | Server Actions            | `nextjs-server-actions.mdc`  |
 | UI partilhada             | `route-shared-ui.mdc`        |
 | Reutilizar antes de criar | `reuse-before-create.mdc`    |

@@ -3,7 +3,7 @@
 Checklist de melhorias, ordenado por prioridade.  
 Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
-**Arquitectura e regras do projecto:** [`docs/architecture.md`](./architecture.md)  
+**Arquitetura e regras do projeto:** [`docs/architecture.md`](./architecture.md)  
 **Auditoria de refactors:** [`docs/architecture-audit.md`](./architecture-audit.md)  
 **Testes (unit + E2E):** [`tests/README.md`](../tests/README.md)
 
@@ -111,15 +111,15 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ## P5 — Relatórios clínicos (expansão)
 
-**Status:** PDF e protocolos no fluxo actual · hub `/relatorio` e export GMFM pendentes
+**Status:** PDF e protocolos no fluxo atual · hub `/relatorio` e export GMFM pendentes
 
 ### Concluído
 
 - [x] PDF de prontuário / anamnese a partir do detalhe do paciente e dos formulários (preview + download) — ver P2
 - [x] **Avaliação dos pacientes** — campo selecionável para escolher o que irá para o relatório (domínios/seções)
 - [x] **Protocolos estruturados** — GMFM-88 em `/avaliacoes/gmfm-88` (formulário 88 itens, percentuais, gráfico comparativo avaliação vs. reavaliação)
-- [x] **Evolução na agenda** — criar evolução directamente a partir do agendamento
-- [x] **Anamnese por especialidade** — hub `/anamnese` filtrado pelas profissões activas (1ª entrega: T.O.)
+- [x] **Evolução na agenda** — criar evolução diretamente a partir do agendamento
+- [x] **Anamnese por especialidade** — hub `/anamnese` filtrado pelas profissões ativas (1ª entrega: T.O.)
 
 ### Pendente
 
@@ -143,7 +143,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 ### Observabilidade (futuro)
 
 - [ ] Relatório de acessos (dispositivo: computador, celular, tablet, …)
-- [ ] Relatório de erros (sistema, utilizador, rede, …)
+- [ ] Relatório de erros (sistema, usuário, rede, …)
 - [ ] Relatório de performance (tempo de resposta / processamento)
 
 ### Testes de performance e carga
@@ -171,6 +171,6 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - **IA:** fundação + interpretação de protocolos — [`docs/ai.md`](ai.md).
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
 - **Logo / media em produção:** pipeline em `shared/lib/media`; R2 — [`docs/media-storage.md`](media-storage.md). Dokploy com volume local pode adiar.
-- **Jobs / filas (futuro):** Redis + BullMQ; worker Node no Dokploy; R2 para ficheiros — [`docs/jobs-queues.md`](jobs-queues.md). Cloudflare Queues só como orquestração leve opcional.
+- **Jobs / filas (futuro):** Redis + BullMQ; worker Node no Dokploy; R2 para arquivos — [`docs/jobs-queues.md`](jobs-queues.md). Cloudflare Queues só como orquestração leve opcional.
 - **Conflito de horário:** explicitamente fora de escopo.
-- **Rate limit:** contadores na BD para réplicas Docker; ver README · secção Segurança.
+- **Rate limit:** contadores na BD para réplicas Docker; ver README · seção Segurança.
