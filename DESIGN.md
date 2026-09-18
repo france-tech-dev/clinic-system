@@ -95,7 +95,7 @@ A Movi é um sistema Operate para clínicas multi-profissionais: o ecrã autenti
 
 A **landing pública** (`/`, `src/app/(marketing)/`) é Persuade no **mesmo sistema de tokens**, com **ritmo tipo Origin**: hero → showcase (mockup) → grelha de produto → prova dual → capacidades honestas → planos → CTA circular → footer. Dual-theme via `ThemeSwitcher` / `next-themes`: light = branco/teal; dark = zinc premium. Mockups usam `MediaPlaceholder` até existirem assets reais. Sem purple-glow SaaS, sem testemunhos inventados, sem claims de portal/WhatsApp como entregues.
 
-A personalidade é **confiável e directa**: tokens semânticos Shadcn, tipografia serif nos títulos, acções destrutivas confirmadas. No app rejeita-se o “kit de landing” (eyebrows, gradient text, grelhas ícone+texto). Na marketing, a nav é um **pill flutuante** com blur simples (`bg-card/75` ao scroll); não espalhar glass pelo resto da página.
+A personalidade é **confiável e direta**: tokens semânticos Shadcn, tipografia serif nos títulos, ações destrutivas confirmadas. No app rejeita-se o “kit de landing” (eyebrows, gradient text, grelhas ícone+texto). Na marketing, a nav é um **pill flutuante** com blur simples (`bg-card/75` ao scroll); não espalhar glass pelo resto da página.
 
 **Key Characteristics:**
 
@@ -111,7 +111,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 ### Primary
 
-- **Teal clínico** (`oklch(58.813% 0.11371 171.371 / 0.781)`): CTAs, links activos, indicador activo do nav da landing, tabs seleccionadas. Usar com parcimónia.
+- **Teal clínico** (`oklch(58.813% 0.11371 171.371 / 0.781)`): CTAs, links ativos, indicador ativo do nav da landing, tabs seleccionadas. Usar com parcimónia.
 
 ### Neutral
 
@@ -132,14 +132,14 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 ## Typography
 
-**Display / Title Font:** Georgia (via `.font-serif`) — títulos de card, dialog, secção e headlines da landing.  
+**Display / Title Font:** Georgia (via `.font-serif`) — títulos de card, dialog, seção e headlines da landing.  
 **Body Font:** Inter (`--font-sans`).  
 **Mono Font:** Geist Mono — dados tabulares, horas.
 
 ### Hierarchy
 
 - **Display** (serif, ~2.25–3.75rem): hero da landing.
-- **Headline** (serif, ~1.5–3rem): títulos de secção (marketing e app).
+- **Headline** (serif, ~1.5–3rem): títulos de seção (marketing e app).
 - **Title** (serif, ~1.125rem): `CardTitle`, `DialogTitle`.
 - **Body** (sans, 0.875–1rem): conteúdo e formulários.
 - **Label** (sans, 0.75rem): meta, badges — sentence case.
@@ -152,8 +152,8 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 - Shell autenticado: `AppPage` (`px-4 lg:px-6`, `gap-3` / `md:gap-4`; header compacto). `fillViewport` só em calendário / workspace clínico.
 - Listas e hubs: grelha responsiva sem forçar cards decorativos.
-- Workspaces clínicos: `ClinicalWorkspaceShell` — uma secção activa + footer fixo.
-- Landing: content `max-w-6xl`; secções com ritmo generoso (`py-20` / `lg:py-28`); grelhas 1 → 2 → 3 colunas.
+- Workspaces clínicos: `ClinicalWorkspaceShell` — uma seção ativa + footer fixo.
+- Landing: content `max-w-6xl`; seções com ritmo generoso (`py-20` / `lg:py-28`); grelhas 1 → 2 → 3 colunas.
 - Altura: `dvh` / `svh`; nunca `vh` em overlays.
 
 ### Landing composition (ordem fixa)
@@ -171,7 +171,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 **App (Operate):** flat-by-default — borda + fundo tonal; sombra só em hover de card ou overlays.
 
-**Landing (Persuade):** secções e cards sobretudo flat (`border` + `bg-card` / tons); CTA final pode usar halo radial teal suave (não purple glow).
+**Landing (Persuade):** seções e cards sobretudo flat (`border` + `bg-card` / tons); CTA final pode usar halo radial teal suave (não purple glow).
 
 **Glass na nav marketing:** pill flutuante genérico — `backdrop-blur-xl` + `bg-card/75` ao scroll (padrão france-tech). Sem variante Liquid Glass.
 
@@ -197,7 +197,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 ### Cards / Containers
 
-- App: cards só com interacção ou agrupamento real.
+- App: cards só com interação ou agrupamento real.
 - Landing: cards de feature/prova com `rounded-3xl` e placeholders — não grelhas ícone+texto.
 
 ### Inputs / Fields
@@ -207,7 +207,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 ### Navigation
 
 - **App:** Sidebar Shadcn; tabs de paciente = underline `border-primary`.
-- **Landing:** `LandingNav` — pill `fixed` centrada (`md:top-6`), largura anima no scroll (80% → ~640px), `ThemeSwitcher`, Entrar + teste, âncoras com ponto `primary` no activo. Sem Lenis; scroll nativo. Spacer abaixo do nav para o conteúdo.
+- **Landing:** `LandingNav` — pill `fixed` centrada (`md:top-6`), largura anima no scroll (80% → ~640px), `ThemeSwitcher`, Entrar + teste, âncoras com ponto `primary` no ativo. Sem Lenis; scroll nativo. Spacer abaixo do nav para o conteúdo.
 
 ### Media
 
@@ -215,7 +215,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 
 ### Signature: Clinical workspace
 
-Índice de secções + painel único + footer fixo. Não empilhar todas as secções num scroll longo.
+Índice de seções + painel único + footer fixo. Não empilhar todas as seções num scroll longo.
 
 ## Do's and Don'ts
 
@@ -225,7 +225,7 @@ Paleta semântica via CSS variables em `src/app/globals.css` (fonte normativa). 
 - **Do** dual-theme na landing; testar light e dark.
 - **Do** manter honestidade de produto (trial, preços públicos, “em desenvolvimento”).
 - **Do** empty states com próxima ação quando o usuário pode criar.
-- **Do** confirmar acções que apagam dados ou invalidam links.
+- **Do** confirmar ações que apagam dados ou invalidam links.
 - **Do** copy PT-BR de domínio (paciente, responsável, instrumento, evolução).
 
 ### Don't:

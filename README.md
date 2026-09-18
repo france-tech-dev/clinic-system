@@ -1,6 +1,6 @@
 # CLINIC SYSTEM - Movi Clinicas
 
-Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupacional e equipas multi-profissionais): prontuário, agenda, anamnese, avaliações estruturadas, caixa e painel — com isolamento por organização.
+Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupacional e equipes multiprofissionais): prontuário, agenda, anamnese, avaliações estruturadas, caixa e painel — com isolamento por organização.
 
 **Em produção:** [https://movi-clinicas.francetech.com.br](https://movi-clinicas.francetech.com.br) — já em uso por profissionais.
 
@@ -26,7 +26,7 @@ Sistema de gestão clínica multi-tenant para clínicas de saúde (Terapia Ocupa
 - **Painel** (`/painel`) — estatísticas, alertas clínicos, faturamento do mês e atividade recente
 - **Agenda** (`/agenda`) — lista + calendário, drag-and-drop, repetição semanal, filtro por profissional
 - **Pacientes** (`/pacientes`) — cadastro, responsáveis, preço/sessão ou pacote, evoluções e PDF do prontuário
-- **Anamnese** (`/anamnese`) — hub por especialidade (formulários filtrados pelas profissões activas da clínica)
+- **Anamnese** (`/anamnese`) — hub por especialidade (formulários filtrados pelas profissões ativas da clínica)
 - **Avaliações** (`/avaliacoes`) — protocolos estruturados (ex.: GMFM-88)
 - **Caixa** (`/caixa`) — entradas/saídas, resumo mensal, filtro por profissional; sugestão ao marcar agendamento como realizado
 - **Profissionais** (`/profissionais`) — equipe da clínica (profissão, status)
@@ -150,7 +150,7 @@ Documentação: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`doc
 | `pnpm worker:dev`          | Worker em modo watch                          |
 | `pnpm build`               | `prisma generate` + build Next.js             |
 | `pnpm start`               | Servidor de produção                          |
-| `pnpm lint`                | ESLint + verificação de arquitectura (`arch`) |
+| `pnpm lint`                | ESLint + verificação de arquitetura (`arch`) |
 | `pnpm arch`                | Fronteiras de import (dependency-cruiser)     |
 | `pnpm test`                | Testes unitários (Vitest)                     |
 | `pnpm test:watch`          | Vitest em modo watch                          |
@@ -162,7 +162,7 @@ Documentação: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`doc
 
 Build Type: **Dockerfile**. No arranque do contentor corre `prisma migrate deploy` e depois `node server.js` (ver `docker-entrypoint.sh`).
 
-Usa a URL **Internal** da BD nas envs da app. Podes desactivar a porta External no Postgres se já não precisares dela.
+Usa a URL **Internal** da BD nas envs da app. Você pode desativar a porta External no Postgres se já não precisar dela.
 
 Com **várias réplicas**, o rate limit em database é obrigatório (já configurado) — storage em memória não partilha contadores entre processos.
 
