@@ -6,7 +6,7 @@ Estrutura separada do código de produção (`src/`).
 tests/
 ├── unit/          # Vitest — funções puras, services (mock repository)
 ├── e2e/           # Playwright — fluxos no browser (futuro)
-└── README.md      # este ficheiro
+└── README.md      # este arquivo
 ```
 
 ## Comandos
@@ -28,7 +28,7 @@ tests/
 
 ### Convenção unitários
 
-Espelhar o domínio de `src/`, **sem** copiar `_lib/` no path quando o ficheiro testado é óbvio:
+Espelhar o domínio de `src/`, **sem** copiar `_lib/` no path quando o arquivo testado é óbvio:
 
 ```
 src/features/finance/_lib/build-summary.ts
@@ -55,7 +55,7 @@ import { buildSummary } from "@/features/finance/_lib/build-summary";
 
 ## E2E (Playwright)
 
-Pasta reservada em `tests/e2e/`. Candidatos quando activarmos:
+Pasta reservada em `tests/e2e/`. Candidatos quando ativarmos:
 
 - Login + seleção de organização
 - CRUD paciente
@@ -66,5 +66,5 @@ Ver `tests/e2e/README.md`.
 
 ## Referências
 
-- [`docs/architecture.md`](../docs/architecture.md) — secção 12
+- [`docs/architecture.md`](../docs/architecture.md) — seção 12
 - [`.cursor/rules/testing.mdc`](../.cursor/rules/testing.mdc)
