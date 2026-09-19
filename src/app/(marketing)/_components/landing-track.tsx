@@ -50,7 +50,7 @@ export function LandingTrack() {
         </div>
 
         <div className="mt-14 space-y-10">
-          {TRACK_CARDS.map((card, index) => (
+          {TRACK_CARDS.map((card) => (
             <article
               key={card.title}
               className="overflow-hidden rounded-2xl border border-border bg-card sm:rounded-3xl"
@@ -63,11 +63,7 @@ export function LandingTrack() {
                   {card.body}
                 </p>
               </div>
-              <LandingShot
-                name={card.shot}
-                alt={card.alt}
-                priority={index === 0}
-              />
+              <LandingShot name={card.shot} alt={card.alt} />
             </article>
           ))}
         </div>

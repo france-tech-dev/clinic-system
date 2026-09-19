@@ -11,49 +11,38 @@ export type LandingShotName =
 type LandingShotProps = {
   name: LandingShotName;
   alt: string;
-  className?: string;
-  frameClassName?: string;
   priority?: boolean;
 };
 
 export function LandingShot({
   name,
   alt,
-  className,
-  frameClassName,
   priority = false,
 }: LandingShotProps) {
   const isPhone = name === "app";
-  const width = isPhone ? 480 : 1920;
-  const height = isPhone ? 1000 : 1000;
-
-  const imgClass = cn(
-    "h-auto w-full max-w-none",
-    className,
-  );
+  const width = isPhone ? 960 : 2400;
+  const height = isPhone ? 2040 : 1350;
+  const imgClass = "h-auto w-full";
 
   return (
-    <div className={cn("relative overflow-hidden", frameClassName)}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- prints de marketing: ficheiro na resolução nativa */}
+    <div className="relative overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element -- print marketing sem otimizador */}
       <img
-        src={`/marketing/light/${name}.webp`}
+        src={`/marketing/light/${name}.png`}
         alt={alt}
         width={width}
         height={height}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
-        decoding={priority ? "sync" : "async"}
         className={cn(imgClass, "dark:hidden")}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={`/marketing/dark/${name}.webp`}
+        src={`/marketing/dark/${name}.png`}
         alt=""
         width={width}
         height={height}
         loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
-        decoding="async"
         className={cn(imgClass, "hidden dark:block")}
         aria-hidden
       />
