@@ -1,25 +1,25 @@
-import { betterAuth, User } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { lastLoginMethod, magicLink, organization } from "better-auth/plugins";
-import { db } from "@/shared/lib/prisma";
-import { nextCookies } from "better-auth/next-js";
-import {
-  ac,
-  ADMIN,
-  OWNER,
-  MANAGER,
-  MEMBER,
-  CLIENT,
-} from "@/shared/lib/permissions";
 import { OrganizationInvitationEmail } from "@/components/emails/organization-invitation";
 import { ResetPasswordEmail } from "@/components/emails/reset-password";
 import { VerifyEmail } from "@/components/emails/verify-email";
-import { sendEmail } from "@/shared/lib/email";
+import { startOrganizationTrial } from "@/server/billing/start-trial";
 import { getActiveOrganization } from "@/server/organizations/active-organization";
 import { paths } from "@/shared/constants/paths";
-import { Role } from "@prisma/enums";
-import { startOrganizationTrial } from "@/server/billing/start-trial";
 import { env } from "@/shared/env";
+import { sendEmail } from "@/shared/lib/email";
+import {
+  ac,
+  ADMIN,
+  CLIENT,
+  MANAGER,
+  MEMBER,
+  OWNER,
+} from "@/shared/lib/permissions";
+import { db } from "@/shared/lib/prisma";
+import { Role } from "@prisma/enums";
+import { betterAuth, User } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { nextCookies } from "better-auth/next-js";
+import { lastLoginMethod, magicLink, organization } from "better-auth/plugins";
 
 const baseUrl = env.BETTER_AUTH_URL;
 const invitationAcceptUrl = (invitationId: string) =>
@@ -34,7 +34,8 @@ export const auth = betterAuth({
 
   advanced: {
     ipAddress: {
-      ipAddressHeaders: ["x-real-ip"],
+      ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for", "x-real-ip"],
+      trustedProxies: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"],
     },
   },
 
