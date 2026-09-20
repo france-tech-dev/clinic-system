@@ -1,9 +1,8 @@
 import { LandingNav } from "./landing-nav";
-import { LandingHero, LandingHeroBackdrop } from "./landing-hero";
-import { LandingShowcase } from "./landing-showcase";
-import { LandingTrack } from "./landing-track";
-import { LandingDual } from "./landing-dual";
-import { LandingFeatures } from "./landing-features";
+import { LandingHero } from "./landing-hero";
+import { LandingProduto } from "./landing-produto";
+import { LandingRecursos } from "./landing-recursos";
+import { LandingMobile } from "./landing-mobile";
 import { LandingSecurity } from "./landing-security";
 import { LandingPlans } from "./landing-plans";
 import { LandingFaq } from "./landing-faq";
@@ -15,23 +14,10 @@ export function LandingPage() {
     <>
       <LandingNav />
       <main>
-        <section
-          id="top"
-          aria-labelledby="landing-hero-title"
-          className="relative -mt-14 overflow-hidden md:-mt-24"
-        >
-          <div className="absolute inset-0" aria-hidden>
-            <LandingHeroBackdrop />
-          </div>
-          <div className="relative">
-            <LandingHero />
-          </div>
-        </section>
-
-        <LandingShowcase />
-        <LandingTrack />
-        <LandingDual />
-        <LandingFeatures />
+        <LandingHero />
+        <LandingProduto />
+        <LandingRecursos />
+        <LandingMobile />
         <LandingSecurity />
         <LandingPlans />
         <LandingFaq />

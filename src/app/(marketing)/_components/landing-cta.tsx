@@ -1,58 +1,61 @@
-import Image from "next/image";
-import Link from "next/link";
-import { IconArrowUpRight } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
-import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
+"use client";
+
 import { paths } from "@/shared/constants/paths";
-import { LandingShot } from "./landing-shot";
+import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
+import { cn } from "@/shared/lib/utils";
+import { LandingMascot } from "./landing-brand-mark";
+import { useLandingReveal } from "./use-landing-reveal";
+import {
+  LandingTextLink,
+  LandingTrialCta,
+  landingContainer,
+  landingDisplay,
+} from "./landing-ui";
 
 export function LandingCta() {
+  const ref = useLandingReveal("[data-reveal]");
+
   return (
     <section
+      ref={ref}
       aria-labelledby="landing-cta-title"
-      className="relative isolate overflow-hidden border-b border-border"
+      className="overflow-hidden bg-[var(--movi-tint-lilac)]"
     >
-      <Image
-        src="/marketing/flower.webp"
-        alt=""
-        fill
-        sizes="100vw"
-        quality={100}
-        priority={false}
-        className="object-cover object-center"
-      />
       <div
-        aria-hidden
-        className="absolute inset-0 bg-linear-to-b from-black/45 via-black/35 to-black/55"
-      />
-
-      <div className="relative mx-auto flex min-h-[min(90svh,48rem)] max-w-3xl flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:py-32">
-        <h2
-          id="landing-cta-title"
-          className="font-serif text-4xl tracking-tight text-white sm:text-5xl"
+        className={cn(
+          landingContainer,
+          "grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_400px] md:gap-16",
+        )}
+      >
+        <div data-reveal className="py-20 md:py-[104px]">
+          <h2
+            id="landing-cta-title"
+            className={cn(
+              landingDisplay,
+              "max-w-[680px] text-[clamp(2.25rem,5vw,3.875rem)] leading-[1.03] text-[var(--movi-ink)]",
+            )}
+          >
+            Comece o teste de {TRIAL_DAYS}&nbsp;dias hoje
+          </h2>
+          <p className="mt-5 max-w-[560px] text-[clamp(1.1rem,2vw,1.3125rem)] font-bold text-[var(--movi-ink)]">
+            Crie a organização, convide a equipe e use o Movi por{" "}
+            {TRIAL_DAYS}&nbsp;dias. Depois, escolha o plano.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-7">
+            <LandingTrialCta className="h-[60px] px-[38px] text-[19px]" />
+            <LandingTextLink
+              href={paths.auth.login}
+              className="text-[var(--movi-ink)] hover:text-[var(--movi-green-deep)]"
+            >
+              Já tenho conta
+            </LandingTextLink>
+          </div>
+        </div>
+        <div
+          data-reveal
+          className="flex justify-center py-10 md:justify-end md:py-14"
         >
-          Leve a Movi Clínicas para a sua clínica
-        </h2>
-        <p className="mt-4 max-w-md text-base text-white/85">
-          Crie a organização, convide a equipe e utilize a plataforma por{" "}
-          {TRIAL_DAYS} dias — sem cartão.
-        </p>
-        <Button
-          size="lg"
-          className="mt-8 border-transparent bg-white text-neutral-950 hover:bg-white/90"
-          asChild
-        >
-          <Link href={paths.auth.signup}>
-            Iniciar período de teste
-            <IconArrowUpRight data-icon="inline-end" />
-          </Link>
-        </Button>
-
-        <div className="mt-14 w-full max-w-[320px] overflow-hidden rounded-[2rem] border border-white/30 bg-black/20 shadow-lg sm:max-w-[360px]">
-          <LandingShot
-            name="app"
-            alt="Aplicativo Movi Clínicas no celular"
-          />
+          <LandingMascot size={360} className="h-auto w-full max-w-[400px]" />
         </div>
       </div>
     </section>

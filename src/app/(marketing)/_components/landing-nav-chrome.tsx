@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import ThemeSwitcher from "@/components/templates/ThemeSwitcher/ThemeSwitcher";
 import { paths } from "@/shared/constants/paths";
 import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
 import { cn } from "@/shared/lib/utils";
+import { LANDING_ASSETS } from "./landing-assets";
 import { LANDING_NAV_LINKS } from "./use-landing-nav-behavior";
 
 type LandingNavChromeProps = {
@@ -18,7 +18,7 @@ type LandingNavChromeProps = {
 };
 
 function HeaderLogo({
-  size = 40,
+  size = 44,
   onNavigate,
 }: {
   size?: number;
@@ -27,21 +27,24 @@ function HeaderLogo({
     href: string,
   ) => void;
 }) {
+  const height = Math.round(size * (470 / 460));
+
   return (
     <Link
       href={paths.root}
-      onClick={(event) => onNavigate(event, "#top")}
+      onClick={(event) => onNavigate(event, "#topo")}
       className="relative shrink-0"
-      style={{ width: size, height: size }}
+      style={{ width: size, height }}
       aria-label="Movi Clínicas — início"
     >
       <Image
-        src="/logo.png"
+        src={LANDING_ASSETS.mascot}
         alt=""
-        width={size}
-        height={size}
+        width={size * 2}
+        height={height * 2}
         className="size-full object-contain"
         priority
+        quality={100}
       />
     </Link>
   );
@@ -65,19 +68,17 @@ export function LandingNavChrome({
                 href={link.href}
                 onClick={(event) => onNavClick(event, link.href)}
                 className={cn(
-                  "group relative whitespace-nowrap text-xs transition-colors sm:text-sm",
-                  "group-data-[scrolling=false]/nav:text-white/80 group-data-[scrolling=false]/nav:hover:text-white",
+                  "group relative whitespace-nowrap text-xs font-bold transition-colors sm:text-sm",
                   active
-                    ? "group-data-[scrolling=false]/nav:text-white group-data-[scrolling=true]/nav:text-foreground"
-                    : "group-data-[scrolling=true]/nav:text-muted-foreground group-data-[scrolling=true]/nav:hover:text-foreground",
+                    ? "text-[var(--movi-heading)]"
+                    : "text-[var(--movi-muted-2)] hover:text-[var(--movi-heading)] hover:underline hover:decoration-2 hover:underline-offset-[6px]",
                 )}
                 aria-current={active ? "true" : undefined}
               >
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute top-1/2 -left-3.5 hidden size-1.5 -translate-y-1/2 rounded-full bg-primary transition-all duration-300 md:block",
-                    "group-data-[scrolling=false]/nav:bg-white",
+                    "absolute top-1/2 -left-3.5 hidden size-1.5 -translate-y-1/2 rounded-full bg-[var(--movi-sun)] transition-all duration-300 md:block",
                     active ? "scale-100 opacity-100" : "scale-0 opacity-0",
                   )}
                 />
@@ -96,20 +97,17 @@ export function LandingNavChrome({
       </ul>
 
       <div className="flex shrink-0 items-center gap-1">
-        <div className="group-data-[scrolling=false]/nav:[&_button]:text-white group-data-[scrolling=false]/nav:[&_button]:hover:bg-white/15">
-          <ThemeSwitcher />
-        </div>
         <Button
           variant="ghost"
           size="sm"
-          className="hidden group-data-[scrolling=false]/nav:text-white group-data-[scrolling=false]/nav:hover:bg-white/15 group-data-[scrolling=false]/nav:hover:text-white sm:inline-flex"
+          className="hidden font-bold text-[var(--movi-muted-2)] hover:bg-[var(--movi-hover)] hover:text-[var(--movi-heading)] sm:inline-flex"
           asChild
         >
           <Link href={paths.auth.login}>Entrar</Link>
         </Button>
         <Button
           size="sm"
-          className="shrink-0 whitespace-nowrap group-data-[scrolling=false]/nav:border-transparent group-data-[scrolling=false]/nav:bg-white group-data-[scrolling=false]/nav:text-neutral-950 group-data-[scrolling=false]/nav:hover:bg-white/90"
+          className="shrink-0 whitespace-nowrap border-transparent bg-[var(--movi-action)] font-extrabold text-[var(--movi-action-fg)] hover:bg-[var(--movi-action-hover)] hover:text-[var(--movi-action-fg)]"
           asChild
         >
           <Link href={paths.auth.signup}>

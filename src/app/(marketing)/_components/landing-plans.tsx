@@ -1,133 +1,239 @@
-import Link from "next/link";
-import { IconCheck } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { BillingPlan } from "@prisma/enums";
 import {
   BILLING_PLAN_DEFS,
-  INCLUDED_IN_ALL_PLANS,
-  INCLUDED_SECTION_TITLE,
+  EXTRA_SEAT_PRICE_BRL,
   TRIAL_DAYS,
-  planSeatLabel,
-  type BillingPlanDef,
 } from "@/shared/constants/billing-plans";
-import { formatBrl } from "@/shared/lib/money-utils";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
-import { BillingPlan } from "@prisma/enums";
+import { useLandingReveal } from "./use-landing-reveal";
+import {
+  CheckIcon,
+  LandingBtnLine,
+  LandingBtnSun,
+  landingContainer,
+  landingDisplay,
+  landingSectionScroll,
+} from "./landing-ui";
 
-function pricePerProfessionalHint(plan: BillingPlanDef): string | null {
-  if (plan.id !== BillingPlan.PRO) return null;
-  const per = Math.round(plan.priceMonthlyBrl / plan.includedProfessionals);
-  return `Equivalente a aproximadamente ${formatBrl(per)} por profissional`;
+const LANDING_INCLUDED = [
+  "Agenda, pacientes, prontuário e evoluções",
+  "Anamnese, avaliações e caixa",
+  "Interpretação assistida por IA dos protocolos",
+  "Dashboard, busca e configurações da clínica",
+] as const;
+
+function formatPrice(value: number) {
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  });
 }
 
-function PlanCard({
-  plan,
-  featured,
-}: {
-  plan: BillingPlanDef;
-  featured: boolean;
-}) {
-  const perHint = pricePerProfessionalHint(plan);
-
-  return (
-    <article
-      className={cn(
-        "flex flex-col rounded-3xl border border-border bg-card p-6 sm:p-8",
-        featured && "border-primary/40 ring-1 ring-primary/25",
-      )}
-    >
-      <header>
-        <div className="flex items-baseline justify-between gap-2">
-          <h3 className="font-serif text-2xl font-semibold">{plan.name}</h3>
-          {featured ? (
-            <span className="text-xs font-medium text-primary">
-              Mais indicado
-            </span>
-          ) : null}
-        </div>
-        <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
-        <p className="mt-4 flex items-baseline gap-1">
-          <span className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-            {formatBrl(plan.priceMonthlyBrl)}
-          </span>
-          <span className="text-sm text-muted-foreground">/mês</span>
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {planSeatLabel(plan)}
-        </p>
-        {perHint ? (
-          <p className="mt-1 text-xs text-muted-foreground">{perHint}</p>
-        ) : null}
-      </header>
-
-      <ul className="mt-8 flex-1 space-y-2.5 text-sm">
-        {plan.highlights.map((item) => (
-          <li key={item} className="flex items-start gap-2">
-            <IconCheck
-              aria-hidden
-              className="mt-0.5 size-4 shrink-0 text-primary"
-            />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-
-      <Button
-        className="mt-10 w-full"
-        variant={featured ? "default" : "outline"}
-        asChild
-      >
-        <Link href={paths.auth.signup}>Iniciar período de teste</Link>
-      </Button>
-    </article>
-  );
+function planSeatLine(plan: (typeof BILLING_PLAN_DEFS)[number]) {
+  if (plan.id === BillingPlan.SOLO) {
+    return {
+      seats: "1 profissional",
+      per: `R$ ${plan.priceMonthlyBrl} por profissional`,
+    };
+  }
+  if (plan.id === BillingPlan.PRO) {
+    return {
+      seats: `Até ${plan.includedProfessionals} profissionais`,
+      per: `Cerca de R$ ${Math.round(plan.priceMonthlyBrl / plan.includedProfessionals)} por profissional`,
+    };
+  }
+  return {
+    seats: `Até ${plan.includedProfessionals} profissionais`,
+    per: `Cerca de R$ ${Math.round(plan.priceMonthlyBrl / plan.includedProfessionals)} por profissional. Profissional adicional: R$ ${EXTRA_SEAT_PRICE_BRL}/mês.`,
+  };
 }
+
+const CARD_STYLES: Record<
+  BillingPlan,
+  { bg: string; radius: string; onDark?: boolean }
+> = {
+  [BillingPlan.SOLO]: {
+    bg: "bg-[var(--movi-tint-sun)]",
+    radius: "rounded-[40px_40px_40px_100px]",
+  },
+  [BillingPlan.PRO]: {
+    bg: "bg-[var(--movi-band)]",
+    radius: "rounded-[40px_40px_100px_40px]",
+    onDark: true,
+  },
+  [BillingPlan.ENTERPRISE]: {
+    bg: "bg-[var(--movi-tint-sky)]",
+    radius: "rounded-[40px_40px_40px_100px]",
+  },
+};
 
 export function LandingPlans() {
+  const ref = useLandingReveal("[data-reveal]");
+
   return (
     <section
+      ref={ref}
       id="planos"
       aria-labelledby="landing-plans-title"
-      className="scroll-mt-24 border-b border-border"
+      className={cn(landingSectionScroll, "py-24 md:py-[120px]")}
     >
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
-        <div className="max-w-2xl">
-          <h2
-            id="landing-plans-title"
-            className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
+      <div className={landingContainer}>
+        <h2
+          id="landing-plans-title"
+          data-reveal
+          className={cn(
+            landingDisplay,
+            "max-w-[760px] text-[clamp(2rem,4.5vw,3.375rem)] leading-[1.06]",
+          )}
+        >
+          Planos pelo tamanho da equipe
+        </h2>
+        <p
+          data-reveal
+          className="mt-5 max-w-[640px] text-xl text-[var(--movi-muted)]"
+        >
+          Todas as funções em todos os planos. O que muda é quantos profissionais
+          atendem na clínica. Teste {TRIAL_DAYS} dias e escolha o plano quando
+          estiver pronto.
+        </p>
+
+        <div
+          data-reveal
+          className="mt-12 grid items-stretch gap-6 md:mt-14 md:grid-cols-3"
+        >
+          {BILLING_PLAN_DEFS.map((plan) => {
+            const style = CARD_STYLES[plan.id];
+            const seats = planSeatLine(plan);
+            const onDark = style.onDark;
+
+            return (
+              <div
+                key={plan.id}
+                className={cn(
+                  "relative flex flex-col px-8 pt-10 pb-9 sm:px-9",
+                  style.bg,
+                  style.radius,
+                )}
+              >
+                {plan.recommended ? (
+                  <span className="absolute -top-4 right-[52px] whitespace-nowrap rounded-full bg-[var(--movi-coral)] px-4 py-1.5 text-sm font-extrabold text-[var(--movi-ink)]">
+                    Mais indicado
+                  </span>
+                ) : null}
+                <h3
+                  className={cn(
+                    landingDisplay,
+                    "text-[32px] leading-[1.1]",
+                    onDark && "text-[var(--movi-on-dark)]",
+                  )}
+                >
+                  {plan.name}
+                </h3>
+                <p
+                  className={cn(
+                    "mt-1.5 text-[17px]",
+                    onDark
+                      ? "text-[var(--movi-on-dark-muted)]"
+                      : "text-[var(--movi-muted)]",
+                  )}
+                >
+                  {plan.id === BillingPlan.SOLO
+                    ? "Atendimento individual"
+                    : plan.id === BillingPlan.PRO
+                      ? "Equipes pequenas"
+                      : "Clínicas maiores"}
+                </p>
+                <div className="mt-7 flex items-baseline gap-1.5">
+                  <span
+                    className={cn(
+                      landingDisplay,
+                      "text-[50px] leading-none",
+                      onDark && "text-[var(--movi-on-dark)]",
+                    )}
+                  >
+                    {formatPrice(plan.priceMonthlyBrl)}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-base",
+                      onDark
+                        ? "text-[var(--movi-on-dark-muted)]"
+                        : "text-[var(--movi-muted)]",
+                    )}
+                  >
+                    /mês
+                  </span>
+                </div>
+                <p
+                  className={cn(
+                    "mt-3.5 font-extrabold",
+                    onDark
+                      ? "text-[var(--movi-on-dark)]"
+                      : "text-[var(--movi-ink)]",
+                  )}
+                >
+                  {seats.seats}
+                </p>
+                <p
+                  className={cn(
+                    "mt-0.5 text-[15px]",
+                    onDark
+                      ? "text-[var(--movi-on-dark-muted)]"
+                      : "text-[var(--movi-muted)]",
+                  )}
+                >
+                  {seats.per}
+                </p>
+                <div className="mt-auto pt-9">
+                  {onDark ? (
+                    <LandingBtnSun
+                      href={paths.auth.signup}
+                      className="w-full"
+                    >
+                      Testar {TRIAL_DAYS} dias grátis
+                    </LandingBtnSun>
+                  ) : (
+                    <LandingBtnLine
+                      href={paths.auth.signup}
+                      className="w-full"
+                    >
+                      Testar {TRIAL_DAYS} dias grátis
+                    </LandingBtnLine>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div
+          data-reveal
+          className="mt-12 grid gap-6 md:mt-14 md:grid-cols-[260px_minmax(0,1fr)] md:gap-8 md:items-start"
+        >
+          <h3
+            className={cn(
+              landingDisplay,
+              "text-[26px] leading-[1.2]",
+            )}
           >
-            Planos para a sua clínica
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            {TRIAL_DAYS} dias de acesso completo, sem cartão. Em seguida,
-            selecione o plano conforme o número de profissionais da equipe.
-          </p>
-        </div>
-
-        <div className="mt-10 rounded-3xl border border-border bg-muted/30 p-6 sm:p-8">
-          <h3 className="font-medium">{INCLUDED_SECTION_TITLE}</h3>
-          <ul className="mt-4 grid gap-2.5 text-sm sm:grid-cols-2">
-            {INCLUDED_IN_ALL_PLANS.map((item) => (
-              <li key={item} className="flex items-start gap-2">
-                <IconCheck
-                  aria-hidden
-                  className="mt-0.5 size-4 shrink-0 text-primary"
-                />
-                <span className="text-muted-foreground">{item}</span>
-              </li>
+            Em todos os planos
+          </h3>
+          <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-x-10">
+            {LANDING_INCLUDED.map((item) => (
+              <div key={item} className="flex items-start gap-3">
+                <CheckIcon className="mt-1 shrink-0" />
+                <span className="text-[var(--movi-row)]">{item}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
-
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {BILLING_PLAN_DEFS.map((plan) => (
-            <PlanCard
-              key={plan.id}
-              plan={plan}
-              featured={Boolean(plan.recommended)}
-            />
-          ))}
-        </div>
+        <p className="mt-10 text-sm text-[var(--movi-muted-2)]">
+          Valores sujeitos à confirmação no checkout.
+        </p>
       </div>
     </section>
   );

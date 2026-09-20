@@ -31,7 +31,7 @@ export type BillingPlanDef = {
 /** Funcionalidades comuns a todos os planos — apresentar uma vez acima dos cards. */
 export const INCLUDED_IN_ALL_PLANS = [
   "Agenda, pacientes, prontuário, evoluções e PDF",
-  "Anamnese, avaliações, caixa e portal do responsável",
+  "Anamnese, avaliações e caixa",
   "Interpretação assistida por IA (protocolos)",
   "Dashboard, busca e configurações da clínica",
 ] as const;

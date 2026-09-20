@@ -1,66 +1,86 @@
 import Link from "next/link";
 import { paths } from "@/shared/constants/paths";
+import { cn } from "@/shared/lib/utils";
+import { LandingBrandLockup } from "./landing-brand-mark";
+import { landingContainer, landingDisplay } from "./landing-ui";
 
-const COLUMNS = [
-  {
-    title: "Produto",
-    links: [
-      { href: "#produto", label: "Visão geral" },
-      { href: "#como-funciona", label: "Como funciona" },
-      { href: "#recursos", label: "Recursos" },
-      { href: "#planos", label: "Planos" },
-    ],
-  },
-  {
-    title: "Conta",
-    links: [
-      { href: paths.auth.login, label: "Entrar" },
-      { href: paths.auth.signup, label: "Criar conta" },
-      { href: "#faq", label: "Dúvidas" },
-    ],
-  },
+const PRODUCT_LINKS = [
+  { href: "#produto", label: "Como funciona" },
+  { href: "#recursos", label: "Recursos" },
+  { href: "#planos", label: "Planos" },
+] as const;
+
+const ACCOUNT_LINKS = [
+  { href: paths.auth.login, label: "Entrar" },
+  { href: paths.auth.signup, label: "Criar conta" },
+  { href: "#faq", label: "Dúvidas" },
 ] as const;
 
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-zinc-950 text-zinc-50">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.2fr_1fr_1fr]">
-        <div>
-          <p className="font-serif text-xl">Movi Clínicas</p>
-          <p className="mt-3 max-w-sm text-sm text-zinc-400">
-            Gestão clínica para clínicas de terapia ocupacional e equipes
-            multiprofissionais — com dados isolados por organização.
-          </p>
+    <footer className="bg-[var(--movi-band)] pt-16 pb-12 md:pt-20 md:pb-12">
+      <div className={landingContainer}>
+        <div className="grid gap-12 md:grid-cols-12 md:gap-6 md:items-start">
+          <div className="md:col-span-5">
+            <LandingBrandLockup
+              onDark
+              mascotSize={54}
+              wordmarkSize={96}
+            />
+            <p className="mt-[22px] max-w-[400px] text-base text-[var(--movi-on-dark-muted)]">
+              Sistema de saúde integrado para clínicas de várias especialidades,
+              com dados isolados por organização.
+            </p>
+          </div>
+
+          <div className="md:col-span-2 md:col-start-8">
+            <h3
+              className={cn(
+                landingDisplay,
+                "text-lg text-[var(--movi-on-dark)]",
+              )}
+            >
+              Produto
+            </h3>
+            <div className="mt-4 flex flex-col gap-2.5 text-base text-[var(--movi-on-dark-muted)]">
+              {PRODUCT_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="hover:text-[var(--movi-on-dark)] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[var(--movi-sun)]"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="md:col-span-2 md:col-start-10">
+            <h3
+              className={cn(
+                landingDisplay,
+                "text-lg text-[var(--movi-on-dark)]",
+              )}
+            >
+              Conta
+            </h3>
+            <div className="mt-4 flex flex-col gap-2.5 text-base text-[var(--movi-on-dark-muted)]">
+              {ACCOUNT_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="hover:text-[var(--movi-on-dark)] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[var(--movi-sun)]"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {COLUMNS.map((col) => (
-          <div key={col.title}>
-            <p className="text-sm font-semibold">{col.title}</p>
-            <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
-              {col.links.map((link) => (
-                <li key={link.href + link.label}>
-                  {link.href.startsWith("#") ? (
-                    <a href={link.href} className="hover:text-zinc-100">
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link href={link.href} className="hover:text-zinc-100">
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div className="border-t border-white/10">
-        <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-zinc-500 sm:px-6">
-          © {new Date().getFullYear()} Movi Clínicas. Portal do responsável e
-          lembretes por WhatsApp encontram-se em desenvolvimento e ainda não
-          devem ser considerados recursos concluídos. Valores públicos sujeitos
-          à confirmação no checkout.
+        <p className="mt-16 border-t border-[rgb(244_239_230/0.25)] pt-6 text-sm text-[var(--movi-on-dark-muted)]">
+          © 2026 Movi Clínicas. O portal do responsável e os lembretes por
+          WhatsApp estão em desenvolvimento e ainda não são recursos concluídos.
         </p>
       </div>
     </footer>

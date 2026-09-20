@@ -1,74 +1,92 @@
 "use client";
 
+import { cn } from "@/shared/lib/utils";
+import { useLandingReveal } from "./use-landing-reveal";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
+  landingContainer,
+  landingDisplay,
+  landingSectionScroll,
+} from "./landing-ui";
 
-const FAQ = [
+const FAQS = [
   {
-    q: "O que é a Movi Clínicas?",
-    a: "É um sistema de gestão para clínicas de terapia ocupacional e equipes multiprofissionais. Reúne agenda, pacientes, prontuário com PDF, anamnese, avaliações, caixa e dashboard em um só produto.",
+    q: "O Movi serve para qual especialidade?",
+    a: "O Movi é um sistema de saúde integrado para clínicas de várias especialidades. A anamnese é organizada por especialidade e as avaliações estruturadas incluem instrumentos como GMFM-88, PEDI e Perfil Sensorial.",
   },
   {
     q: "O que está incluído?",
-    a: "Todas as funcionalidades estão disponíveis em todos os planos: agenda, pacientes, evoluções e PDF com assinatura e registro profissional, anamnese, avaliações, caixa, portal do responsável e interpretação assistida por IA. Os planos diferenciam-se pelo número de profissionais incluídos.",
+    a: "Todas as funções estão em todos os planos. O que muda é o número de profissionais.",
   },
   {
     q: "Serve para o tamanho da minha clínica?",
-    a: "Sim. Solo contempla 1 profissional; Professional, até 3 (indicado para equipes de pequeno porte); Enterprise, até 9, com possibilidade de profissionais adicionais.",
+    a: "Há plano para 1 profissional, para até 3 e para até 9. No Enterprise, cada profissional adicional custa R$ 59/mês.",
   },
   {
     q: "Como testar antes de assinar?",
-    a: `Crie a conta e utilize o período de teste de ${TRIAL_DAYS} dias, sem cartão. Em seguida, selecione o plano no checkout.`,
+    a: "Crie a conta, convide a equipe e use por 7 dias. Depois, escolha o plano que cabe na sua clínica.",
   },
   {
     q: "Os dados dos pacientes ficam isolados?",
-    a: "Sim. Cada clínica acessa exclusivamente os próprios dados. As permissões distinguem quem atende de quem gerencia.",
+    a: "Sim. Cada clínica acessa exclusivamente as próprias informações, com acesso por função.",
   },
   {
     q: "Tem inteligência artificial?",
-    a: "Sim. A interpretação assistida por IA em protocolos de avaliação está disponível em todos os planos. Lembretes por WhatsApp encontram-se em desenvolvimento e não devem ser considerados recurso concluído.",
+    a: "Sim. A interpretação assistida por IA dos protocolos está incluída em todos os planos.",
   },
 ] as const;
 
 export function LandingFaq() {
+  const ref = useLandingReveal("[data-reveal]");
+
   return (
     <section
+      ref={ref}
       id="faq"
       aria-labelledby="landing-faq-title"
-      className="scroll-mt-24 border-b border-border bg-muted/25"
+      className={cn(
+        landingSectionScroll,
+        "bg-[var(--movi-surface)] py-24 md:py-[112px]",
+      )}
     >
-      <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:py-28">
-        <div className="text-center">
-          <h2
-            id="landing-faq-title"
-            className="font-serif text-3xl tracking-tight sm:text-4xl"
-          >
-            Dúvidas frequentes
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            Respostas objetivas sobre o produto, o período de teste e a proteção
-            dos dados.
-          </p>
-        </div>
-
-        <div className="mt-12 rounded-2xl border border-border bg-card px-4 sm:px-6">
-          <Accordion type="single" collapsible className="w-full">
-            {FAQ.map((item, index) => (
-              <AccordionItem key={item.q} value={`item-${index}`}>
-                <AccordionTrigger className="py-4 text-base hover:no-underline">
+      <div className={landingContainer}>
+        <h2
+          id="landing-faq-title"
+          data-reveal
+          className={cn(
+            landingDisplay,
+            "text-[clamp(2rem,4vw,3.25rem)] leading-[1.06]",
+          )}
+        >
+          Dúvidas frequentes
+        </h2>
+        <div
+          data-reveal
+          className="mt-12 grid gap-x-20 md:mt-14 md:grid-cols-2"
+        >
+          {FAQS.map((item, i) => {
+            const isLastRow = i >= FAQS.length - 2;
+            return (
+              <div
+                key={item.q}
+                className={cn(
+                  "border-t border-[var(--movi-border)] py-7",
+                  isLastRow && "border-b",
+                )}
+              >
+                <h3
+                  className={cn(
+                    landingDisplay,
+                    "text-[clamp(1.2rem,2vw,1.5625rem)] leading-[1.2]",
+                  )}
+                >
                   {item.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  <p>{item.a}</p>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                </h3>
+                <p className="mt-3 max-w-[520px] text-lg text-[var(--movi-muted)]">
+                  {item.a}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

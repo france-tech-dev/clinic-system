@@ -1,67 +1,89 @@
+"use client";
+
+import { cn } from "@/shared/lib/utils";
+import { useLandingReveal } from "./use-landing-reveal";
 import {
-  IconDatabase,
-  IconLock,
-  IconShieldLock,
-  IconUserCheck,
-} from "@tabler/icons-react";
+  landingContainer,
+  landingDisplay,
+} from "./landing-ui";
 
 const POINTS = [
   {
+    border: "var(--movi-sage)",
     title: "Dados separados por clínica",
-    body: "Cada organização acessa exclusivamente as próprias informações, sem compartilhar dados entre clínicas.",
-    Icon: IconDatabase,
+    body: "Cada organização acessa exclusivamente as próprias informações.",
   },
   {
+    border: "var(--movi-sun)",
     title: "Acesso por função",
-    body: "O profissional utiliza o fluxo de atendimento; a liderança acompanha dashboard, caixa e equipe.",
-    Icon: IconUserCheck,
+    body: "O profissional usa o fluxo de atendimento. A liderança acompanha dashboard, caixa e equipe.",
   },
   {
+    border: "var(--movi-sky)",
     title: "Controle da equipe",
-    body: "Convites e permissões permanecem no âmbito da sua organização.",
-    Icon: IconLock,
+    body: "Convites e permissões ficam dentro da sua organização.",
   },
   {
+    border: "var(--movi-lilac)",
     title: "Privacidade e LGPD",
     body: "Projetado com foco em menor exposição de dados e maior controle de acesso.",
-    Icon: IconShieldLock,
   },
 ] as const;
 
 export function LandingSecurity() {
+  const ref = useLandingReveal("[data-reveal]");
+
   return (
     <section
+      ref={ref}
       aria-labelledby="landing-security-title"
-      className="scroll-mt-24 border-b border-border bg-zinc-950 text-zinc-50"
+      className="bg-[var(--movi-band)] py-24 md:py-[112px]"
     >
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
-        <div className="mx-auto max-w-2xl text-center">
+      <div
+        className={cn(
+          landingContainer,
+          "grid gap-12 md:grid-cols-12 md:gap-6 md:items-start",
+        )}
+      >
+        <div data-reveal className="md:col-span-5">
           <h2
             id="landing-security-title"
-            className="font-serif text-3xl tracking-tight sm:text-4xl lg:text-5xl"
+            className={cn(
+              landingDisplay,
+              "text-[clamp(2rem,4vw,3.25rem)] leading-[1.06] text-[var(--movi-on-dark)]",
+            )}
           >
-            Dados isolados por clínica, com controle de acesso
+            Os dados de cada clínica ficam separados
           </h2>
-          <p className="mt-4 text-zinc-400">
-            Cada clínica possui o seu espaço. Privacidade e permissões integram
-            o produto — não constituem um complemento opcional.
+          <p className="mt-[22px] max-w-[440px] text-xl text-[var(--movi-on-dark-muted)]">
+            Privacidade e permissões fazem parte do produto. Não são um extra.
           </p>
         </div>
 
-        <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {POINTS.map(({ title, body, Icon }) => (
-            <li
-              key={title}
-              className="rounded-2xl border border-white/10 bg-white/5 p-5"
+        <div
+          data-reveal
+          className="grid gap-10 sm:grid-cols-2 md:col-span-6 md:col-start-7 md:gap-10"
+        >
+          {POINTS.map((p) => (
+            <div
+              key={p.title}
+              className="border-t-2 pt-5"
+              style={{ borderColor: p.border }}
             >
-              <Icon aria-hidden className="size-5 text-zinc-300" />
-              <h3 className="mt-4 font-serif text-lg font-semibold tracking-tight">
-                {title}
+              <h3
+                className={cn(
+                  landingDisplay,
+                  "text-2xl leading-[1.2] text-[var(--movi-on-dark)]",
+                )}
+              >
+                {p.title}
               </h3>
-              <p className="mt-2 text-sm text-pretty text-zinc-400">{body}</p>
-            </li>
+              <p className="mt-2.5 text-[17px] text-[var(--movi-on-dark-muted)]">
+                {p.body}
+              </p>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

@@ -5,7 +5,7 @@ import { LandingNavChrome } from "./landing-nav-chrome";
 import { useLandingNavBehavior } from "./use-landing-nav-behavior";
 
 const SHELL =
-  "group/nav fixed top-0 left-1/2 z-40 -translate-x-1/2 overflow-visible rounded-full border border-transparent transition-[background-color,border-color,border-radius,box-shadow,backdrop-filter] duration-300 ease-in-out md:top-6 max-md:w-full! max-md:rounded-none max-md:overflow-hidden";
+  "group/nav fixed top-0 left-1/2 z-40 -translate-x-1/2 overflow-visible rounded-full border transition-[background-color,border-color,border-radius,box-shadow,backdrop-filter] duration-300 ease-in-out md:top-6 max-md:w-full! max-md:rounded-none max-md:overflow-hidden";
 
 export function LandingNav() {
   const { navRef, activeHref, onNavClick } = useLandingNavBehavior();
@@ -20,8 +20,8 @@ export function LandingNav() {
         style={{ width: "80%" }}
         className={cn(
           SHELL,
-          "backdrop-blur-xl data-[scrolling=false]:border-white/15 data-[scrolling=false]:bg-white/10",
-          "data-[scrolling=true]:border-white/10 data-[scrolling=true]:bg-card/75",
+          "border-[var(--movi-nav-border)] bg-[var(--movi-nav-shell)] backdrop-blur-xl",
+          "data-[scrolling=true]:border-[var(--movi-nav-border-scroll)] data-[scrolling=true]:bg-[var(--movi-nav-shell-scroll)] data-[scrolling=true]:shadow-[var(--movi-nav-shadow)]",
           "data-[scrolling=true]:md:rounded-full",
         )}
       >

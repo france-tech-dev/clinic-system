@@ -75,7 +75,7 @@ export function useLandingNavBehavior() {
     event: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    if (href === "#top") {
+    if (href === "#top" || href === "#topo") {
       event.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
