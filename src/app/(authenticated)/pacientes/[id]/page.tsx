@@ -21,6 +21,7 @@ import type {
   PrintBranding,
   ProfessionalProfile,
 } from "@/domains/settings/settings.types";
+import { DEFAULT_APP_NAME, DEFAULT_PRINT_LOGO } from "@/shared/constants/brand";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { isLeadershipRole } from "@/shared/lib/member-role";
@@ -65,8 +66,8 @@ export default async function PacienteDetailPage({
   };
 
   let branding: PrintBranding = {
-    clinicName: "Clinic System",
-    logoUrl: "/logo_dark.png",
+    clinicName: DEFAULT_APP_NAME,
+    logoUrl: DEFAULT_PRINT_LOGO,
   };
 
   const inviteProtocols = listPublicInviteProtocols();

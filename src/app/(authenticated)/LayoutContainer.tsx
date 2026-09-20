@@ -8,6 +8,7 @@ import { getBillingSnapshot } from "@/domains/billing/billing.service";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { getCurrentUser } from "@/server/auth/users";
 import { getOrganizations } from "@/server/organizations/organizations";
+import { BRAND_LOGO } from "@/shared/constants/brand";
 import { isPlatformAdminUserId } from "@/shared/lib/platform-admin";
 
 export default async function LayoutContainer({
@@ -27,7 +28,7 @@ export default async function LayoutContainer({
   const sidebarUser = {
     name: user.name ?? "Usuário",
     email: user.email ?? "",
-    avatar: user.image ?? "/logo_dark.png",
+    avatar: user.image ?? BRAND_LOGO,
     role: member?.role ?? null,
   };
 

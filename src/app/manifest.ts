@@ -1,9 +1,10 @@
-import type { MetadataRoute } from "next";
+import { BRAND_LOGO } from "@/shared/constants/brand";
 import { paths } from "@/shared/constants/paths";
+import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Movi Clinicas",
+    name: "Movi Clínicas",
     short_name: "Movi",
     description:
       "Sistema de gestão clínica e agendamentos para profissionais da saúde.",
@@ -14,13 +15,13 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#000000",
     icons: [
       {
-        src: "/icon.png",
+        src: BRAND_LOGO,
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icon.png",
+        src: BRAND_LOGO,
         sizes: "512x512",
         type: "image/png",
         purpose: "any",

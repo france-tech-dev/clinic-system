@@ -128,6 +128,46 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Landing sempre clara — paleta fixa, independente do tema da app */
+.marketing-landing {
+  color-scheme: light;
+  --movi-cream: #f4efe6;
+  --movi-ink: #2b3d30;
+  --movi-heading: #39523f;
+  --movi-action: #39523f;
+  --movi-action-hover: #2b3d30;
+  --movi-action-fg: #f4efe6;
+  --movi-band: #39523f;
+  --movi-muted: #4a5b4b;
+  --movi-muted-2: #5b6b5c;
+  --movi-row: #3d503f;
+  --movi-sun: #f5b24e;
+  --movi-sun-hover: #f0a337;
+  --movi-coral: #f3a48c;
+  --movi-sky: #7db6cf;
+  --movi-lilac: #b9a7d8;
+  --movi-sage: #9cb49a;
+  --movi-on-dark: #f4efe6;
+  --movi-on-dark-muted: #cfdacb;
+  --movi-surface: #ffffff;
+  --movi-tint-sun: #fbe6bf;
+  --movi-tint-sky: #d6e8f1;
+  --movi-tint-coral: #fadbd1;
+  --movi-tint-lilac: #e4ddf1;
+  --movi-tint-sage: #dce6da;
+  --movi-tint-green: #c9d6cb;
+  --movi-border: rgb(57 82 63 / 0.18);
+  --movi-border-strong: rgb(57 82 63 / 0.3);
+  --movi-hover: rgb(57 82 63 / 0.08);
+  --movi-nav-shell: color-mix(in srgb, var(--movi-cream) 78%, white);
+  --movi-nav-shell-scroll: color-mix(in srgb, var(--movi-cream) 92%, white);
+  --movi-nav-border: rgb(57 82 63 / 0.16);
+  --movi-nav-border-scroll: rgb(57 82 63 / 0.28);
+  --movi-nav-shadow: 0 8px 28px rgb(43 61 48 / 0.08);
+  --movi-green: var(--movi-heading);
+  --movi-green-deep: var(--movi-action-hover);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -146,29 +186,10 @@
   .font-serif {
     font-family: var(--font-serif), Georgia, serif;
   }
-}
 
-@keyframes landing-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  @keyframes landing-fade-up {
-    from {
-      opacity: 1;
-      transform: none;
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
+  .font-marketing {
+    font-family: var(--font-marketing-display), Georgia, "Times New Roman",
+      serif;
   }
 }
 

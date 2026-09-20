@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import ThemeSwitcher from "@/components/templates/ThemeSwitcher/ThemeSwitcher";
+import { BRAND_LOGO } from "@/shared/constants/brand";
 import { paths } from "@/shared/constants/paths";
 
 type AuthPageProps = {
@@ -18,15 +19,16 @@ export function AuthPage({ children }: AuthPageProps) {
           >
             <div className="flex h-20 w-20 items-center justify-center">
               <Image
-                src="/logo.png"
-                alt="Movi Clinicas"
+                src={BRAND_LOGO}
+                alt="Movi Clínicas"
                 width={200}
                 height={200}
                 className="mx-auto max-w-full object-contain"
                 loading="eager"
+                quality={100}
               />
             </div>
-            Movi Clinicas
+            Movi Clínicas
           </Link>
           <ThemeSwitcher />
         </div>
