@@ -5,26 +5,25 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/domains/protocol/protocol.service", () => ({
   listProtocolEvaluations: vi.fn(),
 }));
+vi.mock("@/features/protocol/instruments/_shared/item-protocol-client", () => ({
+  ItemProtocolClient: () => null,
+}));
 vi.mock(
-  "@/features/protocol/evaluation-modules/_shared/item-protocol-client",
-  () => ({ ItemProtocolClient: () => null }),
-);
-vi.mock(
-  "@/features/protocol/evaluation-modules/fisioterapia/gmfm-88/components/protocol-client",
+  "@/features/protocol/instruments/fisioterapia/gmfm-88/components/protocol-client",
   () => ({ GmfmProtocolClient: () => null }),
 );
 
-import { PROFESSION_EVALUATION_CATALOG } from "@/domains/protocol/evaluation-modules";
+import { PROFESSION_INSTRUMENT_CATALOG } from "@/domains/protocol/instruments";
 import {
-  EVALUATION_MODULE_REGISTRY,
-  getEvaluationModule,
-} from "@/features/protocol/evaluation-modules";
+  PROTOCOL_INSTRUMENT_MODULE_REGISTRY,
+  getProtocolInstrumentModule,
+} from "@/features/protocol/instruments";
 
-const ALL_UI_MODULES = [...EVALUATION_MODULE_REGISTRY.values()];
+const ALL_UI_MODULES = [...PROTOCOL_INSTRUMENT_MODULE_REGISTRY.values()];
 
-describe("assessment catalog ↔ UI registry", () => {
+describe("instrument catalog ↔ UI registry", () => {
   it("every catalog assessment id has a registered UI module", () => {
-    const catalogIds = PROFESSION_EVALUATION_CATALOG.flatMap((item) =>
+    const catalogIds = PROFESSION_INSTRUMENT_CATALOG.flatMap((item) =>
       item.assessments.map((a) => a.id),
     );
 
@@ -32,7 +31,7 @@ describe("assessment catalog ↔ UI registry", () => {
 
     for (const id of catalogIds) {
       expect(
-        getEvaluationModule(id),
+        getProtocolInstrumentModule(id),
         `Missing UI registry entry for catalog id "${id}"`,
       ).toBeDefined();
     }
@@ -40,7 +39,7 @@ describe("assessment catalog ↔ UI registry", () => {
 
   it("every registered UI id appears in the catalog under the same profession", () => {
     for (const mod of ALL_UI_MODULES) {
-      const profession = PROFESSION_EVALUATION_CATALOG.find(
+      const profession = PROFESSION_INSTRUMENT_CATALOG.find(
         (item) => item.professionId === mod.professionId,
       );
       expect(
@@ -55,7 +54,7 @@ describe("assessment catalog ↔ UI registry", () => {
   });
 
   it("lists TO instruments (PEDI + SPM) in the hub catalog", () => {
-    const to = PROFESSION_EVALUATION_CATALOG.find(
+    const to = PROFESSION_INSTRUMENT_CATALOG.find(
       (item) => item.professionId === "terapeuta_ocupacional",
     );
     expect(to).toBeDefined();

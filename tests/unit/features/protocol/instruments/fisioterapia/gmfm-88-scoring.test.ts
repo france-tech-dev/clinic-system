@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
 import {
   emptyGmfm88Scores,
   summarizeGmfm88,
   summarizeGmfm88Domain,
-} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
+} from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
+import { describe, expect, it } from "vitest";
 
 describe("summarizeGmfm88Domain", () => {
   it("calcula total e percentual do domínio A", () => {

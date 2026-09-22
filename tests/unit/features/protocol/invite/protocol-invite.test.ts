@@ -1,20 +1,20 @@
-import { describe, expect, it } from "vitest";
-import { createProtocolInviteToken } from "@/domains/protocol/invite/_lib/token";
-import { computeInviteFlags } from "@/domains/protocol/invite/_lib/invite-status";
-import {
-  countInviteBuckets,
-  filterInvites,
-  inviteListBucket,
-} from "@/domains/protocol/invite/_lib/invite-list-filter";
-import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import {
   countAnsweredResponses,
   createItemResponseSchema,
   emptyItemProtocolResponses,
   parseItemProtocolResponses,
   type ItemProtocolTemplate,
-} from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
-import { isValidItemResponse } from "@/domains/protocol/evaluation-modules/_shared/item-scale";
+} from "@/domains/protocol/instruments/_shared/item-protocol-template";
+import { isValidItemResponse } from "@/domains/protocol/instruments/_shared/item-scale";
+import {
+  countInviteBuckets,
+  filterInvites,
+  inviteListBucket,
+} from "@/domains/protocol/invite/_lib/invite-list-filter";
+import { computeInviteFlags } from "@/domains/protocol/invite/_lib/invite-status";
+import { createProtocolInviteToken } from "@/domains/protocol/invite/_lib/token";
+import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
+import { describe, expect, it } from "vitest";
 
 const sampleTemplate: ItemProtocolTemplate = {
   scale: "pedi",

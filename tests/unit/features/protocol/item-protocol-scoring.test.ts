@@ -1,6 +1,6 @@
+import { summarizeItemProtocol } from "@/domains/protocol/instruments/_shared/item-protocol-scoring";
+import type { ItemProtocolTemplate } from "@/domains/protocol/instruments/_shared/item-protocol-template";
 import { describe, expect, it } from "vitest";
-import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
-import { summarizeItemProtocol } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-scoring";
 
 describe("summarizeItemProtocol", () => {
   it("calcula % PEDI (0/1) por secção e overall", () => {

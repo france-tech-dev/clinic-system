@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
-import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
 import {
   computeItemProtocolRawScores,
   formatRawScoresForPrompt,
 } from "@/domains/protocol/_lib/interpretationAI/raw-section-scores";
+import type { ItemProtocolTemplate } from "@/domains/protocol/instruments/_shared/item-protocol-template";
+import { describe, expect, it } from "vitest";
 
 const template: ItemProtocolTemplate = {
   scale: "spm",
