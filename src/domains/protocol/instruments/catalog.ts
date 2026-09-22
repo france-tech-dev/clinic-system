@@ -1,33 +1,33 @@
+import { paths } from "@/shared/constants/paths";
 import type { HealthProfessionId } from "@/shared/constants/professions";
 import { HEALTH_PROFESSIONS } from "@/shared/constants/professions";
-import { paths } from "@/shared/constants/paths";
 import { listProtocolInstruments } from "./instruments";
 import type {
-  CatalogEvaluation,
-  CatalogEvaluationDef,
-  ProfessionEvaluationCatalogItem,
+  CatalogInstrument,
+  CatalogInstrumentDef,
+  ProfessionInstrumentCatalogItem,
 } from "./types";
 
 /**
  * Catálogo do hub `/avaliacoes`.
- * Instrumentos nativos: derivados do registry único (metadados + render).
+ * Instrumentos nativos: derivados das listas por especialidade (agregadas em `instruments.ts`).
  */
 function catalogDefsByProfession(
   professionId: HealthProfessionId,
-): CatalogEvaluationDef[] {
+): CatalogInstrumentDef[] {
   return listProtocolInstruments()
     .filter((mod) => mod.professionId === professionId)
     .map(({ id, name, description }) => ({ id, name, description }));
 }
 
-function withHref(assessment: CatalogEvaluationDef): CatalogEvaluation {
+function withHref(assessment: CatalogInstrumentDef): CatalogInstrument {
   return {
     ...assessment,
     href: paths.avaliacoes.byId(assessment.id),
   };
 }
 
-export const PROFESSION_EVALUATION_CATALOG: ProfessionEvaluationCatalogItem[] =
+export const PROFESSION_INSTRUMENT_CATALOG: ProfessionInstrumentCatalogItem[] =
   HEALTH_PROFESSIONS.map((profession) => ({
     professionId: profession.id,
     label: profession.label,
@@ -41,20 +41,20 @@ export const PROFESSION_EVALUATION_CATALOG: ProfessionEvaluationCatalogItem[] =
   });
 
 /** Filtra o catálogo às profissões presentes na clínica (ex.: membros ativos). */
-export function filterEvaluationCatalogByProfessions(
+export function filterInstrumentCatalogByProfessions(
   professionIds: Iterable<string>,
-): ProfessionEvaluationCatalogItem[] {
+): ProfessionInstrumentCatalogItem[] {
   const allowed = new Set(professionIds);
-  return PROFESSION_EVALUATION_CATALOG.filter((item) =>
+  return PROFESSION_INSTRUMENT_CATALOG.filter((item) =>
     allowed.has(item.professionId),
   );
 }
 
 /** Resolve uma avaliação pelo id da URL (`/avaliacoes/[avaliacao]`). */
-export function getCatalogEvaluation(
+export function getCatalogInstrument(
   avaliacaoId: string,
-): CatalogEvaluation | undefined {
-  for (const item of PROFESSION_EVALUATION_CATALOG) {
+): CatalogInstrument | undefined {
+  for (const item of PROFESSION_INSTRUMENT_CATALOG) {
     const assessment = item.assessments.find((a) => a.id === avaliacaoId);
     if (assessment) return assessment;
   }

@@ -1,14 +1,15 @@
 import {
   getProtocolInstrument,
   listProtocolInstruments,
-} from "@/domains/protocol/evaluation-modules/instruments";
+} from "@/domains/protocol/instruments/instruments";
 import {
   createItemResponseSchema,
   listItemProtocolItemIds,
   parseItemProtocolResponses,
   type ItemProtocolTemplate,
-} from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
+} from "@/domains/protocol/instruments/_shared/item-protocol-template";
 import { paths } from "@/shared/constants/paths";
+import { protocolRepository } from "@/domains/protocol/protocol.repository";
 import { protocolInviteRepository } from "./protocol-invite.repository";
 import { createProtocolInviteToken } from "./_lib/token";
 import { computeInviteFlags } from "./_lib/invite-status";
@@ -124,7 +125,7 @@ export async function createProtocolInvite(
   );
   if (!patient) return null;
 
-  const member = await protocolInviteRepository.findMemberByUserId(
+  const member = await protocolRepository.findMemberByUserId(
     organizationId,
     userId,
   );
@@ -272,7 +273,7 @@ export async function submitPublicInvite(input: SubmitPublicInviteInput) {
     organizationId: row.organizationId,
     patientId: row.patientId,
     protocolId: input.protocolId,
-    scores: JSON.stringify(responses),
+    scores: responses,
     label: protocolName(input.protocolId),
     date,
   });

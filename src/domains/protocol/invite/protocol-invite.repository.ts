@@ -1,4 +1,5 @@
 import { db } from "@/shared/lib/prisma";
+import { protocolRepository } from "../protocol.repository";
 
 const inviteInclude = {
   patient: { select: { id: true, name: true } },
@@ -17,13 +18,6 @@ const inviteInclude = {
 } as const;
 
 export const protocolInviteRepository = {
-  async findMemberByUserId(organizationId: string, userId: string) {
-    return db.member.findFirst({
-      where: { organizationId, userId },
-      select: { id: true },
-    });
-  },
-
   async findPatient(organizationId: string, patientId: string) {
     return db.patient.findFirst({
       where: { id: patientId, organizationId },
@@ -114,30 +108,34 @@ export const protocolInviteRepository = {
     organizationId: string;
     patientId: string;
     protocolId: string;
-    scores: string;
+    scores: Record<string, unknown>;
     label: string;
     date: string;
   }) {
+    const scoresJson = JSON.stringify(data.scores);
     return db.$transaction(async (tx) => {
-      const evaluation = await tx.protocolEvaluation.create({
-        data: {
-          organizationId: data.organizationId,
+      const evaluation = await protocolRepository.create(
+        data.organizationId,
+        {
           patientId: data.patientId,
-          memberId: null,
           protocolId: data.protocolId,
           label: data.label,
           date: data.date,
           scores: data.scores,
           notes: "",
-          inviteItemId: data.itemId,
         },
-      });
+        null,
+        { client: tx, inviteItemId: data.itemId },
+      );
+      if (!evaluation) {
+        throw new Error("Paciente não encontrado para o convite");
+      }
 
       await tx.protocolInviteItem.update({
         where: { id: data.itemId },
         data: {
           status: "submitted",
-          responses: data.scores,
+          responses: scoresJson,
           submittedAt: new Date(),
         },
       });

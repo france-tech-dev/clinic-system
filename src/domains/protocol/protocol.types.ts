@@ -1,4 +1,4 @@
-import type { ProtocolOverallSummary } from "./evaluation-modules/_shared/protocol-score-summary";
+import type { ProtocolOverallSummary } from "./instruments/_shared/protocol-score-summary";
 
 export type ProtocolScoreValue = number | string | null;
 

@@ -1,8 +1,8 @@
 import type {
   ItemScaleId,
   ItemResponseValue,
-} from "@/domains/protocol/evaluation-modules/_shared/item-scale";
-import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
+} from "@/domains/protocol/instruments/_shared/item-scale";
+import type { ItemProtocolTemplate } from "@/domains/protocol/instruments/_shared/item-protocol-template";
 import type { ProtocolScoreValue } from "@/domains/protocol/protocol.types";
 
 export type SectionRawScore = {

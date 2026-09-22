@@ -1,14 +1,3 @@
-import { GMFM88_PROTOCOL_ID } from "./evaluation-modules/fisioterapia/gmfm-88/template";
-import {
-  summarizeGmfm88,
-  type Gmfm88Scores,
-} from "./evaluation-modules/fisioterapia/gmfm-88/scoring";
-import { getProtocolInstrument } from "./evaluation-modules/instruments";
-import {
-  ITEM_SCALE_OPTIONS,
-  type ItemResponseValue,
-} from "./evaluation-modules/_shared/item-scale";
-import { summarizeItemProtocol } from "./evaluation-modules/_shared/item-protocol-scoring";
 import {
   ageYearsFromBirthDate,
   patientFirstName,
@@ -17,19 +6,24 @@ import {
   computeItemProtocolRawScores,
   formatRawScoresForPrompt,
 } from "./_lib/interpretationAI/raw-section-scores";
+import {
+  ITEM_SCALE_OPTIONS,
+  type ItemResponseValue,
+} from "./instruments/_shared/item-scale";
+import type { ProtocolOverallSummary } from "./instruments/_shared/protocol-score-summary";
+import { getProtocolInstrument } from "./instruments/instruments";
 import { protocolRepository } from "./protocol.repository";
 import type {
   ProtocolEvaluationFormInput,
   UpdateProtocolEvaluationInput,
 } from "./protocol.schema";
 import type {
-  ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
+  ProtocolEvaluationDTO,
   ProtocolEvaluationPreviewDTO,
   ProtocolInterpretationAIContextDTO,
   ProtocolScoreValue,
 } from "./protocol.types";
-import type { ProtocolOverallSummary } from "./evaluation-modules/_shared/protocol-score-summary";
 
 function parseScores(raw: string): Record<string, ProtocolScoreValue> {
   try {
@@ -47,12 +41,7 @@ function resolveSummary(
   protocolId: string,
   scores: Record<string, ProtocolScoreValue>,
 ): ProtocolOverallSummary | null {
-  if (protocolId === GMFM88_PROTOCOL_ID) {
-    return summarizeGmfm88(scores as Gmfm88Scores);
-  }
-  const template = getProtocolInstrument(protocolId)?.template;
-  if (!template) return null;
-  return summarizeItemProtocol(template, scores);
+  return getProtocolInstrument(protocolId)?.summarize(scores) ?? null;
 }
 
 function toDTO(row: ProtocolEvaluationRow): ProtocolEvaluationDTO {

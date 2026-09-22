@@ -1,4 +1,5 @@
 import { db } from "@/shared/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import type {
   ProtocolEvaluationFormInput,
   UpdateProtocolEvaluationInput,
@@ -12,6 +13,8 @@ const assessmentInclude = {
     },
   },
 } as const;
+
+type DbClient = Prisma.TransactionClient | typeof db;
 
 export const protocolRepository = {
   async findMemberByUserId(organizationId: string, userId: string) {
@@ -48,14 +51,19 @@ export const protocolRepository = {
     organizationId: string,
     data: ProtocolEvaluationFormInput,
     memberId: string | null,
+    options?: {
+      inviteItemId?: string | null;
+      client?: DbClient;
+    },
   ) {
-    const patient = await db.patient.findFirst({
+    const client = options?.client ?? db;
+    const patient = await client.patient.findFirst({
       where: { id: data.patientId, organizationId },
       select: { id: true },
     });
     if (!patient) return null;
 
-    return db.protocolEvaluation.create({
+    return client.protocolEvaluation.create({
       data: {
         organizationId,
         patientId: data.patientId,
@@ -65,6 +73,7 @@ export const protocolRepository = {
         date: data.date,
         scores: JSON.stringify(data.scores),
         notes: data.notes ?? "",
+        inviteItemId: options?.inviteItemId ?? undefined,
       },
       include: assessmentInclude,
     });
