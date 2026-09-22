@@ -13,11 +13,11 @@ import type { PublicProtocolInviteInstrumentDTO } from "@/domains/protocol/invit
 import {
   parseItemProtocolResponses,
   type ItemProtocolTemplate,
-} from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
+} from "@/domains/protocol/instruments/_shared/item-protocol-template";
 import {
   ITEM_SCALE_OPTIONS,
   type ItemResponseValue,
-} from "@/domains/protocol/evaluation-modules/_shared/item-scale";
+} from "@/domains/protocol/instruments/_shared/item-scale";
 import { paths } from "@/shared/constants/paths";
 import { cn } from "@/shared/lib/utils";
 import { PublicInviteShell } from "./public-invite-shell";

@@ -18,9 +18,9 @@ import {
 import { getBillingAccess } from "@/server/billing/access";
 import { listTeamMembers } from "@/domains/team/team.service";
 import {
-  filterEvaluationCatalogByProfessions,
-  type ProfessionEvaluationCatalogItem,
-} from "@/domains/protocol/evaluation-modules";
+  filterInstrumentCatalogByProfessions,
+  type ProfessionInstrumentCatalogItem,
+} from "@/domains/protocol/instruments";
 import { MemberStatus } from "@prisma/enums";
 import { HEALTH_PROFESSION_IDS } from "@/shared/constants/professions";
 import { paths } from "@/shared/constants/paths";
@@ -29,9 +29,9 @@ import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
 const professionIdSet = new Set<string>(HEALTH_PROFESSION_IDS);
 
 function sortViewerProfessionFirst(
-  catalog: ProfessionEvaluationCatalogItem[],
+  catalog: ProfessionInstrumentCatalogItem[],
   viewerProfessionId: string | null,
-): ProfessionEvaluationCatalogItem[] {
+): ProfessionInstrumentCatalogItem[] {
   if (!viewerProfessionId) return catalog;
   return [...catalog].sort((a, b) => {
     if (a.professionId === viewerProfessionId) return -1;
@@ -42,7 +42,7 @@ function sortViewerProfessionFirst(
 
 export default async function AvaliacoesPage() {
   let error: string | null = null;
-  let catalog: ProfessionEvaluationCatalogItem[] = [];
+  let catalog: ProfessionInstrumentCatalogItem[] = [];
   let viewerProfessionId: string | null = null;
   let canWriteEvaluations = true;
 
@@ -65,7 +65,7 @@ export default async function AvaliacoesPage() {
     viewerProfessionId =
       members.find((member) => member.userId === userId)?.profession ?? null;
     catalog = sortViewerProfessionFirst(
-      filterEvaluationCatalogByProfessions(activeProfessionIds),
+      filterInstrumentCatalogByProfessions(activeProfessionIds),
       viewerProfessionId,
     );
     canWriteEvaluations =

@@ -18,7 +18,7 @@ import type { AnamneseDTO } from "@/domains/anamnese/anamnese.types";
 import type { AnamneseReportPayload } from "@/domains/anamnese/_lib/pdf/types";
 import { AnamnesePdfPreviewDialog } from "@/features/anamnese/components/anamnese-pdf-preview-dialog";
 import { paths } from "@/shared/constants/paths";
-import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
+import type { ClinicalWorkspacePatientOption } from "@/shared/types/clinical-workspace-patient";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -43,7 +43,7 @@ export function AnamneseFormClient({
   formId: string;
   formTitle: string;
   schema: AnamneseSection[];
-  patients: EvaluationModulePatientOption[];
+  patients: ClinicalWorkspacePatientOption[];
   initialPatientId: string | null;
   initialAnamnese: AnamneseDTO | null;
   branding: PrintBranding;

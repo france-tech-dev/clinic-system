@@ -10,8 +10,8 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { getCatalogEvaluation } from "@/domains/protocol/evaluation-modules";
-import { getEvaluationModule } from "@/features/protocol/evaluation-modules";
+import { getCatalogInstrument } from "@/domains/protocol/instruments";
+import { getProtocolInstrumentModule } from "@/features/protocol/instruments";
 import { listPatients } from "@/domains/patient/patient.service";
 import { getBillingAccess } from "@/server/billing/access";
 import { OrgContextError, requireOrgId } from "@/shared/lib/org-context";
@@ -25,8 +25,8 @@ export default async function AvaliacaoPage({
   searchParams: Promise<{ paciente?: string }>;
 }) {
   const { avaliacao: avaliacaoId } = await params;
-  const assessment = getCatalogEvaluation(avaliacaoId);
-  const ui = getEvaluationModule(avaliacaoId);
+  const assessment = getCatalogInstrument(avaliacaoId);
+  const ui = getProtocolInstrumentModule(avaliacaoId);
   if (!assessment || !ui) notFound();
 
   const query = await searchParams;

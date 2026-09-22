@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { InviteInstrumentForm } from "@/features/protocol/components/public/invite-instrument-form";
 import { PublicInviteUnavailable } from "@/features/protocol/components/public/public-invite-unavailable";
-import { getEvaluationModule } from "@/features/protocol/evaluation-modules";
+import { getProtocolInstrumentModule } from "@/features/protocol/instruments";
 import { getPublicProtocolInviteInstrument } from "@/domains/protocol/invite/protocol-invite.service";
 
 export default async function PublicAvaliacaoInstrumentPage({
@@ -10,7 +10,7 @@ export default async function PublicAvaliacaoInstrumentPage({
   params: Promise<{ token: string; protocolId: string }>;
 }) {
   const { token, protocolId } = await params;
-  const mod = getEvaluationModule(protocolId);
+  const mod = getProtocolInstrumentModule(protocolId);
   if (!mod?.template || !mod.supportsPublicInvite) notFound();
 
   const instrument = await getPublicProtocolInviteInstrument(token, protocolId);

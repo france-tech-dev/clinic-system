@@ -22,9 +22,9 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   GMFM88_TEMPLATE,
   GMFM88_MAX_ITEM_SCORE,
-} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
-import type { Gmfm88Scores } from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
-import { summarizeGmfm88Domain } from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
+} from "@/domains/protocol/instruments/fisioterapia/gmfm-88/template";
+import type { Gmfm88Scores } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
+import { summarizeGmfm88Domain } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
 import type { ProtocolEvaluationFormInput } from "@/domains/protocol/protocol.schema";
 import { cn } from "@/shared/lib/utils";
 

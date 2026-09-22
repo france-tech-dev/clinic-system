@@ -1,19 +1,13 @@
-import { ItemProtocolClient } from "./item-protocol-client";
+import type { ItemProtocolInstrument } from "@/domains/protocol/instruments/_shared/define-instrument";
 import { listProtocolEvaluations } from "@/domains/protocol/protocol.service";
-import type {
-  ProtocolInstrument,
-} from "@/domains/protocol/evaluation-modules/instruments";
-import type { EvaluationModule } from "@/domains/protocol/evaluation-modules/types";
-import type { ItemProtocolTemplate } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
+import { ItemProtocolClient } from "./item-protocol-client";
+import type { ProtocolInstrumentModule } from "../types";
 
-/** Instrumento com template de itens (PEDI, SPM, Perfil, …). */
-export type ItemProtocolInstrument = ProtocolInstrument & {
-  template: ItemProtocolTemplate;
-};
+export type { ItemProtocolInstrument };
 
-export function createItemEvaluationModule(
+export function createItemInstrumentModule(
   instrument: ItemProtocolInstrument,
-): EvaluationModule {
+): ProtocolInstrumentModule {
   const {
     id,
     name,

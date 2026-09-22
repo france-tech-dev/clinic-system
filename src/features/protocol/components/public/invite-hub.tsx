@@ -120,10 +120,7 @@ export function InviteHub({ invite }: { invite: PublicProtocolInviteDTO }) {
                     item.protocolId,
                   );
                   const done = item.status === "submitted";
-                  const subtitle = protocolSubtitle(
-                    item.protocolId,
-                    item.protocolName,
-                  );
+                  const subtitle = protocolSubtitle(item.protocolId);
 
                   return (
                     <li key={item.id}>

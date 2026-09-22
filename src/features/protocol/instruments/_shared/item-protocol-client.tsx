@@ -52,7 +52,7 @@ import type {
   ProtocolEvaluationComparisonDTO,
   ProtocolEvaluationDTO,
 } from "@/domains/protocol/protocol.types";
-import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
+import type { ClinicalWorkspacePatientOption } from "@/shared/types/clinical-workspace-patient";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
@@ -60,14 +60,14 @@ import {
   emptyItemProtocolResponses,
   listItemProtocolItemIds,
   type ItemProtocolTemplate,
-} from "@/domains/protocol/evaluation-modules/_shared/item-protocol-template";
+} from "@/domains/protocol/instruments/_shared/item-protocol-template";
 import {
   ITEM_SCALE_OPTIONS,
   type ItemResponseValue,
-} from "@/domains/protocol/evaluation-modules/_shared/item-scale";
-import { scoresToItemResponses } from "@/domains/protocol/evaluation-modules/_shared/parse-item-scores";
-import { summarizeItemProtocol } from "@/domains/protocol/evaluation-modules/_shared/item-protocol-scoring";
-import { ProtocolComparisonChart } from "@/features/protocol/evaluation-modules/_shared/protocol-comparison-chart";
+} from "@/domains/protocol/instruments/_shared/item-scale";
+import { scoresToItemResponses } from "@/domains/protocol/instruments/_shared/parse-item-scores";
+import { summarizeItemProtocol } from "@/domains/protocol/instruments/_shared/item-protocol-scoring";
+import { ProtocolComparisonChart } from "@/features/protocol/instruments/_shared/protocol-comparison-chart";
 
 type FormValues = {
   id?: string;
@@ -123,7 +123,7 @@ export function ItemProtocolClient({
   protocolId: string;
   protocolName: string;
   template: ItemProtocolTemplate;
-  patients: EvaluationModulePatientOption[];
+  patients: ClinicalWorkspacePatientOption[];
   initialPatientId: string | null;
   initialProtocolEvaluations: ProtocolEvaluationDTO[];
   canWrite: boolean;

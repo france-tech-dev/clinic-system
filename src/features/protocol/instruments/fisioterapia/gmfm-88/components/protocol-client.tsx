@@ -39,13 +39,13 @@ import {
   GmfmEvaluationForm,
   type GmfmEvaluationFormValues,
 } from "./evaluation-form";
-import { ProtocolComparisonChart } from "@/features/protocol/evaluation-modules/_shared/protocol-comparison-chart";
-import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/template";
+import { ProtocolComparisonChart } from "@/features/protocol/instruments/_shared/protocol-comparison-chart";
+import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/template";
 import {
   emptyGmfm88Scores,
   summarizeGmfm88,
   type Gmfm88Scores,
-} from "@/domains/protocol/evaluation-modules/fisioterapia/gmfm-88/scoring";
+} from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
 import {
   compareProtocolEvaluationsAction,
   createProtocolEvaluationAction,
@@ -58,7 +58,7 @@ import type {
   ProtocolEvaluationDTO,
   ProtocolEvaluationComparisonDTO,
 } from "@/domains/protocol/protocol.types";
-import type { EvaluationModulePatientOption } from "@/shared/types/evaluation-module-patient";
+import type { ClinicalWorkspacePatientOption } from "@/shared/types/clinical-workspace-patient";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
@@ -94,7 +94,7 @@ export function GmfmProtocolClient({
   initialProtocolEvaluations,
   canWrite,
 }: {
-  patients: EvaluationModulePatientOption[];
+  patients: ClinicalWorkspacePatientOption[];
   initialPatientId: string | null;
   initialProtocolEvaluations: ProtocolEvaluationDTO[];
   canWrite: boolean;
