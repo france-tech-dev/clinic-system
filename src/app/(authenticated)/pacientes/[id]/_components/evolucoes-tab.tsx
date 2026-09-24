@@ -1,18 +1,18 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
-import type { SessionNoteDTO } from "@/domains/patient/patient.types";
+import { EVOLUTION_STATUS_LABEL } from "@/shared/constants/evolution-status";
+import type { EvolutionDTO } from "@/domains/evolution/evolution.types";
 import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 export function EvolucoesTab({
-  sessionNotes,
+  evolutions,
   onNewSession,
   onViewSession,
 }: {
-  sessionNotes: SessionNoteDTO[];
+  evolutions: EvolutionDTO[];
   onNewSession: () => void;
-  onViewSession: (note: SessionNoteDTO) => void;
+  onViewSession: (note: EvolutionDTO) => void;
 }) {
   return (
     <section
@@ -27,13 +27,13 @@ export function EvolucoesTab({
           Nova evolução
         </Button>
       </div>
-      {sessionNotes.length === 0 ? (
+      {evolutions.length === 0 ? (
         <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
           <p className="text-sm text-muted-foreground">
             Ainda não há evoluções neste paciente.
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Registe a primeira após uma sessão na agenda.
+            Registre a primeira após uma sessão na agenda.
           </p>
           <Button size="sm" className="mt-4" onClick={onNewSession}>
             <Plus className="size-4" />
@@ -42,7 +42,7 @@ export function EvolucoesTab({
         </div>
       ) : (
         <ul className="space-y-2">
-          {sessionNotes.map((s) => (
+          {evolutions.map((s) => (
             <li key={s.id}>
               <button
                 type="button"
@@ -51,7 +51,7 @@ export function EvolucoesTab({
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">
-                    {SESSION_NOTE_STATUS_LABEL[s.status]}
+                    {EVOLUTION_STATUS_LABEL[s.status]}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {formatDateBR(s.date)}

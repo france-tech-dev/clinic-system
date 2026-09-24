@@ -1,16 +1,16 @@
 "use client";
 
-import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import { AvaliacaoLista } from "./avaliacao-lista";
 
 export function AvaliacaoTab({
-  clinicalEvaluations,
+  assessments,
   onNewEvaluation,
   onViewEvaluation,
 }: {
-  clinicalEvaluations: ClinicalEvaluationDTO[];
+  assessments: AssessmentDTO[];
   onNewEvaluation: () => void;
-  onViewEvaluation: (evaluation: ClinicalEvaluationDTO) => void;
+  onViewEvaluation: (evaluation: AssessmentDTO) => void;
 }) {
   return (
     <section
@@ -20,7 +20,7 @@ export function AvaliacaoTab({
       className="space-y-3"
     >
       <AvaliacaoLista
-        clinicalEvaluations={clinicalEvaluations}
+        assessments={assessments}
         onNewEvaluation={onNewEvaluation}
         onViewEvaluation={onViewEvaluation}
       />

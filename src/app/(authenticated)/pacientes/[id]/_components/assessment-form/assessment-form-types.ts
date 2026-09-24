@@ -1,4 +1,4 @@
-export type ClinicalEvaluationDialogValues = {
+export type AssessmentDialogValues = {
   id?: string;
   patientId: string;
   type: string;

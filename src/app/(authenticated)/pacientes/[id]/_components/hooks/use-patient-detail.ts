@@ -1,6 +1,11 @@
 "use client";
 
 import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import type {
+  EvolutionDTO,
+  LinkableAppointmentDTO,
+} from "@/domains/evolution/evolution.types";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import { buildPatientReportPayload } from "@/domains/patient/_lib/pdf/build-patient-report-payload";
 import type {
@@ -8,10 +13,7 @@ import type {
   PatientReportPayload,
 } from "@/domains/patient/_lib/pdf/types";
 import { deletePatientAction } from "@/domains/patient/patient.actions";
-import type {
-  ClinicalEvaluationDTO,
-  PatientDetailDTO,
-} from "@/domains/patient/patient.types";
+import type { PatientDetailDTO } from "@/domains/patient/patient.types";
 import type {
   PrintBranding,
   ProfessionalProfile,
@@ -23,12 +25,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { PatientDetailTab } from "../patient-detail-types";
-import { usePatientClinicalEvaluations } from "./use-patient-clinical-evaluations";
+import { usePatientAssessments } from "./use-patient-assessments";
 import { usePatientEdit } from "./use-patient-edit";
-import { usePatientSessions } from "./use-patient-sessions";
+import { usePatientEvolutions } from "./use-patient-evolutions";
 
 export function usePatientDetail({
   initial,
+  initialAssessments,
+  initialEvolutions,
+  initialAppointments,
   initialGuardians,
   initialAnamneses,
   initialAnamneseSections,
@@ -37,6 +42,9 @@ export function usePatientDetail({
   initialTab,
 }: {
   initial: PatientDetailDTO;
+  initialAssessments: AssessmentDTO[];
+  initialEvolutions: EvolutionDTO[];
+  initialAppointments: LinkableAppointmentDTO[];
   initialGuardians: GuardianDTO[];
   initialAnamneses: AnamneseSummaryDTO[];
   initialAnamneseSections: PdfKeyValueSection[];
@@ -47,6 +55,9 @@ export function usePatientDetail({
   const router = useRouter();
   const pathname = usePathname();
   const [detail, setDetail] = useState(initial);
+  const [assessments, setAssessments] = useState(initialAssessments);
+  const [evolutions, setEvolutions] = useState(initialEvolutions);
+  const [appointments, setAppointments] = useState(initialAppointments);
   const [guardians, setGuardians] = useState(initialGuardians);
   const [anamneses] = useState(initialAnamneses);
   const [tab, setTabState] = useState<PatientDetailTab>(initialTab);
@@ -83,13 +94,14 @@ export function usePatientDetail({
     pending,
     startTransition,
   });
-  const evaluations = usePatientClinicalEvaluations({
-    setDetail,
+  const evaluations = usePatientAssessments({
+    setAssessments,
     pending,
     startTransition,
   });
-  const sessions = usePatientSessions({
-    setDetail,
+  const sessions = usePatientEvolutions({
+    setEvolutions,
+    setAppointments,
     pending,
     startTransition,
   });
@@ -97,27 +109,33 @@ export function usePatientDetail({
   const signature = formatProfessionalSignature(professional);
 
   const buildReportPayload = useCallback(
-    (reportMode: PatientReportMode, evaluation?: ClinicalEvaluationDTO) =>
+    (reportMode: PatientReportMode, assessment?: AssessmentDTO) =>
       buildPatientReportPayload({
         detail,
+        assessments,
+        evolutions,
         mode: reportMode,
         branding,
         professional,
         authorProfessional:
           reportMode === "evaluation"
-            ? (evaluation?.authorProfessional ?? null)
+            ? (assessment?.authorProfessional ?? null)
             : null,
-        evaluation,
+        assessment,
         anamneseSections: initialAnamneseSections,
       }),
-    [branding, detail, initialAnamneseSections, professional],
+    [
+      assessments,
+      branding,
+      detail,
+      evolutions,
+      initialAnamneseSections,
+      professional,
+    ],
   );
 
-  function previewReport(
-    mode: PatientReportMode,
-    evaluation?: ClinicalEvaluationDTO,
-  ) {
-    pdfReport.openPreview(buildReportPayload(mode, evaluation));
+  function previewReport(mode: PatientReportMode, assessment?: AssessmentDTO) {
+    pdfReport.openPreview(buildReportPayload(mode, assessment));
   }
 
   function removePatient() {
@@ -134,6 +152,9 @@ export function usePatientDetail({
 
   return {
     detail,
+    assessments,
+    evolutions,
+    appointments,
     setPatient,
     tab,
     setTab,

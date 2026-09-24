@@ -1,5 +1,5 @@
 import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
-import { ClinicalEvaluationDocument } from "./documents/clinical-evaluation-document";
+import { AssessmentDocument } from "@/features/assessment/_lib/pdf/documents/assessment-document";
 import { FullRecordDocument } from "./documents/full-record-document";
 
 type PatientReportDocumentProps = {
@@ -13,7 +13,7 @@ export function PatientReportDocument({
 }: PatientReportDocumentProps) {
   switch (payload.mode) {
     case "evaluation":
-      return <ClinicalEvaluationDocument payload={payload} logoOrigin={logoOrigin} />;
+      return <AssessmentDocument payload={payload} logoOrigin={logoOrigin} />;
     case "full":
     default:
       return <FullRecordDocument payload={payload} logoOrigin={logoOrigin} />;

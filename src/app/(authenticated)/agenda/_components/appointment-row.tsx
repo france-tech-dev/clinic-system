@@ -54,7 +54,7 @@ export function AppointmentRow({
           >
             {st.label}
           </span>
-          {appointment.hasSessionNote ? (
+          {appointment.hasEvolution ? (
             <span className="rounded-full border border-[#3D6B8C]/40 bg-[#3D6B8C]/15 px-2 py-0.5 text-[0.65rem] font-medium text-[#3D6B8C]">
               Com evolução
             </span>

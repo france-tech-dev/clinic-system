@@ -172,7 +172,7 @@ export function AgendaCalendar({
   );
 
   const eventPropGetter = useCallback((event: CalendarEvent) => {
-    const style = calendarEventStyle(event.status, event.hasSessionNote);
+    const style = calendarEventStyle(event.status, event.hasEvolution);
     return { style };
   }, []);
 

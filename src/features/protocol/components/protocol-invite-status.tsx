@@ -37,8 +37,8 @@ import {
   type InviteListFilter,
 } from "@/domains/protocol/invite/_lib/invite-list-filter";
 import type { ProtocolInviteDTO } from "@/domains/protocol/invite/protocol-invite.types";
-import { getProtocolEvaluationPreviewAction } from "@/domains/protocol/protocol.actions";
-import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
+import { getProtocolAssessmentPreviewAction } from "@/domains/protocol/protocol.actions";
+import type { ProtocolAssessmentPreviewDTO } from "@/domains/protocol/protocol.types";
 import { cn } from "@/shared/lib/utils";
 import { ProtocolInviteResultsDialog } from "./protocol-invite-results-dialog";
 
@@ -136,7 +136,7 @@ export function ProtocolInviteStatusList({
   >([]);
   const [previewEvalId, setPreviewEvalId] = useState<string | null>(null);
   const [previewData, setPreviewData] =
-    useState<ProtocolEvaluationPreviewDTO | null>(null);
+    useState<ProtocolAssessmentPreviewDTO | null>(null);
 
   const counts = useMemo(() => countInviteBuckets(invites), [invites]);
   const filtered = useMemo(
@@ -164,12 +164,12 @@ export function ProtocolInviteStatusList({
     }
   }
 
-  function loadEvaluation(evaluationId: string) {
-    setPreviewEvalId(evaluationId);
+  function loadAssessment(assessmentId: string) {
+    setPreviewEvalId(assessmentId);
     setPreviewData(null);
     startPreviewTransition(async () => {
-      const result = await getProtocolEvaluationPreviewAction({
-        id: evaluationId,
+      const result = await getProtocolAssessmentPreviewAction({
+        id: assessmentId,
       });
       if (!result.success) {
         toast.error(result.message);
@@ -179,10 +179,10 @@ export function ProtocolInviteStatusList({
     });
   }
 
-  function openResults(invite: ProtocolInviteDTO, evaluationId: string) {
+  function openResults(invite: ProtocolInviteDTO, assessmentId: string) {
     setPreviewItems(invite.items);
     setPreviewOpen(true);
-    loadEvaluation(evaluationId);
+    loadAssessment(assessmentId);
   }
 
   function confirmRevoke() {
@@ -283,7 +283,7 @@ export function ProtocolInviteStatusList({
             const meta = statusMeta(invite);
             const StatusIcon = meta.Icon;
             const submittedItems = invite.items.filter(
-              (i) => i.status === "submitted" && i.evaluationId != null,
+              (i) => i.status === "submitted" && i.assessmentId != null,
             );
             const lastSubmittedAt = submittedItems
               .map((i) => i.submittedAt)
@@ -367,7 +367,7 @@ export function ProtocolInviteStatusList({
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        openResults(invite, submittedItems[0]!.evaluationId!)
+                        openResults(invite, submittedItems[0]!.assessmentId!)
                       }
                     >
                       <List data-icon="inline-start" />
@@ -466,14 +466,14 @@ export function ProtocolInviteStatusList({
         open={previewOpen}
         onOpenChange={setPreviewOpen}
         items={previewItems}
-        activeEvaluationId={previewEvalId}
-        onSelectEvaluationId={loadEvaluation}
+        activeAssessmentId={previewEvalId}
+        onSelectAssessmentId={loadAssessment}
         preview={previewData}
         loading={previewPending}
         canUseAi={canUseAi}
-        onInterpretationAISaved={(evaluationId, interpretationAI) => {
+        onInterpretationAISaved={(assessmentId, interpretationAI) => {
           setPreviewData((prev) =>
-            prev && prev.id === evaluationId
+            prev && prev.id === assessmentId
               ? {
                   ...prev,
                   interpretationAI,

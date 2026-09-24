@@ -13,22 +13,22 @@ import {
   dialogScrollFooterClassName,
   dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
-import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
-import type { SessionNoteDTO } from "@/domains/patient/patient.types";
+import { EVOLUTION_STATUS_LABEL } from "@/shared/constants/evolution-status";
+import type { EvolutionDTO } from "@/domains/evolution/evolution.types";
 import { formatTime } from "@/shared/constants/appointment";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { cn } from "@/shared/lib/utils";
 
-export function SessionViewDialog({
+export function EvolutionViewDialog({
   note,
   onClose,
   onEdit,
   onDelete,
   pending,
 }: {
-  note: SessionNoteDTO | null;
+  note: EvolutionDTO | null;
   onClose: () => void;
-  onEdit: (s: SessionNoteDTO) => void;
+  onEdit: (s: EvolutionDTO) => void;
   onDelete: (id: string) => void;
   pending: boolean;
 }) {
@@ -40,7 +40,7 @@ export function SessionViewDialog({
       >
         <DialogHeader className={dialogScrollHeaderClassName}>
           <DialogTitle>
-            {SESSION_NOTE_STATUS_LABEL[note.status]} — {formatDateBR(note.date)}
+            {EVOLUTION_STATUS_LABEL[note.status]} — {formatDateBR(note.date)}
             {note.time ? ` às ${formatTime(note.time)}` : ""}
           </DialogTitle>
         </DialogHeader>

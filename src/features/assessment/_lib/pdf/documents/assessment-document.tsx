@@ -6,14 +6,14 @@ import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 import { getPatientReportTitle } from "@/domains/patient/_lib/pdf/report-meta";
 import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
-import { ClinicalEvaluationSection } from "../sections/clinical-evaluation-section";
+import { AssessmentSection } from "../sections/assessment-section";
 
 type PatientReportDocumentProps = {
   payload: PatientReportPayload;
   logoOrigin?: string;
 };
 
-export function ClinicalEvaluationDocument({
+export function AssessmentDocument({
   payload,
   logoOrigin,
 }: PatientReportDocumentProps) {
@@ -30,10 +30,10 @@ export function ClinicalEvaluationDocument({
           logoOrigin={logoOrigin}
         />
         <PatientInfo patientName={patientName} />
-        <ClinicalEvaluationSection
-          clinicalEvaluations={payload.clinicalEvaluations}
-          selectedEvaluation={payload.selectedEvaluation}
-          evaluationReportOptions={payload.evaluationReportOptions}
+        <AssessmentSection
+          assessments={payload.assessments}
+          selectedAssessment={payload.selectedAssessment}
+          assessmentReportOptions={payload.assessmentReportOptions}
           single
         />
         <SignatureFooter signature={signature} />

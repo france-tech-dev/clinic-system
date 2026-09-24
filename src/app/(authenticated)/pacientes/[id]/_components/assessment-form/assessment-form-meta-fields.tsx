@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form-types";
+import type { AssessmentDialogValues } from "./assessment-form-types";
 
-export function ClinicalEvaluationFormMetaFields() {
-  const { control } = useFormContext<ClinicalEvaluationDialogValues>();
+export function AssessmentFormMetaFields() {
+  const { control } = useFormContext<AssessmentDialogValues>();
 
   return (
     <>

@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { ProtocolEvaluationComparisonDTO } from "@/domains/protocol/protocol.types";
+import type { ProtocolAssessmentComparisonDTO } from "@/domains/protocol/protocol.types";
 
 function shortDomainTitle(title: string) {
   if (title.length <= 18) return title;
@@ -21,7 +21,7 @@ function shortDomainTitle(title: string) {
 export function ProtocolComparisonChart({
   comparison,
 }: {
-  comparison: ProtocolEvaluationComparisonDTO;
+  comparison: ProtocolAssessmentComparisonDTO;
 }) {
   const data = comparison.domainDeltas.map((d) => ({
     domain: d.domainId,

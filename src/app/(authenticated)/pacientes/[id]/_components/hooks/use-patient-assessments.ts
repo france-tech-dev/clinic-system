@@ -1,58 +1,49 @@
 "use client";
 
+import { deleteAssessmentAction } from "@/domains/assessment/assessment.actions";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteClinicalEvaluationAction } from "@/domains/patient/patient.actions";
-import type {
-  ClinicalEvaluationDTO,
-  PatientDetailDTO,
-} from "@/domains/patient/patient.types";
 
-export function usePatientClinicalEvaluations({
-  setDetail,
+export function usePatientAssessments({
+  setAssessments,
   pending,
   startTransition,
 }: {
-  setDetail: React.Dispatch<React.SetStateAction<PatientDetailDTO>>;
+  setAssessments: React.Dispatch<React.SetStateAction<AssessmentDTO[]>>;
   pending: boolean;
   startTransition: (fn: () => void) => void;
 }) {
   const [evalOpen, setEvalOpen] = useState(false);
-  const [editingEval, setEditingEval] = useState<ClinicalEvaluationDTO | null>(null);
-  const [viewEval, setViewEval] = useState<ClinicalEvaluationDTO | null>(null);
+  const [editingEval, setEditingEval] = useState<AssessmentDTO | null>(null);
+  const [viewEval, setViewEval] = useState<AssessmentDTO | null>(null);
 
   function openNewEvaluation() {
     setEditingEval(null);
     setEvalOpen(true);
   }
 
-  function openEditEvaluation(ev: ClinicalEvaluationDTO) {
+  function openEditEvaluation(ev: AssessmentDTO) {
     setViewEval(null);
     setEditingEval(ev);
     setEvalOpen(true);
   }
 
-  function saveEvaluation(ev: ClinicalEvaluationDTO, isEdit: boolean) {
-    setDetail((d) => ({
-      ...d,
-      clinicalEvaluations: isEdit
-        ? d.clinicalEvaluations.map((e) => (e.id === ev.id ? ev : e))
-        : [ev, ...d.clinicalEvaluations],
-    }));
+  function saveEvaluation(ev: AssessmentDTO, isEdit: boolean) {
+    setAssessments((list) =>
+      isEdit ? list.map((e) => (e.id === ev.id ? ev : e)) : [ev, ...list],
+    );
     setEvalOpen(false);
   }
 
-  function deleteClinicalEvaluation(id: string) {
+  function deleteAssessment(id: string) {
     startTransition(async () => {
-      const result = await deleteClinicalEvaluationAction({ id });
+      const result = await deleteAssessmentAction({ id });
       if (!result.success) {
         toast.error(result.message);
         return;
       }
-      setDetail((d) => ({
-        ...d,
-        clinicalEvaluations: d.clinicalEvaluations.filter((e) => e.id !== id),
-      }));
+      setAssessments((list) => list.filter((e) => e.id !== id));
       setViewEval(null);
       toast.success("Avaliação removida");
     });
@@ -67,7 +58,7 @@ export function usePatientClinicalEvaluations({
     openNewEvaluation,
     openEditEvaluation,
     saveEvaluation,
-    deleteClinicalEvaluation,
+    deleteAssessment,
     pending,
     startTransition,
   };

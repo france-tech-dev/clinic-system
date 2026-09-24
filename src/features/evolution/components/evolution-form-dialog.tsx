@@ -32,19 +32,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SESSION_NOTE_STATUS_LABEL } from "@/shared/constants/session-note-status";
+import { EVOLUTION_STATUS_LABEL } from "@/shared/constants/evolution-status";
 import {
-  createSessionAction,
-  updateSessionAction,
-} from "@/domains/patient/patient.actions";
+  createEvolutionAction,
+  updateEvolutionAction,
+} from "@/domains/evolution/evolution.actions";
 import {
-  sessionFormSchema,
-  updateSessionNoteSchema,
-} from "@/domains/patient/patient.schema";
+  evolutionFormSchema,
+  updateEvolutionSchema,
+} from "@/domains/evolution/evolution.schema";
 import type {
-  SessionLinkableAppointmentDTO,
-  SessionNoteDTO,
-} from "@/domains/patient/patient.types";
+  EvolutionDTO,
+  LinkableAppointmentDTO,
+} from "@/domains/evolution/evolution.types";
 import {
   appointmentStatusInfo,
   formatTime,
@@ -52,18 +52,18 @@ import {
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
-import { SessionNoteStatus } from "@prisma/enums";
+import { EvolutionStatus } from "@prisma/enums";
 
-type SessionDialogValues = {
+type EvolutionDialogValues = {
   id?: string;
   patientId: string;
   appointmentId: string;
-  status: SessionNoteStatus;
+  status: EvolutionStatus;
   activities: string;
   observations: string;
 };
 
-function appointmentLabel(a: SessionLinkableAppointmentDTO) {
+function appointmentLabel(a: LinkableAppointmentDTO) {
   const st = appointmentStatusInfo(a.status);
   const when = `${formatDateBR(a.date)}${a.time ? ` · ${formatTime(a.time)}` : ""}`;
   const pro = a.professionalName ? ` — ${a.professionalName}` : "";
@@ -72,20 +72,20 @@ function appointmentLabel(a: SessionLinkableAppointmentDTO) {
 
 function buildDefaults(
   patientId: string,
-  initial: SessionNoteDTO | null,
+  initial: EvolutionDTO | null,
   defaultAppointmentId: string,
-): SessionDialogValues {
+): EvolutionDialogValues {
   return {
     ...(initial ? { id: initial.id } : {}),
     patientId,
     appointmentId: initial?.appointmentId ?? defaultAppointmentId,
-    status: initial?.status ?? SessionNoteStatus.ATTENDED,
+    status: initial?.status ?? EvolutionStatus.ATTENDED,
     activities: initial?.activities ?? "",
     observations: initial?.observations ?? "",
   };
 }
 
-export function SessionFormDialog({
+export function EvolutionFormDialog({
   open,
   onOpenChange,
   patientId,
@@ -99,23 +99,23 @@ export function SessionFormDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
   patientId: string;
-  appointments: SessionLinkableAppointmentDTO[];
-  initial: SessionNoteDTO | null;
+  appointments: LinkableAppointmentDTO[];
+  initial: EvolutionDTO | null;
   pending: boolean;
   startTransition: (fn: () => void) => void;
-  onSave: (s: SessionNoteDTO, isEdit: boolean) => void;
+  onSave: (s: EvolutionDTO, isEdit: boolean) => void;
   /** Quando true, o agendamento fica fixo (ex.: aberto a partir da agenda). */
   lockAppointment?: boolean;
 }) {
   const options = appointments.filter(
-    (a) => !a.sessionNoteId || a.sessionNoteId === initial?.id,
+    (a) => !a.evolutionId || a.evolutionId === initial?.id,
   );
   const defaultAppointmentId = options[0]?.id ?? "";
 
-  const form = useForm<SessionDialogValues>({
+  const form = useForm<EvolutionDialogValues>({
     resolver: zodResolver(
-      initial ? updateSessionNoteSchema : sessionFormSchema,
-    ) as Resolver<SessionDialogValues>,
+      initial ? updateEvolutionSchema : evolutionFormSchema,
+    ) as Resolver<EvolutionDialogValues>,
     defaultValues: buildDefaults(patientId, initial, defaultAppointmentId),
   });
 
@@ -136,7 +136,7 @@ export function SessionFormDialog({
     onOpenChange(next);
   }
 
-  function onSubmit(data: SessionDialogValues) {
+  function onSubmit(data: EvolutionDialogValues) {
     startTransition(async () => {
       const payload = {
         patientId: data.patientId,
@@ -146,8 +146,8 @@ export function SessionFormDialog({
         observations: data.observations,
       };
       const result = initial
-        ? await updateSessionAction({ id: initial.id, ...payload })
-        : await createSessionAction(payload);
+        ? await updateEvolutionAction({ id: initial.id, ...payload })
+        : await createEvolutionAction(payload);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.message);
@@ -158,7 +158,7 @@ export function SessionFormDialog({
     });
   }
 
-  const formId = `session-form-${initial?.id ?? "new"}`;
+  const formId = `evolution-form-${initial?.id ?? "new"}`;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -237,14 +237,14 @@ export function SessionFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={SessionNoteStatus.ATTENDED}>
-                        {SESSION_NOTE_STATUS_LABEL.ATTENDED}
+                      <SelectItem value={EvolutionStatus.ATTENDED}>
+                        {EVOLUTION_STATUS_LABEL.ATTENDED}
                       </SelectItem>
-                      <SelectItem value={SessionNoteStatus.ABSENT}>
-                        {SESSION_NOTE_STATUS_LABEL.ABSENT}
+                      <SelectItem value={EvolutionStatus.ABSENT}>
+                        {EVOLUTION_STATUS_LABEL.ABSENT}
                       </SelectItem>
-                      <SelectItem value={SessionNoteStatus.CANCELLED}>
-                        {SESSION_NOTE_STATUS_LABEL.CANCELLED}
+                      <SelectItem value={EvolutionStatus.CANCELLED}>
+                        {EVOLUTION_STATUS_LABEL.CANCELLED}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -259,7 +259,7 @@ export function SessionFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {status === SessionNoteStatus.ATTENDED
+                    {status === EvolutionStatus.ATTENDED
                       ? "Atividades realizadas *"
                       : "Atividades realizadas"}
                   </FormLabel>

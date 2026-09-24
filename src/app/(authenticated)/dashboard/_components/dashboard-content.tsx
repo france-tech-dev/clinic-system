@@ -100,7 +100,7 @@ export function DashboardContent({
           <KpiCard
             href={paths.avaliacoes.root}
             label="Avaliações"
-            value={String(data.stats.totalClinicalEvaluations)}
+            value={String(data.stats.totalAssessments)}
             hint="registradas"
           />
           <KpiCard

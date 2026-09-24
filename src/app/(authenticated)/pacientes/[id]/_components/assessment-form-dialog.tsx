@@ -18,27 +18,27 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import {
-  createClinicalEvaluationAction,
-  updateClinicalEvaluationAction,
-} from "@/domains/patient/patient.actions";
+  createAssessmentAction,
+  updateAssessmentAction,
+} from "@/domains/assessment/assessment.actions";
 import {
-  clinicalEvaluationFormSchema,
-  updateClinicalEvaluationSchema,
-} from "@/domains/patient/patient.schema";
-import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
-import { CLINICAL_EVALUATION_DOMAINS } from "@/shared/constants/clinical-evaluation-domains";
+  assessmentFormSchema,
+  updateAssessmentSchema,
+} from "@/domains/assessment/assessment.schema";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import { ASSESSMENT_DOMAINS } from "@/shared/constants/assessment-domains";
 import { cn } from "@/shared/lib/utils";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
-import { ClinicalEvaluationFormClinicalFields } from "./clinical-evaluation-form/clinical-evaluation-form-clinical-fields";
-import { ClinicalEvaluationFormDomainsSection } from "./clinical-evaluation-form/clinical-evaluation-form-domains-section";
-import { ClinicalEvaluationFormMetaFields } from "./clinical-evaluation-form/clinical-evaluation-form-meta-fields";
-import { ClinicalEvaluationFormPlanFields } from "./clinical-evaluation-form/clinical-evaluation-form-plan-fields";
-import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form/clinical-evaluation-form-types";
+import { AssessmentFormClinicalFields } from "./assessment-form/assessment-form-clinical-fields";
+import { AssessmentFormDomainsSection } from "./assessment-form/assessment-form-domains-section";
+import { AssessmentFormMetaFields } from "./assessment-form/assessment-form-meta-fields";
+import { AssessmentFormPlanFields } from "./assessment-form/assessment-form-plan-fields";
+import type { AssessmentDialogValues } from "./assessment-form/assessment-form-types";
 
-export type { ClinicalEvaluationDialogValues };
+export type { AssessmentDialogValues };
 
 function defaultDomains() {
-  return CLINICAL_EVALUATION_DOMAINS.map((c) => ({
+  return ASSESSMENT_DOMAINS.map((c) => ({
     categoryId: c.id,
     score: 2,
     note: "",
@@ -47,8 +47,8 @@ function defaultDomains() {
 
 function buildDefaults(
   patientId: string,
-  initial: ClinicalEvaluationDTO | null,
-): ClinicalEvaluationDialogValues {
+  initial: AssessmentDTO | null,
+): AssessmentDialogValues {
   const today = new Date().toISOString().slice(0, 10);
   return {
     ...(initial ? { id: initial.id } : {}),
@@ -72,7 +72,7 @@ function buildDefaults(
   };
 }
 
-export function ClinicalEvaluationFormDialog({
+export function AssessmentFormDialog({
   open,
   onOpenChange,
   patientId,
@@ -84,15 +84,15 @@ export function ClinicalEvaluationFormDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
   patientId: string;
-  initial: ClinicalEvaluationDTO | null;
+  initial: AssessmentDTO | null;
   pending: boolean;
-  onSave: (ev: ClinicalEvaluationDTO, isEdit: boolean) => void;
+  onSave: (ev: AssessmentDTO, isEdit: boolean) => void;
   startTransition: (fn: () => void) => void;
 }) {
-  const form = useForm<ClinicalEvaluationDialogValues>({
+  const form = useForm<AssessmentDialogValues>({
     resolver: zodResolver(
-      initial ? updateClinicalEvaluationSchema : clinicalEvaluationFormSchema,
-    ) as Resolver<ClinicalEvaluationDialogValues>,
+      initial ? updateAssessmentSchema : assessmentFormSchema,
+    ) as Resolver<AssessmentDialogValues>,
     defaultValues: buildDefaults(patientId, initial),
   });
 
@@ -103,7 +103,7 @@ export function ClinicalEvaluationFormDialog({
     onOpenChange(next);
   }
 
-  function onSubmit(data: ClinicalEvaluationDialogValues) {
+  function onSubmit(data: AssessmentDialogValues) {
     startTransition(async () => {
       const payload = {
         patientId: data.patientId,
@@ -125,8 +125,8 @@ export function ClinicalEvaluationFormDialog({
         dischargeCriteria: data.dischargeCriteria,
       };
       const result = initial
-        ? await updateClinicalEvaluationAction({ id: initial.id, ...payload })
-        : await createClinicalEvaluationAction(payload);
+        ? await updateAssessmentAction({ id: initial.id, ...payload })
+        : await createAssessmentAction(payload);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.message);
@@ -150,14 +150,14 @@ export function ClinicalEvaluationFormDialog({
 
         <Form {...form}>
           <form
-            id="evaluation-form"
+            id="assessment-form"
             onSubmit={form.handleSubmit(onSubmit)}
             className={cn(dialogScrollBodyClassName, "grid gap-3")}
           >
-            <ClinicalEvaluationFormMetaFields />
-            <ClinicalEvaluationFormClinicalFields />
-            <ClinicalEvaluationFormDomainsSection />
-            <ClinicalEvaluationFormPlanFields />
+            <AssessmentFormMetaFields />
+            <AssessmentFormClinicalFields />
+            <AssessmentFormDomainsSection />
+            <AssessmentFormPlanFields />
           </form>
         </Form>
 
@@ -165,7 +165,7 @@ export function ClinicalEvaluationFormDialog({
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
             Cancelar
           </Button>
-          <Button type="submit" form="evaluation-form" disabled={pending}>
+          <Button type="submit" form="assessment-form" disabled={pending}>
             {pending ? <Spinner data-icon="inline-start" /> : null}
             Salvar
           </Button>

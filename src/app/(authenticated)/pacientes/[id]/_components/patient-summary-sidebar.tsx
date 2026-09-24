@@ -77,15 +77,15 @@ export function PatientStatusBadge({
 
 export function PatientSummaryFields({
   patient,
-  clinicalEvaluationsCount,
-  sessionNotesCount,
+  assessmentsCount,
+  evolutionsCount,
   canEditMembers,
   pending,
   onEditMembers,
 }: {
   patient: PatientDTO;
-  clinicalEvaluationsCount: number;
-  sessionNotesCount: number;
+  assessmentsCount: number;
+  evolutionsCount: number;
   canEditMembers: boolean;
   pending: boolean;
   onEditMembers: () => void;
@@ -140,8 +140,8 @@ export function PatientSummaryFields({
 
       <Section title="Prontuário">
         <div className="grid grid-cols-2 gap-2">
-          <Field label="Avaliações">{clinicalEvaluationsCount}</Field>
-          <Field label="Evoluções">{sessionNotesCount}</Field>
+          <Field label="Avaliações">{assessmentsCount}</Field>
+          <Field label="Evoluções">{evolutionsCount}</Field>
         </div>
         <div className="flex flex-col gap-0.5">
           <p className="text-xs text-muted-foreground">Observações</p>
@@ -199,16 +199,16 @@ export function PatientSummaryIdentity({
 
 export function PatientSummarySidebar({
   patient,
-  clinicalEvaluationsCount,
-  sessionNotesCount,
+  assessmentsCount,
+  evolutionsCount,
   canEditMembers,
   pending,
   onEditMembers,
   onPhotoChanged,
 }: {
   patient: PatientDTO;
-  clinicalEvaluationsCount: number;
-  sessionNotesCount: number;
+  assessmentsCount: number;
+  evolutionsCount: number;
   canEditMembers: boolean;
   pending: boolean;
   onEditMembers: () => void;
@@ -224,8 +224,8 @@ export function PatientSummarySidebar({
       <Separator />
       <PatientSummaryFields
         patient={patient}
-        clinicalEvaluationsCount={clinicalEvaluationsCount}
-        sessionNotesCount={sessionNotesCount}
+        assessmentsCount={assessmentsCount}
+        evolutionsCount={evolutionsCount}
         canEditMembers={canEditMembers}
         pending={pending}
         onEditMembers={onEditMembers}

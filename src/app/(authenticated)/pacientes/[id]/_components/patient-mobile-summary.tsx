@@ -21,16 +21,16 @@ import {
 
 export function PatientMobileSummary({
   patient,
-  clinicalEvaluationsCount,
-  sessionNotesCount,
+  assessmentsCount,
+  evolutionsCount,
   canEditMembers,
   pending,
   onEditMembers,
   onPhotoChanged,
 }: {
   patient: PatientDTO;
-  clinicalEvaluationsCount: number;
-  sessionNotesCount: number;
+  assessmentsCount: number;
+  evolutionsCount: number;
   canEditMembers: boolean;
   pending: boolean;
   onEditMembers: () => void;
@@ -101,8 +101,8 @@ export function PatientMobileSummary({
               />
               <PatientSummaryFields
                 patient={patient}
-                clinicalEvaluationsCount={clinicalEvaluationsCount}
-                sessionNotesCount={sessionNotesCount}
+                assessmentsCount={assessmentsCount}
+                evolutionsCount={evolutionsCount}
                 canEditMembers={canEditMembers}
                 pending={pending}
                 onEditMembers={() => {

@@ -1,5 +1,5 @@
 import type { ItemProtocolInstrument } from "@/domains/protocol/instruments/_shared/define-instrument";
-import { listProtocolEvaluations } from "@/domains/protocol/protocol.service";
+import { listProtocolAssessments } from "@/domains/protocol/protocol.service";
 import { ItemProtocolClient } from "./item-protocol-client";
 import type { ProtocolInstrumentModule } from "../types";
 
@@ -30,8 +30,8 @@ export function createItemInstrumentModule(
       initialPatientId,
       canWrite,
     }) => {
-      const initialProtocolEvaluations = initialPatientId
-        ? await listProtocolEvaluations(organizationId, initialPatientId, id)
+      const initialProtocolAssessments = initialPatientId
+        ? await listProtocolAssessments(organizationId, initialPatientId, id)
         : [];
 
       return (
@@ -41,7 +41,7 @@ export function createItemInstrumentModule(
           template={template}
           patients={patients}
           initialPatientId={initialPatientId}
-          initialProtocolEvaluations={initialProtocolEvaluations}
+          initialProtocolAssessments={initialProtocolAssessments}
           canWrite={canWrite}
         />
       );

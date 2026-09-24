@@ -1,16 +1,16 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 export function AvaliacaoLista({
-  clinicalEvaluations,
+  assessments,
   onNewEvaluation,
   onViewEvaluation,
 }: {
-  clinicalEvaluations: ClinicalEvaluationDTO[];
+  assessments: AssessmentDTO[];
   onNewEvaluation: () => void;
-  onViewEvaluation: (evaluation: ClinicalEvaluationDTO) => void;
+  onViewEvaluation: (evaluation: AssessmentDTO) => void;
 }) {
   return (
     <>
@@ -20,7 +20,7 @@ export function AvaliacaoLista({
           Nova avaliação
         </Button>
       </div>
-      {clinicalEvaluations.length === 0 ? (
+      {assessments.length === 0 ? (
         <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
           <p className="text-sm text-muted-foreground">
             Ainda não há avaliações clínicas neste paciente.
@@ -35,7 +35,7 @@ export function AvaliacaoLista({
         </div>
       ) : (
         <ul className="space-y-2">
-          {clinicalEvaluations.map((ev) => (
+          {assessments.map((ev) => (
             <li key={ev.id}>
               <button
                 type="button"

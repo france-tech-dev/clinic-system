@@ -14,31 +14,32 @@ import {
   dialogScrollFooterClassName,
   dialogScrollHeaderClassName,
 } from "@/components/ui/dialog";
-import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
-import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import { categoryOf } from "@/shared/constants/assessment-domains";
 import { cn } from "@/shared/lib/utils";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
-export function ClinicalEvaluationViewDialog({
-  evaluation,
-  allEvaluations,
+export function AssessmentViewDialog({
+  assessment,
+  allAssessments,
   onClose,
   onEdit,
   onDelete,
   onPreviewReport,
   pending,
 }: {
-  evaluation: ClinicalEvaluationDTO | null;
-  allEvaluations: ClinicalEvaluationDTO[];
+  assessment: AssessmentDTO | null;
+  allAssessments: AssessmentDTO[];
   onClose: () => void;
-  onEdit: (ev: ClinicalEvaluationDTO) => void;
+  onEdit: (ev: AssessmentDTO) => void;
   onDelete: (id: string) => void;
-  onPreviewReport: (ev: ClinicalEvaluationDTO) => void;
+  onPreviewReport: (ev: AssessmentDTO) => void;
   pending: boolean;
 }) {
-  if (!evaluation) return null;
+  if (!assessment) return null;
 
-  const sorted = [...allEvaluations].sort((a, b) =>
+  const evaluation = assessment;
+  const sorted = [...allAssessments].sort((a, b) =>
     a.date.localeCompare(b.date),
   );
   const firstEval = sorted[0];

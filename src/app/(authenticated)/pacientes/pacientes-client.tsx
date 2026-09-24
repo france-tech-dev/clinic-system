@@ -553,12 +553,12 @@ export function PacientesClient({
                           {patient.guardian?.name ?? "—"}
                         </TableCell>
                         <TableCell className="text-muted-foreground tabular-nums">
-                          {patient.clinicalEvaluationsCount ?? 0} /{" "}
-                          {patient.sessionsCount ?? 0}
+                          {patient.assessmentsCount ?? 0} /{" "}
+                          {patient.evolutionsCount ?? 0}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {patient.lastClinicalEvaluationDate
-                            ? formatDateBR(patient.lastClinicalEvaluationDate)
+                          {patient.lastAssessmentDate
+                            ? formatDateBR(patient.lastAssessmentDate)
                             : "—"}
                         </TableCell>
                         <TableCell className="text-muted-foreground">

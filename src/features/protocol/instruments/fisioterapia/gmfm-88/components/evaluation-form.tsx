@@ -25,12 +25,12 @@ import {
 } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/template";
 import type { Gmfm88Scores } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
 import { summarizeGmfm88Domain } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
-import type { ProtocolEvaluationFormInput } from "@/domains/protocol/protocol.schema";
+import type { ProtocolAssessmentFormInput } from "@/domains/protocol/protocol.schema";
 import { cn } from "@/shared/lib/utils";
 
 const SCORE_OPTIONS = [0, 1, 2, 3] as const;
 
-export type GmfmEvaluationFormValues = ProtocolEvaluationFormInput & {
+export type GmfmEvaluationFormValues = ProtocolAssessmentFormInput & {
   id?: string;
 };
 

@@ -1,85 +1,85 @@
 import { Text, View } from "@react-pdf/renderer";
-import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
-import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import { categoryOf } from "@/shared/constants/assessment-domains";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
 import type {
-  ClinicalEvaluationReportOptions,
-  ClinicalEvaluationReportSectionId,
-} from "@/domains/patient/_lib/pdf/clinical-evaluation-report-options";
+  AssessmentReportOptions,
+  AssessmentReportSectionId,
+} from "@/domains/assessment/_lib/pdf/assessment-report-options";
 import {
-  getClinicalEvaluationReportDomains,
-  isClinicalEvaluationSectionEnabled,
-} from "@/domains/patient/_lib/pdf/clinical-evaluation-report-options";
+  getAssessmentReportDomains,
+  isAssessmentSectionEnabled,
+} from "@/domains/assessment/_lib/pdf/assessment-report-options";
 
 function hasSectionContent(value: string): boolean {
   return value.trim().length > 0;
 }
 
 function showSection(
-  options: ClinicalEvaluationReportOptions | null,
-  sectionId: ClinicalEvaluationReportSectionId,
+  options: AssessmentReportOptions | null,
+  sectionId: AssessmentReportSectionId,
   value: string,
 ): boolean {
   return (
-    isClinicalEvaluationSectionEnabled(options, sectionId) &&
+    isAssessmentSectionEnabled(options, sectionId) &&
     hasSectionContent(value)
   );
 }
 
-function ClinicalEvaluationBlock({
-  evaluation,
+function AssessmentBlock({
+  assessment,
   options,
 }: {
-  evaluation: ClinicalEvaluationDTO;
-  options: ClinicalEvaluationReportOptions | null;
+  assessment: AssessmentDTO;
+  options: AssessmentReportOptions | null;
 }) {
-  const domains = getClinicalEvaluationReportDomains(evaluation, options);
+  const domains = getAssessmentReportDomains(assessment, options);
 
   return (
     <View>
       <Text style={pdfStyles.sectionTitle}>
-        Avaliação {evaluation.type} — {formatDateBR(evaluation.date)}
+        Avaliação {assessment.type} — {formatDateBR(assessment.date)}
       </Text>
-      {showSection(options, "diagnosis", evaluation.diagnosis) ? (
+      {showSection(options, "diagnosis", assessment.diagnosis) ? (
         <Text style={pdfStyles.paragraph}>
-          Diagnóstico: {evaluation.diagnosis}
+          Diagnóstico: {assessment.diagnosis}
         </Text>
       ) : null}
-      {showSection(options, "referredBy", evaluation.referredBy) ? (
+      {showSection(options, "referredBy", assessment.referredBy) ? (
         <Text style={pdfStyles.paragraph}>
-          Encaminhado por: {evaluation.referredBy}
+          Encaminhado por: {assessment.referredBy}
         </Text>
       ) : null}
-      {showSection(options, "complaint", evaluation.complaint) ? (
-        <Text style={pdfStyles.paragraph}>Queixa: {evaluation.complaint}</Text>
+      {showSection(options, "complaint", assessment.complaint) ? (
+        <Text style={pdfStyles.paragraph}>Queixa: {assessment.complaint}</Text>
       ) : null}
-      {showSection(options, "history", evaluation.history) ? (
-        <Text style={pdfStyles.paragraph}>História: {evaluation.history}</Text>
+      {showSection(options, "history", assessment.history) ? (
+        <Text style={pdfStyles.paragraph}>História: {assessment.history}</Text>
       ) : null}
-      {showSection(options, "familyContext", evaluation.familyContext) ? (
+      {showSection(options, "familyContext", assessment.familyContext) ? (
         <Text style={pdfStyles.paragraph}>
-          Contexto familiar: {evaluation.familyContext}
+          Contexto familiar: {assessment.familyContext}
         </Text>
       ) : null}
-      {showSection(options, "previousLevel", evaluation.previousLevel) ? (
+      {showSection(options, "previousLevel", assessment.previousLevel) ? (
         <Text style={pdfStyles.paragraph}>
-          Nível prévio: {evaluation.previousLevel}
+          Nível prévio: {assessment.previousLevel}
         </Text>
       ) : null}
-      {showSection(options, "medications", evaluation.medications) ? (
+      {showSection(options, "medications", assessment.medications) ? (
         <Text style={pdfStyles.paragraph}>
-          Medicações: {evaluation.medications}
+          Medicações: {assessment.medications}
         </Text>
       ) : null}
-      {showSection(options, "precautions", evaluation.precautions) ? (
+      {showSection(options, "precautions", assessment.precautions) ? (
         <Text style={pdfStyles.paragraph}>
-          Precauções: {evaluation.precautions}
+          Precauções: {assessment.precautions}
         </Text>
       ) : null}
-      {showSection(options, "equipment", evaluation.equipment) ? (
+      {showSection(options, "equipment", assessment.equipment) ? (
         <Text style={pdfStyles.paragraph}>
-          Equipamentos: {evaluation.equipment}
+          Equipamentos: {assessment.equipment}
         </Text>
       ) : null}
       {domains.map((domain) => (
@@ -88,55 +88,55 @@ function ClinicalEvaluationBlock({
           {domain.note ? ` — ${domain.note}` : ""}
         </Text>
       ))}
-      {showSection(options, "goals", evaluation.goals) ? (
+      {showSection(options, "goals", assessment.goals) ? (
         <Text style={pdfStyles.paragraph}>
-          Objetivos: {evaluation.goals}
+          Objetivos: {assessment.goals}
         </Text>
       ) : null}
-      {showSection(options, "interventions", evaluation.interventions) ? (
+      {showSection(options, "interventions", assessment.interventions) ? (
         <Text style={pdfStyles.paragraph}>
-          Condutas: {evaluation.interventions}
+          Condutas: {assessment.interventions}
         </Text>
       ) : null}
-      {showSection(options, "frequency", evaluation.frequency) ? (
-        <Text style={pdfStyles.paragraph}>Frequência: {evaluation.frequency}</Text>
+      {showSection(options, "frequency", assessment.frequency) ? (
+        <Text style={pdfStyles.paragraph}>Frequência: {assessment.frequency}</Text>
       ) : null}
-      {showSection(options, "dischargeCriteria", evaluation.dischargeCriteria) ? (
+      {showSection(options, "dischargeCriteria", assessment.dischargeCriteria) ? (
         <Text style={pdfStyles.paragraph}>
-          Critérios de alta: {evaluation.dischargeCriteria}
+          Critérios de alta: {assessment.dischargeCriteria}
         </Text>
       ) : null}
     </View>
   );
 }
 
-type ClinicalEvaluationSectionProps = {
-  clinicalEvaluations: ClinicalEvaluationDTO[];
-  selectedEvaluation: ClinicalEvaluationDTO | null;
+type AssessmentSectionProps = {
+  assessments: AssessmentDTO[];
+  selectedAssessment: AssessmentDTO | null;
   single?: boolean;
-  evaluationReportOptions?: ClinicalEvaluationReportOptions | null;
+  assessmentReportOptions?: AssessmentReportOptions | null;
 };
 
-export function ClinicalEvaluationSection({
-  clinicalEvaluations,
-  selectedEvaluation,
+export function AssessmentSection({
+  assessments,
+  selectedAssessment,
   single = false,
-  evaluationReportOptions = null,
-}: ClinicalEvaluationSectionProps) {
+  assessmentReportOptions = null,
+}: AssessmentSectionProps) {
   const items = single
-    ? selectedEvaluation
-      ? [selectedEvaluation]
+    ? selectedAssessment
+      ? [selectedAssessment]
       : []
-    : clinicalEvaluations;
+    : assessments;
 
-  const options = single ? evaluationReportOptions : null;
+  const options = single ? assessmentReportOptions : null;
 
   return (
     <>
-      {items.map((evaluation) => (
-        <ClinicalEvaluationBlock
-          key={evaluation.id}
-          evaluation={evaluation}
+      {items.map((assessment) => (
+        <AssessmentBlock
+          key={assessment.id}
+          assessment={assessment}
           options={options}
         />
       ))}

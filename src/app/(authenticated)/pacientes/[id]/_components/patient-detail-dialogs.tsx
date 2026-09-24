@@ -1,16 +1,18 @@
 "use client";
 
 import { EditPatientDialog } from "./edit-patient-dialog";
-import { ClinicalEvaluationFormDialog } from "./clinical-evaluation-form-dialog";
-import { ClinicalEvaluationViewDialog } from "./clinical-evaluation-view-dialog";
+import { AssessmentFormDialog } from "./assessment-form-dialog";
+import { AssessmentViewDialog } from "./assessment-view-dialog";
 import type { PatientDetailViewModel } from "./hooks/use-patient-detail";
 import { PatientPdfPreviewDialog } from "@/features/patient/components/patient-pdf-preview-dialog";
-import { SessionFormDialog } from "@/features/patient/components/session-form-dialog";
-import { SessionViewDialog } from "./session-view-dialog";
+import { EvolutionFormDialog } from "@/features/evolution/components/evolution-form-dialog";
+import { EvolutionViewDialog } from "./evolution-view-dialog";
 
 export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
   const {
     detail,
+    assessments,
+    appointments,
     pdfReport,
     previewReport,
     patientEdit,
@@ -21,7 +23,7 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
   return (
     <>
       {evaluations.evalOpen && (
-        <ClinicalEvaluationFormDialog
+        <AssessmentFormDialog
           key={evaluations.editingEval?.id ?? "new-eval"}
           open={evaluations.evalOpen}
           onOpenChange={evaluations.setEvalOpen}
@@ -33,23 +35,23 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
         />
       )}
 
-      <ClinicalEvaluationViewDialog
-        evaluation={evaluations.viewEval}
-        allEvaluations={detail.clinicalEvaluations}
+      <AssessmentViewDialog
+        assessment={evaluations.viewEval}
+        allAssessments={assessments}
         onClose={() => evaluations.setViewEval(null)}
         onEdit={evaluations.openEditEvaluation}
-        onDelete={evaluations.deleteClinicalEvaluation}
+        onDelete={evaluations.deleteAssessment}
         onPreviewReport={(ev) => previewReport("evaluation", ev)}
         pending={evaluations.pending}
       />
 
       {sessions.sessionOpen && (
-        <SessionFormDialog
+        <EvolutionFormDialog
           key={sessions.editingSession?.id ?? "new-session"}
           open={sessions.sessionOpen}
           onOpenChange={sessions.setSessionOpen}
           patientId={detail.patient.id}
-          appointments={detail.appointments}
+          appointments={appointments}
           initial={sessions.editingSession}
           pending={sessions.pending}
           startTransition={sessions.startTransition}
@@ -57,7 +59,7 @@ export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
         />
       )}
 
-      <SessionViewDialog
+      <EvolutionViewDialog
         note={sessions.viewSession}
         onClose={() => sessions.setViewSession(null)}
         onEdit={sessions.openEditSession}

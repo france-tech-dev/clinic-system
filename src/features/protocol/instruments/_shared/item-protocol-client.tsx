@@ -41,16 +41,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  compareProtocolEvaluationsAction,
-  createProtocolEvaluationAction,
-  deleteProtocolEvaluationAction,
-  listProtocolEvaluationsAction,
-  updateProtocolEvaluationAction,
+  compareProtocolAssessmentsAction,
+  createProtocolAssessmentAction,
+  deleteProtocolAssessmentAction,
+  listProtocolAssessmentsAction,
+  updateProtocolAssessmentAction,
 } from "@/domains/protocol/protocol.actions";
-import { protocolEvaluationFormSchema } from "@/domains/protocol/protocol.schema";
+import { protocolAssessmentFormSchema } from "@/domains/protocol/protocol.schema";
 import type {
-  ProtocolEvaluationComparisonDTO,
-  ProtocolEvaluationDTO,
+  ProtocolAssessmentComparisonDTO,
+  ProtocolAssessmentDTO,
 } from "@/domains/protocol/protocol.types";
 import type { ClinicalWorkspacePatientOption } from "@/shared/types/clinical-workspace-patient";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
@@ -67,7 +67,15 @@ import {
 } from "@/domains/protocol/instruments/_shared/item-scale";
 import { scoresToItemResponses } from "@/domains/protocol/instruments/_shared/parse-item-scores";
 import { summarizeItemProtocol } from "@/domains/protocol/instruments/_shared/item-protocol-scoring";
+import { scoreSpm } from "@/domains/protocol/instruments/terapia-ocupacional/_lib/spm/score";
+import { SPM_CASA_5ANOS_NORMS } from "@/domains/protocol/instruments/terapia-ocupacional/spm-casa-5anos/norms";
+import { SPM_CASA_5ANOS_PROTOCOL_ID } from "@/domains/protocol/instruments/terapia-ocupacional/spm-casa-5anos/template";
 import { ProtocolComparisonChart } from "@/features/protocol/instruments/_shared/protocol-comparison-chart";
+import {
+  formatProtocolHistoryLine,
+  SpmScorePanel,
+} from "@/features/protocol/instruments/_shared/spm-score-panel";
+import { SpmPdfButtons } from "@/features/protocol/instruments/_shared/spm-pdf-buttons";
 
 type FormValues = {
   id?: string;
@@ -87,7 +95,7 @@ function buildDefaults(
   protocolId: string,
   template: ItemProtocolTemplate,
   patientId: string,
-  editing: ProtocolEvaluationDTO | null,
+  editing: ProtocolAssessmentDTO | null,
   assessmentsLength: number,
 ): FormValues {
   if (editing) {
@@ -117,7 +125,7 @@ export function ItemProtocolClient({
   template,
   patients,
   initialPatientId,
-  initialProtocolEvaluations,
+  initialProtocolAssessments,
   canWrite,
 }: {
   protocolId: string;
@@ -125,7 +133,7 @@ export function ItemProtocolClient({
   template: ItemProtocolTemplate;
   patients: ClinicalWorkspacePatientOption[];
   initialPatientId: string | null;
-  initialProtocolEvaluations: ProtocolEvaluationDTO[];
+  initialProtocolAssessments: ProtocolAssessmentDTO[];
   canWrite: boolean;
 }) {
   const activePatients = useMemo(
@@ -133,18 +141,18 @@ export function ItemProtocolClient({
     [patients],
   );
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
-  const [assessments, setAssessments] = useState(initialProtocolEvaluations);
-  const [editing, setEditing] = useState<ProtocolEvaluationDTO | null>(null);
+  const [assessments, setAssessments] = useState(initialProtocolAssessments);
+  const [editing, setEditing] = useState<ProtocolAssessmentDTO | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [baselineId, setBaselineId] = useState("");
   const [followUpId, setFollowUpId] = useState("");
   const [comparison, setComparison] =
-    useState<ProtocolEvaluationComparisonDTO | null>(null);
+    useState<ProtocolAssessmentComparisonDTO | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(
-      protocolEvaluationFormSchema,
+      protocolAssessmentFormSchema,
     ) as Resolver<FormValues>,
     defaultValues: buildDefaults(
       protocolId,
@@ -185,10 +193,18 @@ export function ItemProtocolClient({
   const progressValue =
     progress.total === 0 ? 0 : (progress.answered / progress.total) * 100;
 
-  const liveSummary = useMemo(
-    () => summarizeItemProtocol(template, scores),
-    [scores, template],
-  );
+  const liveSummary = useMemo(() => {
+    if (template.scale === "spm") {
+      const norms =
+        protocolId === SPM_CASA_5ANOS_PROTOCOL_ID
+          ? SPM_CASA_5ANOS_NORMS
+          : null;
+      return scoreSpm(template, scores, norms);
+    }
+    return summarizeItemProtocol(template, scores);
+  }, [protocolId, scores, template]);
+
+  const isSpm = template.scale === "spm";
 
   function openCreate() {
     if (!patientId) {
@@ -202,7 +218,7 @@ export function ItemProtocolClient({
     setDialogOpen(true);
   }
 
-  function openEdit(row: ProtocolEvaluationDTO) {
+  function openEdit(row: ProtocolAssessmentDTO) {
     setEditing(row);
     form.reset(
       buildDefaults(protocolId, template, patientId, row, assessments.length),
@@ -212,7 +228,7 @@ export function ItemProtocolClient({
 
   function reload(nextPatientId: string) {
     startTransition(async () => {
-      const result = await listProtocolEvaluationsAction({
+      const result = await listProtocolAssessmentsAction({
         patientId: nextPatientId,
         protocolId,
       });
@@ -242,7 +258,7 @@ export function ItemProtocolClient({
       return;
     }
     startTransition(async () => {
-      const result = await compareProtocolEvaluationsAction({
+      const result = await compareProtocolAssessmentsAction({
         baselineId,
         followUpId,
       });
@@ -265,8 +281,8 @@ export function ItemProtocolClient({
         scores: values.scores as Record<string, number | string | null>,
       };
       const result = editing
-        ? await updateProtocolEvaluationAction({ ...payload, id: editing.id })
-        : await createProtocolEvaluationAction(payload);
+        ? await updateProtocolAssessmentAction({ ...payload, id: editing.id })
+        : await createProtocolAssessmentAction(payload);
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
         toast.error(result.message);
@@ -280,7 +296,7 @@ export function ItemProtocolClient({
 
   function onDelete(id: string) {
     startTransition(async () => {
-      const result = await deleteProtocolEvaluationAction({ id });
+      const result = await deleteProtocolAssessmentAction({ id });
       if (!result.success) {
         toast.error(result.message);
         return;
@@ -354,11 +370,19 @@ export function ItemProtocolClient({
                   <p className="text-xs text-muted-foreground">
                     {formatDateBR(row.date)}
                     {row.summary
-                      ? ` · bruto ${row.summary.totalScore}/${row.summary.maxScore} (${row.summary.percent.toFixed(1)}%)`
+                      ? ` · ${formatProtocolHistoryLine(row.summary)}`
                       : null}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {isSpm ? (
+                    <SpmPdfButtons
+                      assessment={row}
+                      protocolName={protocolName}
+                      template={template}
+                      disabled={pending}
+                    />
+                  ) : null}
                   <Button
                     type="button"
                     size="sm"
@@ -394,8 +418,9 @@ export function ItemProtocolClient({
           <CardHeader>
             <CardTitle className="text-lg">Comparativo</CardTitle>
             <CardDescription>
-              Evolução do escore bruto (% do máximo por secção). Sem T-scores
-              nem normas oficiais.
+              {isSpm
+                ? "Evolução por secção (% do máximo bruto). T-scores no painel de scores de cada avaliação."
+                : "Evolução do escore bruto (% do máximo por secção)."}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -531,6 +556,8 @@ export function ItemProtocolClient({
                   </div>
                   <Progress value={progressValue} className="h-2" />
                 </div>
+
+                {isSpm ? <SpmScorePanel summary={liveSummary} /> : null}
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-border bg-amber-500/10 px-3 py-2.5 text-sm text-amber-950 dark:bg-amber-400/10 dark:text-amber-100">
                   {scaleOptions.map((opt) => (

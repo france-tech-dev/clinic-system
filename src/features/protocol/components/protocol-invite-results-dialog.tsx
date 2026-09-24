@@ -14,7 +14,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
+import type { ProtocolAssessmentPreviewDTO } from "@/domains/protocol/protocol.types";
 import type { ProtocolInviteItemDTO } from "@/domains/protocol/invite/protocol-invite.types";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { ProtocolInterpretationAIPanel } from "./protocol-interpretation-ai-panel";
@@ -23,8 +23,8 @@ export function ProtocolInviteResultsDialog({
   open,
   onOpenChange,
   items,
-  activeEvaluationId,
-  onSelectEvaluationId,
+  activeAssessmentId,
+  onSelectAssessmentId,
   preview,
   loading,
   canUseAi,
@@ -33,21 +33,21 @@ export function ProtocolInviteResultsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   items: ProtocolInviteItemDTO[];
-  activeEvaluationId: string | null;
-  onSelectEvaluationId: (evaluationId: string) => void;
-  preview: ProtocolEvaluationPreviewDTO | null;
+  activeAssessmentId: string | null;
+  onSelectAssessmentId: (assessmentId: string) => void;
+  preview: ProtocolAssessmentPreviewDTO | null;
   loading: boolean;
   canUseAi: boolean;
   onInterpretationAISaved?: (
-    evaluationId: string,
+    assessmentId: string,
     interpretationAI: string | null,
   ) => void;
 }) {
   const submitted = items.filter(
-    (item) => item.status === "submitted" && item.evaluationId != null,
+    (item) => item.status === "submitted" && item.assessmentId != null,
   );
   const activeItem =
-    submitted.find((item) => item.evaluationId === activeEvaluationId) ?? null;
+    submitted.find((item) => item.assessmentId === activeAssessmentId) ?? null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,14 +75,14 @@ export function ProtocolInviteResultsDialog({
               {submitted.length > 1 ? (
                 <NativeSelect
                   className="w-full"
-                  value={activeEvaluationId ?? ""}
-                  onChange={(e) => onSelectEvaluationId(e.target.value)}
+                  value={activeAssessmentId ?? ""}
+                  onChange={(e) => onSelectAssessmentId(e.target.value)}
                   aria-label="Instrumento respondido"
                 >
                   {submitted.map((item) => (
                     <NativeSelectOption
                       key={item.id}
-                      value={item.evaluationId!}
+                      value={item.assessmentId!}
                     >
                       {item.protocolName}
                     </NativeSelectOption>
@@ -114,14 +114,14 @@ export function ProtocolInviteResultsDialog({
                 </p>
               </div>
 
-              {preview && activeEvaluationId && preview.sections.length > 0 ? (
+              {preview && activeAssessmentId && preview.sections.length > 0 ? (
                 <ProtocolInterpretationAIPanel
-                  key={activeEvaluationId}
-                  evaluationId={activeEvaluationId}
+                  key={activeAssessmentId}
+                  evaluationId={activeAssessmentId}
                   initialInterpretationAI={preview.interpretationAI}
                   canUseAi={canUseAi}
                   onSaved={(interpretationAI) =>
-                    onInterpretationAISaved?.(activeEvaluationId, interpretationAI)
+                    onInterpretationAISaved?.(activeAssessmentId, interpretationAI)
                   }
                 />
               ) : null}

@@ -47,16 +47,16 @@ import {
   type Gmfm88Scores,
 } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/scoring";
 import {
-  compareProtocolEvaluationsAction,
-  createProtocolEvaluationAction,
-  deleteProtocolEvaluationAction,
-  listProtocolEvaluationsAction,
-  updateProtocolEvaluationAction,
+  compareProtocolAssessmentsAction,
+  createProtocolAssessmentAction,
+  deleteProtocolAssessmentAction,
+  listProtocolAssessmentsAction,
+  updateProtocolAssessmentAction,
 } from "@/domains/protocol/protocol.actions";
-import { protocolEvaluationFormSchema } from "@/domains/protocol/protocol.schema";
+import { protocolAssessmentFormSchema } from "@/domains/protocol/protocol.schema";
 import type {
-  ProtocolEvaluationDTO,
-  ProtocolEvaluationComparisonDTO,
+  ProtocolAssessmentDTO,
+  ProtocolAssessmentComparisonDTO,
 } from "@/domains/protocol/protocol.types";
 import type { ClinicalWorkspacePatientOption } from "@/shared/types/clinical-workspace-patient";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
@@ -64,7 +64,7 @@ import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 
 function buildDefaults(
   patientId: string,
-  editing: ProtocolEvaluationDTO | null,
+  editing: ProtocolAssessmentDTO | null,
   assessmentsLength: number,
 ): GmfmEvaluationFormValues {
   if (editing) {
@@ -91,29 +91,29 @@ function buildDefaults(
 export function GmfmProtocolClient({
   patients,
   initialPatientId,
-  initialProtocolEvaluations,
+  initialProtocolAssessments,
   canWrite,
 }: {
   patients: ClinicalWorkspacePatientOption[];
   initialPatientId: string | null;
-  initialProtocolEvaluations: ProtocolEvaluationDTO[];
+  initialProtocolAssessments: ProtocolAssessmentDTO[];
   canWrite: boolean;
 }) {
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
-  const [assessments, setAssessments] = useState<ProtocolEvaluationDTO[]>(
-    initialProtocolEvaluations,
+  const [assessments, setAssessments] = useState<ProtocolAssessmentDTO[]>(
+    initialProtocolAssessments,
   );
   const [baselineId, setBaselineId] = useState("");
   const [followUpId, setFollowUpId] = useState("");
   const [comparison, setComparison] =
-    useState<ProtocolEvaluationComparisonDTO | null>(null);
+    useState<ProtocolAssessmentComparisonDTO | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<ProtocolEvaluationDTO | null>(null);
+  const [editing, setEditing] = useState<ProtocolAssessmentDTO | null>(null);
   const [pending, startTransition] = useTransition();
 
   const form = useForm<GmfmEvaluationFormValues>({
     resolver: zodResolver(
-      protocolEvaluationFormSchema,
+      protocolAssessmentFormSchema,
     ) as Resolver<GmfmEvaluationFormValues>,
     defaultValues: buildDefaults(patientId, null, 0),
   });
@@ -138,7 +138,7 @@ export function GmfmProtocolClient({
     }
 
     startTransition(async () => {
-      const result = await listProtocolEvaluationsAction({
+      const result = await listProtocolAssessmentsAction({
         patientId: id,
         protocolId: GMFM88_PROTOCOL_ID,
       });
@@ -159,7 +159,7 @@ export function GmfmProtocolClient({
     setFormOpen(true);
   }
 
-  function openEdit(item: ProtocolEvaluationDTO) {
+  function openEdit(item: ProtocolAssessmentDTO) {
     setEditing(item);
     form.reset(buildDefaults(patientId, item, assessments.length));
     setFormOpen(true);
@@ -189,8 +189,8 @@ export function GmfmProtocolClient({
       };
 
       const result = editing
-        ? await updateProtocolEvaluationAction({ id: editing.id, ...payload })
-        : await createProtocolEvaluationAction(payload);
+        ? await updateProtocolAssessmentAction({ id: editing.id, ...payload })
+        : await createProtocolAssessmentAction(payload);
 
       if (!result.success) {
         applyActionFieldErrors(form.setError, result.fieldErrors);
@@ -214,7 +214,7 @@ export function GmfmProtocolClient({
 
   function removeAssessment(id: string) {
     startTransition(async () => {
-      const result = await deleteProtocolEvaluationAction({ id });
+      const result = await deleteProtocolAssessmentAction({ id });
       if (!result.success) {
         toast.error(result.message);
         return;
@@ -234,7 +234,7 @@ export function GmfmProtocolClient({
     }
 
     startTransition(async () => {
-      const result = await compareProtocolEvaluationsAction({
+      const result = await compareProtocolAssessmentsAction({
         baselineId,
         followUpId,
       });

@@ -8,12 +8,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { categoryOf } from "@/shared/constants/clinical-evaluation-domains";
+import { categoryOf } from "@/shared/constants/assessment-domains";
 import { cn } from "@/shared/lib/utils";
-import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form-types";
+import type { AssessmentDialogValues } from "./assessment-form-types";
 
-export function ClinicalEvaluationFormDomainsSection() {
-  const { control } = useFormContext<ClinicalEvaluationDialogValues>();
+export function AssessmentFormDomainsSection() {
+  const { control } = useFormContext<AssessmentDialogValues>();
   const domains = useWatch({ control, name: "domains" }) ?? [];
 
   return (

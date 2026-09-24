@@ -1,72 +1,74 @@
 "use client";
 
+import { deleteEvolutionAction } from "@/domains/evolution/evolution.actions";
+import type {
+  EvolutionDTO,
+  LinkableAppointmentDTO,
+} from "@/domains/evolution/evolution.types";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteSessionAction } from "@/domains/patient/patient.actions";
-import type {
-  PatientDetailDTO,
-  SessionNoteDTO,
-} from "@/domains/patient/patient.types";
 
-export function usePatientSessions({
-  setDetail,
+export function usePatientEvolutions({
+  setEvolutions,
+  setAppointments,
   pending,
   startTransition,
 }: {
-  setDetail: React.Dispatch<React.SetStateAction<PatientDetailDTO>>;
+  setEvolutions: React.Dispatch<React.SetStateAction<EvolutionDTO[]>>;
+  setAppointments: React.Dispatch<
+    React.SetStateAction<LinkableAppointmentDTO[]>
+  >;
   pending: boolean;
   startTransition: (fn: () => void) => void;
 }) {
   const [sessionOpen, setSessionOpen] = useState(false);
-  const [editingSession, setEditingSession] = useState<SessionNoteDTO | null>(
+  const [editingSession, setEditingSession] = useState<EvolutionDTO | null>(
     null,
   );
-  const [viewSession, setViewSession] = useState<SessionNoteDTO | null>(null);
+  const [viewSession, setViewSession] = useState<EvolutionDTO | null>(null);
 
   function openNewSession() {
     setEditingSession(null);
     setSessionOpen(true);
   }
 
-  function openEditSession(s: SessionNoteDTO) {
+  function openEditSession(s: EvolutionDTO) {
     setViewSession(null);
     setEditingSession(s);
     setSessionOpen(true);
   }
 
-  function saveSession(s: SessionNoteDTO, isEdit: boolean) {
-    setDetail((d) => ({
-      ...d,
-      sessionNotes: isEdit
-        ? d.sessionNotes.map((x) => (x.id === s.id ? s : x))
-        : [s, ...d.sessionNotes],
-      appointments: d.appointments.map((a) => {
+  function saveSession(s: EvolutionDTO, isEdit: boolean) {
+    setEvolutions((list) =>
+      isEdit ? list.map((x) => (x.id === s.id ? s : x)) : [s, ...list],
+    );
+    setAppointments((list) =>
+      list.map((a) => {
         if (a.id === s.appointmentId) {
-          return { ...a, sessionNoteId: s.id };
+          return { ...a, evolutionId: s.id };
         }
-        if (a.sessionNoteId === s.id && a.id !== s.appointmentId) {
-          return { ...a, sessionNoteId: null };
+        if (a.evolutionId === s.id && a.id !== s.appointmentId) {
+          return { ...a, evolutionId: null };
         }
         return a;
       }),
-    }));
+    );
     setSessionOpen(false);
   }
 
   function deleteSession(id: string) {
     startTransition(async () => {
-      const result = await deleteSessionAction({ id });
+      const result = await deleteEvolutionAction({ id });
       if (!result.success) {
         toast.error(result.message);
         return;
       }
-      setDetail((d) => ({
-        ...d,
-        sessionNotes: d.sessionNotes.filter((s) => s.id !== id),
-        appointments: d.appointments.map((a) =>
-          a.sessionNoteId === id ? { ...a, sessionNoteId: null } : a,
+      setEvolutions((list) => list.filter((s) => s.id !== id));
+      setAppointments((list) =>
+        list.map((a) =>
+          a.evolutionId === id ? { ...a, evolutionId: null } : a,
         ),
-      }));
+      );
       setViewSession(null);
       toast.success("Evolução removida");
     });

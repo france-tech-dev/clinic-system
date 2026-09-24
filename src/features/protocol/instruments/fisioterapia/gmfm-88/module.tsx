@@ -1,6 +1,6 @@
 import { GmfmProtocolClient } from "./components/protocol-client";
 import { getProtocolInstrument } from "@/domains/protocol/instruments/instruments";
-import { listProtocolEvaluations } from "@/domains/protocol/protocol.service";
+import { listProtocolAssessments } from "@/domains/protocol/protocol.service";
 import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/template";
 import type {
   ProtocolInstrumentModule,
@@ -18,8 +18,8 @@ async function renderGmfm88({
   initialPatientId,
   canWrite,
 }: ProtocolInstrumentRenderContext) {
-  const initialProtocolEvaluations = initialPatientId
-    ? await listProtocolEvaluations(
+  const initialProtocolAssessments = initialPatientId
+    ? await listProtocolAssessments(
         organizationId,
         initialPatientId,
         GMFM88_PROTOCOL_ID,
@@ -30,7 +30,7 @@ async function renderGmfm88({
     <GmfmProtocolClient
       patients={patients}
       initialPatientId={initialPatientId}
-      initialProtocolEvaluations={initialProtocolEvaluations}
+      initialProtocolAssessments={initialProtocolAssessments}
       canWrite={canWrite}
     />
   );

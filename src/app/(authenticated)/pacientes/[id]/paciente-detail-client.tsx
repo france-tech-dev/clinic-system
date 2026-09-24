@@ -13,6 +13,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import type {
+  EvolutionDTO,
+  LinkableAppointmentDTO,
+} from "@/domains/evolution/evolution.types";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import {
   setPatientMembersAction,
@@ -49,6 +54,9 @@ type PendingStatusChange = {
 
 export function PacienteDetailClient({
   initial,
+  initialAssessments,
+  initialEvolutions,
+  initialAppointments,
   initialGuardians,
   initialAnamneses,
   initialAnamneseSections,
@@ -64,6 +72,9 @@ export function PacienteDetailClient({
   initialTab,
 }: {
   initial: PatientDetailDTO;
+  initialAssessments: AssessmentDTO[];
+  initialEvolutions: EvolutionDTO[];
+  initialAppointments: LinkableAppointmentDTO[];
   initialGuardians: GuardianDTO[];
   initialAnamneses: AnamneseSummaryDTO[];
   initialAnamneseSections: PdfKeyValueSection[];
@@ -80,6 +91,9 @@ export function PacienteDetailClient({
 }) {
   const vm = usePatientDetail({
     initial,
+    initialAssessments,
+    initialEvolutions,
+    initialAppointments,
     initialGuardians,
     initialAnamneses,
     initialAnamneseSections,
@@ -143,8 +157,8 @@ export function PacienteDetailClient({
         <div className="no-print hidden xl:block">
           <PatientSummarySidebar
             patient={vm.detail.patient}
-            clinicalEvaluationsCount={vm.detail.clinicalEvaluations.length}
-            sessionNotesCount={vm.detail.sessionNotes.length}
+            assessmentsCount={vm.assessments.length}
+            evolutionsCount={vm.evolutions.length}
             canEditMembers={isLeadership}
             pending={busy}
             onEditMembers={() => setAssignOpen(true)}
@@ -166,8 +180,8 @@ export function PacienteDetailClient({
           <div className="no-print xl:hidden">
             <PatientMobileSummary
               patient={vm.detail.patient}
-              clinicalEvaluationsCount={vm.detail.clinicalEvaluations.length}
-              sessionNotesCount={vm.detail.sessionNotes.length}
+              assessmentsCount={vm.assessments.length}
+              evolutionsCount={vm.evolutions.length}
               canEditMembers={isLeadership}
               pending={busy}
               onEditMembers={() => setAssignOpen(true)}
@@ -179,7 +193,7 @@ export function PacienteDetailClient({
 
           {vm.tab === "avaliacao" ? (
             <AvaliacaoTab
-              clinicalEvaluations={vm.detail.clinicalEvaluations}
+              assessments={vm.assessments}
               onNewEvaluation={vm.evaluations.openNewEvaluation}
               onViewEvaluation={vm.evaluations.setViewEval}
             />
@@ -194,7 +208,7 @@ export function PacienteDetailClient({
 
           {vm.tab === "evolucoes" ? (
             <EvolucoesTab
-              sessionNotes={vm.detail.sessionNotes}
+              evolutions={vm.evolutions}
               onNewSession={vm.sessions.openNewSession}
               onViewSession={vm.sessions.setViewSession}
             />

@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { ClinicalEvaluationDialogValues } from "./clinical-evaluation-form-types";
+import type { AssessmentDialogValues } from "./assessment-form-types";
 
-export function ClinicalEvaluationFormPlanFields() {
-  const { control } = useFormContext<ClinicalEvaluationDialogValues>();
+export function AssessmentFormPlanFields() {
+  const { control } = useFormContext<AssessmentDialogValues>();
 
   return (
     <>

@@ -171,7 +171,7 @@ export function AppointmentFormDialog({
     });
   }
 
-  const canEvolve = Boolean(initial && onEvolve && !initial.hasSessionNote);
+  const canEvolve = Boolean(initial && onEvolve && !initial.hasEvolution);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

@@ -35,11 +35,9 @@ import type {
   AppointmentDTO,
   ScheduleMemberDTO,
 } from "@/domains/schedule/schedule.types";
-import type {
-  PatientDTO,
-  SessionLinkableAppointmentDTO,
-} from "@/domains/patient/patient.types";
-import { SessionFormDialog } from "@/features/patient/components/session-form-dialog";
+import type { LinkableAppointmentDTO } from "@/domains/evolution/evolution.types";
+import type { PatientDTO } from "@/domains/patient/patient.types";
+import { EvolutionFormDialog } from "@/features/evolution/components/evolution-form-dialog";
 import {
   addDaysIso,
   APPOINTMENT_STATUSES,
@@ -61,14 +59,14 @@ import { AgendaCalendar } from "./agenda-calendar";
 
 function toLinkableAppointment(
   a: AppointmentDTO,
-): SessionLinkableAppointmentDTO {
+): LinkableAppointmentDTO {
   return {
     id: a.id,
     date: a.date,
     time: a.time,
     status: a.status,
     professionalName: a.professionalName,
-    sessionNoteId: a.hasSessionNote ? "existing" : null,
+    evolutionId: a.hasEvolution ? "existing" : null,
   };
 }
 
@@ -348,10 +346,10 @@ export function AgendaClient({
     setSessionAppointment(a);
   }
 
-  function markHasSessionNote(appointmentId: string) {
+  function markHasEvolution(appointmentId: string) {
     const patch = (list: AppointmentDTO[]) =>
       list.map((item) =>
-        item.id === appointmentId ? { ...item, hasSessionNote: true } : item,
+        item.id === appointmentId ? { ...item, hasEvolution: true } : item,
       );
     setDayAppointments(patch);
     setUpcoming(patch);
@@ -708,7 +706,7 @@ export function AgendaClient({
             startTransition={startTransition}
             onDelete={editing ? () => remove(editing.id) : undefined}
             onEvolve={
-              editing && !editing.hasSessionNote
+              editing && !editing.hasEvolution
                 ? () => openEvolve(editing)
                 : undefined
             }
@@ -770,7 +768,7 @@ export function AgendaClient({
         )}
 
         {sessionAppointment && (
-          <SessionFormDialog
+          <EvolutionFormDialog
             key={`session-${sessionAppointment.id}`}
             open
             onOpenChange={(open) => {
@@ -783,7 +781,7 @@ export function AgendaClient({
             pending={pending}
             startTransition={startTransition}
             onSave={() => {
-              markHasSessionNote(sessionAppointment.id);
+              markHasEvolution(sessionAppointment.id);
               setSessionAppointment(null);
               router.refresh();
             }}

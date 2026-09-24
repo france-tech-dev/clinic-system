@@ -6,6 +6,16 @@ import {
 } from "@/domains/anamnese/anamnese.service";
 import { buildAnamnesePdfBlocks } from "@/domains/anamnese/_lib/pdf/build-blocks";
 import { getCatalogAnamnese } from "@/domains/anamnese/forms";
+import { listAssessmentsByPatient } from "@/domains/assessment/assessment.service";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import {
+  listEvolutionsByPatient,
+  listLinkableAppointments,
+} from "@/domains/evolution/evolution.service";
+import type {
+  EvolutionDTO,
+  LinkableAppointmentDTO,
+} from "@/domains/evolution/evolution.types";
 import { getPatientDetail } from "@/domains/patient/patient.service";
 import { listTeamMembers } from "@/domains/team/team.service";
 import type { TeamMemberDTO } from "@/domains/team/team.types";
@@ -50,6 +60,9 @@ export default async function PacienteDetailPage({
   const initialTab = parsePatientDetailTab(query.tab);
   let error: string | null = null;
   let detail: PatientDetailDTO | null = null;
+  let assessments: AssessmentDTO[] = [];
+  let evolutions: EvolutionDTO[] = [];
+  let appointments: LinkableAppointmentDTO[] = [];
   let guardians: GuardianDTO[] = [];
   let anamneses: AnamneseSummaryDTO[] = [];
   let anamneseSections: PdfKeyValueSection[] = [];
@@ -81,6 +94,9 @@ export default async function PacienteDetailPage({
 
     const [
       d,
+      a,
+      evo,
+      appts,
       g,
       prof,
       printBranding,
@@ -91,6 +107,9 @@ export default async function PacienteDetailPage({
       billing,
     ] = await Promise.all([
       getPatientDetail(organizationId, id),
+      listAssessmentsByPatient(organizationId, id),
+      listEvolutionsByPatient(organizationId, id),
+      listLinkableAppointments(organizationId, id),
       listGuardians(organizationId),
       getProfessionalProfile(organizationId),
       getPrintBranding(organizationId),
@@ -101,6 +120,9 @@ export default async function PacienteDetailPage({
       getBillingAccess(organizationId),
     ]);
     detail = d;
+    assessments = a ?? [];
+    evolutions = evo ?? [];
+    appointments = appts ?? [];
     guardians = g;
     professional = prof;
     branding = printBranding;
@@ -150,6 +172,9 @@ export default async function PacienteDetailPage({
     <AppPage title={detail.patient.name}>
       <PacienteDetailClient
         initial={detail}
+        initialAssessments={assessments}
+        initialEvolutions={evolutions}
+        initialAppointments={appointments}
         initialGuardians={guardians}
         initialAnamneses={anamneses}
         initialAnamneseSections={anamneseSections}
@@ -167,4 +192,3 @@ export default async function PacienteDetailPage({
     </AppPage>
   );
 }
-
