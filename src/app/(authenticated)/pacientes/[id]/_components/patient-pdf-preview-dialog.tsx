@@ -1,12 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useTransition } from "react";
-import { Download } from "lucide-react";
-import { toast } from "sonner";
-import { PatientReportDocument } from "@/features/patient/_lib/pdf/build-patient-report-document";
-import { downloadPatientReport } from "@/features/patient/_lib/pdf/download-patient-report";
-import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
+import type { PatientReportPayload } from "@/application/patient";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
+import { buildPatientReportFilename } from "@/domains/patient/_lib/pdf/report-meta";
+import { downloadPdfBlob, renderPdfBlob } from "@/shared/lib/pdf/generate";
+import { Download } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { PatientReportDocument } from "./pdf/patient-report-document";
 
 const PdfViewer = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
@@ -44,7 +45,13 @@ export function PatientPdfPreviewDialog({
     if (!payload) return;
     startTransition(async () => {
       try {
-        await downloadPatientReport(payload, logoOrigin);
+        const blob = await renderPdfBlob(
+          <PatientReportDocument payload={payload} logoOrigin={logoOrigin} />,
+        );
+        await downloadPdfBlob(
+          blob,
+          buildPatientReportFilename(payload.patientName, payload.mode),
+        );
         toast.success("PDF baixado");
       } catch (error) {
         console.error(error);
@@ -57,9 +64,7 @@ export function PatientPdfPreviewDialog({
     <Dialog open={payload !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="flex h-[92dvh] max-h-[92dvh] max-w-7xl flex-col gap-0 overflow-hidden p-0 sm:max-w-7xl">
         <DialogHeader className="border-b border-border px-4 py-3">
-          <DialogTitle>
-            Pré-visualização do relatório
-          </DialogTitle>
+          <DialogTitle>Pré-visualização do relatório</DialogTitle>
         </DialogHeader>
 
         <div className="min-h-0 flex-1 overflow-hidden bg-muted/30">

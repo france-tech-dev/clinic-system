@@ -1,24 +1,22 @@
-import { Document, Page } from "@react-pdf/renderer";
+import { AssessmentDocument } from "@/features/assessment/_lib/pdf/documents/assessment-document";
+import { AssessmentSection } from "@/features/assessment/_lib/pdf/sections/assessment-section";
+import { EvolutionsSection } from "@/features/patient/_lib/pdf/sections/evolutions-section";
+import type { PatientReportPayload } from "@/application/patient";
+import { getPatientReportTitle } from "@/domains/patient/_lib/pdf/report-meta";
 import { ClinicHeader } from "@/shared/lib/pdf/components/clinic-header";
 import { KeyValueSections } from "@/shared/lib/pdf/components/key-value-sections";
 import { PageFooter } from "@/shared/lib/pdf/components/page-footer";
 import { PatientInfo } from "@/shared/lib/pdf/components/patient-info";
 import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
-import { getPatientReportTitle } from "@/domains/patient/_lib/pdf/report-meta";
-import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
-import { AssessmentSection } from "@/features/assessment/_lib/pdf/sections/assessment-section";
-import { EvolutionsSection } from "@/features/patient/_lib/pdf/sections/evolutions-section";
+import { Document, Page } from "@react-pdf/renderer";
 
-type PatientReportDocumentProps = {
+type Props = {
   payload: PatientReportPayload;
   logoOrigin?: string;
 };
 
-export function FullRecordDocument({
-  payload,
-  logoOrigin,
-}: PatientReportDocumentProps) {
+function FullRecordDocument({ payload, logoOrigin }: Props) {
   const { branding, patientName, signature } = payload;
   const documentTitle = getPatientReportTitle("full");
 
@@ -46,4 +44,14 @@ export function FullRecordDocument({
       </Page>
     </Document>
   );
+}
+
+export function PatientReportDocument({ payload, logoOrigin }: Props) {
+  switch (payload.mode) {
+    case "evaluation":
+      return <AssessmentDocument payload={payload} logoOrigin={logoOrigin} />;
+    case "full":
+    default:
+      return <FullRecordDocument payload={payload} logoOrigin={logoOrigin} />;
+  }
 }

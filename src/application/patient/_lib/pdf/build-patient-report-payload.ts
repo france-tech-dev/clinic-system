@@ -19,13 +19,10 @@ export type BuildPatientReportPayloadInput = {
   evolutions: EvolutionDTO[];
   mode: PatientReportMode;
   branding: PrintBranding;
-  /** Fallback da organização (Configurações). */
   professional: ProfessionalProfile;
-  /** Assinatura do autor da avaliação (Member), se houver. */
   authorProfessional?: ProfessionalProfile | null;
   assessment?: AssessmentDTO | null;
   assessmentReportOptions?: AssessmentReportOptions | null;
-  /** Secções de anamnese já resolvidas no app/. */
   anamneseSections?: PdfKeyValueSection[];
 };
 

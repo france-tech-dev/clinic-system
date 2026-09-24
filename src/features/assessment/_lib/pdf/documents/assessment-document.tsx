@@ -1,14 +1,14 @@
-import { Document, Page } from "@react-pdf/renderer";
+import type { PatientReportPayload } from "@/application/patient";
+import { getPatientReportTitle } from "@/domains/patient/_lib/pdf/report-meta";
 import { ClinicHeader } from "@/shared/lib/pdf/components/clinic-header";
 import { PageFooter } from "@/shared/lib/pdf/components/page-footer";
 import { PatientInfo } from "@/shared/lib/pdf/components/patient-info";
 import { SignatureFooter } from "@/shared/lib/pdf/components/signature-footer";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
-import { getPatientReportTitle } from "@/domains/patient/_lib/pdf/report-meta";
-import type { PatientReportPayload } from "@/domains/patient/_lib/pdf/types";
+import { Document, Page } from "@react-pdf/renderer";
 import { AssessmentSection } from "../sections/assessment-section";
 
-type PatientReportDocumentProps = {
+type AssessmentDocumentProps = {
   payload: PatientReportPayload;
   logoOrigin?: string;
 };
@@ -16,7 +16,7 @@ type PatientReportDocumentProps = {
 export function AssessmentDocument({
   payload,
   logoOrigin,
-}: PatientReportDocumentProps) {
+}: AssessmentDocumentProps) {
   const { branding, patientName, signature } = payload;
   const documentTitle = getPatientReportTitle("evaluation");
 

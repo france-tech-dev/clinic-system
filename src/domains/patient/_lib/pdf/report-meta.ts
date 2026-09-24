@@ -1,4 +1,4 @@
-import type { PatientReportMode } from "./types";
+export type PatientReportMode = "full" | "evaluation";
 
 export function getPatientReportTitle(mode: PatientReportMode): string {
   switch (mode) {

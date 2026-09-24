@@ -1,8 +1,8 @@
-import { Text, View } from "@react-pdf/renderer";
-import type { PatientReportEvolution } from "@/domains/patient/_lib/pdf/types";
-import { formatDateBR } from "@/shared/lib/date/format-date-br";
+import type { PatientReportEvolution } from "@/application/patient";
 import { formatTime } from "@/shared/constants/appointment";
+import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { pdfStyles } from "@/shared/lib/pdf/styles/shared";
+import { Text, View } from "@react-pdf/renderer";
 
 type EvolutionsSectionProps = {
   evolutions: PatientReportEvolution[];

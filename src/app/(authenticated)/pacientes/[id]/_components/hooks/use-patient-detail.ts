@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  buildPatientReportPayload,
+  type PatientReportMode,
+  type PatientReportPayload,
+} from "@/application/patient";
 import type { AnamneseSummaryDTO } from "@/domains/anamnese/anamnese.types";
 import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import type {
@@ -7,11 +12,6 @@ import type {
   LinkableAppointmentDTO,
 } from "@/domains/evolution/evolution.types";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
-import { buildPatientReportPayload } from "@/domains/patient/_lib/pdf/build-patient-report-payload";
-import type {
-  PatientReportMode,
-  PatientReportPayload,
-} from "@/domains/patient/_lib/pdf/types";
 import { deletePatientAction } from "@/domains/patient/patient.actions";
 import type { PatientDetailDTO } from "@/domains/patient/patient.types";
 import type {

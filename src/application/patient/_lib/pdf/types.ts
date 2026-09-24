@@ -1,9 +1,10 @@
 import type { AssessmentReportOptions } from "@/domains/assessment/_lib/pdf/assessment-report-options";
 import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import type { PatientReportMode } from "@/domains/patient/_lib/pdf/report-meta";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
 import type { PrintBranding } from "@/shared/types/professional";
 
-export type PatientReportMode = "full" | "evaluation";
+export type { PatientReportMode };
 
 export type PatientReportEvolution = {
   date: string;
@@ -13,6 +14,7 @@ export type PatientReportEvolution = {
   observations?: string;
 };
 
+/** Payload composto (patient + assessment + evolution) — vive em application/. */
 export type PatientReportPayload = {
   mode: PatientReportMode;
   patientName: string;
@@ -20,7 +22,6 @@ export type PatientReportPayload = {
   branding: PrintBranding;
   assessments: AssessmentDTO[];
   selectedAssessment: AssessmentDTO | null;
-  /** Blocos de anamnese já achatados (orquestrados no app/). */
   anamneseSections: PdfKeyValueSection[];
   evolutions: PatientReportEvolution[];
   assessmentReportOptions: AssessmentReportOptions | null;

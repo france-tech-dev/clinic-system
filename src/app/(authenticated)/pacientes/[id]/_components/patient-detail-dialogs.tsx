@@ -1,12 +1,12 @@
 "use client";
 
+import { PatientPdfPreviewDialog } from "./patient-pdf-preview-dialog";
+import { EvolutionFormDialog } from "@/features/evolution/components/evolution-form-dialog";
+import { EvolutionViewDialog } from "./evolution-view-dialog";
 import { EditPatientDialog } from "./edit-patient-dialog";
 import { AssessmentFormDialog } from "./assessment-form-dialog";
 import { AssessmentViewDialog } from "./assessment-view-dialog";
 import type { PatientDetailViewModel } from "./hooks/use-patient-detail";
-import { PatientPdfPreviewDialog } from "@/features/patient/components/patient-pdf-preview-dialog";
-import { EvolutionFormDialog } from "@/features/evolution/components/evolution-form-dialog";
-import { EvolutionViewDialog } from "./evolution-view-dialog";
 
 export function PatientDetailDialogs({ vm }: { vm: PatientDetailViewModel }) {
   const {
