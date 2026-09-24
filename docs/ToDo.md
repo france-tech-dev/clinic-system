@@ -31,14 +31,14 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 ### Melhorias (P1+)
 
 - [x] Link para cadastro do paciente a partir da agenda (lista + calendário)
-- [x] Cor distinta no agendamento quando há evolução registrada (`SessionNote` compareceu na data)
+- [x] Cor distinta no agendamento quando há evolução registrada (`Evolution` compareceu na data)
 - [x] Auditoria domínio multi-profissional — ver [`architecture-audit.md`](./architecture-audit.md) **P6**
 - [x] **P6.1** — `Appointment.memberId` (Member) + nome por evento no calendário + select no form
 - [x] **P6.2** — Filtro por profissional na agenda (`?member=`)
 - [x] **P6.3** — Caixa por profissional (`CashTransaction.memberId` + filtro `/caixa`)
-- [x] **P6.4** — Autoria em Evaluation/SessionNote (autor = membro da sessão)
+- [x] **P6.4** — Autoria em Assessment/Evolution (autor = membro da sessão)
 - [x] **P6.5** — Limpezas (`patient-price-input`, shared types, migration baseline)
-- [x] ProtocolEvaluation autor + PDF com registro profissional (Member.metadata + fallback org)
+- [x] ProtocolAssessment autor + PDF com registro profissional (Member.metadata + fallback org)
 
 ---
 
@@ -123,7 +123,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Pendente
 
-- [ ] **Score + gráfico TO** — raw + comparativo ✅ (sem normas) · ver [`avaliacao/scoring-oficial-to.md`](./avaliacao/scoring-oficial-to.md) · auditoria templates / normas pendente
+- [x] **Score + gráfico TO (SPM)** — raw + T/bandas Casa 5–12; PDF respostas/scores; outros SPM aguardam tabelas; PEDI/Perfil depois · [`avaliacao/scoring-oficial-to.md`](./avaliacao/scoring-oficial-to.md)
 - [ ] **Hub `/relatorio`** — página dedicada para gerar PDF (prontuário, anamnese, avaliação) num só sítio
 - [ ] **GMFM-88 PDF** — exportar/visualizar o comparativo / ficha preenchida em PDF
 - [ ] **Portal dos pais** — página para acompanharem as atividades realizadas com seus filhos (`/portal` ainda é stub)
@@ -174,3 +174,9 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - **Jobs / filas (futuro):** Redis + BullMQ; worker Node no Dokploy; R2 para arquivos — [`docs/jobs-queues.md`](jobs-queues.md). Cloudflare Queues só como orquestração leve opcional.
 - **Conflito de horário:** explicitamente fora de escopo.
 - **Rate limit:** contadores na BD para réplicas Docker; ver README · seção Segurança.
+
+# ToDo (em desenvolvimento)
+
+- [x] **Score + gráfico TO (SPM)** — raw + T/bandas Casa 5–12; PDF; demais SPM/PEDI/Perfil depois
+- [x] **limitar a 1 uso da IA no periodo de teste**.
+- [ ] **Teste de carga com k6** — stress, performance, carga.

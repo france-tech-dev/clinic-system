@@ -12,7 +12,7 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 | Prompt clínico (protocolo)    | [`interpretationAI`](../src/domains/protocol/_lib/interpretationAI/prompt.ts)                     |
 | Somas brutas (determinístico) | [`raw-section-scores.ts`](../src/domains/protocol/_lib/interpretationAI/raw-section-scores.ts)    |
 | Stream HTTP                   | `POST /api/ai/protocol-interpretation-ai`                                                         |
-| Persistência                  | `ProtocolEvaluation.interpretationAI`                                                             |
+| Persistência                  | `ProtocolAssessment.interpretationAI`                                                             |
 | Auditoria                     | `AiGenerationLog` (`ai_generation_logs`)                                                          |
 
 `shared/lib/ai` não contém regras clínicas — só provider e helpers reutilizáveis. Novos casos devem acrescentar prompts no respectivo domínio e reutilizar `prepareAiGeneration` + `route-handler`.
@@ -51,10 +51,10 @@ Novas rotas `/api/ai/*`: reutilizar `prepareAiGeneration`, `logAiGeneration` e `
 
 Dois regimes, conforme billing da clínica:
 
-| Regime                    | Clínica    | Usuário    | Janela                                                                                                               |
-| ------------------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Período de teste**      | 5 gerações | 5 gerações | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` (todas as rotas `/api/ai/*`) |
-| **Plano pago** (qualquer) | 40         | 20         | 1 hora (`rate_limit`)                                                                                                |
+| Regime                    | Clínica   | Usuário   | Janela                                                                                                               |
+| ------------------------- | --------- | --------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Período de teste**      | 1 geração | 1 geração | Desde o início do trial (`trialEndsAt − TRIAL_DAYS`) — contagem em `ai_generation_logs` (todas as rotas `/api/ai/*`) |
+| **Plano pago** (qualquer) | 40        | 20        | 1 hora (`rate_limit`)                                                                                                |
 
 Constantes: [`src/shared/constants/ai-limits.ts`](../src/shared/constants/ai-limits.ts)  
 Enforcement: [`src/shared/lib/ai/generation-limit.ts`](../src/shared/lib/ai/generation-limit.ts)

@@ -297,18 +297,20 @@ Aplicamos SOLID onde traz valor, sem cerimônia enterprise.
 
 ## 11. Domínios actuais (`src/domains`)
 
-| Domínio     | Responsabilidade                                       |
-| ----------- | ------------------------------------------------------ |
-| `patient`   | Pacientes, ClinicalEvaluation, evoluções, PDF          |
-| `anamnese`  | Anamnese por especialidade (hub, formulários, PDF)     |
-| `guardian`  | Responsáveis, portal (Role.CLIENT), vínculo User       |
-| `schedule`  | Agenda, agendamentos, calendário, repetição semanal    |
-| `finance`   | Fluxo de caixa, lançamentos                            |
-| `settings`  | Perfil profissional, branding da clínica               |
-| `team`      | Profissionais da clínica                               |
-| `dashboard` | Painel, estatísticas, alertas                          |
-| `protocol`  | ProtocolEvaluation (ex.: GMFM-88) + EvaluationModuleUI |
-| `billing`   | Mensalidade Stripe (trial + planos)                    |
+| Domínio      | Responsabilidade                                         |
+| ------------ | -------------------------------------------------------- |
+| `patient`    | Pacientes, cadastro, PDF prontuário (orquestra)          |
+| `assessment` | Assessment (avaliação clínica do prontuário)             |
+| `evolution`  | Evolution (nota por atendimento)                         |
+| `anamnese`   | Anamnese por especialidade (hub, formulários, PDF)       |
+| `guardian`   | Responsáveis, portal (Role.CLIENT), vínculo User         |
+| `schedule`   | Agenda, agendamentos, calendário, repetição semanal      |
+| `finance`    | Fluxo de caixa, lançamentos                              |
+| `settings`   | Perfil profissional, branding da clínica                 |
+| `team`       | Profissionais da clínica                                 |
+| `dashboard`  | Painel, estatísticas, alertas                            |
+| `protocol`   | ProtocolAssessment (ex.: GMFM-88) + ProtocolInstrumentUI |
+| `billing`    | Mensalidade Stripe (trial + planos)                      |
 
 ---
 

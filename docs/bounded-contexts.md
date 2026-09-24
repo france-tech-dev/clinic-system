@@ -23,7 +23,9 @@ Evitar imports profundos (`repository` / arquivos internos) entre contextos.
    │   Patient   │      │  Schedule   │       │   Finance   │
    │  Guardian   │◄────►│             │──────►│             │
    │  Anamnese   │      │             │       │             │
-   │  Protocol   │      └─────────────┘       └─────────────┘
+   │  Assessment │      └─────────────┘       └─────────────┘
+   │  Evolution  │              │
+   │  Protocol   │              │
    └─────────────┘              │
           │                     │
           └──────────┬──────────┘
@@ -39,16 +41,18 @@ Evitar imports profundos (`repository` / arquivos internos) entre contextos.
 
 ## Contextos
 
-| Contexto                  | Pasta                                                          | Linguagem (exemplos)                                      | Não é dono de                                           |
-| ------------------------- | -------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------- |
-| **Identity & access**     | `src/platform` (`auth`, `organizations`, …) — alias `@/server` | sessão, member, role, convite, platform admin             | pacientes, agenda, caixa                                |
-| **Billing (SaaS)**        | `src/domains/billing` + `src/platform/billing`                 | trial, plano, seats/extras, Stripe                        | conteúdo clínico                                        |
-| **Patient care**          | `src/domains` → `patient`, `guardian`, `anamnese`              | paciente, responsável, evolução, anamnese, PDF prontuário | preços de plano SaaS                                    |
-| **Protocol & evaluation** | `src/domains/protocol` (+ módulos GMFM, etc.)                  | ProtocolEvaluation, item bruto, interpretationAI, seção  | T-scores inventados; billing                            |
-| **Schedule**              | `src/domains/schedule`                                         | Appointment, memberId (profissional da sessão), status    | lançamentos de caixa (só dispara fluxo em `app/`)       |
-| **Finance**               | `src/domains/finance`                                          | CashTransaction, preço paciente, resumo                   | regras de agenda                                        |
-| **Clinic ops**            | `settings`, `team`, `dashboard` (em `src/domains`)             | branding, profissionais, painel                           | domínio clínico fino                                    |
-| **AI runtime**            | `src/shared/lib/ai`                                            | provider, stream, audit, rate limit                       | prompts clínicos (ficam no contexto dono, ex. protocol) |
+| Contexto                  | Pasta                                                          | Linguagem (exemplos)                                    | Não é dono de                                           |
+| ------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| **Identity & access**     | `src/platform` (`auth`, `organizations`, …) — alias `@/server` | sessão, member, role, convite, platform admin           | pacientes, agenda, caixa                                |
+| **Billing (SaaS)**        | `src/domains/billing` + `src/platform/billing`                 | trial, plano, seats/extras, Stripe                      | conteúdo clínico                                        |
+| **Patient care**          | `src/domains` → `patient`, `guardian`, `anamnese`              | paciente, responsável, anamnese, PDF prontuário         | preços de plano SaaS                                    |
+| **Assessment**            | `src/domains/assessment`                                       | Assessment (prontuário narrativo + domínios)            | instrumentos pontuados; evolução por sessão             |
+| **Evolution**             | `src/domains/evolution`                                        | Evolution (nota por atendimento), vínculo a Appointment | avaliação clínica; agenda                               |
+| **Protocol & assessment** | `src/domains/protocol` (+ módulos GMFM, etc.)                  | ProtocolAssessment, item bruto, interpretationAI, seção | T-scores inventados; billing                            |
+| **Schedule**              | `src/domains/schedule`                                         | Appointment, memberId (profissional da sessão), status  | lançamentos de caixa (só dispara fluxo em `app/`)       |
+| **Finance**               | `src/domains/finance`                                          | CashTransaction, preço paciente, resumo                 | regras de agenda                                        |
+| **Clinic ops**            | `settings`, `team`, `dashboard` (em `src/domains`)             | branding, profissionais, painel                         | domínio clínico fino                                    |
+| **AI runtime**            | `src/shared/lib/ai`                                            | provider, stream, audit, rate limit                     | prompts clínicos (ficam no contexto dono, ex. protocol) |
 
 ### Billing: duas pastas de propósito
 
@@ -89,13 +93,13 @@ Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./archi
 
 ## Glossário curto (evitar ambiguidade)
 
-| Termo                   | Significa                                                               |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `interpretationAI`      | Texto de apoio à leitura do protocolo; **não** score normativo          |
+| Termo                  | Significa                                                               |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `interpretationAI`     | Texto de apoio à leitura do protocolo; **não** score normativo          |
 | Somas brutas por seção | Determinístico a partir das respostas; **não** T-score                  |
-| `Appointment.memberId`  | Profissional **da sessão** (Member)                                     |
-| `Organization.name`     | Nome da clínica (PDF / branding)                                        |
-| Limite de plano         | Seats (`maxProfessionals` / extras) — módulos não são gated por feature |
+| `Appointment.memberId` | Profissional **da sessão** (Member)                                     |
+| `Organization.name`    | Nome da clínica (PDF / branding)                                        |
+| Limite de plano        | Seats (`maxProfessionals` / extras) — módulos não são gated por feature |
 
 ---
 
