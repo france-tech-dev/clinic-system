@@ -1,8 +1,8 @@
 import { db } from "@/shared/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import type {
-  ProtocolEvaluationFormInput,
-  UpdateProtocolEvaluationInput,
+  ProtocolAssessmentFormInput,
+  UpdateProtocolAssessmentInput,
 } from "./protocol.schema";
 
 const assessmentInclude = {
@@ -29,7 +29,7 @@ export const protocolRepository = {
     patientId: string,
     protocolId?: string,
   ) {
-    return db.protocolEvaluation.findMany({
+    return db.protocolAssessment.findMany({
       where: {
         organizationId,
         patientId,
@@ -41,7 +41,7 @@ export const protocolRepository = {
   },
 
   async findById(organizationId: string, id: string) {
-    return db.protocolEvaluation.findFirst({
+    return db.protocolAssessment.findFirst({
       where: { id, organizationId },
       include: assessmentInclude,
     });
@@ -49,10 +49,11 @@ export const protocolRepository = {
 
   async create(
     organizationId: string,
-    data: ProtocolEvaluationFormInput,
+    data: ProtocolAssessmentFormInput,
     memberId: string | null,
     options?: {
       inviteItemId?: string | null;
+      summary?: string | null;
       client?: DbClient;
     },
   ) {
@@ -63,7 +64,7 @@ export const protocolRepository = {
     });
     if (!patient) return null;
 
-    return client.protocolEvaluation.create({
+    return client.protocolAssessment.create({
       data: {
         organizationId,
         patientId: data.patientId,
@@ -72,6 +73,7 @@ export const protocolRepository = {
         label: data.label,
         date: data.date,
         scores: JSON.stringify(data.scores),
+        summary: options?.summary ?? undefined,
         notes: data.notes ?? "",
         inviteItemId: options?.inviteItemId ?? undefined,
       },
@@ -79,19 +81,24 @@ export const protocolRepository = {
     });
   },
 
-  async update(organizationId: string, data: UpdateProtocolEvaluationInput) {
-    const existing = await db.protocolEvaluation.findFirst({
+  async update(
+    organizationId: string,
+    data: UpdateProtocolAssessmentInput,
+    options?: { summary?: string | null },
+  ) {
+    const existing = await db.protocolAssessment.findFirst({
       where: { id: data.id, organizationId },
       select: { id: true },
     });
     if (!existing) return null;
 
-    return db.protocolEvaluation.update({
+    return db.protocolAssessment.update({
       where: { id: data.id },
       data: {
         label: data.label,
         date: data.date,
         scores: JSON.stringify(data.scores),
+        summary: options?.summary ?? undefined,
         notes: data.notes ?? "",
       },
       include: assessmentInclude,
@@ -103,13 +110,13 @@ export const protocolRepository = {
     id: string,
     interpretationAI: string | null,
   ) {
-    const existing = await db.protocolEvaluation.findFirst({
+    const existing = await db.protocolAssessment.findFirst({
       where: { id, organizationId },
       select: { id: true },
     });
     if (!existing) return null;
 
-    return db.protocolEvaluation.update({
+    return db.protocolAssessment.update({
       where: { id },
       data: {
         interpretationAI,
@@ -120,13 +127,13 @@ export const protocolRepository = {
   },
 
   async delete(organizationId: string, id: string) {
-    const existing = await db.protocolEvaluation.findFirst({
+    const existing = await db.protocolAssessment.findFirst({
       where: { id, organizationId },
       include: assessmentInclude,
     });
     if (!existing) return null;
 
-    await db.protocolEvaluation.delete({ where: { id } });
+    await db.protocolAssessment.delete({ where: { id } });
     return existing;
   },
 };

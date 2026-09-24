@@ -32,7 +32,7 @@ const itemProtocolScoresSchema = z.record(
   itemProtocolScoreSchema.optional(),
 );
 
-const protocolEvaluationFieldsSchema = z.object({
+const protocolAssessmentFieldsSchema = z.object({
   patientId: z.string().min(1),
   protocolId: z.string().min(1),
   label: z.string().min(1).max(80),
@@ -42,7 +42,7 @@ const protocolEvaluationFieldsSchema = z.object({
 });
 
 function refineProtocolScores(
-  data: z.infer<typeof protocolEvaluationFieldsSchema>,
+  data: z.infer<typeof protocolAssessmentFieldsSchema>,
   ctx: z.RefinementCtx,
 ) {
   const instrument = getProtocolInstrument(data.protocolId);
@@ -77,16 +77,16 @@ function refineProtocolScores(
   }
 }
 
-export const protocolEvaluationFormSchema =
-  protocolEvaluationFieldsSchema.superRefine(refineProtocolScores);
+export const protocolAssessmentFormSchema =
+  protocolAssessmentFieldsSchema.superRefine(refineProtocolScores);
 
-export const updateProtocolEvaluationSchema = protocolEvaluationFieldsSchema
+export const updateProtocolAssessmentSchema = protocolAssessmentFieldsSchema
   .extend({
     id: z.string().min(1),
   })
   .superRefine(refineProtocolScores);
 
-export const protocolEvaluationIdSchema = z.object({
+export const protocolAssessmentIdSchema = z.object({
   id: z.string().min(1),
 });
 
@@ -103,21 +103,21 @@ export const saveProtocolInterpretationAISchema = z.object({
     }),
 });
 
-export const listProtocolEvaluationsSchema = z.object({
+export const listProtocolAssessmentsSchema = z.object({
   patientId: z.string().min(1),
   protocolId: z.string().min(1).optional(),
 });
 
-export const compareProtocolEvaluationsSchema = z.object({
+export const compareProtocolAssessmentsSchema = z.object({
   baselineId: z.string().min(1),
   followUpId: z.string().min(1),
 });
 
-export type ProtocolEvaluationFormInput = z.infer<
-  typeof protocolEvaluationFormSchema
+export type ProtocolAssessmentFormInput = z.infer<
+  typeof protocolAssessmentFormSchema
 >;
-export type UpdateProtocolEvaluationInput = z.infer<
-  typeof updateProtocolEvaluationSchema
+export type UpdateProtocolAssessmentInput = z.infer<
+  typeof updateProtocolAssessmentSchema
 >;
 export type SaveProtocolInterpretationAIInput = z.infer<
   typeof saveProtocolInterpretationAISchema

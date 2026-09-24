@@ -12,14 +12,14 @@ export const dashboardRepository = {
     });
   },
 
-  countClinicalEvaluations(organizationId: string) {
-    return db.clinicalEvaluation.count({
+  countAssessments(organizationId: string) {
+    return db.assessment.count({
       where: { patient: { organizationId } },
     });
   },
 
-  countSessionsSince(organizationId: string, weekStart: string) {
-    return db.sessionNote.count({
+  countEvolutionsSince(organizationId: string, weekStart: string) {
+    return db.evolution.count({
       where: {
         patient: { organizationId },
         date: { gte: weekStart },
@@ -27,11 +27,11 @@ export const dashboardRepository = {
     });
   },
 
-  findActivePatientsWithLastClinicalEvaluation(organizationId: string) {
+  findActivePatientsWithLastAssessment(organizationId: string) {
     return db.patient.findMany({
       where: { organizationId, status: PatientStatus.ACTIVE },
       include: {
-        clinicalEvaluations: {
+        assessments: {
           orderBy: { date: "desc" },
           take: 1,
           select: { date: true },
@@ -40,8 +40,8 @@ export const dashboardRepository = {
     });
   },
 
-  findRecentClinicalEvaluations(organizationId: string, take = 8) {
-    return db.clinicalEvaluation.findMany({
+  findRecentAssessments(organizationId: string, take = 8) {
+    return db.assessment.findMany({
       where: { patient: { organizationId } },
       include: { patient: { select: { id: true, name: true } } },
       orderBy: { date: "desc" },
@@ -49,8 +49,8 @@ export const dashboardRepository = {
     });
   },
 
-  findRecentSessions(organizationId: string, take = 8) {
-    return db.sessionNote.findMany({
+  findRecentEvolutions(organizationId: string, take = 8) {
+    return db.evolution.findMany({
       where: { patient: { organizationId } },
       include: { patient: { select: { id: true, name: true } } },
       orderBy: { date: "desc" },
@@ -65,8 +65,8 @@ export const dashboardRepository = {
     });
   },
 
-  findSessionDatesSince(organizationId: string, startDate: string) {
-    return db.sessionNote.findMany({
+  findEvolutionDatesSince(organizationId: string, startDate: string) {
+    return db.evolution.findMany({
       where: {
         patient: { organizationId },
         date: { gte: startDate },
@@ -75,8 +75,8 @@ export const dashboardRepository = {
     });
   },
 
-  findEvaluationDatesSince(organizationId: string, startDate: string) {
-    return db.clinicalEvaluation.findMany({
+  findAssessmentDatesSince(organizationId: string, startDate: string) {
+    return db.assessment.findMany({
       where: {
         patient: { organizationId },
         date: { gte: startDate },

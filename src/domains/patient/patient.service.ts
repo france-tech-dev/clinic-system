@@ -3,19 +3,9 @@ import {
   isManagedUploadUrl,
   isMediaUploadMimeType,
 } from "@/shared/lib/media/media.constants";
-import {
-  toClinicalEvaluationDTO,
-  toLinkableAppointmentDTO,
-  toPatientDTO,
-  toSessionDTO,
-} from "./_lib/mappers";
+import { toPatientDTO } from "./_lib/mappers";
 import { patientRepository } from "./patient.repository";
-import type {
-  ClinicalEvaluationFormInput,
-  PatientFormInput,
-  SessionFormInput,
-  UpdatePatientInput,
-} from "./patient.schema";
+import type { PatientFormInput, UpdatePatientInput } from "./patient.schema";
 import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 
 export async function listPatients(
@@ -35,9 +25,6 @@ export async function getPatientDetail(
 
   return {
     patient: toPatientDTO(row),
-    clinicalEvaluations: row.clinicalEvaluations.map(toClinicalEvaluationDTO),
-    sessionNotes: row.sessionNotes.map(toSessionDTO),
-    appointments: row.appointments.map(toLinkableAppointmentDTO),
   };
 }
 
@@ -145,74 +132,4 @@ export async function deletePatient(organizationId: string, id: string) {
   }
 
   return toPatientDTO(row);
-}
-
-export async function resolveAuthorMemberId(
-  organizationId: string,
-  userId: string,
-): Promise<string | null> {
-  const member = await patientRepository.findMemberByUserId(
-    organizationId,
-    userId,
-  );
-  return member?.id ?? null;
-}
-
-export async function createClinicalEvaluation(
-  organizationId: string,
-  data: ClinicalEvaluationFormInput,
-  memberId: string | null,
-) {
-  const row = await patientRepository.createClinicalEvaluation(
-    organizationId,
-    data,
-    memberId,
-  );
-  return row ? toClinicalEvaluationDTO(row) : null;
-}
-
-export async function updateClinicalEvaluation(
-  organizationId: string,
-  id: string,
-  data: ClinicalEvaluationFormInput,
-) {
-  const row = await patientRepository.updateClinicalEvaluation(
-    organizationId,
-    id,
-    data,
-  );
-  return row ? toClinicalEvaluationDTO(row) : null;
-}
-
-export async function deleteClinicalEvaluation(
-  organizationId: string,
-  id: string,
-) {
-  return patientRepository.deleteClinicalEvaluation(organizationId, id);
-}
-
-export async function createSessionNote(
-  organizationId: string,
-  data: SessionFormInput,
-  memberId: string | null,
-) {
-  const row = await patientRepository.createSession(
-    organizationId,
-    data,
-    memberId,
-  );
-  return row ? toSessionDTO(row) : null;
-}
-
-export async function updateSessionNote(
-  organizationId: string,
-  id: string,
-  data: SessionFormInput,
-) {
-  const row = await patientRepository.updateSession(organizationId, id, data);
-  return row ? toSessionDTO(row) : null;
-}
-
-export async function deleteSessionNote(organizationId: string, id: string) {
-  return patientRepository.deleteSession(organizationId, id);
 }

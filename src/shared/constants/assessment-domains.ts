@@ -1,4 +1,4 @@
-export type ClinicalClinicalEvaluationDomainId =
+export type AssessmentDomainId =
   | "fine-motor"
   | "gross-motor"
   | "cognition"
@@ -8,13 +8,13 @@ export type ClinicalClinicalEvaluationDomainId =
   | "communication"
   | "participation";
 
-export type ClinicalClinicalEvaluationDomainCategory = {
-  id: ClinicalClinicalEvaluationDomainId;
+export type AssessmentDomainCategory = {
+  id: AssessmentDomainId;
   label: string;
   color: string;
 };
 
-export const CLINICAL_EVALUATION_DOMAINS: ClinicalClinicalEvaluationDomainCategory[] = [
+export const ASSESSMENT_DOMAINS: AssessmentDomainCategory[] = [
   { id: "fine-motor", label: "Motricidade Fina", color: "#5B7B93" },
   { id: "gross-motor", label: "Motricidade Grossa", color: "#B8863B" },
   { id: "cognition", label: "Cognição", color: "#7A6A9C" },
@@ -25,6 +25,6 @@ export const CLINICAL_EVALUATION_DOMAINS: ClinicalClinicalEvaluationDomainCatego
   { id: "participation", label: "Participação Social", color: "#A5764A" },
 ];
 
-export function categoryOf(id: string): ClinicalClinicalEvaluationDomainCategory {
-  return CLINICAL_EVALUATION_DOMAINS.find((c) => c.id === id) ?? CLINICAL_EVALUATION_DOMAINS[0];
+export function categoryOf(id: string): AssessmentDomainCategory {
+  return ASSESSMENT_DOMAINS.find((c) => c.id === id) ?? ASSESSMENT_DOMAINS[0];
 }

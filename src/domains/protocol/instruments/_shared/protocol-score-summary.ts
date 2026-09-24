@@ -13,7 +13,3 @@ export type ProtocolOverallSummary = {
   percent: number;
   domains: ProtocolDomainSummary[];
 };
-
-export function emptyProtocolOverallSummary(): ProtocolOverallSummary {
-  return { totalScore: 0, maxScore: 0, percent: 0, domains: [] };
-}

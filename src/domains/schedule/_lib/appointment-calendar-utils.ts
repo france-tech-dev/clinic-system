@@ -17,7 +17,7 @@ export type CalendarEvent = {
   patientName: string;
   professionalName: string;
   status: string;
-  hasSessionNote: boolean;
+  hasEvolution: boolean;
 };
 
 export function appointmentDateTime(date: string, time: string): Date {
@@ -40,13 +40,13 @@ export function appointmentsToCalendarEvents(
       patientName: a.patientName,
       professionalName: a.professionalName,
       status: a.status,
-      hasSessionNote: a.hasSessionNote,
+      hasEvolution: a.hasEvolution,
     };
   });
 }
 
-export function calendarEventStyle(status: string, hasSessionNote = false) {
-  if (hasSessionNote) {
+export function calendarEventStyle(status: string, hasEvolution = false) {
+  if (hasEvolution) {
     return {
       backgroundColor: APPOINTMENT_WITH_EVOLUTION_COLOR,
       borderColor: APPOINTMENT_WITH_EVOLUTION_COLOR,
@@ -64,10 +64,7 @@ export function calendarEventStyle(status: string, hasSessionNote = false) {
   };
 }
 
-export function appointmentDisplayColor(
-  status: string,
-  hasSessionNote = false,
-) {
-  if (hasSessionNote) return APPOINTMENT_WITH_EVOLUTION_COLOR;
+export function appointmentDisplayColor(status: string, hasEvolution = false) {
+  if (hasEvolution) return APPOINTMENT_WITH_EVOLUTION_COLOR;
   return appointmentStatusInfo(status).color;
 }

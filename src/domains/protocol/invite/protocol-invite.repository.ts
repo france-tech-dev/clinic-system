@@ -12,7 +12,7 @@ const inviteInclude = {
   items: {
     orderBy: { createdAt: "asc" as const },
     include: {
-      evaluation: { select: { id: true } },
+      assessment: { select: { id: true } },
     },
   },
 } as const;
@@ -111,10 +111,11 @@ export const protocolInviteRepository = {
     scores: Record<string, unknown>;
     label: string;
     date: string;
+    summary?: string | null;
   }) {
     const scoresJson = JSON.stringify(data.scores);
     return db.$transaction(async (tx) => {
-      const evaluation = await protocolRepository.create(
+      const assessment = await protocolRepository.create(
         data.organizationId,
         {
           patientId: data.patientId,
@@ -125,9 +126,13 @@ export const protocolInviteRepository = {
           notes: "",
         },
         null,
-        { client: tx, inviteItemId: data.itemId },
+        {
+          client: tx,
+          inviteItemId: data.itemId,
+          summary: data.summary ?? null,
+        },
       );
-      if (!evaluation) {
+      if (!assessment) {
         throw new Error("Paciente não encontrado para o convite");
       }
 
@@ -140,7 +145,7 @@ export const protocolInviteRepository = {
         },
       });
 
-      return evaluation;
+      return assessment;
     });
   },
 };

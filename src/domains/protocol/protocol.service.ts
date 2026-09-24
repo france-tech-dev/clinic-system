@@ -14,13 +14,13 @@ import type { ProtocolOverallSummary } from "./instruments/_shared/protocol-scor
 import { getProtocolInstrument } from "./instruments/instruments";
 import { protocolRepository } from "./protocol.repository";
 import type {
-  ProtocolEvaluationFormInput,
-  UpdateProtocolEvaluationInput,
+  ProtocolAssessmentFormInput,
+  UpdateProtocolAssessmentInput,
 } from "./protocol.schema";
 import type {
-  ProtocolEvaluationComparisonDTO,
-  ProtocolEvaluationDTO,
-  ProtocolEvaluationPreviewDTO,
+  ProtocolAssessmentComparisonDTO,
+  ProtocolAssessmentDTO,
+  ProtocolAssessmentPreviewDTO,
   ProtocolInterpretationAIContextDTO,
   ProtocolScoreValue,
 } from "./protocol.types";
@@ -33,9 +33,16 @@ function parseScores(raw: string): Record<string, ProtocolScoreValue> {
   }
 }
 
-type ProtocolEvaluationRow = NonNullable<
-  Awaited<ReturnType<typeof protocolRepository.findById>>
->;
+function parseSummary(
+  raw: string | null | undefined,
+): ProtocolOverallSummary | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as ProtocolOverallSummary;
+  } catch {
+    return null;
+  }
+}
 
 function resolveSummary(
   protocolId: string,
@@ -44,9 +51,20 @@ function resolveSummary(
   return getProtocolInstrument(protocolId)?.summarize(scores) ?? null;
 }
 
-function toDTO(row: ProtocolEvaluationRow): ProtocolEvaluationDTO {
+function serializeSummary(
+  summary: ProtocolOverallSummary | null,
+): string | null {
+  return summary ? JSON.stringify(summary) : null;
+}
+
+type ProtocolAssessmentRow = NonNullable<
+  Awaited<ReturnType<typeof protocolRepository.findById>>
+>;
+
+function toDTO(row: ProtocolAssessmentRow): ProtocolAssessmentDTO {
   const scores = parseScores(row.scores);
-  const summary = resolveSummary(row.protocolId, scores);
+  const summary =
+    parseSummary(row.summary) ?? resolveSummary(row.protocolId, scores);
 
   return {
     id: row.id,
@@ -80,7 +98,7 @@ export async function resolveProtocolAuthorMemberId(
   return member?.id ?? null;
 }
 
-export async function listProtocolEvaluations(
+export async function listProtocolAssessments(
   organizationId: string,
   patientId: string,
   protocolId?: string,
@@ -93,7 +111,7 @@ export async function listProtocolEvaluations(
   return rows.map(toDTO);
 }
 
-export async function getProtocolEvaluation(
+export async function getProtocolAssessment(
   organizationId: string,
   id: string,
 ) {
@@ -101,10 +119,10 @@ export async function getProtocolEvaluation(
   return row ? toDTO(row) : null;
 }
 
-export async function getProtocolEvaluationPreview(
+export async function getProtocolAssessmentPreview(
   organizationId: string,
   id: string,
-): Promise<ProtocolEvaluationPreviewDTO | null> {
+): Promise<ProtocolAssessmentPreviewDTO | null> {
   const row = await protocolRepository.findById(organizationId, id);
   if (!row) return null;
   const dto = toDTO(row);
@@ -155,7 +173,7 @@ export async function getProtocolInterpretationAIContext(
   const row = await protocolRepository.findById(organizationId, id);
   if (!row) return null;
 
-  const preview = await getProtocolEvaluationPreview(organizationId, id);
+  const preview = await getProtocolAssessmentPreview(organizationId, id);
   if (!preview) return null;
 
   const dto = toDTO(row);
@@ -189,24 +207,40 @@ export async function saveProtocolInterpretationAI(
   return row ? toDTO(row) : null;
 }
 
-export async function createProtocolEvaluation(
+export async function createProtocolAssessment(
   organizationId: string,
-  data: ProtocolEvaluationFormInput,
+  data: ProtocolAssessmentFormInput,
   memberId: string | null,
 ) {
-  const row = await protocolRepository.create(organizationId, data, memberId);
+  const summary = serializeSummary(
+    resolveSummary(
+      data.protocolId,
+      data.scores as Record<string, ProtocolScoreValue>,
+    ),
+  );
+  const row = await protocolRepository.create(organizationId, data, memberId, {
+    summary,
+  });
   return row ? toDTO(row) : null;
 }
 
-export async function updateProtocolEvaluation(
+export async function updateProtocolAssessment(
   organizationId: string,
-  data: UpdateProtocolEvaluationInput,
+  data: UpdateProtocolAssessmentInput,
 ) {
-  const row = await protocolRepository.update(organizationId, data);
+  const summary = serializeSummary(
+    resolveSummary(
+      data.protocolId,
+      data.scores as Record<string, ProtocolScoreValue>,
+    ),
+  );
+  const row = await protocolRepository.update(organizationId, data, {
+    summary,
+  });
   return row ? toDTO(row) : null;
 }
 
-export async function deleteProtocolEvaluation(
+export async function deleteProtocolAssessment(
   organizationId: string,
   id: string,
 ) {
@@ -214,11 +248,11 @@ export async function deleteProtocolEvaluation(
   return row ? toDTO(row) : null;
 }
 
-export async function compareProtocolEvaluations(
+export async function compareProtocolAssessments(
   organizationId: string,
   baselineId: string,
   followUpId: string,
-): Promise<ProtocolEvaluationComparisonDTO | null> {
+): Promise<ProtocolAssessmentComparisonDTO | null> {
   const [baselineRow, followUpRow] = await Promise.all([
     protocolRepository.findById(organizationId, baselineId),
     protocolRepository.findById(organizationId, followUpId),

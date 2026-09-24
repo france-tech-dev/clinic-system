@@ -1,11 +1,11 @@
-import type { ClinicalEvaluationDTO } from "@/domains/patient/patient.types";
-import type { PrintBranding } from "@/shared/types/professional";
+import type { AssessmentReportOptions } from "@/domains/assessment/_lib/pdf/assessment-report-options";
+import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
-import type { ClinicalEvaluationReportOptions } from "./clinical-evaluation-report-options";
+import type { PrintBranding } from "@/shared/types/professional";
 
 export type PatientReportMode = "full" | "evaluation";
 
-export type PatientReportSessionNote = {
+export type PatientReportEvolution = {
   date: string;
   time: string;
   status: string;
@@ -18,10 +18,10 @@ export type PatientReportPayload = {
   patientName: string;
   signature: string;
   branding: PrintBranding;
-  clinicalEvaluations: ClinicalEvaluationDTO[];
-  selectedEvaluation: ClinicalEvaluationDTO | null;
+  assessments: AssessmentDTO[];
+  selectedAssessment: AssessmentDTO | null;
   /** Blocos de anamnese já achatados (orquestrados no app/). */
   anamneseSections: PdfKeyValueSection[];
-  sessionNotes: PatientReportSessionNote[];
-  evaluationReportOptions: ClinicalEvaluationReportOptions | null;
+  evolutions: PatientReportEvolution[];
+  assessmentReportOptions: AssessmentReportOptions | null;
 };

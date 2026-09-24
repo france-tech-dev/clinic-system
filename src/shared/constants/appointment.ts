@@ -7,7 +7,7 @@ export const APPOINTMENT_STATUSES = [
   { id: AppointmentStatus.CANCELLED, label: "Cancelado", color: "#B83333" },
 ] as const;
 
-/** Agendamento com evolução registrada (SessionNote.appointmentId). */
+/** Agendamento com evolução registrada (Evolution.appointmentId). */
 export const APPOINTMENT_WITH_EVOLUTION_COLOR = "#3D6B8C";
 
 export function appointmentStatusInfo(status: string) {

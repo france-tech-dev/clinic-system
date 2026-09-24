@@ -1,7 +1,4 @@
-import type {
-  AppointmentStatus,
-  PatientPricingType,
-} from "@prisma/enums";
+import type { AppointmentStatus, PatientPricingType } from "@prisma/enums";
 
 export type ScheduleMemberDTO = {
   id: string;
@@ -21,7 +18,7 @@ export type AppointmentDTO = {
   duration: number;
   notes: string;
   status: AppointmentStatus;
-  hasSessionNote: boolean;
+  hasEvolution: boolean;
   patientPricingType: PatientPricingType;
   patientPrice: number | null;
   createdAt: string;

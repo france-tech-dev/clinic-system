@@ -30,10 +30,9 @@ function toDTO(
     duration: row.duration,
     notes: row.notes,
     status: row.status,
-    hasSessionNote: sessionAppointmentIds.has(row.id),
+    hasEvolution: sessionAppointmentIds.has(row.id),
     patientPricingType: row.patient.pricingType,
-    patientPrice:
-      row.patient.price == null ? null : Number(row.patient.price),
+    patientPrice: row.patient.price == null ? null : Number(row.patient.price),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -57,7 +56,7 @@ async function mapWithSessionKeys(
   endDate: string,
 ) {
   const sessionAppointmentIds =
-    await scheduleRepository.findSessionNoteAppointmentIdsInRange(
+    await scheduleRepository.findEvolutionAppointmentIdsInRange(
       organizationId,
       startDate,
       endDate,

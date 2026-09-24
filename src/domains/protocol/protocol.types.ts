@@ -2,7 +2,7 @@ import type { ProtocolOverallSummary } from "./instruments/_shared/protocol-scor
 
 export type ProtocolScoreValue = number | string | null;
 
-export type ProtocolEvaluationDTO = {
+export type ProtocolAssessmentDTO = {
   id: string;
   patientId: string;
   patientName: string;
@@ -20,9 +20,9 @@ export type ProtocolEvaluationDTO = {
   updatedAt: string;
 };
 
-export type ProtocolEvaluationComparisonDTO = {
-  baseline: ProtocolEvaluationDTO;
-  followUp: ProtocolEvaluationDTO;
+export type ProtocolAssessmentComparisonDTO = {
+  baseline: ProtocolAssessmentDTO;
+  followUp: ProtocolAssessmentDTO;
   domainDeltas: {
     domainId: string;
     title: string;
@@ -33,7 +33,7 @@ export type ProtocolEvaluationComparisonDTO = {
   overallDeltaPercent: number;
 };
 
-export type ProtocolEvaluationPreviewDTO = {
+export type ProtocolAssessmentPreviewDTO = {
   id: string;
   protocolId: string;
   protocolName: string;
@@ -52,7 +52,7 @@ export type ProtocolEvaluationPreviewDTO = {
 };
 
 export type ProtocolInterpretationAIContextDTO = {
-  preview: ProtocolEvaluationPreviewDTO;
+  preview: ProtocolAssessmentPreviewDTO;
   patientFirstName: string;
   patientAgeYears: number | null;
   rawScoresText: string | null;

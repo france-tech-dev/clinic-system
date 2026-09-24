@@ -1,16 +1,16 @@
 import type { PatientDTO } from "@/domains/patient/patient.types";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
-type PatientListMetaInput = Pick<
-  PatientDTO,
-  "clinicalEvaluationsCount" | "sessionsCount" | "lastClinicalEvaluationDate"
->;
+export function formatPatientListMeta(
+  patient: Pick<
+    PatientDTO,
+    "assessmentsCount" | "evolutionsCount" | "lastAssessmentDate"
+  >,
+): string {
+  let meta = `${patient.assessmentsCount ?? 0} avaliações · ${patient.evolutionsCount ?? 0} evoluções`;
 
-export function formatPatientListMeta(patient: PatientListMetaInput): string {
-  let meta = `${patient.clinicalEvaluationsCount ?? 0} avaliações · ${patient.sessionsCount ?? 0} evoluções`;
-
-  if (patient.lastClinicalEvaluationDate) {
-    meta += ` · última aval. ${formatDateBR(patient.lastClinicalEvaluationDate)}`;
+  if (patient.lastAssessmentDate) {
+    meta += ` · última aval. ${formatDateBR(patient.lastAssessmentDate)}`;
   }
 
   return meta;

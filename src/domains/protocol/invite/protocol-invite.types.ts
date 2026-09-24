@@ -8,7 +8,7 @@ export type ProtocolInviteItemDTO = {
   totalCount: number;
   submittedAt: string | null;
   /** Presente quando o responsável já enviou este instrumento. */
-  evaluationId: string | null;
+  assessmentId: string | null;
 };
 
 export type ProtocolInviteDTO = {

@@ -3,20 +3,20 @@ import type { DashboardAlert } from "../dashboard.types";
 const REAVALIATION_DAYS = 90;
 const MAX_ALERTS = 8;
 
-type PatientWithLastEvaluation = {
+type PatientWithLastAssessment = {
   id: string;
   name: string;
-  clinicalEvaluations: { date: string }[];
+  assessments: { date: string }[];
 };
 
 export function buildDashboardAlerts(
-  patients: PatientWithLastEvaluation[],
+  patients: PatientWithLastAssessment[],
   now = new Date(),
 ): DashboardAlert[] {
   const alerts: DashboardAlert[] = [];
 
   for (const patient of patients) {
-    const last = patient.clinicalEvaluations[0]?.date;
+    const last = patient.assessments[0]?.date;
     if (!last) {
       alerts.push({
         patientId: patient.id,

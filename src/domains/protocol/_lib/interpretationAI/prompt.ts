@@ -1,4 +1,4 @@
-import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
+import type { ProtocolAssessmentPreviewDTO } from "@/domains/protocol/protocol.types";
 
 export type ProtocolInterpretationAIMeta = {
   /** Primeiro nome apenas — sem CPF, contacto ou outros PII. */
@@ -38,7 +38,7 @@ Regras:
 - Tom clínico, preciso e útil para o profissional rever e editar.
 - Se uma secção tiver poucas respostas elevadas, diga-o claramente.`;
 
-function formatSections(preview: ProtocolEvaluationPreviewDTO): string {
+function formatSections(preview: ProtocolAssessmentPreviewDTO): string {
   if (preview.sections.length === 0) {
     return "(Sem secções disponíveis no modelo do instrumento.)";
   }
@@ -56,7 +56,7 @@ function formatSections(preview: ProtocolEvaluationPreviewDTO): string {
 
 /** Constrói o prompt de interpretação a partir do preview tipado (função pura). */
 export function buildProtocolInterpretationAIPrompt(
-  preview: ProtocolEvaluationPreviewDTO,
+  preview: ProtocolAssessmentPreviewDTO,
   meta: ProtocolInterpretationAIMeta,
   rawScoresText?: string | null,
 ): ProtocolInterpretationAIPrompt {

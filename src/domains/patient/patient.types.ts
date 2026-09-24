@@ -3,15 +3,9 @@ import type {
   PatientPricingType,
   PatientSex,
   PatientStatus,
-  SessionNoteStatus,
 } from "@prisma/enums";
 
-export type {
-  PatientPricingType,
-  PatientSex,
-  PatientStatus,
-  SessionNoteStatus,
-};
+export type { PatientPricingType, PatientSex, PatientStatus };
 
 /** Resumo do responsável embutido no PatientDTO (sem importar features/guardian). */
 export type PatientGuardianEmbed = {
@@ -63,77 +57,11 @@ export type PatientDTO = {
   members: PatientMemberEmbed[];
   createdAt: string;
   updatedAt: string;
-  clinicalEvaluationsCount?: number;
-  sessionsCount?: number;
-  lastClinicalEvaluationDate?: string | null;
-};
-
-export type ClinicalEvaluationDomain = {
-  categoryId: string;
-  score: number;
-  note: string;
-};
-
-export type ClinicalEvaluationDTO = {
-  id: string;
-  patientId: string;
-  memberId: string | null;
-  professionalName: string | null;
-  /** Perfil CREFITO do autor (Member.metadata), para PDF. */
-  authorProfessional: {
-    name: string;
-    registration: string;
-    clinic: string;
-  } | null;
-  type: string;
-  date: string;
-  complaint: string;
-  history: string;
-  domains: ClinicalEvaluationDomain[];
-  goals: string;
-  interventions: string;
-  diagnosis: string;
-  referredBy: string;
-  familyContext: string;
-  previousLevel: string;
-  medications: string;
-  precautions: string;
-  equipment: string;
-  frequency: string;
-  dischargeCriteria: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type SessionNoteDTO = {
-  id: string;
-  patientId: string;
-  appointmentId: string | null;
-  memberId: string | null;
-  professionalName: string | null;
-  date: string;
-  time: string;
-  status: SessionNoteStatus;
-  activities: string;
-  observations: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-/** Agendamento do paciente para vincular a uma evolução. */
-export type SessionLinkableAppointmentDTO = {
-  id: string;
-  date: string;
-  time: string;
-  status: string;
-  professionalName: string | null;
-  /** Id da evolução já ligada, se houver. */
-  sessionNoteId: string | null;
+  assessmentsCount?: number;
+  evolutionsCount?: number;
+  lastAssessmentDate?: string | null;
 };
 
 export type PatientDetailDTO = {
   patient: PatientDTO;
-  clinicalEvaluations: ClinicalEvaluationDTO[];
-  sessionNotes: SessionNoteDTO[];
-  appointments: SessionLinkableAppointmentDTO[];
 };

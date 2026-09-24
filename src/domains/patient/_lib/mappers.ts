@@ -1,25 +1,11 @@
 import { formatCivilDateParam } from "@/shared/lib/date/civil-date-param";
-import { memberToProfessionalProfile } from "@/shared/types/professional";
 import { PatientSex } from "@prisma/enums";
 import type {
-  ClinicalEvaluationDomain,
-  ClinicalEvaluationDTO,
   PatientDTO,
   PatientGuardianEmbed,
   PatientPricingType,
   PatientStatus,
-  SessionLinkableAppointmentDTO,
-  SessionNoteDTO,
-  SessionNoteStatus,
 } from "../patient.types";
-
-export function parseDomains(raw: string): ClinicalEvaluationDomain[] {
-  try {
-    return JSON.parse(raw) as ClinicalEvaluationDomain[];
-  } catch {
-    return [];
-  }
-}
 
 export function toPatientGuardianEmbed(row: {
   id: string;
@@ -78,8 +64,8 @@ export function toPatientDTO(row: {
   }[];
   createdAt: Date;
   updatedAt: Date;
-  _count?: { clinicalEvaluations: number; sessionNotes: number };
-  clinicalEvaluations?: { date: string }[];
+  _count?: { assessments: number; evolutions: number };
+  assessments?: { date: string }[];
 }): PatientDTO {
   return {
     id: row.id,
@@ -100,117 +86,8 @@ export function toPatientDTO(row: {
     })),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
-    clinicalEvaluationsCount: row._count?.clinicalEvaluations,
-    sessionsCount: row._count?.sessionNotes,
-    lastClinicalEvaluationDate: row.clinicalEvaluations?.[0]?.date ?? null,
-  };
-}
-
-export function toClinicalEvaluationDTO(row: {
-  id: string;
-  patientId: string;
-  memberId?: string | null;
-  type: string;
-  date: string;
-  complaint: string;
-  history: string;
-  domains: string;
-  goals: string;
-  interventions: string;
-  diagnosis: string;
-  referredBy: string;
-  familyContext: string;
-  previousLevel: string;
-  medications: string;
-  precautions: string;
-  equipment: string;
-  frequency: string;
-  dischargeCriteria: string;
-  createdAt: Date;
-  updatedAt: Date;
-  member?: {
-    metadata?: string | null;
-    registration?: string | null;
-    user: { name: string | null };
-  } | null;
-}): ClinicalEvaluationDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    memberId: row.memberId ?? null,
-    professionalName: row.member?.user.name?.trim() || null,
-    authorProfessional: row.member
-      ? memberToProfessionalProfile(
-          row.member.metadata,
-          row.member.user.name,
-          row.member.registration,
-        )
-      : null,
-    type: row.type,
-    date: row.date,
-    complaint: row.complaint,
-    history: row.history,
-    domains: parseDomains(row.domains),
-    goals: row.goals,
-    interventions: row.interventions,
-    diagnosis: row.diagnosis,
-    referredBy: row.referredBy,
-    familyContext: row.familyContext,
-    previousLevel: row.previousLevel,
-    medications: row.medications,
-    precautions: row.precautions,
-    equipment: row.equipment,
-    frequency: row.frequency,
-    dischargeCriteria: row.dischargeCriteria,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
-export function toSessionDTO(row: {
-  id: string;
-  patientId: string;
-  appointmentId?: string | null;
-  memberId?: string | null;
-  date: string;
-  time: string;
-  status: SessionNoteStatus;
-  activities: string;
-  observations: string;
-  createdAt: Date;
-  updatedAt: Date;
-  member?: { user: { name: string | null } } | null;
-}): SessionNoteDTO {
-  return {
-    id: row.id,
-    patientId: row.patientId,
-    appointmentId: row.appointmentId ?? null,
-    memberId: row.memberId ?? null,
-    professionalName: row.member?.user.name?.trim() || null,
-    date: row.date,
-    time: row.time ?? "",
-    status: row.status,
-    activities: row.activities,
-    observations: row.observations,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
-export function toLinkableAppointmentDTO(row: {
-  id: string;
-  date: string;
-  time: string;
-  status: string;
-  sessionNote?: { id: string } | null;
-  member?: { user: { name: string | null } } | null;
-}): SessionLinkableAppointmentDTO {
-  return {
-    id: row.id,
-    date: row.date,
-    time: row.time ?? "",
-    status: row.status,
-    professionalName: row.member?.user.name?.trim() || null,
-    sessionNoteId: row.sessionNote?.id ?? null,
+    assessmentsCount: row._count?.assessments,
+    evolutionsCount: row._count?.evolutions,
+    lastAssessmentDate: row.assessments?.[0]?.date ?? null,
   };
 }

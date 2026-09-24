@@ -1,10 +1,10 @@
-import { db } from "@/shared/lib/prisma";
 import { addDaysIso } from "@/shared/constants/appointment";
+import { db } from "@/shared/lib/prisma";
 import {
   AppointmentStatus,
+  EvolutionStatus,
   MemberStatus,
   Role,
-  SessionNoteStatus,
 } from "@prisma/enums";
 import type {
   AppointmentFormInput,
@@ -28,16 +28,16 @@ const appointmentInclude = {
 } as const;
 
 export const scheduleRepository = {
-  async findSessionNoteAppointmentIdsInRange(
+  async findEvolutionAppointmentIdsInRange(
     organizationId: string,
     startDate: string,
     endDate: string,
   ) {
-    const notes = await db.sessionNote.findMany({
+    const notes = await db.evolution.findMany({
       where: {
         patient: { organizationId },
         date: { gte: startDate, lte: endDate },
-        status: SessionNoteStatus.ATTENDED,
+        status: EvolutionStatus.ATTENDED,
         appointmentId: { not: null },
       },
       select: { appointmentId: true },
@@ -170,7 +170,7 @@ export const scheduleRepository = {
         },
         include: appointmentInclude,
       });
-      await tx.sessionNote.updateMany({
+      await tx.evolution.updateMany({
         where: { appointmentId: data.id },
         data: { date: data.date, time: data.time ?? "" },
       });
@@ -187,7 +187,8 @@ export const scheduleRepository = {
     const existing = await db.appointment.findFirst({
       where: { id, organizationId },
     });
-    if (!existing || existing.status !== AppointmentStatus.SCHEDULED) return null;
+    if (!existing || existing.status !== AppointmentStatus.SCHEDULED)
+      return null;
 
     return db.$transaction(async (tx) => {
       const row = await tx.appointment.update({
@@ -195,7 +196,7 @@ export const scheduleRepository = {
         data: { date, time: time ?? "" },
         include: appointmentInclude,
       });
-      await tx.sessionNote.updateMany({
+      await tx.evolution.updateMany({
         where: { appointmentId: id },
         data: { date, time: time ?? "" },
       });

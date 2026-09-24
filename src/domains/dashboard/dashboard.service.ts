@@ -1,5 +1,5 @@
 import { addDaysIso, todayIso } from "@/shared/constants/appointment";
-import { SessionNoteStatus } from "@prisma/enums";
+import { EvolutionStatus } from "@prisma/enums";
 import {
   activitySeriesStartDate,
   buildActivityMonthSeries,
@@ -23,11 +23,11 @@ function startOfWeekIso() {
   return monday.toISOString().slice(0, 10);
 }
 
-function sessionActivityLabel(status: string) {
+function evolutionActivityLabel(status: string) {
   switch (status) {
-    case SessionNoteStatus.ABSENT:
+    case EvolutionStatus.ABSENT:
       return "Evolução · Faltou";
-    case SessionNoteStatus.CANCELLED:
+    case EvolutionStatus.CANCELLED:
       return "Evolução · Cancelada";
     default:
       return "Evolução";
@@ -35,15 +35,15 @@ function sessionActivityLabel(status: string) {
 }
 
 function buildRecentActivity(
-  recentEvals: Awaited<
-    ReturnType<typeof dashboardRepository.findRecentClinicalEvaluations>
+  recentAssessments: Awaited<
+    ReturnType<typeof dashboardRepository.findRecentAssessments>
   >,
-  recentSessions: Awaited<
-    ReturnType<typeof dashboardRepository.findRecentSessions>
+  recentEvolutions: Awaited<
+    ReturnType<typeof dashboardRepository.findRecentEvolutions>
   >,
 ): DashboardActivity[] {
   return [
-    ...recentEvals.map((e) => ({
+    ...recentAssessments.map((e) => ({
       id: e.id,
       kind: "evaluation" as const,
       patientId: e.patient.id,
@@ -51,13 +51,13 @@ function buildRecentActivity(
       date: e.date,
       label: `Avaliação ${e.type}`,
     })),
-    ...recentSessions.map((s) => ({
+    ...recentEvolutions.map((s) => ({
       id: s.id,
       kind: "session" as const,
       patientId: s.patient.id,
       patientName: s.patient.name,
       date: s.date,
-      label: sessionActivityLabel(s.status),
+      label: evolutionActivityLabel(s.status),
     })),
   ]
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -75,32 +75,30 @@ export async function getDashboardData(
   const [
     totalPatients,
     activePatients,
-    totalClinicalEvaluations,
+    totalAssessments,
     sessionsThisWeek,
     patients,
-    recentEvals,
-    recentSessions,
+    recentAssessments,
+    recentEvolutions,
     patientCreated,
-    sessionDates,
-    evaluationDates,
+    evolutionDates,
+    assessmentDates,
     birthdayPatients,
     appointmentSlots,
   ] = await Promise.all([
     dashboardRepository.countPatients(organizationId),
     dashboardRepository.countActivePatients(organizationId),
-    dashboardRepository.countClinicalEvaluations(organizationId),
-    dashboardRepository.countSessionsSince(organizationId, weekStart),
-    dashboardRepository.findActivePatientsWithLastClinicalEvaluation(
-      organizationId,
-    ),
-    dashboardRepository.findRecentClinicalEvaluations(organizationId),
-    dashboardRepository.findRecentSessions(organizationId),
+    dashboardRepository.countAssessments(organizationId),
+    dashboardRepository.countEvolutionsSince(organizationId, weekStart),
+    dashboardRepository.findActivePatientsWithLastAssessment(organizationId),
+    dashboardRepository.findRecentAssessments(organizationId),
+    dashboardRepository.findRecentEvolutions(organizationId),
     dashboardRepository.findPatientCreatedAtsSince(
       organizationId,
       activitySince,
     ),
-    dashboardRepository.findSessionDatesSince(organizationId, activityStart),
-    dashboardRepository.findEvaluationDatesSince(organizationId, activityStart),
+    dashboardRepository.findEvolutionDatesSince(organizationId, activityStart),
+    dashboardRepository.findAssessmentDatesSince(organizationId, activityStart),
     dashboardRepository.findActivePatientsWithBirthDate(organizationId),
     dashboardRepository.findAppointmentSlotsSince(organizationId, busiestStart),
   ]);
@@ -113,15 +111,15 @@ export async function getDashboardData(
     stats: {
       activePatients,
       totalPatients,
-      totalClinicalEvaluations,
+      totalAssessments,
       sessionsThisWeek,
     },
     alerts: buildDashboardAlerts(patients),
-    recentActivity: buildRecentActivity(recentEvals, recentSessions),
+    recentActivity: buildRecentActivity(recentAssessments, recentEvolutions),
     activitySeries: buildActivityMonthSeries({
       patientCreatedAts: patientCreated.map((p) => p.createdAt),
-      sessionDates: sessionDates.map((s) => s.date),
-      evaluationDates: evaluationDates.map((e) => e.date),
+      sessionDates: evolutionDates.map((s) => s.date),
+      evaluationDates: assessmentDates.map((e) => e.date),
     }),
     upcomingBirthdays: buildUpcomingBirthdays(
       birthdaySources,

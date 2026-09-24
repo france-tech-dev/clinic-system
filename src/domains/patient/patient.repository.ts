@@ -1,24 +1,8 @@
 import { parseCivilDateParam } from "@/shared/lib/date/civil-date-param";
 import { db } from "@/shared/lib/prisma";
 import { PatientPricingType, PatientSex, Role } from "@prisma/enums";
-import type {
-  ClinicalEvaluationFormInput,
-  PatientFormInput,
-  SessionFormInput,
-  UpdatePatientInput,
-} from "./patient.schema";
+import type { PatientFormInput, UpdatePatientInput } from "./patient.schema";
 import type { PatientStatus } from "./patient.types";
-
-const memberAuthorInclude = {
-  member: {
-    select: {
-      id: true,
-      metadata: true,
-      registration: true,
-      user: { select: { name: true } },
-    },
-  },
-} as const;
 
 const guardianSelect = {
   id: true,
@@ -53,9 +37,9 @@ const patientListInclude = {
   guardian: { select: guardianSelect },
   ...membersInclude,
   _count: {
-    select: { clinicalEvaluations: true, sessionNotes: true },
+    select: { assessments: true, evolutions: true },
   },
-  clinicalEvaluations: {
+  assessments: {
     orderBy: { date: "desc" as const },
     take: 1,
     select: { date: true },
@@ -89,23 +73,6 @@ export const patientRepository = {
       include: {
         guardian: { select: guardianSelect },
         ...membersInclude,
-        clinicalEvaluations: {
-          include: memberAuthorInclude,
-          orderBy: { date: "desc" },
-        },
-        sessionNotes: {
-          include: memberAuthorInclude,
-          orderBy: [{ date: "desc" }, { time: "desc" }],
-        },
-        appointments: {
-          include: {
-            member: {
-              select: { user: { select: { name: true } } },
-            },
-            sessionNote: { select: { id: true } },
-          },
-          orderBy: [{ date: "desc" }, { time: "desc" }],
-        },
       },
     });
   },
@@ -270,137 +237,6 @@ export const patientRepository = {
     });
     if (!existing) return null;
     await db.patient.delete({ where: { id } });
-    return existing;
-  },
-
-  async findMemberByUserId(organizationId: string, userId: string) {
-    return db.member.findFirst({
-      where: { organizationId, userId },
-      select: { id: true },
-    });
-  },
-
-  async createClinicalEvaluation(
-    organizationId: string,
-    data: ClinicalEvaluationFormInput,
-    memberId: string | null,
-  ) {
-    const patient = await db.patient.findFirst({
-      where: { id: data.patientId, organizationId },
-    });
-    if (!patient) return null;
-    const { patientId, domains, ...rest } = data;
-    return db.clinicalEvaluation.create({
-      data: {
-        patientId,
-        memberId,
-        ...rest,
-        domains: JSON.stringify(domains),
-      },
-      include: memberAuthorInclude,
-    });
-  },
-
-  async updateClinicalEvaluation(
-    organizationId: string,
-    id: string,
-    data: ClinicalEvaluationFormInput,
-  ) {
-    const existing = await db.clinicalEvaluation.findFirst({
-      where: { id, patient: { organizationId } },
-    });
-    if (!existing) return null;
-    const { patientId, domains, ...rest } = data;
-    return db.clinicalEvaluation.update({
-      where: { id },
-      data: {
-        patientId,
-        ...rest,
-        domains: JSON.stringify(domains),
-      },
-      include: memberAuthorInclude,
-    });
-  },
-
-  async deleteClinicalEvaluation(organizationId: string, id: string) {
-    const existing = await db.clinicalEvaluation.findFirst({
-      where: { id, patient: { organizationId } },
-    });
-    if (!existing) return null;
-    await db.clinicalEvaluation.delete({ where: { id } });
-    return existing;
-  },
-
-  async createSession(
-    organizationId: string,
-    data: SessionFormInput,
-    memberId: string | null,
-  ) {
-    const appointment = await db.appointment.findFirst({
-      where: {
-        id: data.appointmentId,
-        patientId: data.patientId,
-        organizationId,
-        sessionNote: null,
-      },
-    });
-    if (!appointment) return null;
-
-    return db.sessionNote.create({
-      data: {
-        patientId: data.patientId,
-        appointmentId: appointment.id,
-        memberId: memberId ?? appointment.memberId,
-        date: appointment.date,
-        time: appointment.time,
-        status: data.status,
-        activities: data.activities ?? "",
-        observations: data.observations ?? "",
-      },
-      include: memberAuthorInclude,
-    });
-  },
-
-  async updateSession(
-    organizationId: string,
-    id: string,
-    data: SessionFormInput,
-  ) {
-    const existing = await db.sessionNote.findFirst({
-      where: { id, patient: { organizationId } },
-    });
-    if (!existing) return null;
-
-    const appointment = await db.appointment.findFirst({
-      where: {
-        id: data.appointmentId,
-        patientId: data.patientId,
-        organizationId,
-        OR: [{ sessionNote: null }, { sessionNote: { id } }],
-      },
-    });
-    if (!appointment) return null;
-
-    return db.sessionNote.update({
-      where: { id },
-      data: {
-        appointmentId: appointment.id,
-        date: appointment.date,
-        time: appointment.time,
-        status: data.status,
-        activities: data.activities ?? "",
-        observations: data.observations ?? "",
-      },
-      include: memberAuthorInclude,
-    });
-  },
-
-  async deleteSession(organizationId: string, id: string) {
-    const existing = await db.sessionNote.findFirst({
-      where: { id, patient: { organizationId } },
-    });
-    if (!existing) return null;
-    await db.sessionNote.delete({ where: { id } });
     return existing;
   },
 };

@@ -34,12 +34,18 @@ export function defineItemProtocolInstrument(
     abbrev: string;
     subtitle?: string;
     supportsPublicInvite?: boolean;
+    /** Override (ex. SPM com normas). */
+    summarize?: (
+      scores: Record<string, ProtocolScoreValue>,
+    ) => ProtocolOverallSummary | null;
   },
 ): ItemProtocolInstrument {
-  const { template } = def;
+  const { template, summarize, ...rest } = def;
   return {
-    ...def,
+    ...rest,
+    template,
     family: "item-protocol",
-    summarize: (scores) => summarizeItemProtocol(template, scores),
+    summarize:
+      summarize ?? ((scores) => summarizeItemProtocol(template, scores)),
   };
 }

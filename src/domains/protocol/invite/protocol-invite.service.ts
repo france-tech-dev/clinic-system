@@ -1,18 +1,18 @@
 import {
-  getProtocolInstrument,
-  listProtocolInstruments,
-} from "@/domains/protocol/instruments/instruments";
-import {
   createItemResponseSchema,
   listItemProtocolItemIds,
   parseItemProtocolResponses,
   type ItemProtocolTemplate,
 } from "@/domains/protocol/instruments/_shared/item-protocol-template";
-import { paths } from "@/shared/constants/paths";
+import {
+  getProtocolInstrument,
+  listProtocolInstruments,
+} from "@/domains/protocol/instruments/instruments";
 import { protocolRepository } from "@/domains/protocol/protocol.repository";
-import { protocolInviteRepository } from "./protocol-invite.repository";
-import { createProtocolInviteToken } from "./_lib/token";
+import { paths } from "@/shared/constants/paths";
 import { computeInviteFlags } from "./_lib/invite-status";
+import { createProtocolInviteToken } from "./_lib/token";
+import { protocolInviteRepository } from "./protocol-invite.repository";
 import type {
   CreateProtocolInviteInput,
   SubmitPublicInviteInput,
@@ -77,7 +77,7 @@ function toItemDTO(item: InviteRow["items"][number]): ProtocolInviteItemDTO {
     status: item.status === "submitted" ? "submitted" : "pending",
     totalCount: template ? listItemProtocolItemIds(template).length : 0,
     submittedAt: item.submittedAt?.toISOString() ?? null,
-    evaluationId: item.evaluation?.id ?? null,
+    assessmentId: item.assessment?.id ?? null,
   };
 }
 
@@ -201,7 +201,7 @@ export async function getPublicProtocolInvite(
     allSubmitted: flags.allSubmitted,
     items: row.items.map((item) => ({
       ...toItemDTO(item),
-      evaluationId: null,
+      assessmentId: null,
     })),
   };
 }
@@ -267,6 +267,7 @@ export async function submitPublicInvite(input: SubmitPublicInviteInput) {
 
   const responses = parseItemProtocolResponses(template, input.responses);
   const date = new Date().toISOString().slice(0, 10);
+  const summary = getProtocolInstrument(input.protocolId)?.summarize(responses);
 
   await protocolInviteRepository.submitItem({
     itemId: item.id,
@@ -276,6 +277,7 @@ export async function submitPublicInvite(input: SubmitPublicInviteInput) {
     scores: responses,
     label: protocolName(input.protocolId),
     date,
+    summary: summary ? JSON.stringify(summary) : null,
   });
 
   return { ok: true as const, alreadySubmitted: false as const };

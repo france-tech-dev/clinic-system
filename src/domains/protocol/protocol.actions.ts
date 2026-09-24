@@ -8,28 +8,28 @@ import { requireOrgId } from "@/shared/lib/org-context";
 import { ok, type ActionResult } from "@/shared/types/action-result";
 import { revalidatePath } from "next/cache";
 import {
-  compareProtocolEvaluationsSchema,
-  listProtocolEvaluationsSchema,
-  protocolEvaluationFormSchema,
-  protocolEvaluationIdSchema,
+  compareProtocolAssessmentsSchema,
+  listProtocolAssessmentsSchema,
+  protocolAssessmentFormSchema,
+  protocolAssessmentIdSchema,
   saveProtocolInterpretationAISchema,
-  updateProtocolEvaluationSchema,
+  updateProtocolAssessmentSchema,
 } from "./protocol.schema";
 import {
-  compareProtocolEvaluations,
-  createProtocolEvaluation,
-  deleteProtocolEvaluation,
-  getProtocolEvaluation,
-  getProtocolEvaluationPreview,
-  listProtocolEvaluations,
+  compareProtocolAssessments,
+  createProtocolAssessment,
+  deleteProtocolAssessment,
+  getProtocolAssessment,
+  getProtocolAssessmentPreview,
+  listProtocolAssessments,
   resolveProtocolAuthorMemberId,
   saveProtocolInterpretationAI,
-  updateProtocolEvaluation,
+  updateProtocolAssessment,
 } from "./protocol.service";
 import type {
-  ProtocolEvaluationComparisonDTO,
-  ProtocolEvaluationDTO,
-  ProtocolEvaluationPreviewDTO,
+  ProtocolAssessmentComparisonDTO,
+  ProtocolAssessmentDTO,
+  ProtocolAssessmentPreviewDTO,
 } from "./protocol.types";
 
 function revalidateProtocol(protocolId: string, patientId?: string) {
@@ -37,15 +37,15 @@ function revalidateProtocol(protocolId: string, patientId?: string) {
   if (patientId) revalidatePath(paths.paciente(patientId));
 }
 
-export async function listProtocolEvaluationsAction(
+export async function listProtocolAssessmentsAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationDTO[]>> {
+): Promise<ActionResult<ProtocolAssessmentDTO[]>> {
   try {
     await requirePermission({ project: ["read"] });
-    const payload = AppError.parse(listProtocolEvaluationsSchema, input);
+    const payload = AppError.parse(listProtocolAssessmentsSchema, input);
 
     const { organizationId } = await requireOrgId();
-    const data = await listProtocolEvaluations(
+    const data = await listProtocolAssessments(
       organizationId,
       payload.patientId,
       payload.protocolId,
@@ -56,15 +56,15 @@ export async function listProtocolEvaluationsAction(
   }
 }
 
-export async function getProtocolEvaluationAction(
+export async function getProtocolAssessmentAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationDTO>> {
+): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     await requirePermission({ project: ["read"] });
-    const payload = AppError.parse(protocolEvaluationIdSchema, input);
+    const payload = AppError.parse(protocolAssessmentIdSchema, input);
 
     const { organizationId } = await requireOrgId();
-    const data = await getProtocolEvaluation(organizationId, payload.id);
+    const data = await getProtocolAssessment(organizationId, payload.id);
     if (!data) throw new AppError("Avaliação não encontrada");
     return ok(data);
   } catch (error) {
@@ -72,15 +72,15 @@ export async function getProtocolEvaluationAction(
   }
 }
 
-export async function getProtocolEvaluationPreviewAction(
+export async function getProtocolAssessmentPreviewAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationPreviewDTO>> {
+): Promise<ActionResult<ProtocolAssessmentPreviewDTO>> {
   try {
     await requirePermission({ project: ["read"] });
-    const payload = AppError.parse(protocolEvaluationIdSchema, input);
+    const payload = AppError.parse(protocolAssessmentIdSchema, input);
 
     const { organizationId } = await requireOrgId();
-    const data = await getProtocolEvaluationPreview(organizationId, payload.id);
+    const data = await getProtocolAssessmentPreview(organizationId, payload.id);
     if (!data) throw new AppError("Avaliação não encontrada");
     return ok(data);
   } catch (error) {
@@ -90,7 +90,7 @@ export async function getProtocolEvaluationPreviewAction(
 
 export async function saveProtocolInterpretationAIAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationDTO>> {
+): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     await requirePermission({ project: ["update"] });
     const payload = AppError.parse(saveProtocolInterpretationAISchema, input);
@@ -110,12 +110,12 @@ export async function saveProtocolInterpretationAIAction(
   }
 }
 
-export async function createProtocolEvaluationAction(
+export async function createProtocolAssessmentAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationDTO>> {
+): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     await requirePermission({ project: ["create"] });
-    const payload = AppError.parse(protocolEvaluationFormSchema, input);
+    const payload = AppError.parse(protocolAssessmentFormSchema, input);
 
     const { organizationId, userId } =
       await requireOrgWrite();
@@ -123,7 +123,7 @@ export async function createProtocolEvaluationAction(
       organizationId,
       userId,
     );
-    const data = await createProtocolEvaluation(
+    const data = await createProtocolAssessment(
       organizationId,
       payload,
       memberId,
@@ -137,15 +137,15 @@ export async function createProtocolEvaluationAction(
   }
 }
 
-export async function updateProtocolEvaluationAction(
+export async function updateProtocolAssessmentAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationDTO>> {
+): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     await requirePermission({ project: ["update"] });
-    const payload = AppError.parse(updateProtocolEvaluationSchema, input);
+    const payload = AppError.parse(updateProtocolAssessmentSchema, input);
 
     const { organizationId } = await requireOrgWrite();
-    const data = await updateProtocolEvaluation(organizationId, payload);
+    const data = await updateProtocolAssessment(organizationId, payload);
     if (!data) throw new AppError("Avaliação não encontrada");
 
     revalidateProtocol(data.protocolId, payload.patientId);
@@ -155,18 +155,18 @@ export async function updateProtocolEvaluationAction(
   }
 }
 
-export async function deleteProtocolEvaluationAction(
+export async function deleteProtocolAssessmentAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationDTO>> {
+): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
     await requirePermission({ project: ["delete"] });
-    const payload = AppError.parse(protocolEvaluationIdSchema, input);
+    const payload = AppError.parse(protocolAssessmentIdSchema, input);
 
     const { organizationId } = await requireOrgWrite();
-    const existing = await getProtocolEvaluation(organizationId, payload.id);
+    const existing = await getProtocolAssessment(organizationId, payload.id);
     if (!existing) throw new AppError("Avaliação não encontrada");
 
-    const data = await deleteProtocolEvaluation(organizationId, payload.id);
+    const data = await deleteProtocolAssessment(organizationId, payload.id);
     if (!data) throw new AppError("Avaliação não encontrada");
 
     revalidateProtocol(existing.protocolId, existing.patientId);
@@ -176,15 +176,15 @@ export async function deleteProtocolEvaluationAction(
   }
 }
 
-export async function compareProtocolEvaluationsAction(
+export async function compareProtocolAssessmentsAction(
   input: unknown,
-): Promise<ActionResult<ProtocolEvaluationComparisonDTO>> {
+): Promise<ActionResult<ProtocolAssessmentComparisonDTO>> {
   try {
     await requirePermission({ project: ["read"] });
-    const payload = AppError.parse(compareProtocolEvaluationsSchema, input);
+    const payload = AppError.parse(compareProtocolAssessmentsSchema, input);
 
     const { organizationId } = await requireOrgId();
-    const data = await compareProtocolEvaluations(
+    const data = await compareProtocolAssessments(
       organizationId,
       payload.baselineId,
       payload.followUpId,
