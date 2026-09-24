@@ -4,12 +4,12 @@ import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import { AvaliacaoLista } from "./avaliacao-lista";
 
 export function AvaliacaoTab({
+  patientId,
   assessments,
-  onNewEvaluation,
   onViewEvaluation,
 }: {
+  patientId: string;
   assessments: AssessmentDTO[];
-  onNewEvaluation: () => void;
   onViewEvaluation: (evaluation: AssessmentDTO) => void;
 }) {
   return (
@@ -20,8 +20,8 @@ export function AvaliacaoTab({
       className="space-y-3"
     >
       <AvaliacaoLista
+        patientId={patientId}
         assessments={assessments}
-        onNewEvaluation={onNewEvaluation}
         onViewEvaluation={onViewEvaluation}
       />
     </section>

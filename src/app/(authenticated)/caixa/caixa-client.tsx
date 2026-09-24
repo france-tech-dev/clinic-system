@@ -3,6 +3,11 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
+import {
   Check,
   ChevronDown,
   Download,
@@ -29,7 +34,6 @@ import {
   filterCashTransactionsByMethod,
   type CashMethodFilter,
 } from "@/domains/finance/_lib/cash-method-filter";
-import { cashPeriodToSearchParams } from "@/domains/finance/_lib/period-utils";
 import { markCashTransactionPostedAction } from "@/domains/finance/finance.actions";
 import type {
   CashflowPageData,
@@ -44,7 +48,6 @@ import {
   cashTransactionStatusLabel,
   cashTransactionTypeLabel,
 } from "@/shared/constants/cash";
-import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 import { formatBrl } from "@/shared/lib/money-utils";
 import { cn } from "@/shared/lib/utils";
@@ -65,6 +68,16 @@ import {
 } from "@prisma/enums";
 
 const MEMBER_FILTER_ALL = "all";
+
+const LIST_VIEW_VALUES = CASH_LIST_VIEWS.map((v) => v.id) as unknown as readonly [
+  CashListView,
+  ...CashListView[],
+];
+
+const METHOD_FILTER_VALUES = [
+  CASH_METHOD_FILTER_ALL,
+  ...CASH_PAYMENT_METHODS.map((m) => m.id),
+] as const;
 
 export function CaixaClient({
   error,
@@ -106,8 +119,8 @@ function CaixaClientBody({
   patients,
   members,
   memberFilter,
-  listView,
-  methodFilter,
+  listView: initialListView,
+  methodFilter: initialMethodFilter,
 }: {
   initial: CashflowPageData;
   patients: PatientDTO[];
@@ -117,6 +130,24 @@ function CaixaClientBody({
   methodFilter: CashMethodFilter;
 }) {
   const router = useRouter();
+  const [url, setUrl] = useQueryStates(
+    {
+      period: parseAsString,
+      from: parseAsString,
+      to: parseAsString,
+      month: parseAsString,
+      member: parseAsString,
+      view: parseAsStringLiteral(LIST_VIEW_VALUES).withDefault(initialListView),
+      method: parseAsStringLiteral(METHOD_FILTER_VALUES).withDefault(
+        initialMethodFilter,
+      ),
+    },
+    { history: "replace" },
+  );
+
+  const listView = url.view;
+  const methodFilter = url.method as CashMethodFilter;
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<CashTransactionDTO | null>(null);
   const [defaultType, setDefaultType] = useState<CashTransactionType>(
@@ -161,52 +192,52 @@ function CaixaClientBody({
     (methodFilter !== CASH_METHOD_FILTER_ALL ? 1 : 0) +
     (memberFilter !== MEMBER_FILTER_ALL ? 1 : 0);
 
-  function buildUrl(
-    period: CashPeriod,
-    member: string,
-    view: CashListView = listView,
-    method: CashMethodFilter = methodFilter,
-  ) {
-    return `${paths.caixa}?${cashPeriodToSearchParams(period, {
-      member: member !== MEMBER_FILTER_ALL ? member : undefined,
-      view: view !== "all" ? view : undefined,
-      method: method !== CASH_METHOD_FILTER_ALL ? method : undefined,
-    })}`;
-  }
-
   function navigatePeriod(next: CashPeriod) {
     startNavTransition(() => {
-      router.push(buildUrl(next, memberFilter));
+      void setUrl(
+        {
+          period: next.preset,
+          from: next.start,
+          to: next.end,
+          month:
+            next.preset === "month" ? next.start.slice(0, 7) : null,
+          member:
+            memberFilter !== MEMBER_FILTER_ALL ? memberFilter : null,
+        },
+        { shallow: false },
+      );
     });
   }
 
   function changeMemberFilter(next: string) {
     startNavTransition(() => {
-      router.push(buildUrl(initial.period, next || MEMBER_FILTER_ALL));
+      void setUrl(
+        {
+          member: next && next !== MEMBER_FILTER_ALL ? next : null,
+        },
+        { shallow: false },
+      );
     });
   }
 
   function changeListView(next: CashListView) {
-    startNavTransition(() => {
-      router.push(buildUrl(initial.period, memberFilter, next));
-    });
+    void setUrl({ view: next });
   }
 
   function changeMethodFilter(next: CashMethodFilter) {
-    startNavTransition(() => {
-      router.push(buildUrl(initial.period, memberFilter, listView, next));
-    });
+    void setUrl({ method: next });
   }
 
   function clearFilters() {
+    const needsServer = memberFilter !== MEMBER_FILTER_ALL;
     startNavTransition(() => {
-      router.push(
-        buildUrl(
-          initial.period,
-          MEMBER_FILTER_ALL,
-          "all",
-          CASH_METHOD_FILTER_ALL,
-        ),
+      void setUrl(
+        {
+          view: "all",
+          method: CASH_METHOD_FILTER_ALL,
+          member: null,
+        },
+        { shallow: !needsServer },
       );
     });
   }

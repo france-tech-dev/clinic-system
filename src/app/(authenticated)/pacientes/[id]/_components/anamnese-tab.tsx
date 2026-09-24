@@ -12,6 +12,8 @@ export function AnamneseTab({
   patientId: string;
   anamneses: AnamneseSummaryDTO[];
 }) {
+  const hubHref = `${paths.anamnese.root}?paciente=${patientId}`;
+
   return (
     <section
       role="tabpanel"
@@ -21,7 +23,7 @@ export function AnamneseTab({
     >
       <div className="no-print flex justify-end">
         <Button asChild size="sm">
-          <Link href={paths.anamnese.root}>
+          <Link href={hubHref}>
             <Plus className="size-4" />
             Nova anamnese
           </Link>
@@ -37,7 +39,7 @@ export function AnamneseTab({
             Escolha o formulário adequado à especialidade na área de Anamnese.
           </p>
           <Button asChild size="sm" className="mt-4">
-            <Link href={paths.anamnese.root}>
+            <Link href={hubHref}>
               <Plus className="size-4" />
               Nova anamnese
             </Link>

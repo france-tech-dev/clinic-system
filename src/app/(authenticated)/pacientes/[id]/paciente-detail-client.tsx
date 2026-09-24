@@ -46,7 +46,6 @@ import { PatientDetailHeader } from "./_components/patient-detail-header";
 import { PatientMobileSummary } from "./_components/patient-mobile-summary";
 import { PatientSummarySidebar } from "./_components/patient-summary-sidebar";
 import { PatientDetailTabs } from "./_components/patient-detail-tabs";
-import type { PatientDetailTab } from "./_components/patient-detail-types";
 
 type PendingStatusChange = {
   nextStatus: PatientStatus;
@@ -69,7 +68,6 @@ export function PacienteDetailClient({
   canWriteInvites,
   canUseAi,
   initialAiTrialQuota,
-  initialTab,
 }: {
   initial: PatientDetailDTO;
   initialAssessments: AssessmentDTO[];
@@ -87,7 +85,6 @@ export function PacienteDetailClient({
   canWriteInvites: boolean;
   canUseAi: boolean;
   initialAiTrialQuota: AiTrialQuotaDTO | null;
-  initialTab: PatientDetailTab;
 }) {
   const vm = usePatientDetail({
     initial,
@@ -99,7 +96,6 @@ export function PacienteDetailClient({
     initialAnamneseSections,
     professional,
     branding,
-    initialTab,
   });
 
   const [assignOpen, setAssignOpen] = useState(false);
@@ -193,8 +189,8 @@ export function PacienteDetailClient({
 
           {vm.tab === "avaliacao" ? (
             <AvaliacaoTab
+              patientId={vm.detail.patient.id}
               assessments={vm.assessments}
-              onNewEvaluation={vm.evaluations.openNewEvaluation}
               onViewEvaluation={vm.evaluations.setViewEval}
             />
           ) : null}

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { toast } from "sonner";
 import { ChevronDown, Plus, Search, X } from "lucide-react";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
@@ -117,13 +117,15 @@ export function PacientesClient({
   initialMembers: TeamMemberDTO[];
   isLeadership: boolean;
 }) {
-  const searchParams = useSearchParams();
+  const [open, setOpen] = useQueryState(
+    "novo",
+    parseAsBoolean.withDefault(false),
+  );
   const [patients, setPatients] = useState(initialPatients);
   const [guardians, setGuardians] = useState(initialGuardians);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PatientStatus | null>(null);
   const [memberFilter, setMemberFilter] = useState<string | null>(null);
-  const [open, setOpen] = useState(() => searchParams.get("novo") === "1");
   const [guardianMode, setGuardianMode] = useState<"new" | "existing">("new");
   const [selectedGuardianId, setSelectedGuardianId] = useState("");
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);

@@ -74,7 +74,7 @@ export default async function CaixaPage({
   return (
     <AppPage title="Caixa">
       <CaixaClient
-        key={`${period.preset}-${period.start}-${period.end}-${memberFilter}-${listView}-${methodFilter}`}
+        key={`${period.preset}-${period.start}-${period.end}-${memberFilter}`}
         error={error}
         initial={pageData}
         patients={patients}

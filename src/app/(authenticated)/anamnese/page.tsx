@@ -40,11 +40,17 @@ function sortViewerProfessionFirst(
   });
 }
 
-export default async function AnamneseHubPage() {
+export default async function AnamneseHubPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paciente?: string }>;
+}) {
   let error: string | null = null;
   let catalog: ProfessionAnamneseCatalogItem[] = [];
   let viewerProfessionId: string | null = null;
   let canWriteAnamnese = true;
+
+  const { paciente: patientId } = await searchParams;
 
   try {
     const { organizationId, userId } = await requireOrgId();
@@ -68,8 +74,7 @@ export default async function AnamneseHubPage() {
       filterAnamneseCatalogByProfessions(activeProfessionIds),
       viewerProfessionId,
     );
-    canWriteAnamnese =
-      access.mode === "full";
+    canWriteAnamnese = access.mode === "full";
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -129,7 +134,14 @@ export default async function AnamneseHubPage() {
                     professionId={item.professionId}
                     label={item.label}
                     council={item.council}
-                    items={item.forms}
+                    items={
+                      patientId
+                        ? item.forms.map((f) => ({
+                            ...f,
+                            href: `${f.href}?paciente=${patientId}`,
+                          }))
+                        : item.forms
+                    }
                     highlightLabel={
                       showViewerBadge &&
                       item.professionId === viewerProfessionId

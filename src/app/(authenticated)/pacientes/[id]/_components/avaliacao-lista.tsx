@@ -1,23 +1,29 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
+import { paths } from "@/shared/constants/paths";
 import { formatDateBR } from "@/shared/lib/date/format-date-br";
 
 export function AvaliacaoLista({
+  patientId,
   assessments,
-  onNewEvaluation,
   onViewEvaluation,
 }: {
+  patientId: string;
   assessments: AssessmentDTO[];
-  onNewEvaluation: () => void;
   onViewEvaluation: (evaluation: AssessmentDTO) => void;
 }) {
+  const hubHref = `${paths.avaliacoes.root}?paciente=${patientId}`;
+
   return (
     <>
       <div className="no-print flex justify-end">
-        <Button size="sm" onClick={onNewEvaluation}>
-          <Plus className="size-4" />
-          Nova avaliação
+        <Button asChild size="sm">
+          <Link href={hubHref}>
+            <Plus className="size-4" />
+            Nova avaliação
+          </Link>
         </Button>
       </div>
       {assessments.length === 0 ? (
@@ -26,11 +32,14 @@ export function AvaliacaoLista({
             Ainda não há avaliações clínicas neste paciente.
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Comece pela avaliação inicial do prontuário.
+            Escolha o instrumento adequado à especialidade na área de
+            Avaliações.
           </p>
-          <Button size="sm" className="mt-4" onClick={onNewEvaluation}>
-            <Plus className="size-4" />
-            Nova avaliação
+          <Button asChild size="sm" className="mt-4">
+            <Link href={hubHref}>
+              <Plus className="size-4" />
+              Nova avaliação
+            </Link>
           </Button>
         </div>
       ) : (

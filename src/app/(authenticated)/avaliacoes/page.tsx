@@ -40,11 +40,17 @@ function sortViewerProfessionFirst(
   });
 }
 
-export default async function AvaliacoesPage() {
+export default async function AvaliacoesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paciente?: string }>;
+}) {
   let error: string | null = null;
   let catalog: ProfessionInstrumentCatalogItem[] = [];
   let viewerProfessionId: string | null = null;
   let canWriteEvaluations = true;
+
+  const { paciente: patientId } = await searchParams;
 
   try {
     const { organizationId, userId } = await requireOrgId();
@@ -68,8 +74,7 @@ export default async function AvaliacoesPage() {
       filterInstrumentCatalogByProfessions(activeProfessionIds),
       viewerProfessionId,
     );
-    canWriteEvaluations =
-      access.mode === "full";
+    canWriteEvaluations = access.mode === "full";
   } catch (e) {
     error =
       e instanceof OrgContextError
@@ -129,7 +134,14 @@ export default async function AvaliacoesPage() {
                     professionId={item.professionId}
                     label={item.label}
                     council={item.council}
-                    items={item.assessments}
+                    items={
+                      patientId
+                        ? item.assessments.map((a) => ({
+                            ...a,
+                            href: `${a.href}?paciente=${patientId}`,
+                          }))
+                        : item.assessments
+                    }
                     highlightLabel={
                       showViewerBadge &&
                       item.professionId === viewerProfessionId

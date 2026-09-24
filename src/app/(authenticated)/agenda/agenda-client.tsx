@@ -2,6 +2,12 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import {
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
 import { toast } from "sonner";
 import {
   ChevronDown,
@@ -46,8 +52,6 @@ import {
 } from "@/shared/constants/appointment";
 import type { AppointmentStatus } from "@prisma/enums";
 import { CashTransactionType } from "@prisma/enums";
-import { paths } from "@/shared/constants/paths";
-import { replacePathAndQuery } from "@/shared/lib/replace-path-and-query";
 import { cn } from "@/shared/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CashTransactionFormDialog } from "@/features/finance/components/cash-transaction-form-dialog";
@@ -92,7 +96,10 @@ const STATUS_FILTER_OPTIONS = APPOINTMENT_STATUSES.map((s) => ({
   name: s.label,
 }));
 
-type CalView = "day" | "week" | "month";
+const VIEW_VALUES = ["lista", "calendario"] as const;
+const CAL_VIEW_VALUES = ["day", "week", "month"] as const;
+
+type CalView = (typeof CAL_VIEW_VALUES)[number];
 
 export function AgendaClient({
   initialView,
@@ -128,15 +135,35 @@ export function AgendaClient({
   canSuggestCash: boolean;
 }) {
   const router = useRouter();
-  const [activeView, setActiveView] = useState(initialView);
-  const [selectedDate, setSelectedDate] = useState(initialDate);
-  const [calendarViewDateIso, setCalendarViewDateIso] = useState(viewDateIso);
-  const [calView, setCalView] = useState<CalView>(initialCalView);
+  const [url, setUrl] = useQueryStates(
+    {
+      view: parseAsStringLiteral(VIEW_VALUES).withDefault(initialView),
+      date: parseAsString.withDefault(initialDate),
+      viewDate: parseAsString.withDefault(viewDateIso),
+      calView: parseAsStringLiteral(CAL_VIEW_VALUES).withDefault(initialCalView),
+      member: parseAsArrayOf(parseAsString, ",").withDefault(
+        initialMemberFilter,
+      ),
+      patient: parseAsArrayOf(parseAsString, ",").withDefault(
+        initialPatientFilter,
+      ),
+      status: parseAsArrayOf(parseAsString, ",").withDefault(
+        initialStatusFilter,
+      ),
+    },
+    { history: "replace" },
+  );
+
+  const activeView = url.view;
+  const selectedDate = url.date;
+  const calendarViewDateIso = url.viewDate ?? url.date;
+  const calView = url.calView;
+  const memberFilter = url.member;
+  const patientFilter = url.patient;
+  const statusFilter = url.status;
+
   const [dayAppointments, setDayAppointments] = useState(initialDay);
   const [upcoming, setUpcoming] = useState(initialUpcoming);
-  const [memberFilter, setMemberFilter] = useState(initialMemberFilter);
-  const [patientFilter, setPatientFilter] = useState(initialPatientFilter);
-  const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [upcomingOpen, setUpcomingOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -204,126 +231,41 @@ export function AgendaClient({
     return map;
   }, [dayAppointments, upcoming, calendarAppointments]);
 
-  function buildUrl(
-    view: "lista" | "calendario",
-    date: string,
-    viewDate?: string,
-    memberIds?: string[],
-    patientIds?: string[],
-    statuses?: string[],
-    nextCalView?: CalView,
-  ) {
-    const params = new URLSearchParams();
-    params.set("view", view);
-    params.set("date", date);
-    if (view === "calendario") {
-      params.set("viewDate", viewDate ?? date);
-      params.set("calView", nextCalView ?? calView);
-    }
-    const nextMembers = memberIds ?? memberFilter;
-    if (nextMembers.length > 0) {
-      params.set("member", nextMembers.join(","));
-    }
-    const nextPatients = patientIds ?? patientFilter;
-    if (nextPatients.length > 0) {
-      params.set("patient", nextPatients.join(","));
-    }
-    const nextStatuses = statuses ?? statusFilter;
-    if (nextStatuses.length > 0) {
-      params.set("status", nextStatuses.join(","));
-    }
-    return `${paths.agenda}?${params.toString()}`;
-  }
-
-  /** UI-only: URL partilhável sem refetch RSC. */
-  function syncUrl(
-    view: "lista" | "calendario",
-    date: string,
-    viewDate?: string,
-    memberIds?: string[],
-    patientIds?: string[],
-    statuses?: string[],
-    nextCalView?: CalView,
-  ) {
-    replacePathAndQuery(
-      buildUrl(
-        view,
-        date,
-        viewDate,
-        memberIds,
-        patientIds,
-        statuses,
-        nextCalView,
-      ),
-    );
-  }
-
   function navigate(date: string) {
-    setSelectedDate(date);
-    router.push(buildUrl(activeView, date, calendarViewDateIso));
+    void setUrl({ date }, { shallow: false });
   }
 
   function switchView(view: "lista" | "calendario") {
-    setActiveView(view);
-    syncUrl(view, selectedDate, calendarViewDateIso);
+    void setUrl(
+      view === "calendario"
+        ? { view, viewDate: selectedDate }
+        : { view, viewDate: null },
+    );
   }
 
   function changeMemberFilter(next: string[]) {
-    setMemberFilter(next);
-    syncUrl(
-      activeView,
-      selectedDate,
-      calendarViewDateIso,
-      next,
-      patientFilter,
-      statusFilter,
-    );
+    void setUrl({ member: next });
   }
 
   function changePatientFilter(next: string[]) {
-    setPatientFilter(next);
-    syncUrl(
-      activeView,
-      selectedDate,
-      calendarViewDateIso,
-      memberFilter,
-      next,
-      statusFilter,
-    );
+    void setUrl({ patient: next });
   }
 
   function changeStatusFilter(next: string[]) {
-    setStatusFilter(next);
-    syncUrl(
-      activeView,
-      selectedDate,
-      calendarViewDateIso,
-      memberFilter,
-      patientFilter,
-      next,
-    );
+    void setUrl({ status: next });
   }
 
   function clearFilters() {
-    setMemberFilter([]);
-    setPatientFilter([]);
-    setStatusFilter([]);
-    syncUrl(activeView, selectedDate, calendarViewDateIso, [], [], []);
+    void setUrl({ member: [], patient: [], status: [] });
   }
 
   function filterOnlyMe() {
     if (!defaultMemberId) return;
-    setMemberFilter([defaultMemberId]);
-    setPatientFilter([]);
-    setStatusFilter([]);
-    syncUrl(
-      activeView,
-      selectedDate,
-      calendarViewDateIso,
-      [defaultMemberId],
-      [],
-      [],
-    );
+    void setUrl({
+      member: [defaultMemberId],
+      patient: [],
+      status: [],
+    });
   }
 
   function openCreate() {
@@ -668,24 +610,13 @@ export function AgendaClient({
               loadedViewDateIso={viewDateIso}
               calView={calView}
               onCalViewChange={(next) => {
-                setCalView(next);
-                syncUrl(
-                  "calendario",
-                  selectedDate,
-                  calendarViewDateIso,
-                  undefined,
-                  undefined,
-                  undefined,
-                  next,
-                );
+                void setUrl({ calView: next });
               }}
               onViewDateChange={(nextIso, needsServerFetch) => {
-                setCalendarViewDateIso(nextIso);
-                if (needsServerFetch) {
-                  router.push(buildUrl("calendario", selectedDate, nextIso));
-                } else {
-                  syncUrl("calendario", selectedDate, nextIso);
-                }
+                void setUrl(
+                  { viewDate: nextIso },
+                  { shallow: !needsServerFetch },
+                );
               }}
               onSelectEvent={openEditById}
             />

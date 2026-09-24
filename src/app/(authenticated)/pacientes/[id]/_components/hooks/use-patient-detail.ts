@@ -21,13 +21,21 @@ import type {
 import { formatProfessionalSignature } from "@/domains/settings/settings.types";
 import { paths } from "@/shared/constants/paths";
 import type { PdfKeyValueSection } from "@/shared/types/pdf-sections";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
-import type { PatientDetailTab } from "../patient-detail-types";
+import {
+  PATIENT_DETAIL_TAB_IDS,
+  type PatientDetailTab,
+} from "../patient-detail-types";
 import { usePatientAssessments } from "./use-patient-assessments";
 import { usePatientEdit } from "./use-patient-edit";
 import { usePatientEvolutions } from "./use-patient-evolutions";
+
+const tabParser = parseAsStringEnum([...PATIENT_DETAIL_TAB_IDS]).withDefault(
+  "avaliacao",
+);
 
 export function usePatientDetail({
   initial,
@@ -39,7 +47,6 @@ export function usePatientDetail({
   initialAnamneseSections,
   professional,
   branding,
-  initialTab,
 }: {
   initial: PatientDetailDTO;
   initialAssessments: AssessmentDTO[];
@@ -50,32 +57,22 @@ export function usePatientDetail({
   initialAnamneseSections: PdfKeyValueSection[];
   professional: ProfessionalProfile;
   branding: PrintBranding;
-  initialTab: PatientDetailTab;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [detail, setDetail] = useState(initial);
   const [assessments, setAssessments] = useState(initialAssessments);
   const [evolutions, setEvolutions] = useState(initialEvolutions);
   const [appointments, setAppointments] = useState(initialAppointments);
   const [guardians, setGuardians] = useState(initialGuardians);
   const [anamneses] = useState(initialAnamneses);
-  const [tab, setTabState] = useState<PatientDetailTab>(initialTab);
+  const [tab, setTabState] = useQueryState("tab", tabParser);
+
+  function setTab(next: PatientDetailTab) {
+    void setTabState(next);
+  }
   const [pending, startTransition] = useTransition();
   const [previewPayload, setPreviewPayload] =
     useState<PatientReportPayload | null>(null);
-
-  function setTab(next: PatientDetailTab) {
-    setTabState(next);
-    const params = new URLSearchParams(window.location.search);
-    if (next === "avaliacao") {
-      params.delete("tab");
-    } else {
-      params.set("tab", next);
-    }
-    const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }
 
   function setPatient(patient: PatientDetailDTO["patient"]) {
     setDetail((prev) => ({ ...prev, patient }));
@@ -156,7 +153,7 @@ export function usePatientDetail({
     evolutions,
     appointments,
     setPatient,
-    tab,
+    tab: tab as PatientDetailTab,
     setTab,
     pending,
     professional,

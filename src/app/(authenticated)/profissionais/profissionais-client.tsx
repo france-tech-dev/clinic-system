@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppPage } from "@/app/(authenticated)/_components/app-page";
@@ -113,11 +113,11 @@ export function ProfissionaisClient({
   currentUserId: string;
   isLeadership: boolean;
 }) {
-  const searchParams = useSearchParams();
-  const [members, setMembers] = useState(initialMembers);
-  const [createOpen, setCreateOpen] = useState(
-    () => searchParams.get("novo") === "1",
+  const [createOpen, setCreateOpen] = useQueryState(
+    "novo",
+    parseAsBoolean.withDefault(false),
   );
+  const [members, setMembers] = useState(initialMembers);
   const [editing, setEditing] = useState<TeamMemberDTO | null>(null);
   const [assignMember, setAssignMember] = useState<TeamMemberDTO | null>(null);
   const [pending, startTransition] = useTransition();

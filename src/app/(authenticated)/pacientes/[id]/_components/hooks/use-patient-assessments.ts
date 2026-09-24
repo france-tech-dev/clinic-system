@@ -18,11 +18,6 @@ export function usePatientAssessments({
   const [editingEval, setEditingEval] = useState<AssessmentDTO | null>(null);
   const [viewEval, setViewEval] = useState<AssessmentDTO | null>(null);
 
-  function openNewEvaluation() {
-    setEditingEval(null);
-    setEvalOpen(true);
-  }
-
   function openEditEvaluation(ev: AssessmentDTO) {
     setViewEval(null);
     setEditingEval(ev);
@@ -55,7 +50,6 @@ export function usePatientAssessments({
     editingEval,
     viewEval,
     setViewEval,
-    openNewEvaluation,
     openEditEvaluation,
     saveEvaluation,
     deleteAssessment,
