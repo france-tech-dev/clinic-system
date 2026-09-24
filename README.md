@@ -120,21 +120,22 @@ pnpm db:seed
 
 ## Segurança (rate limit)
 
-- **Better Auth** — contadores em Postgres (`RateLimit`), para partilhar limites entre réplicas Docker. Defaults nos endpoints sensíveis (sign-in, reset, etc.); `/get-session` sem throttle.
-- **Accept invitation** — `assertRateLimit` na rota pública `/api/accept-invitation/[invitationId]`.
+- **Better Auth** — contadores no **Redis** (`customStorage` + prefixo `rate-limit:`), partilhados entre réplicas. Defaults nos endpoints sensíveis (sign-in, reset, etc.); `/get-session` sem throttle.
+- **Accept invitation** — `assertRateLimit` na rota pública `/api/accept-invitation/[invitationId]` (mesmo Redis).
 - Em produção (Traefik), Better Auth usa `X-Real-IP` via `advanced.ipAddress` (mesmo critério que `getRequestClientIp`).
+- Requisito: `REDIS_URL` (local: `docker compose up -d` + `redis://127.0.0.1:6379`).
 
 Validar localmente ou em staging:
 
 ```bash
 pnpm validate:rate-limit -- --url http://127.0.0.1:3000
-# duas réplicas (contador partilhado na BD):
+# duas réplicas (contador partilhado no Redis):
 pnpm validate:rate-limit -- --a http://127.0.0.1:3001 --b http://127.0.0.1:3002
 ```
 
 ## Estrutura
 
-Alvo (**fase 1** — aplicada): `src/domains` (negócio) + `src/features` (UI) + `worker/` — preparado para **Fastify** depois.  
+Alvo (**fase 1** — aplicada): `src/domains` (negócio) + `src/features` (UI) + `consumer/` — preparado para **Fastify** depois.  
 Detalhe: [`docs/target-structure.md`](docs/target-structure.md).
 
 Camadas: `repository` → `service` → `actions` (Zod + revalidação). Domains **sem** React.
@@ -143,20 +144,20 @@ Documentação: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`doc
 
 ## Scripts
 
-| Comando                    | Descrição                                     |
-| -------------------------- | --------------------------------------------- |
-| `pnpm dev`                 | Next.js em desenvolvimento                    |
-| `pnpm worker`              | Worker BullMQ (`tsx worker/index.ts`)         |
-| `pnpm worker:dev`          | Worker em modo watch                          |
-| `pnpm build`               | `prisma generate` + build Next.js             |
-| `pnpm start`               | Servidor de produção                          |
+| Comando                    | Descrição                                    |
+| -------------------------- | -------------------------------------------- |
+| `pnpm dev`                 | Next.js em desenvolvimento                   |
+| `pnpm consumer`            | Consumer BullMQ (`tsx consumer/index.ts`)    |
+| `pnpm consumer:dev`        | Consumer em modo watch                       |
+| `pnpm build`               | `prisma generate` + build Next.js            |
+| `pnpm start`               | Servidor de produção                         |
 | `pnpm lint`                | ESLint + verificação de arquitetura (`arch`) |
-| `pnpm arch`                | Fronteiras de import (dependency-cruiser)     |
-| `pnpm test`                | Testes unitários (Vitest)                     |
-| `pnpm test:watch`          | Vitest em modo watch                          |
-| `pnpm db:migrate`          | Aplica migrations (`prisma migrate deploy`)   |
-| `pnpm db:seed`             | Seed (paciente de demonstração)               |
-| `pnpm validate:rate-limit` | Probe de rate limit (auth / réplicas)         |
+| `pnpm arch`                | Fronteiras de import (dependency-cruiser)    |
+| `pnpm test`                | Testes unitários (Vitest)                    |
+| `pnpm test:watch`          | Vitest em modo watch                         |
+| `pnpm db:migrate`          | Aplica migrations (`prisma migrate deploy`)  |
+| `pnpm db:seed`             | Seed (paciente de demonstração)              |
+| `pnpm validate:rate-limit` | Probe de rate limit (auth / réplicas)        |
 
 ## Deploy (Dokploy)
 
@@ -164,7 +165,7 @@ Build Type: **Dockerfile**. No arranque do contentor corre `prisma migrate deplo
 
 Usa a URL **Internal** da BD nas envs da app. Você pode desativar a porta External no Postgres se já não precisar dela.
 
-Com **várias réplicas**, o rate limit em database é obrigatório (já configurado) — storage em memória não partilha contadores entre processos.
+Com **várias réplicas**, o rate limit no Redis (`REDIS_URL`) partilha contadores entre processos — memória local não serve.
 
 ## Licença
 

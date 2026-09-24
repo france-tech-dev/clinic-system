@@ -1,17 +1,5 @@
-/**
- * Valida rate limit de login: spam de sign-in → 429 + X-Retry-After.
- *
- * Uso (staging ou local em NODE_ENV=production):
- *   pnpm validate:rate-limit -- --url https://teu-staging.exemplo
- *   pnpm validate:rate-limit -- --url http://127.0.0.1:3000
- *
- * Default Better Auth em /sign-in*: max 3 / 10s → o 4.º pedido deve ser 429.
- *
- * Opcional (duas réplicas, contador partilhado na DB):
- *   pnpm validate:rate-limit -- --a http://127.0.0.1:3001 --b http://127.0.0.1:3002
- */
 import "dotenv/config";
-import { Client } from "pg";
+import Redis from "ioredis";
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((acc, cur, i, arr) => {
@@ -67,19 +55,21 @@ async function main() {
   const sequenceBases = bases();
   const mode = args.url ? `single (${args.url})` : "replicas A/B";
 
-  const db = process.env.DATABASE_URL
-    ? new Client({ connectionString: process.env.DATABASE_URL })
-    : null;
-  if (db) {
-    await db.connect();
-    await db.query(`DELETE FROM rate_limit WHERE key LIKE $1`, [
-      `%${clientIp}%`,
-    ]);
+  const redisUrl = process.env.REDIS_URL;
+  assert(redisUrl, "REDIS_URL é obrigatória para validar rate limit");
+
+  const redis = new Redis(redisUrl);
+  const pattern = `rl:*${clientIp}*`;
+  const preexisting = await redis.keys(pattern);
+  if (preexisting.length > 0) {
+    await redis.del(...preexisting);
   }
 
   console.log(`Modo=${mode}`);
   console.log(`Probe IP=${clientIp}`);
-  console.log("Expectativa: pedidos 1–3 OK (≠429); pedido 4 = 429 + X-Retry-After\n");
+  console.log(
+    "Expectativa: pedidos 1–3 OK (≠429); pedido 4 = 429 + X-Retry-After\n",
+  );
 
   const results = [];
   for (let i = 0; i < 4; i++) {
@@ -99,30 +89,27 @@ async function main() {
   assert(
     r4.status === 429,
     `Pedido 4 deveria ser 429 (foi ${r4.status}). ` +
-      `Confirma NODE_ENV=production (ou rateLimit.enabled) e storage database.`,
+      `Confirma rateLimit.enabled e Redis (REDIS_URL / customStorage).`,
   );
   assert(
     r4.retryAfter != null && Number(r4.retryAfter) > 0,
     `X-Retry-After em falta ou inválido: ${r4.retryAfter}`,
   );
 
-  if (db) {
-    const { rows } = await db.query(
-      `SELECT key, count, "lastRequest" FROM rate_limit WHERE key LIKE $1 ORDER BY key`,
-      [`%${clientIp}%`],
-    );
-    assert(
-      rows.length > 0,
-      "Nenhuma linha em rate_limit — storage database não está a gravar",
-    );
-    console.log("\nLinhas rate_limit para o IP de probe:");
-    for (const row of rows) {
-      console.log(`  key=${row.key} count=${row.count}`);
-    }
-    await db.end();
+  const keys = await redis.keys(pattern);
+  assert(
+    keys.length > 0,
+    `Nenhuma chave Redis ${pattern} — customStorage não está a gravar`,
+  );
+  console.log("\nChaves Redis para o IP de probe:");
+  for (const key of keys) {
+    const count = await redis.get(key);
+    const ttl = await redis.ttl(key);
+    console.log(`  ${key} count=${count} ttl=${ttl}s`);
   }
+  await redis.quit();
 
-  console.log("\nOK — 429 no login + X-Retry-After.");
+  console.log("\nOK — 429 no login + X-Retry-After (Redis).");
   console.log(
     "Toast: no browser, falha de login 4× seguidas → mensagem com segundos.",
   );

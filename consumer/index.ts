@@ -1,5 +1,5 @@
+import { getRedisUrl, JOB_NAMES, JOB_QUEUE_NAME } from "@/shared/lib/jobs";
 import "dotenv/config";
-import { getRedisUrl, JOB_QUEUE_NAME, JOB_NAMES } from "@/shared/lib/jobs";
 
 async function main() {
   const { Worker } = await import("bullmq");
@@ -9,28 +9,28 @@ async function main() {
     async (job) => {
       switch (job.name) {
         case JOB_NAMES.MEDIA_PROCESS:
-          console.log("[worker] media.process", job.data);
+          console.log("[consumer] media.process", job.data);
           // TODO: processManagedImageJob(job.data)
           break;
         case JOB_NAMES.WHATSAPP_REMINDER:
-          console.log("[worker] whatsapp.reminder", job.data);
+          console.log("[consumer] whatsapp.reminder", job.data);
           // TODO: processWhatsappReminderJob(job.data)
           break;
         default:
-          console.warn(`[worker] unknown job name: ${job.name}`);
+          console.warn(`[consumer] unknown job name: ${job.name}`);
       }
     },
-    { connection: { url: getRedisUrl() || undefined } },
+    { connection: { url: getRedisUrl() } },
   );
 
   worker.on("failed", (job, err) => {
-    console.error(`[worker] job ${job?.id} failed:`, err);
+    console.error(`[consumer] job ${job?.id} failed:`, err);
   });
 
-  console.log(`[worker] listening on queue "${JOB_QUEUE_NAME}"`);
+  console.log(`[consumer] listening on queue "${JOB_QUEUE_NAME}"`);
 }
 
 main().catch((err) => {
-  console.error("[worker] fatal:", err);
+  console.error("[consumer] fatal:", err);
   process.exit(1);
 });

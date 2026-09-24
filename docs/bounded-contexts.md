@@ -74,7 +74,7 @@ Não fundir tudo em platform — billing de produto é domínio; auth gates são
 | Genérico (sem regra de negócio) | `src/ui/`                                                    |
 | Negócio (repo/service/jobs)     | `src/domains/` — **sem** React                               |
 
-Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./architecture.md). Fase 1 aplicada (`src/` + `worker/`).
+Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./architecture.md). Fase 1 aplicada (`src/` + `consumer/`).
 
 **Não** meter UI clínica em `platform/`. Platform = Better Auth, org — sem UI de domínio.
 

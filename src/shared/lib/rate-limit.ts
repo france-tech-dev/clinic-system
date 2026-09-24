@@ -1,67 +1,54 @@
+import { getRedis } from "@/shared/lib/redis";
 import "server-only";
-import { db } from "@/shared/lib/prisma";
 
 export type RateLimitResult =
-  | { ok: true }
-  | { ok: false; retryAfterSec: number };
+  { ok: true } | { ok: false; retryAfterSec: number };
 
-/**
- * Rate limit simples por chave (IP, userId, etc.) na mesma tabela do Better Auth.
- * Para superfícies que `auth.api.*` não cobre (ex.: accept-invitation).
- */
+const KEY_PREFIX = "rate-limit:";
+
+function redisKey(key: string): string {
+  return `${KEY_PREFIX}${key}`;
+}
+
+export async function consumeRateLimit(
+  key: string,
+  rule: { windowSec: number; max: number },
+): Promise<{ allowed: boolean; retryAfter: number | null }> {
+  const redis = getRedis();
+  const k = redisKey(key);
+  const count = await redis.incr(k);
+
+  if (count === 1) {
+    await redis.expire(k, rule.windowSec);
+  }
+
+  if (count > rule.max) {
+    const ttl = await redis.ttl(k);
+    return {
+      allowed: false,
+      retryAfter: Math.max(1, ttl > 0 ? ttl : rule.windowSec),
+    };
+  }
+
+  return { allowed: true, retryAfter: null };
+}
+
 export async function assertRateLimit(opts: {
   key: string;
   windowSec: number;
   max: number;
 }): Promise<RateLimitResult> {
-  const { key, windowSec, max } = opts;
-  const now = Date.now();
-  const windowMs = windowSec * 1000;
-
-  const existing = await db.rateLimit.findUnique({ where: { key } });
-
-  if (!existing) {
-    try {
-      await db.rateLimit.create({
-        data: {
-          key,
-          count: 1,
-          lastRequest: BigInt(now),
-        },
-      });
-      return { ok: true };
-    } catch {
-      // corrida na criação — reavaliar
-      return assertRateLimit(opts);
-    }
-  }
-
-  const lastRequest = Number(existing.lastRequest);
-
-  if (now - lastRequest > windowMs) {
-    await db.rateLimit.update({
-      where: { key },
-      data: { count: 1, lastRequest: BigInt(now) },
-    });
-    return { ok: true };
-  }
-
-  if (existing.count >= max) {
-    const retryAfterSec = Math.max(
-      1,
-      Math.ceil((lastRequest + windowMs - now) / 1000),
-    );
-    return { ok: false, retryAfterSec };
-  }
-
-  await db.rateLimit.update({
-    where: { key },
-    data: {
-      count: { increment: 1 },
-      lastRequest: BigInt(now),
-    },
+  const result = await consumeRateLimit(opts.key, {
+    windowSec: opts.windowSec,
+    max: opts.max,
   });
-  return { ok: true };
+
+  if (result.allowed) return { ok: true };
+
+  return {
+    ok: false,
+    retryAfterSec: result.retryAfter ?? opts.windowSec,
+  };
 }
 
 export function getRequestClientIp(headersList: Headers): string {

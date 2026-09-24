@@ -10,7 +10,7 @@ Relacionado: [`docs/ai.md`](../ai.md) · [`docs/bounded-contexts.md`](../bounded
 
 ## Templates actuais vs manuais
 
-Os `template.json` / rotas de avaliação TO deste projeto foram digitalizados a partir de formulários em uso clínico; **não** foram digitados diretamente a partir dos manuais Pearson/WPS/Hogrefe. Por isso a estrutura do app pode divergir do papel oficial.
+Os `template.ts` / rotas de avaliação TO deste projeto foram digitalizados a partir de formulários em uso clínico; **não** foram digitados diretamente a partir dos manuais Pearson/WPS/Hogrefe. Por isso a estrutura do app pode divergir do papel oficial.
 
 | Implicação                                   | Detalhe                                                                                                       |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -40,7 +40,7 @@ Os `template.json` / rotas de avaliação TO deste projeto foram digitalizados a
 Usar esta lista ao decidir a fase seguinte:
 
 - [ ] Confirmar com a clínica qual edição física/digital possuem: PEDI US vs **PEDI BR (Mancini 2005)**; SPM vs SPM-P vs **SPM-2**; Perfil Sensorial 1 vs **Perfil Sensorial 2**.
-- [ ] Auditar `pedi-mobilidade/template.json` (69 itens) vs manual (59 itens) — ver seção PEDI.
+- [ ] Auditar `pedi-mobilidade/template.ts` (69 itens) vs manual (59 itens) — ver seção PEDI.
 - [ ] Auditar SPM Casa/Escola 2/3/5 anos vs formulários do kit (item counts 75/62 vs SPM-2 = 80).
 - [ ] Decidir caminho normativo: (A) só bruto + evolução; (B) tabelas após licença do editor; (C) Q-global / WPS OES.
 - [ ] Não rotular UI como “T-score / scaled oficial” enquanto as tabelas não estiverem licenciadas e validadas.
@@ -248,7 +248,7 @@ Referências:
 
 | Papel               | Path                                                                      |
 | ------------------- | ------------------------------------------------------------------------- |
-| Templates TO        | `src/domains/protocol/instruments/terapia-ocupacional/**/template.json`   |
+| Templates TO        | `src/domains/protocol/instruments/terapia-ocupacional/**/template.ts`     |
 | Escalas de resposta | `src/domains/protocol/instruments/_shared/item-scale.ts`                  |
 | Raw atual (IA)      | `src/domains/protocol/_lib/interpretationAI/raw-section-scores.ts`        |
 | Summary SPM         | `terapia-ocupacional/_lib/spm/score.ts` + `spm-casa-5anos/norms.ts`       |

@@ -4,8 +4,8 @@ Documento de referência para a estrutura, camadas e boas práticas que seguimos
 
 **Stack:** Next.js App Router · Server Actions · Prisma · Better Auth · Shadcn UI
 
-**Abordagem:** monólito modular por domínio em `src/` + `worker/` — **não** DDD completo.  
-**Estado:** fase 1 aplicada (`src/` + `worker/`). Split futuro: **Fastify** como API — ver [`target-structure.md`](./target-structure.md).
+**Abordagem:** monólito modular por domínio em `src/` + `consumer/` — **não** DDD completo.  
+**Estado:** fase 1 aplicada (`src/` + `consumer/`). Split futuro: **Fastify** como API — ver [`target-structure.md`](./target-structure.md).
 
 Documentos relacionados:
 
@@ -26,7 +26,7 @@ Este projeto é um monólito Next.js multi-tenant (`Organization`) para gestão 
 
 | Critério                   | Escolha                                     |
 | -------------------------- | ------------------------------------------- |
-| Organização                | Monólito modular por domínio (web + worker) |
+| Organização                | Monólito modular por domínio (web + consumer) |
 | Camadas                    | repository → service → actions              |
 | Modelo de dados            | Prisma + DTOs planos no boundary            |
 | Orquestração multi-domínio | `app/` (pages), nunca domínio → domínio     |
@@ -60,7 +60,7 @@ clinic-system/
 │   ├── hooks/                        # Hooks globais (use-mobile, etc.)
 │   └── proxy.ts
 │
-├── worker/                           # BullMQ (tsx; não é package npm)
+├── consumer/                         # BullMQ consumer (tsx; não é package npm)
 │   └── index.ts
 │
 ├── prisma/
@@ -327,7 +327,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 ### Convenção unitários
 
-- Código de produção em `src/` (+ `worker/`); testes em `tests/unit/`
+- Código de produção em `src/` (+ `consumer/`); testes em `tests/unit/`
 - Espelhar domínio: `src/domains/finance/_lib/build-summary.ts` → `tests/unit/features/finance/build-summary.test.ts`
 - Imports via aliases (`@/domains/…`, `@/shared/…`, …)
 
@@ -337,7 +337,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 2. Regras em `*.service.ts` (mock repository)
 3. E2E nos fluxos críticos (login, paciente, agenda, caixa)
 
-**Não** colocar `*.test.ts` dentro de `src/` ou `worker/`. **Não** testar primeiro: actions com `revalidatePath`, shadcn, PDF.
+**Não** colocar `*.test.ts` dentro de `src/` ou `consumer/`. **Não** testar primeiro: actions com `revalidatePath`, shadcn, PDF.
 
 ---
 
@@ -384,7 +384,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 | `db` directo em services            | Viola camada repository                        |
 | Clean Architecture dogmática        | App Router já resolve boundary server/client   |
 | React/UI em `src/domains`           | Worker/api não devem puxar React (ver UI-DEBT) |
-| Monorepo `apps/`+`packages/` agora  | Fase 1 é `src/`+`worker/`; Fastify depois      |
+| Monorepo `apps/`+`packages/` agora  | Fase 1 é `src/`+`consumer/`; Fastify depois      |
 
 ---
 

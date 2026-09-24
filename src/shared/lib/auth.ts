@@ -15,6 +15,7 @@ import {
   OWNER,
 } from "@/shared/lib/permissions";
 import { db } from "@/shared/lib/prisma";
+import { consumeRateLimit } from "@/shared/lib/rate-limit";
 import { Role } from "@prisma/enums";
 import { betterAuth, User } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -40,7 +41,14 @@ export const auth = betterAuth({
   },
 
   rateLimit: {
-    storage: "database",
+    enabled: true,
+    customStorage: {
+      consume: (key, rule) =>
+        consumeRateLimit(key, {
+          windowSec: rule.window,
+          max: rule.max,
+        }),
+    },
     customRules: {
       "/get-session": false,
     },

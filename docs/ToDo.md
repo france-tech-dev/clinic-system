@@ -91,7 +91,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] `DeleteConfirmDialog` em deletes destrutivos (caixa, agenda, avaliação, evolução)
 - [x] Migration Prisma versionada (além de `db push` em dev) — baseline `20260731063400_init`
 - [x] Refactors de arquitetura — ver checklist consolidado em [`docs/architecture-audit.md`](./architecture-audit.md) (P0 + P1 + P4 + P6 concluídos)
-- [x] **Rate limit** — Better Auth com `storage: "database"` (modelo `RateLimit`) + `/get-session` sem throttle; `assertRateLimit` em `/api/accept-invitation/[invitationId]`; UI trata 429; script `pnpm validate:rate-limit`
+- [x] **Rate limit** — Better Auth + `assertRateLimit` no **Redis** (`customStorage` / `rl:`); `/get-session` sem throttle; UI trata 429; script `pnpm validate:rate-limit` (tabela Postgres `rate_limit` removida)
 - [x] **Rate limit IP no proxy** — `advanced.ipAddress.ipAddressHeaders: ["x-real-ip"]` (Dokploy/Traefik)
 
 ---
@@ -102,7 +102,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 1. P1 — Calendário ✅
 2. P2 — PDF + branding ✅
 3. P3 — Caixa MVP ✅ → extensões ✅
-4. P4 — Polish + rate limit (DB + ipAddress Traefik) ✅
+4. P4 — Polish + rate limit (Redis + ipAddress Traefik) ✅
 5. P6 — Multi-profissional (P6.0–P6.5 ✅)
 6. P5 — Relatórios clínicos (expansão) — em curso
 ```
@@ -171,12 +171,13 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - **IA:** fundação + interpretação de protocolos — [`docs/ai.md`](ai.md).
 - **Nome da clínica:** usar sempre `Organization.name` (campo em `/configuracoes` → Identidade da clínica). O campo `professional.clinica` foi descontinuado.
 - **Logo / media em produção:** pipeline em `shared/lib/media`; R2 — [`docs/media-storage.md`](media-storage.md). Dokploy com volume local pode adiar.
-- **Jobs / filas (futuro):** Redis + BullMQ; worker Node no Dokploy; R2 para arquivos — [`docs/jobs-queues.md`](jobs-queues.md). Cloudflare Queues só como orquestração leve opcional.
+- **Jobs / filas:** Redis + BullMQ; **producer** (`produce`) / **consumer** Node no Dokploy; R2 para arquivos — [`docs/jobs-queues.md`](jobs-queues.md). Cloudflare Queues só como orquestração leve opcional.
 - **Conflito de horário:** explicitamente fora de escopo.
-- **Rate limit:** contadores na BD para réplicas Docker; ver README · seção Segurança.
+- **Rate limit:** contadores no Redis (`REDIS_URL`); ver README · seção Segurança.
 
 # ToDo (em desenvolvimento)
 
 - [x] **Score + gráfico TO (SPM)** — raw + T/bandas Casa 5–12; PDF; demais SPM/PEDI/Perfil depois
 - [x] **limitar a 1 uso da IA no periodo de teste**.
+- [x] **Redis** — filas (BullMQ producer/consumer) + rate limit; local via `docker compose` (`REDIS_URL`)
 - [ ] **Teste de carga com k6** — stress, performance, carga.

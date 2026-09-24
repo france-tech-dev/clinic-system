@@ -9,6 +9,8 @@ const envSchema = z
     DATABASE_URL: z.string().min(1),
     DATABASE_POOL_MAX: z.coerce.number().int().positive().default(10),
 
+    REDIS_URL: z.string().min(1),
+
     BETTER_AUTH_URL: z.url(),
     BETTER_AUTH_SECRET: z.string().min(32),
 
@@ -41,8 +43,6 @@ const envSchema = z
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
     AI_PROVIDER: z.enum(["openai", "google"]).default("google"),
     AI_MODEL: z.string().optional(),
-
-    REDIS_URL: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.OBJECT_STORAGE_DRIVER !== "r2") return;
