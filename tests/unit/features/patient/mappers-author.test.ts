@@ -1,12 +1,10 @@
+import { toAssessmentDTO } from "@/domains/assessment/_lib/mappers";
+import { toEvolutionDTO } from "@/domains/evolution/_lib/mappers";
 import { describe, expect, it } from "vitest";
-import {
-  toClinicalEvaluationDTO,
-  toSessionDTO,
-} from "@/domains/patient/_lib/mappers";
 
-describe("patient mappers — autoria", () => {
-  it("toClinicalEvaluationDTO inclui professionalName do member", () => {
-    const dto = toClinicalEvaluationDTO({
+describe("assessment/evolution mappers — autoria", () => {
+  it("toAssessmentDTO inclui professionalName do member", () => {
+    const dto = toAssessmentDTO({
       id: "e1",
       patientId: "p1",
       memberId: "m1",
@@ -45,8 +43,8 @@ describe("patient mappers — autoria", () => {
     });
   });
 
-  it("toSessionDTO tolera ausência de member", () => {
-    const dto = toSessionDTO({
+  it("toEvolutionDTO tolera ausência de member", () => {
+    const dto = toEvolutionDTO({
       id: "s1",
       patientId: "p1",
       appointmentId: "a1",

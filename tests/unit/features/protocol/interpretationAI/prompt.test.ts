@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ProtocolEvaluationPreviewDTO } from "@/domains/protocol/protocol.types";
+import type { ProtocolAssessmentPreviewDTO } from "@/domains/protocol/protocol.types";
 import {
   ageYearsFromBirthDate,
   buildProtocolInterpretationAIPrompt,
@@ -7,7 +7,7 @@ import {
   PROTOCOL_INTERPRETATION_AI_SYSTEM_PROMPT,
 } from "@/domains/protocol/_lib/interpretationAI/prompt";
 
-const fixturePreview: ProtocolEvaluationPreviewDTO = {
+const fixturePreview: ProtocolAssessmentPreviewDTO = {
   id: "eval_1",
   protocolId: "spm-casa-5anos",
   protocolName: "SPM Casa (5 anos)",

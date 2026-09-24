@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { buildCashDraftFromAppointment } from "@/app/(authenticated)/agenda/_components/hooks/use-agenda-cashflow";
 import type { AppointmentDTO } from "@/domains/schedule/schedule.types";
 import {
@@ -6,6 +5,7 @@ import {
   CashTransactionType,
   PatientPricingType,
 } from "@prisma/enums";
+import { describe, expect, it } from "vitest";
 
 const appointment: AppointmentDTO = {
   id: "a1",
@@ -18,7 +18,7 @@ const appointment: AppointmentDTO = {
   duration: 50,
   notes: "",
   status: AppointmentStatus.COMPLETED,
-  hasSessionNote: true,
+  hasEvolution: true,
   patientPricingType: PatientPricingType.SESSION,
   patientPrice: 180,
   createdAt: "2026-07-01T12:00:00.000Z",

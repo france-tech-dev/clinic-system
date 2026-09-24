@@ -1,12 +1,12 @@
-import { describe, expect, it } from "vitest";
 import { buildDashboardAlerts } from "@/domains/dashboard/_lib/build-dashboard-alerts";
+import { describe, expect, it } from "vitest";
 
 describe("buildDashboardAlerts", () => {
   const now = new Date("2026-07-13T12:00:00");
 
   it("alerta paciente activo sem avaliação", () => {
     const alerts = buildDashboardAlerts(
-      [{ id: "p1", name: "Ana", clinicalEvaluations: [] }],
+      [{ id: "p1", name: "Ana", assessments: [] }],
       now,
     );
 
@@ -26,7 +26,7 @@ describe("buildDashboardAlerts", () => {
         {
           id: "p2",
           name: "Bruno",
-          clinicalEvaluations: [{ date: "2026-03-01" }],
+          assessments: [{ date: "2026-03-01" }],
         },
       ],
       now,
@@ -43,7 +43,7 @@ describe("buildDashboardAlerts", () => {
         {
           id: "p3",
           name: "Carla",
-          clinicalEvaluations: [{ date: "2026-07-01" }],
+          assessments: [{ date: "2026-07-01" }],
         },
       ],
       now,
@@ -56,7 +56,7 @@ describe("buildDashboardAlerts", () => {
     const patients = Array.from({ length: 12 }, (_, i) => ({
       id: `p${i}`,
       name: `Paciente ${i}`,
-      clinicalEvaluations: [] as { date: string }[],
+      assessments: [] as { date: string }[],
     }));
 
     expect(buildDashboardAlerts(patients, now)).toHaveLength(8);

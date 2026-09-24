@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Decimal } from "@prisma/client/runtime/client";
 import { scheduleRepository } from "@/domains/schedule/schedule.repository";
 import { rescheduleAppointment } from "@/domains/schedule/schedule.service";
+import { Decimal } from "@prisma/client/runtime/client";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/domains/schedule/schedule.repository", () => ({
   scheduleRepository: {
     findById: vi.fn(),
     reschedule: vi.fn(),
-    findSessionNoteAppointmentIdsInRange: vi.fn(),
+    findEvolutionAppointmentIdsInRange: vi.fn(),
   },
 }));
 
@@ -51,7 +51,7 @@ describe("rescheduleAppointment", () => {
     vi.mocked(scheduleRepository.findById).mockReset();
     vi.mocked(scheduleRepository.reschedule).mockReset();
     vi.mocked(
-      scheduleRepository.findSessionNoteAppointmentIdsInRange,
+      scheduleRepository.findEvolutionAppointmentIdsInRange,
     ).mockResolvedValue(new Set());
   });
 
@@ -96,7 +96,7 @@ describe("rescheduleAppointment", () => {
       patientName: "Ana",
       memberId: "member-1",
       professionalName: "Dra. Silva",
-      hasSessionNote: false,
+      hasEvolution: false,
     });
   });
 

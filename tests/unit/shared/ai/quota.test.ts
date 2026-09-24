@@ -8,14 +8,14 @@ import { describe, expect, it } from "vitest";
 
 describe("buildTrialAiQuota", () => {
   it("calcula remaining e canGenerate", () => {
-    const quota = buildTrialAiQuota(2, 2);
+    const quota = buildTrialAiQuota(0, 0);
 
     expect(quota.org).toEqual({
-      used: 2,
+      used: 0,
       max: AI_LIMITS.trial.orgMax,
-      remaining: AI_LIMITS.trial.orgMax - 2,
+      remaining: AI_LIMITS.trial.orgMax,
     });
-    expect(quota.user.remaining).toBe(AI_LIMITS.trial.userMax - 2);
+    expect(quota.user.remaining).toBe(AI_LIMITS.trial.userMax);
     expect(quota.canGenerate).toBe(true);
   });
 
@@ -27,21 +27,26 @@ describe("buildTrialAiQuota", () => {
 
 describe("consumeTrialAiQuota", () => {
   it("decrementa quota após geração", () => {
-    const before = buildTrialAiQuota(1, 1);
+    const before = buildTrialAiQuota(0, 0);
     const after = consumeTrialAiQuota(before);
 
-    expect(after.org.used).toBe(2);
-    expect(after.org.remaining).toBe(AI_LIMITS.trial.orgMax - 2);
-    expect(after.user.used).toBe(2);
+    expect(after.org.used).toBe(1);
+    expect(after.org.remaining).toBe(0);
+    expect(after.user.used).toBe(1);
+    expect(after.canGenerate).toBe(false);
   });
 });
 
 describe("formatTrialAiQuotaHint", () => {
   it("formata singular e plural", () => {
-    const almostFull = buildTrialAiQuota(AI_LIMITS.trial.orgMax - 1, 0);
-    expect(formatTrialAiQuotaHint(almostFull)).toContain("1 geração restante");
+    const oneLeft = buildTrialAiQuota(0, 0);
+    expect(formatTrialAiQuotaHint(oneLeft)).toContain("1 geração restante");
 
-    const plenty = buildTrialAiQuota(0, 0);
-    expect(formatTrialAiQuotaHint(plenty)).toContain("5 gerações restantes");
+    const plural = {
+      org: { used: 0, max: 5, remaining: 5 },
+      user: { used: 0, max: 5, remaining: 5 },
+      canGenerate: true,
+    };
+    expect(formatTrialAiQuotaHint(plural)).toContain("5 gerações restantes");
   });
 });

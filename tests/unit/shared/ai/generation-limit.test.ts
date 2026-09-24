@@ -69,7 +69,7 @@ describe("assertAiGenerationAllowed", () => {
 
   it("bloqueia trial quando o utilizador atinge o máximo", async () => {
     vi.mocked(countAiGenerationsSince)
-      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0)
       .mockResolvedValueOnce(AI_LIMITS.trial.userMax);
 
     await expect(
@@ -83,8 +83,8 @@ describe("assertAiGenerationAllowed", () => {
 
   it("permite trial abaixo do limite", async () => {
     vi.mocked(countAiGenerationsSince)
-      .mockResolvedValueOnce(2)
-      .mockResolvedValueOnce(1);
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0);
 
     await expect(
       assertAiGenerationAllowed({
@@ -147,8 +147,8 @@ describe("getAiTrialQuota", () => {
 
   it("devolve quota com remaining no trial", async () => {
     vi.mocked(countAiGenerationsSince)
-      .mockResolvedValueOnce(3)
-      .mockResolvedValueOnce(2);
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0);
 
     const quota = await getAiTrialQuota({
       organizationId: orgId,
@@ -157,8 +157,8 @@ describe("getAiTrialQuota", () => {
     });
 
     expect(quota).toEqual({
-      org: { used: 3, max: 5, remaining: 2 },
-      user: { used: 2, max: 5, remaining: 3 },
+      org: { used: 0, max: 1, remaining: 1 },
+      user: { used: 0, max: 1, remaining: 1 },
       canGenerate: true,
     });
   });

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 // O registry puxa `render` → clients → actions/service → auth/prisma/env.
 vi.mock("server-only", () => ({}));
 vi.mock("@/domains/protocol/protocol.service", () => ({
-  listProtocolEvaluations: vi.fn(),
+  listProtocolAssessments: vi.fn(),
 }));
 vi.mock("@/features/protocol/instruments/_shared/item-protocol-client", () => ({
   ItemProtocolClient: () => null,
