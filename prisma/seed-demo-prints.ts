@@ -4,7 +4,7 @@ import { serializeMemberProfessionalMetadata } from "../src/shared/types/profess
 import {
   birthDateForSeed,
   buildPrintsAnamnese,
-  buildPrintsClinicalEvaluation,
+  buildPrintsAssessment,
   DEMO_PRINTS_PASSWORD,
   DEMO_PRINTS_PATIENTS,
   DEMO_PRINTS_PROFESSIONALS,
@@ -189,12 +189,12 @@ export async function ensureDemoPrints(
       });
 
       if (def.withEvaluation && def.evaluationDaysAgo != null) {
-        const evaluation = buildPrintsClinicalEvaluation(
+        const evaluation = buildPrintsAssessment(
           def.name,
           def.evaluationDaysAgo,
           baseDate,
         );
-        await tx.clinicalEvaluation.create({
+        await tx.assessment.create({
           data: {
             patientId: patient.id,
             memberId: member.id,
@@ -272,7 +272,7 @@ export async function ensureDemoPrints(
             DEMO_PRINTS_SESSION_ACTIVITIES[
               i % DEMO_PRINTS_SESSION_ACTIVITIES.length
             ];
-          await tx.sessionNote.create({
+          await tx.evolution.create({
             data: {
               patientId: row.id,
               memberId: row.memberId,

@@ -2,9 +2,9 @@ import { db } from "../src/shared/lib/prisma";
 import {
   buildDemoAnamneseData,
   buildDemoAppointments,
+  buildDemoAssessment,
   buildDemoCashTransaction,
-  buildDemoClinicalEvaluation,
-  buildDemoSessionNotes,
+  buildDemoEvolutions,
   DEMO_PATIENT_NAME,
   DEMO_PATIENT_NOTES,
   DEMO_PATIENT_SEED_MARKER,
@@ -37,8 +37,8 @@ export async function ensureDemoPatient(
   }
 
   const baseDate = new Date();
-  const evaluation = buildDemoClinicalEvaluation(baseDate);
-  const sessionNotes = buildDemoSessionNotes();
+  const assessment = buildDemoAssessment(baseDate);
+  const evolutions = buildDemoEvolutions();
   const appointments = buildDemoAppointments(baseDate);
   const cashTransaction = buildDemoCashTransaction(baseDate);
   const anamneseData = buildDemoAnamneseData();
@@ -80,26 +80,26 @@ export async function ensureDemoPatient(
       },
     });
 
-    await tx.clinicalEvaluation.create({
+    await tx.assessment.create({
       data: {
         patientId: createdPatient.id,
         memberId: member.id,
-        type: evaluation.type,
-        date: evaluation.date,
-        complaint: evaluation.complaint,
-        history: evaluation.history,
-        domains: JSON.stringify(evaluation.domains),
-        goals: evaluation.goals,
-        interventions: evaluation.interventions,
-        diagnosis: evaluation.diagnosis,
-        referredBy: evaluation.referredBy,
-        familyContext: evaluation.familyContext,
-        previousLevel: evaluation.previousLevel,
-        medications: evaluation.medications,
-        precautions: evaluation.precautions,
-        equipment: evaluation.equipment,
-        frequency: evaluation.frequency,
-        dischargeCriteria: evaluation.dischargeCriteria,
+        type: assessment.type,
+        date: assessment.date,
+        complaint: assessment.complaint,
+        history: assessment.history,
+        domains: JSON.stringify(assessment.domains),
+        goals: assessment.goals,
+        interventions: assessment.interventions,
+        diagnosis: assessment.diagnosis,
+        referredBy: assessment.referredBy,
+        familyContext: assessment.familyContext,
+        previousLevel: assessment.previousLevel,
+        medications: assessment.medications,
+        precautions: assessment.precautions,
+        equipment: assessment.equipment,
+        frequency: assessment.frequency,
+        dischargeCriteria: assessment.dischargeCriteria,
       },
     });
 
@@ -135,11 +135,11 @@ export async function ensureDemoPatient(
     const evolutionAppointments = createdAppointments.filter(
       (appointment) => appointment.withEvolution,
     );
-    for (let index = 0; index < sessionNotes.length; index++) {
-      const note = sessionNotes[index];
+    for (let index = 0; index < evolutions.length; index++) {
+      const note = evolutions[index];
       const appointment = evolutionAppointments[index];
       if (!note || !appointment) continue;
-      await tx.sessionNote.create({
+      await tx.evolution.create({
         data: {
           patientId: createdPatient.id,
           memberId: member.id,

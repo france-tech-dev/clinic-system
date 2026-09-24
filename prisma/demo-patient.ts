@@ -1,6 +1,6 @@
-import { CLINICAL_EVALUATION_DOMAINS } from "../src/shared/constants/clinical-evaluation-domains";
+import { ASSESSMENT_DOMAINS } from "../src/shared/constants/assessment-domains";
 
-type DemoClinicalEvaluationDomain = {
+type DemoAssessmentDomain = {
   categoryId: string;
   score: number;
   note: string;
@@ -49,8 +49,8 @@ const DOMAIN_SCORES: Record<string, { score: number; note: string }> = {
   },
 };
 
-export function buildDemoClinicalEvaluationDomains(): DemoClinicalEvaluationDomain[] {
-  return CLINICAL_EVALUATION_DOMAINS.map((category) => {
+export function buildDemoAssessmentDomains(): DemoAssessmentDomain[] {
+  return ASSESSMENT_DOMAINS.map((category) => {
     const entry = DOMAIN_SCORES[category.id];
     return {
       categoryId: category.id,
@@ -60,7 +60,7 @@ export function buildDemoClinicalEvaluationDomains(): DemoClinicalEvaluationDoma
   });
 }
 
-export function buildDemoClinicalEvaluation(baseDate: Date) {
+export function buildDemoAssessment(baseDate: Date) {
   const date = offsetDate(baseDate, -42);
 
   return {
@@ -70,7 +70,7 @@ export function buildDemoClinicalEvaluation(baseDate: Date) {
       "Dificuldade para manter atenção em tarefas de mesa, resistência a atividades de coordenação fina e desorganização na rotina de manhã.",
     history:
       "Encaminhado pela pediatra após relato escolar de baixa autonomia para AVDs e cansaço rápido em atividades manuais. Família relata melhora com rotina visual, mas ainda há resistência sensorial em vestuário.",
-    domains: buildDemoClinicalEvaluationDomains(),
+    domains: buildDemoAssessmentDomains(),
     goals:
       "1. Ampliar preensão em pinça e resistência em tarefas finas.\n2. Ganhar autonomia parcial em vestir-se.\n3. Tolerar estímulos táteis em materiais escolares.\n4. Organizar sequência da rotina matinal com apoio mínimo.",
     interventions:
@@ -126,7 +126,7 @@ export function buildDemoAnamneseData() {
   };
 }
 
-export function buildDemoSessionNotes() {
+export function buildDemoEvolutions() {
   return [
     {
       status: "ATTENDED" as const,

@@ -1,6 +1,6 @@
 import {
   buildDemoAnamneseData,
-  buildDemoClinicalEvaluation,
+  buildDemoAssessment,
 } from "./demo-patient";
 
 export const DEMO_PRINTS_MARKER = "seed:demo-prints";
@@ -274,12 +274,12 @@ export function offsetIsoDate(base: Date, days: number): string {
   return `${year}-${month}-${day}`;
 }
 
-export function buildPrintsClinicalEvaluation(
+export function buildPrintsAssessment(
   patientName: string,
   daysAgo: number,
   baseDate: Date,
 ) {
-  const template = buildDemoClinicalEvaluation(baseDate);
+  const template = buildDemoAssessment(baseDate);
   return {
     ...template,
     date: offsetIsoDate(baseDate, -daysAgo),

@@ -32,7 +32,7 @@ enum MemberStatus {
   INACTIVE
 }
 
-enum SessionNoteStatus {
+enum EvolutionStatus {
   ATTENDED
   ABSENT
   CANCELLED
@@ -195,7 +195,7 @@ model Organization {
   guardians           Guardian[]
   appointments        Appointment[]
   cashTransactions    CashTransaction[]
-  protocolEvaluations ProtocolEvaluation[]
+  protocolAssessments ProtocolAssessment[]
   protocolInvites     ProtocolInvite[]
   anamneses           Anamnese[]
   billing             OrganizationBilling?
@@ -271,15 +271,15 @@ model Patient {
   price               Decimal?             @db.Decimal(12, 2)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-  clinicalEvaluations ClinicalEvaluation[]
+  assessments         Assessment[]
   anamneses           Anamnese[]
-  sessionNotes        SessionNote[]
+  evolutions          Evolution[]
   appointments        Appointment[]
   cashTransactions    CashTransaction[]
-  protocolEvaluations ProtocolEvaluation[]
+  protocolAssessments ProtocolAssessment[]
   protocolInvites     ProtocolInvite[]
   /**
-   * Membros da equipa responsáveis por este paciente.
+   * Membros da equipe responsáveis por este paciente.
    */
   members             Member[]             @relation("PatientMembers")
 
@@ -290,7 +290,7 @@ model Patient {
 }
 
 // Avaliações clínicas (prontuário — narrativa + domínios)
-model ClinicalEvaluation {
+model Assessment {
   id                String   @id @default(cuid())
   patientId         String
   patient           Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
@@ -318,7 +318,7 @@ model ClinicalEvaluation {
   @@index([patientId])
   @@index([patientId, date])
   @@index([memberId])
-  @@map("clinical_evaluations")
+  @@map("assessments")
 }
 
 // Anamnese (1 por paciente × formulário/especialidade)
@@ -339,27 +339,27 @@ model Anamnese {
   @@map("anamneses")
 }
 
-// Notas de sessão
-model SessionNote {
-  id            String            @id @default(cuid())
+// Evoluções (nota por atendimento)
+model Evolution {
+  id            String          @id @default(cuid())
   patientId     String
-  patient       Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient       Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
   memberId      String?
-  member        Member?           @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  appointmentId String?           @unique
-  appointment   Appointment?      @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  member        Member?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  appointmentId String?         @unique
+  appointment   Appointment?    @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
   date          String
-  time          String            @default("")
-  status        SessionNoteStatus @default(ATTENDED)
-  activities    String            @default("")
-  observations  String            @default("")
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  time          String          @default("")
+  status        EvolutionStatus @default(ATTENDED)
+  activities    String          @default("")
+  observations  String          @default("")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   @@index([patientId])
   @@index([patientId, date])
   @@index([memberId])
-  @@map("session_notes")
+  @@map("evolutions")
 }
 
 // Agendamentos
@@ -376,7 +376,7 @@ model Appointment {
   duration       Int               @default(45)
   notes          String            @default("")
   status         AppointmentStatus @default(SCHEDULED)
-  sessionNote    SessionNote?
+  evolution      Evolution?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
@@ -414,7 +414,7 @@ model CashTransaction {
 }
 
 // Avaliações de protocolo (instrumentos pontuados, ex. GMFM-88)
-model ProtocolEvaluation {
+model ProtocolAssessment {
   id                        String              @id @default(cuid())
   organizationId            String
   organization              Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -426,6 +426,7 @@ model ProtocolEvaluation {
   label                     String              @default("Evaluation")
   date                      String
   scores                    String
+  summary                   String?
   notes                     String              @default("")
   interpretationAI          String?
   interpretationAIUpdatedAt DateTime?
@@ -441,7 +442,7 @@ model ProtocolEvaluation {
   @@index([patientId])
   @@index([patientId, protocolId])
   @@index([memberId])
-  @@map("protocol_evaluations")
+  @@map("protocol_assessments")
 }
 
 // Convite público para preenchimento remoto de avaliações
@@ -474,7 +475,7 @@ model ProtocolInviteItem {
   status      String              @default("pending")
   responses   String              @default("{}")
   submittedAt DateTime?
-  evaluation  ProtocolEvaluation?
+  assessment  ProtocolAssessment?
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
 
@@ -499,9 +500,9 @@ model Member {
   createdAt           DateTime
   appointments        Appointment[]
   cashTransactions    CashTransaction[]
-  clinicalEvaluations ClinicalEvaluation[]
-  sessionNotes        SessionNote[]
-  protocolEvaluations ProtocolEvaluation[]
+  assessments         Assessment[]
+  evolutions          Evolution[]
+  protocolAssessments ProtocolAssessment[]
   protocolInvites     ProtocolInvite[]
   patients            Patient[]            @relation("PatientMembers")
 
