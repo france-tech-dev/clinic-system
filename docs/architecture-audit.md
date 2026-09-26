@@ -2,21 +2,21 @@
 
 Estado consolidado dos refactors estruturais do Clinic System.
 
-**Última revisão:** 25/07/2026  
-**Referência normativa:** [`architecture.md`](./architecture.md)
+**Última revisão:** 26/09/2026  
+**Referência normativa:** [`architecture.md`](./architecture.md) · rules: [`.cursor/rules/README.md`](../.cursor/rules/README.md)
 
 ## Resultado atual
 
 - [x] Fronteiras automatizadas com `dependency-cruiser` (`pnpm arch`)
 - [x] Sem imports entre features distintas
 - [x] Sem imports das camadas internas para `app/`
-- [x] `shared/` e `server/` sem dependências de features
-- [x] `components/` sem dependências de features
+- [x] `shared/` e `platform/` (`@/server`) sem dependências de `domains/` / `features/`
+- [x] `ui/` (`@/components`) sem dependências de `domains/` / `features/`
 - [x] Sem dependências circulares em `src/`
-- [x] Prisma isolado em repositories dentro das features
+- [x] Prisma isolado em repositories dentro de `domains/`
 - [x] Services sem `use server` nem invalidação de cache
-- [x] UI partilhada movida para `features/[domínio]/components`
-- [x] Orquestração multi-domínio feita em `app/`
+- [x] UI partilhada em `features/[domínio]/` (≥2 rotas)
+- [x] Orquestração multi-domínio em `app/` (+ `application/patient` para escrita composta)
 - [x] Tipos finos partilhados no boundary (`PatientOption`, `PdfKeyValueSection`)
 
 ## Refactors concluídos
@@ -26,7 +26,7 @@ Estado consolidado dos refactors estruturais do Clinic System.
 - [x] Separação `repository → service → actions`
 - [x] Eliminação de imports cruzados entre rotas `_components`
 - [x] DTOs planos no boundary Server → Client
-- [x] PDF multi-domínio composto em `app/`
+- [x] PDF multi-domínio composto em `app/` / `application/`
 
 ### P1 — UI e dados
 
@@ -54,9 +54,13 @@ Estado consolidado dos refactors estruturais do Clinic System.
 - [x] P6.5 — tipos partilhados, preço do paciente e migration baseline
 - [x] Autor de protocolo e assinatura PDF com fallback da organização
 
-## Verificação
+## Notas
 
-Executar antes de integrar alterações estruturais:
+- `application/` existe só para `patient` — não expandir sem 2.º caso real.
+- Jobs: infra BullMQ + `consumer/` pronta; `produce()` ainda sem callers; media síncrona; WhatsApp = stub.
+- Rules Cursor: `reuse-before-create` / `clean-architecture` / `route-shared-ui` fundidas em `ponytail` + `project-core`.
+
+## Verificação
 
 ```bash
 pnpm arch

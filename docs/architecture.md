@@ -54,6 +54,7 @@ clinic-system/
 │   │   ├── finance/
 │   │   ├── billing/
 │   │   └── …
+│   ├── application/                  # Orquestrações ≥2 domains (hoje: patient)
 │   ├── shared/                       # Infra (prisma, jobs, ai, …)
 │   ├── platform/                     # Auth, org (alias @/server)
 │   ├── ui/                           # Design system (shadcn, shell)
@@ -107,7 +108,7 @@ Cada contexto em `src/domains/[nome]/` (import `@/domains/[nome]/`) segue este p
 | `[nome].schema.ts`        | Schemas Zod (validação de input)                                                  |
 | `[nome].types.ts`         | DTOs planos (sem tipos Prisma no client)                                          |
 | `[nome].actions.ts`       | Server Actions finas: validar → service → revalidar                               |
-| `_lib/` / `lib/`          | Funções puras, agregações, helpers de domínio                                     |
+| `_lib/`                   | Funções puras, agregações, helpers de domínio                                     |
 | UI `components/`/`hooks/` | Em `src/features/[nome]/` (≥2 rotas do mesmo domínio)                             |
 
 ### Fluxo de uma mutação
@@ -131,24 +132,30 @@ page.tsx (Server Component) → service → repository
 ## 4. Regras de dependência
 
 ```
-app/  →  domains/  →  shared/
-      →  features/ (UI web) → domains / shared
-components/ (ui)  →  shared/   (evitar domains/)
-platform/         →  shared/
+app/          →  domains/  →  shared/
+              →  features/ →  domains / shared
+              →  application/ (≥2 domains)
+ui/           →  shared/   (evitar domains/)
+platform/     →  shared/
+consumer/     →  domains/, shared/
 ```
 
-| Origem (conceito / pasta)   | Pode importar                                                     | Não pode importar                     |
-| --------------------------- | ----------------------------------------------------------------- | ------------------------------------- |
-| `src/app/`                  | `@/domains`, `@/features`, `@/shared`, `@/components`, `@/server` | —                                     |
-| `src/domains`               | `@/shared`, `@/server` (platform)                                 | outros contexts profundos, `app/`, ui |
-| `src/features/` (UI)        | `@/domains`, `@/shared`, `@/components`                           | UI de outra rota `_components/`       |
-| `src/shared`                | outros módulos `shared/`                                          | `domains/`, `app/`                    |
-| `src/ui` (`@/components`)   | `@/shared` (utils)                                                | `domains/` (preferência)              |
-| `src/platform` (`@/server`) | `@/shared`                                                        | `domains/`, `app/`                    |
+| Origem (conceito / pasta)   | Pode importar                                                                      | Não pode importar                     |
+| --------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------- |
+| `src/app/`                  | `@/domains`, `@/features`, `@/application`, `@/shared`, `@/components`, `@/server` | —                                     |
+| `src/application/`          | `@/domains`, `@/shared`, `@/server`                                                | `features/`, `app/`, ui               |
+| `src/domains`               | `@/shared`, `@/server` (platform)                                                  | outros contexts profundos, `app/`, ui |
+| `src/features/` (UI)        | `@/domains`, `@/shared`, `@/components`                                            | UI de outra rota `_components/`       |
+| `src/shared`                | outros módulos `shared/`                                                           | `domains/`, `app/`                    |
+| `src/ui` (`@/components`)   | `@/shared` (utils)                                                                 | `domains/` (preferência)              |
+| `src/platform` (`@/server`) | `@/shared`                                                                         | `domains/`, `app/`                    |
 
 ### Orquestração multi-domínio
 
-Quando uma página precisa de dados de **vários domains** (ex.: painel = dashboard + finance):
+Quando uma página ou action precisa de **vários domains** (ex.: painel = dashboard + finance; paciente + guardian):
+
+- Preferir compor em `app/` (page / dialog) com `Promise.all` de services.
+- Casos de escrita multi-domínio estáveis: `src/application/` (hoje só `patient/` — create/update com guardian, PDF composto).
 
 ```tsx
 // ✅ src/app/(authenticated)/painel/page.tsx
@@ -238,13 +245,14 @@ Retorno padrão (`shared/types/action-result.ts`):
 
 ```ts
 export type ActionResult<T = void> =
-  { success: true; data: T } | { success: false; error: string };
+  | { success: true; data: T; message?: string }
+  | { success: false; message: string; fieldErrors?: FieldErrors };
 ```
 
 Regras:
 
-1. Validar com **Zod** (`safeParse`) — nunca confiar só no cliente
-2. Actions **finas**: validar → chamar service → `revalidatePath` / `revalidateTag`
+1. Validar com **Zod** via `AppError.parse(schema, input)` nas actions — nunca confiar só no cliente
+2. Actions **finas**: validar → chamar service → `revalidatePath` / `revalidateTag`; catch → `AppError.result(error)`
 3. Segredos só no servidor (env)
 4. Route Handlers (`app/api/`) só para webhooks, HTTP externo e **streaming de IA** (ex. `/api/ai/*`) — ver [`docs/ai.md`](ai.md)
 5. Manter **nomes exportados** estáveis ao refatorar
@@ -253,6 +261,7 @@ Cliente:
 
 - Formulários: `useActionState` + `<form action={formAction}>`
 - Botões: `useTransition` + chamada direta à action
+- Erros de campo: `applyActionFieldErrors` + `FormMessage`
 
 ---
 
@@ -284,14 +293,14 @@ Aplicamos SOLID onde traz valor, sem cerimônia enterprise.
 
 ## 10. Clean code
 
-| Prática     | Regra                                                                            |
-| ----------- | -------------------------------------------------------------------------------- |
-| Nomes       | Verbos para funções (`listPatients`, `buildSummary`); substantivos para tipos    |
-| Funções     | Pequenas; uma responsabilidade; extrair para `_lib/` quando reutilizável         |
-| Ficheiros   | Partir quando passar **~300–400 linhas** (excluir shadcn e constantes estáticas) |
-| Duplicação  | Procurar em `shared/` e `_lib/` antes de criar — ver `reuse-before-create.mdc`   |
-| Comentários | Só para lógica de negócio não óbvia                                              |
-| Abstrações  | Criar quando houver **≥2 usos reais**, não para hipóteses futuras                |
+| Prática     | Regra                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------- |
+| Nomes       | Verbos para funções (`listPatients`, `buildSummary`); substantivos para tipos            |
+| Funções     | Pequenas; uma responsabilidade; extrair para `_lib/` quando reutilizável                 |
+| Ficheiros   | Partir quando passar **~300–400 linhas** (excluir shadcn e constantes estáticas)         |
+| Duplicação  | Procurar em `shared/` e `_lib/` antes de criar — ver `ponytail.mdc` + `project-core.mdc` |
+| Comentários | Só para lógica de negócio não óbvia                                                      |
+| Abstrações  | Criar quando houver **≥2 usos reais**, não para hipóteses futuras                        |
 
 ---
 
@@ -391,14 +400,13 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 
 ## 17. Referência de rules Cursor
 
-| Área                      | Ficheiro                     |
-| ------------------------- | ---------------------------- |
-| Core (sempre ativo)       | `project-core.mdc`           |
-| Server Actions            | `nextjs-server-actions.mdc`  |
-| UI partilhada             | `route-shared-ui.mdc`        |
-| Reutilizar antes de criar | `reuse-before-create.mdc`    |
-| React / efeitos           | `react-effects-and-data.mdc` |
-| Páginas autenticadas      | `app-page.mdc`               |
-| Frontend                  | `frontend.mdc`               |
-| UX / design               | `ux.mdc`                     |
-| Testes / validação        | `testing.mdc`                |
+| Área                 | Ficheiro                     |
+| -------------------- | ---------------------------- |
+| YAGNI                | `ponytail.mdc`               |
+| Core (sempre)        | `project-core.mdc`           |
+| React / efeitos      | `react-effects-and-data.mdc` |
+| Server Actions       | `nextjs-server-actions.mdc`  |
+| Páginas autenticadas | `app-page.mdc`               |
+| Frontend / UX        | `frontend.mdc` · `ux.mdc`    |
+| Testes / validação   | `testing.mdc`                |
+| Índice completo      | `.cursor/rules/README.md`    |

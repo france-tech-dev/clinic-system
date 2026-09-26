@@ -19,7 +19,7 @@ Assistente clínico baseado no [Vercel AI SDK](https://ai-sdk.dev/), com o prime
 
 ## Variáveis de ambiente
 
-Em [`packages/shared/src/env.ts`](../packages/shared/src/env.ts):
+Em [`src/shared/env.ts`](../src/shared/env.ts):
 
 ```env
 # Provider: google (default) | openai

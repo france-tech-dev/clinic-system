@@ -15,7 +15,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Concluído
 
-- [x] Agenda em `/agenda` com CRUD completo (`features/schedule/`)
+- [x] Agenda em `/agenda` com CRUD completo (`domains/schedule` + `app/.../agenda/_components`)
 - [x] Status: agendado, realizado, faltou, cancelado
 - [x] Repetição semanal (`repeatWeeks` 1–52)
 - [x] Vista **lista** + vista **calendário** (`react-big-calendar`)

@@ -8,8 +8,8 @@ Complementa [`architecture.md`](./architecture.md).
 ## Ideia
 
 Cada contexto tem **linguagem própria** e **dono do código**.  
-Cruzar contextos = `application/` ou import via `domains/X/index.ts` (ver [`target-structure.md`](./target-structure.md)).  
-Evitar imports profundos (`repository` / arquivos internos) entre contextos.
+Cruzar contextos = `app/` (composição) ou `application/` (escrita multi-domínio) — ver [`target-structure.md`](./target-structure.md).  
+`domains/X/index.ts` como API pública é **opcional** (hoje a maioria dos domains não tem). Evitar imports profundos (`repository` / arquivos internos) entre contextos.
 
 ```
                     ┌─────────────────────────┐

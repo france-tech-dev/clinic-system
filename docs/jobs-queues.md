@@ -2,7 +2,7 @@
 
 Documento de decisão para **não esquecer** quando a Movi escalar (profissionais autónomos + clínicas, WhatsApp, PDFs, media).
 
-**Estado atual:** processamento síncrono (ex. logo via media). Stub BullMQ em `shared/lib/jobs` (`produce`) + processo `consumer/` (requer `REDIS_URL`). Rate limit da app também no Redis. Alvo de pastas: [`target-structure.md`](./target-structure.md) (fase 1 em `src/` + `consumer/`; monorepo só com Fastify).
+**Estado atual:** infra BullMQ pronta (`produce` em `shared/lib/jobs` + `consumer/` com `REDIS_URL`), mas **ainda sem callers** a `produce()`. Media (logo/avatar) continua **síncrona**. Handler WhatsApp em `domains/schedule/jobs/` é stub. Rate limit da app no Redis. Alvo de pastas: [`target-structure.md`](./target-structure.md).
 
 **Relacionados:** [`media-storage.md`](./media-storage.md) · [`architecture.md`](./architecture.md) · [`ToDo.md`](./ToDo.md)
 

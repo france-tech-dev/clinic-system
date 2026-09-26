@@ -65,20 +65,19 @@ UI / Action / (futuro) Fastify route  →  domain.service  →  repository
 | Genérico                  | `src/ui/`                      |
 | Negócio                   | `src/domains/` — **sem** React |
 
-Interior de um contexto:
+Interior de um contexto (exemplo realista):
 
 ```
 src/domains/patient/
-├── index.ts                 # API pública (sem repository)
 ├── patient.types.ts
 ├── patient.schema.ts
 ├── patient.repository.ts
 ├── patient.service.ts       # sem 'use server', sem next/react
-├── patient.actions.ts       # fino (Zod → service → revalidate) — adaptador Next
-├── lib/
-└── jobs/                    # handlers BullMQ
+├── patient.actions.ts       # fino (Zod → service → revalidate)
+└── _lib/                    # helpers puros
 ```
 
+`index.ts` (API pública sem exportar repository) e `jobs/` são opcionais — criar só com consumidores reais.
 Actions podem ficar junto do domain **ou** em `src/app` como adaptadores; o service **nunca** importa Next/React.
 
 ### Consumer (fase 1)
@@ -142,7 +141,7 @@ ui                          →  shared (utils)
 shared                      →  deps npm
 ```
 
-Cruzar contexts: `application/` ou `domains/X/index.ts` (DAG; sem imports profundos de repository alheio).
+Cruzar contexts: `app/` ou `application/` (DAG; sem imports profundos de repository alheio). `domains/X/index.ts` só se houver API pública estável.
 
 ---
 
