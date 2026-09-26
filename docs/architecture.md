@@ -24,13 +24,13 @@ Documentos relacionados:
 
 Este projeto é um monólito Next.js multi-tenant (`Organization`) para gestão clínica de Terapia Ocupacional, organizado por domínio em `src/`. A escala e complexidade justificam **organização por domínio**, mas **não** a cerimônia de DDD tático (aggregates, domain events, entidades ricas).
 
-| Critério                   | Escolha                                     |
-| -------------------------- | ------------------------------------------- |
+| Critério                   | Escolha                                       |
+| -------------------------- | --------------------------------------------- |
 | Organização                | Monólito modular por domínio (web + consumer) |
-| Camadas                    | repository → service → actions              |
-| Modelo de dados            | Prisma + DTOs planos no boundary            |
-| Orquestração multi-domínio | `app/` (pages), nunca domínio → domínio     |
-| Testes                     | Vitest em funções puras e regras de negócio |
+| Camadas                    | repository → service → actions                |
+| Modelo de dados            | Prisma + DTOs planos no boundary              |
+| Orquestração multi-domínio | `app/` (pages), nunca domínio → domínio       |
+| Testes                     | Vitest em funções puras e regras de negócio   |
 
 ---
 
@@ -318,12 +318,13 @@ Aplicamos SOLID onde traz valor, sem cerimônia enterprise.
 
 Guia completo: [`tests/README.md`](../tests/README.md)
 
-**Comandos:** `pnpm test` · `pnpm test:unit` · `pnpm test:watch` · `pnpm test:e2e` (Playwright, futuro)
+**Comandos:** `pnpm test` · `pnpm test:unit` · `pnpm test:watch` · `pnpm test:e2e` (Playwright, futuro) · `pnpm test:load:smoke` (k6, staging)
 
 | Tipo     | Pasta         | Ferramenta            |
 | -------- | ------------- | --------------------- |
 | Unitário | `tests/unit/` | Vitest                |
 | E2E      | `tests/e2e/`  | Playwright (pendente) |
+| Carga    | `tests/load/` | k6 (staging Dokploy)  |
 
 ### Convenção unitários
 
@@ -384,7 +385,7 @@ Guia completo: [`tests/README.md`](../tests/README.md)
 | `db` directo em services            | Viola camada repository                        |
 | Clean Architecture dogmática        | App Router já resolve boundary server/client   |
 | React/UI em `src/domains`           | Worker/api não devem puxar React (ver UI-DEBT) |
-| Monorepo `apps/`+`packages/` agora  | Fase 1 é `src/`+`consumer/`; Fastify depois      |
+| Monorepo `apps/`+`packages/` agora  | Fase 1 é `src/`+`consumer/`; Fastify depois    |
 
 ---
 

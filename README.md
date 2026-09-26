@@ -155,6 +155,9 @@ Documentação: [`docs/architecture.md`](docs/architecture.md) · roadmap: [`doc
 | `pnpm arch`                | Fronteiras de import (dependency-cruiser)    |
 | `pnpm test`                | Testes unitários (Vitest)                    |
 | `pnpm test:watch`          | Vitest em modo watch                         |
+| `pnpm test:load:smoke`     | k6 smoke (requer `BASE_URL` staging)         |
+| `pnpm test:load`           | k6 carga média                               |
+| `pnpm test:load:stress`    | k6 stress (observar CPU/RAM no Dokploy)      |
 | `pnpm db:migrate`          | Aplica migrations (`prisma migrate deploy`)  |
 | `pnpm db:seed`             | Seed (paciente de demonstração)              |
 | `pnpm validate:rate-limit` | Probe de rate limit (auth / réplicas)        |

@@ -148,7 +148,7 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 
 ### Testes de performance e carga
 
-- [ ] Teste com k6 (stress, performance, carga)
+- [x] Teste com k6 (stress, performance, carga) — `tests/load/` · `pnpm test:load:*`
 
 ---
 
@@ -161,8 +161,8 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] Checkout (setup no trial / subscription após cancel) + webhook
 - [x] `/plataforma` — isentar clínicas (`billingExempt` + `PLATFORM_ADMIN_USER_IDS`)
 - [x] `/planos` — plano atual + Customer Portal + extras (só Enterprise)
-- [ ] Preços e `STRIPE_PRICE_SOLO|PRO|ENTERPRISE|EXTRA_SEAT` / `STRIPE_SECRET_KEY` em produção (live)
-- [ ] Ativar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
+- [x] Preços e `STRIPE_PRICE_SOLO|PRO|ENTERPRISE|EXTRA_SEAT` / `STRIPE_SECRET_KEY` em produção (live)
+- [x] Ativar Customer Portal no Dashboard Stripe (Settings → Billing → Customer portal)
 
 ---
 
@@ -180,4 +180,4 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] **Score + gráfico TO (SPM)** — raw + T/bandas Casa 5–12; PDF; demais SPM/PEDI/Perfil depois
 - [x] **limitar a 1 uso da IA no periodo de teste**.
 - [x] **Redis** — filas (BullMQ producer/consumer) + rate limit; local via `docker compose` (`REDIS_URL`)
-- [ ] **Teste de carga com k6** — stress, performance, carga.
+- [x] **Teste de carga com k6** — smoke / carga / stress em `tests/load/` (alvo: staging Dokploy via `BASE_URL`)
