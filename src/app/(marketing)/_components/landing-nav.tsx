@@ -7,7 +7,7 @@ import { useLandingNavBehavior } from "./use-landing-nav-behavior";
 const SHELL =
   "group/nav fixed top-0 left-1/2 z-40 -translate-x-1/2 overflow-visible rounded-full border transition-[background-color,border-color,border-radius,box-shadow,backdrop-filter] duration-300 ease-in-out md:top-6 max-md:w-full! max-md:rounded-none max-md:overflow-hidden";
 
-export function LandingNav() {
+export function LandingNav({ enterHref }: { enterHref: string }) {
   const { navRef, activeHref, onNavClick } = useLandingNavBehavior();
 
   return (
@@ -25,7 +25,11 @@ export function LandingNav() {
           "data-[scrolling=true]:md:rounded-full",
         )}
       >
-        <LandingNavChrome activeHref={activeHref} onNavClick={onNavClick} />
+        <LandingNavChrome
+          activeHref={activeHref}
+          enterHref={enterHref}
+          onNavClick={onNavClick}
+        />
       </nav>
 
       <div className="h-14 md:h-24" aria-hidden />

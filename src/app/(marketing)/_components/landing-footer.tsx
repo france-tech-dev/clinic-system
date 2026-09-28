@@ -10,13 +10,13 @@ const PRODUCT_LINKS = [
   { href: "#planos", label: "Planos" },
 ] as const;
 
-const ACCOUNT_LINKS = [
-  { href: paths.auth.login, label: "Entrar" },
-  { href: paths.auth.signup, label: "Criar conta" },
-  { href: "#faq", label: "Dúvidas" },
-] as const;
+export function LandingFooter({ enterHref }: { enterHref: string }) {
+  const accountLinks = [
+    { href: enterHref, label: "Entrar" },
+    { href: paths.auth.signup, label: "Criar conta" },
+    { href: "#faq", label: "Dúvidas" },
+  ] as const;
 
-export function LandingFooter() {
   return (
     <footer className="bg-[var(--movi-band)] pt-16 pb-12 md:pt-20 md:pb-12">
       <div className={landingContainer}>
@@ -65,9 +65,9 @@ export function LandingFooter() {
               Conta
             </h3>
             <div className="mt-4 flex flex-col gap-2.5 text-base text-[var(--movi-on-dark-muted)]">
-              {ACCOUNT_LINKS.map((l) => (
+              {accountLinks.map((l) => (
                 <Link
-                  key={l.href}
+                  key={l.label}
                   href={l.href}
                   className="hover:text-[var(--movi-on-dark)] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[var(--movi-sun)]"
                 >

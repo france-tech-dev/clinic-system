@@ -9,10 +9,10 @@ import { LandingFaq } from "./landing-faq";
 import { LandingCta } from "./landing-cta";
 import { LandingFooter } from "./landing-footer";
 
-export function LandingPage() {
+export function LandingPage({ enterHref }: { enterHref: string }) {
   return (
     <>
-      <LandingNav />
+      <LandingNav enterHref={enterHref} />
       <main>
         <LandingHero />
         <LandingProduto />
@@ -21,9 +21,9 @@ export function LandingPage() {
         <LandingSecurity />
         <LandingPlans />
         <LandingFaq />
-        <LandingCta />
+        <LandingCta enterHref={enterHref} />
       </main>
-      <LandingFooter />
+      <LandingFooter enterHref={enterHref} />
     </>
   );
 }

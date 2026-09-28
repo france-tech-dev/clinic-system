@@ -11,6 +11,7 @@ import { LANDING_NAV_LINKS } from "./use-landing-nav-behavior";
 
 type LandingNavChromeProps = {
   activeHref: string;
+  enterHref: string;
   onNavClick: (
     event: React.MouseEvent<HTMLAnchorElement>,
     href: string,
@@ -52,6 +53,7 @@ function HeaderLogo({
 
 export function LandingNavChrome({
   activeHref,
+  enterHref,
   onNavClick,
 }: LandingNavChromeProps) {
   return (
@@ -103,7 +105,7 @@ export function LandingNavChrome({
           className="hidden font-bold text-[var(--movi-muted-2)] hover:bg-[var(--movi-hover)] hover:text-[var(--movi-heading)] sm:inline-flex"
           asChild
         >
-          <Link href={paths.auth.login}>Entrar</Link>
+          <Link href={enterHref}>Entrar</Link>
         </Button>
         <Button
           size="sm"

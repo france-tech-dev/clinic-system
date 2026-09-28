@@ -1,6 +1,5 @@
 "use client";
 
-import { paths } from "@/shared/constants/paths";
 import { TRIAL_DAYS } from "@/shared/constants/billing-plans";
 import { cn } from "@/shared/lib/utils";
 import { LandingMascot } from "./landing-brand-mark";
@@ -12,7 +11,7 @@ import {
   landingDisplay,
 } from "./landing-ui";
 
-export function LandingCta() {
+export function LandingCta({ enterHref }: { enterHref: string }) {
   const ref = useLandingReveal("[data-reveal]");
 
   return (
@@ -44,7 +43,7 @@ export function LandingCta() {
           <div className="mt-9 flex flex-wrap items-center gap-7">
             <LandingTrialCta className="h-[60px] px-[38px] text-[19px]" />
             <LandingTextLink
-              href={paths.auth.login}
+              href={enterHref}
               className="text-[var(--movi-ink)] hover:text-[var(--movi-green-deep)]"
             >
               Já tenho conta
