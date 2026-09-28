@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useSyncExternalStore, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/shared/lib/auth-client";
@@ -32,12 +31,13 @@ const formSchema = z.object({
 export function LoginForm({
   className,
   accessNotice = null,
+  callbackUrl = paths.agenda,
   ...props
 }: React.ComponentPropsWithoutRef<"form"> & {
   accessNotice?: string | null;
+  callbackUrl?: string;
 }) {
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
   const lastMethod = useSyncExternalStore(
     () => () => {},
     () => authClient.getLastUsedLoginMethod() ?? null,
@@ -54,7 +54,6 @@ export function LoginForm({
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     startTransition(async () => {
-      // Via HTTP /api/auth — para o rate limit do Better Auth aplicar (auth.api.* não limita).
       const { error } = await authClient.signIn.email({
         email: data.email,
         password: data.password,
@@ -70,14 +69,14 @@ export function LoginForm({
       }
 
       toast.success("Login realizado com sucesso");
-      router.push(paths.agenda);
+      window.location.assign(callbackUrl);
     });
   };
 
   const signInWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: paths.agenda,
+      callbackURL: callbackUrl,
     });
   };
 

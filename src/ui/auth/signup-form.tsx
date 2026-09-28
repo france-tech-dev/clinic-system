@@ -19,7 +19,6 @@ import {
 import { toast } from "sonner";
 import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { useRouter } from "next/navigation";
 import { authClient } from "@/shared/lib/auth-client";
 import { IconBrandGoogle } from "@tabler/icons-react";
 
@@ -33,12 +32,13 @@ const formSchema = z.object({
     .trim(),
 });
 
+const callbackUrl = paths.agenda;
+
 export function SignupForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,14 +77,14 @@ export function SignupForm({
       toast.success(
         "Cadastro realizado com sucesso. Verifique seu email para ativar sua conta.",
       );
-      router.push(paths.agenda);
+      window.location.assign(callbackUrl);
     });
   };
 
   const signUpWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: paths.agenda,
+      callbackURL: callbackUrl,
     });
   };
 
