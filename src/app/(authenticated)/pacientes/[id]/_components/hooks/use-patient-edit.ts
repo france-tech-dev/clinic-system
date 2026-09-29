@@ -16,6 +16,7 @@ import {
 } from "@/domains/guardian/guardian.schema";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import { patientDtoToDraft } from "@/domains/patient/_lib/patient-form-defaults";
+import { updatePatientAction } from "@/domains/patient/patient.actions";
 import {
   patientDraftSchema,
   type PatientDraftInput,
@@ -46,7 +47,7 @@ export function usePatientEdit({
 }) {
   const [editPatientOpen, setEditPatientOpen] = useState(false);
   const [editGuardianId, setEditGuardianId] = useState(
-    detail.patient.guardianId,
+    detail.patient.guardianId ?? "",
   );
   const [hasPortalAccess, setHasPortalAccess] = useState(
     () =>
@@ -77,7 +78,7 @@ export function usePatientEdit({
 
   function openEditPatient() {
     patientForm.reset(patientDtoToDraft(detail.patient));
-    setEditGuardianId(detail.patient.guardianId);
+    setEditGuardianId(detail.patient.guardianId ?? "");
     const current = guardians.find((g) => g.id === detail.patient.guardianId);
     guardianForm.reset(
       current ? guardianDtoToDraft(current) : EMPTY_GUARDIAN_DRAFT,
@@ -92,19 +93,56 @@ export function usePatientEdit({
     if (selected) {
       guardianForm.reset(guardianDtoToDraft(selected));
       setHasPortalAccess(selected.hasPortalAccess);
+    } else {
+      guardianForm.reset(EMPTY_GUARDIAN_DRAFT);
+      setHasPortalAccess(false);
     }
   }
 
   function savePatientEdit() {
     void (async () => {
       const patientOk = await patientForm.trigger();
-      const guardianOk = await guardianForm.trigger();
-      if (!patientOk || !guardianOk) return;
+      if (!patientOk) return;
 
       const patientDraft = patientForm.getValues();
-      const draft = guardianForm.getValues();
+      const hasGuardian = Boolean(editGuardianId);
+
+      if (hasGuardian) {
+        const guardianOk = await guardianForm.trigger();
+        if (!guardianOk) return;
+      }
 
       startTransition(async () => {
+        if (!hasGuardian) {
+          const result = await updatePatientAction({
+            id: detail.patient.id,
+            name: patientDraft.name,
+            birthDate: patientDraft.birthDate || null,
+            sex: patientDraft.sex,
+            notes: patientDraft.notes,
+            pricingType: patientDraft.pricingType,
+            price: parseBrl(patientDraft.priceInput),
+            guardianId: null,
+          });
+          if (!result.success) {
+            applyActionFieldErrors(patientForm.setError, result.fieldErrors);
+            toast.error(result.message);
+            return;
+          }
+          setDetail((d) => ({
+            ...d,
+            patient: {
+              ...d.patient,
+              ...result.data,
+              guardian: undefined,
+            },
+          }));
+          setEditPatientOpen(false);
+          toast.success("Paciente atualizado");
+          return;
+        }
+
+        const draft = guardianForm.getValues();
         const result = await updatePatientWithGuardianAction({
           guardian: {
             id: editGuardianId,
@@ -153,6 +191,10 @@ export function usePatientEdit({
   }
 
   function enablePortal() {
+    if (!editGuardianId) {
+      toast.error("Selecione um responsável para criar o acesso ao portal");
+      return;
+    }
     void guardianForm.handleSubmit((draft: GuardianFormDraft) => {
       startTransition(async () => {
         const result = await saveGuardianAndEnablePortalAction({

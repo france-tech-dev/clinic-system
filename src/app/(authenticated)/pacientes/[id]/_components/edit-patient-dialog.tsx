@@ -56,6 +56,8 @@ export function EditPatientDialog({
   onSave: () => void;
   onEnablePortal: () => void;
 }) {
+  const hasGuardian = Boolean(guardianId);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(dialogScrollableClassName, "sm:max-w-lg")}>
@@ -77,45 +79,53 @@ export function EditPatientDialog({
 
           <Separator />
 
-          {guardians.length > 1 ? (
-            <Field>
-              <FieldLabel>Responsável vinculado</FieldLabel>
-              <EntityCombobox
-                options={guardians.map((g) => ({
-                  id: g.id,
-                  name: guardianOptionLabel(g),
-                }))}
-                value={guardianId}
-                onValueChange={onGuardianIdChange}
-                emptyText="Nenhum responsável encontrado"
-              />
-            </Field>
-          ) : null}
+          <Field>
+            <FieldLabel>Responsável vinculado</FieldLabel>
+            <EntityCombobox
+              options={guardians.map((g) => ({
+                id: g.id,
+                name: guardianOptionLabel(g),
+              }))}
+              value={guardianId}
+              onValueChange={onGuardianIdChange}
+              emptyText="Nenhum responsável encontrado"
+              placeholder="Sem responsável"
+              allowClear
+            />
+          </Field>
 
-          <Form {...guardianForm}>
-            <GuardianFormFields />
-          </Form>
+          {hasGuardian ? (
+            <>
+              <Form {...guardianForm}>
+                <GuardianFormFields />
+              </Form>
 
-          {!hasPortalAccess ? (
-            <div className="rounded-md border border-border p-3">
-              <p className="text-sm text-muted-foreground">
-                Este responsável ainda não tem acesso ao portal. É necessário
-                e-mail cadastrado.
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-2"
-                disabled={pending || !guardianEmail.trim()}
-                onClick={onEnablePortal}
-              >
-                {pending ? <Spinner data-icon="inline-start" /> : null}
-                Criar acesso ao portal
-              </Button>
-            </div>
+              {!hasPortalAccess ? (
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-sm text-muted-foreground">
+                    Este responsável ainda não tem acesso ao portal. É necessário
+                    e-mail cadastrado.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-2"
+                    disabled={pending || !guardianEmail.trim()}
+                    onClick={onEnablePortal}
+                  >
+                    {pending ? <Spinner data-icon="inline-start" /> : null}
+                    Criar acesso ao portal
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Portal do responsável já ativo.
+                </p>
+              )}
+            </>
           ) : (
-            <p className="text-xs text-muted-foreground">
-              Portal do responsável já ativo.
+            <p className="text-sm text-muted-foreground">
+              Paciente sem responsável vinculado (ex.: atendimento adulto).
             </p>
           )}
         </form>
