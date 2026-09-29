@@ -74,16 +74,20 @@ export function CreateOrganizationForm({
         return;
       }
 
-      if (data?.id) {
-        const { error: activeError } = await authClient.organization.setActive({
-          organizationId: data.id,
-        });
-        if (activeError) {
-          toast.error(
-            activeError.message ||
-              "Organização criada, mas não foi possível ativá-la",
-          );
-        }
+      if (!data?.id) {
+        toast.error("Organização criada, mas sem identificador");
+        return;
+      }
+
+      const { error: activeError } = await authClient.organization.setActive({
+        organizationId: data.id,
+      });
+      if (activeError) {
+        toast.error(
+          activeError.message ||
+            "Organização criada, mas não foi possível ativá-la. Selecione-a no seletor de clínicas.",
+        );
+        return;
       }
 
       toast.success("Clínica criada com sucesso");
