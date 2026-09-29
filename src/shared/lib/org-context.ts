@@ -1,3 +1,4 @@
+import { getActiveOrganization } from "@/server/organizations/active-organization";
 import { AppError } from "@/shared/lib/app-error";
 import { auth } from "@/shared/lib/auth";
 import { headers } from "next/headers";
@@ -21,7 +22,11 @@ export async function requireOrgId(): Promise<{
     throw new OrgContextError("Sessão inválida. Faça login novamente.");
   }
 
-  const organizationId = session.session.activeOrganizationId;
+  let organizationId = session.session.activeOrganizationId ?? null;
+  if (!organizationId) {
+    const org = await getActiveOrganization(session.user.id);
+    organizationId = org?.id ?? null;
+  }
   if (!organizationId) {
     throw new OrgContextError(
       "Nenhuma organização ativa. Crie ou selecione uma clínica.",
