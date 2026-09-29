@@ -148,7 +148,9 @@ export function CashTransactionFormDialog({
   });
 
   const status = useWatch({ control: form.control, name: "status" });
+  const type = useWatch({ control: form.control, name: "type" });
   const isForecast = status === CashTransactionStatus.FORECAST;
+  const patientRequired = type === CashTransactionType.INCOME;
 
   function handleOpenChange(next: boolean) {
     if (!next) {
@@ -414,7 +416,9 @@ export function CashTransactionFormDialog({
                 name="patientId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Paciente</FormLabel>
+                    <FormLabel>
+                      {patientRequired ? "Paciente *" : "Paciente"}
+                    </FormLabel>
                     <FormControl>
                       <EntityCombobox
                         options={patients}
@@ -422,7 +426,7 @@ export function CashTransactionFormDialog({
                         onValueChange={field.onChange}
                         placeholder="Pesquisar paciente…"
                         emptyText="Nenhum paciente encontrado"
-                        allowClear
+                        allowClear={!patientRequired}
                       />
                     </FormControl>
                     <FormMessage />
