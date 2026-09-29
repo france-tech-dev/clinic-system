@@ -126,7 +126,9 @@ export function PacientesClient({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PatientStatus | null>(null);
   const [memberFilter, setMemberFilter] = useState<string | null>(null);
-  const [guardianMode, setGuardianMode] = useState<"new" | "existing">("new");
+  const [guardianMode, setGuardianMode] = useState<"none" | "new" | "existing">(
+    "new",
+  );
   const [selectedGuardianId, setSelectedGuardianId] = useState("");
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -239,7 +241,8 @@ export function PacientesClient({
           notes: patientDraft.notes,
           pricingType: patientDraft.pricingType,
           price: parseBrl(patientDraft.priceInput),
-          guardianId: selectedGuardianId,
+          guardianId:
+            guardianMode === "existing" ? selectedGuardianId : null,
           memberIds: isLeadership ? selectedMemberIds : [],
         });
         if (!result.success) {

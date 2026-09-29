@@ -71,8 +71,8 @@ export function CreatePatientDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   patientForm: UseFormReturn<PatientDraftInput>;
-  guardianMode: "new" | "existing";
-  onGuardianModeChange: (mode: "new" | "existing") => void;
+  guardianMode: "none" | "new" | "existing";
+  onGuardianModeChange: (mode: "none" | "new" | "existing") => void;
   selectedGuardianId: string;
   onSelectedGuardianIdChange: (id: string) => void;
   guardians: GuardianDTO[];
@@ -126,7 +126,7 @@ export function CreatePatientDialog({
                 <Select
                   value={guardianMode}
                   onValueChange={(v) =>
-                    onGuardianModeChange(v as "new" | "existing")
+                    onGuardianModeChange(v as "none" | "new" | "existing")
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -142,6 +142,7 @@ export function CreatePatientDialog({
                     >
                       Usar responsável já cadastrado
                     </SelectItem>
+                    <SelectItem value="none">Sem responsável</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
