@@ -56,8 +56,8 @@ export function toPatientDTO(row: {
   status: PatientStatus;
   pricingType: PatientPricingType;
   price: { toString(): string } | number | null;
-  guardianId: string;
-  guardian?: Parameters<typeof toPatientGuardianEmbed>[0];
+  guardianId: string | null;
+  guardian?: Parameters<typeof toPatientGuardianEmbed>[0] | null;
   members?: {
     id: string;
     user: { name: string | null; image?: string | null };

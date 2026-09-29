@@ -26,7 +26,7 @@ const paymentMethod = z.enum([
   CashPaymentMethod.OTHER,
 ]);
 
-export const cashTransactionFormSchema = z.object({
+const cashTransactionFieldsSchema = z.object({
   type: transactionType,
   status: transactionStatus,
   date: isoDate,
@@ -41,29 +41,50 @@ export const cashTransactionFormSchema = z.object({
   memberId: z.string().min(1).nullable().optional(),
 });
 
-export const updateCashTransactionSchema = cashTransactionFormSchema.extend({
-  id: z.string().cuid(),
-});
+function requirePatientOnIncome(
+  val: { type: string; patientId?: string | null },
+  ctx: z.RefinementCtx,
+) {
+  if (val.type !== CashTransactionType.INCOME) return;
+  if (val.patientId == null || val.patientId.trim() === "") {
+    ctx.addIssue({
+      code: "custom",
+      path: ["patientId"],
+      message: "Selecione o paciente",
+    });
+  }
+}
+
+export const cashTransactionFormSchema =
+  cashTransactionFieldsSchema.superRefine(requirePatientOnIncome);
+
+export const updateCashTransactionSchema = cashTransactionFieldsSchema
+  .extend({
+    id: z.string().cuid(),
+  })
+  .superRefine(requirePatientOnIncome);
 
 /** Schema do diálogo UI: valor em string BRL; patientId/memberId vazios = nenhum. */
-export const cashTransactionDraftSchema = z.object({
-  type: transactionType,
-  status: transactionStatus,
-  date: isoDate,
-  description: z
-    .string()
-    .trim()
-    .min(1, "Informe uma descrição")
-    .max(200, "Descrição muito longa"),
-  amountInput: z
-    .string()
-    .trim()
-    .min(1, "Informe um valor")
-    .refine((v) => parseBrl(v) !== null, "Informe um valor válido"),
-  paymentMethod: paymentMethod,
-  patientId: z.string(),
-  memberId: z.string(),
-});
+export const cashTransactionDraftSchema = z
+  .object({
+    type: transactionType,
+    status: transactionStatus,
+    date: isoDate,
+    description: z
+      .string()
+      .trim()
+      .min(1, "Informe uma descrição")
+      .max(200, "Descrição muito longa"),
+    amountInput: z
+      .string()
+      .trim()
+      .min(1, "Informe um valor")
+      .refine((v) => parseBrl(v) !== null, "Informe um valor válido"),
+    paymentMethod: paymentMethod,
+    patientId: z.string(),
+    memberId: z.string(),
+  })
+  .superRefine(requirePatientOnIncome);
 
 export const cashTransactionIdSchema = z.object({
   id: z.string().cuid(),

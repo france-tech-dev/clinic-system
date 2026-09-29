@@ -41,7 +41,7 @@ const patientFieldsSchema = z.object({
     .enum([PatientPricingType.SESSION, PatientPricingType.PACKAGE])
     .default(PatientPricingType.SESSION),
   price: z.number().positive().nullable().optional(),
-  guardianId: z.string().min(1, "Informe o responsável"),
+  guardianId: z.string().min(1, "Informe o responsável").nullable(),
 });
 
 export const patientFormSchema = patientFieldsSchema.extend({

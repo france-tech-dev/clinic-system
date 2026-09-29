@@ -52,7 +52,7 @@ export type PatientDTO = {
   status: PatientStatus;
   pricingType: PatientPricingType;
   price: number | null;
-  guardianId: string;
+  guardianId: string | null;
   guardian?: PatientGuardianEmbed;
   members: PatientMemberEmbed[];
   createdAt: string;
