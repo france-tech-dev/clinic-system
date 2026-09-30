@@ -181,3 +181,5 @@ Legenda: `[x]` feito · `[~]` parcial · `[ ]` pendente
 - [x] **limitar a 1 uso da IA no periodo de teste**.
 - [x] **Redis** — filas (BullMQ producer/consumer) + rate limit; local via `docker compose` (`REDIS_URL`)
 - [x] **Teste de carga com k6** — smoke / carga / stress em `tests/load/` (alvo: staging Dokploy via `BASE_URL`)
+
+- [ ] **Gerar nota de serviço direto pelo sistema**
