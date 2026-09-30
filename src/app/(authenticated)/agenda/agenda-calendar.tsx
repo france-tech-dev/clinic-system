@@ -237,8 +237,8 @@ export function AgendaCalendar({
             dayLayoutAlgorithm="no-overlap"
             step={30}
             timeslots={2}
-            min={set(new Date(), { hours: 7, minutes: 0, seconds: 0 })}
-            max={set(new Date(), { hours: 21, minutes: 0, seconds: 0 })}
+            min={set(new Date(), { hours: 0, minutes: 0, seconds: 0 })}
+            max={set(new Date(), { hours: 23, minutes: 59, seconds: 59 })}
             scrollToTime={set(new Date(), { hours: 8, minutes: 0, seconds: 0 })}
             popup
             culture="pt-BR"
