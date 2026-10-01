@@ -96,7 +96,7 @@ const STATUS_FILTER_OPTIONS = APPOINTMENT_STATUSES.map((s) => ({
   name: s.label,
 }));
 
-const VIEW_VALUES = ["lista", "calendario"] as const;
+const VIEW_VALUES = ["calendario", "lista"] as const;
 const CAL_VIEW_VALUES = ["day", "week", "month"] as const;
 
 type CalView = (typeof CAL_VIEW_VALUES)[number];
@@ -458,8 +458,8 @@ export function AgendaClient({
           className="flex min-h-0 flex-1 flex-col gap-2"
         >
           <TabsList className="shrink-0">
-            <TabsTrigger value="lista">Lista</TabsTrigger>
             <TabsTrigger value="calendario">Calendário</TabsTrigger>
+            <TabsTrigger value="lista">Lista</TabsTrigger>
           </TabsList>
 
           <TabsContent value="lista" className="mt-4 space-y-6">

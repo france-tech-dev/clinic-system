@@ -64,7 +64,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const params = await searchParams;
   const selectedDate = params.date || todayIso();
   const today = todayIso();
-  const view = params.view === "calendario" ? "calendario" : "lista";
+  const view = params.view === "lista" ? "lista" : "calendario";
   const calView = parseCalView(params.calView);
   const viewDateIso = params.viewDate || selectedDate;
   const viewDate =
