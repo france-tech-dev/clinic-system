@@ -5,28 +5,37 @@ CREATE SCHEMA IF NOT EXISTS "public";
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'OWNER', 'MANAGER', 'MEMBER', 'CLIENT');
 
 -- CreateEnum
-CREATE TYPE "PatientStatus" AS ENUM ('active', 'discharged', 'paused');
+CREATE TYPE "PatientStatus" AS ENUM ('ACTIVE', 'DISCHARGED', 'PAUSED');
 
 -- CreateEnum
-CREATE TYPE "MemberStatus" AS ENUM ('active', 'inactive');
+CREATE TYPE "MemberStatus" AS ENUM ('ACTIVE', 'INACTIVE');
 
 -- CreateEnum
-CREATE TYPE "SessionNoteStatus" AS ENUM ('attended', 'absent', 'cancelled');
+CREATE TYPE "EvolutionStatus" AS ENUM ('ATTENDED', 'ABSENT', 'CANCELLED');
 
 -- CreateEnum
-CREATE TYPE "AppointmentStatus" AS ENUM ('scheduled', 'completed', 'absent', 'cancelled');
+CREATE TYPE "AppointmentStatus" AS ENUM ('SCHEDULED', 'COMPLETED', 'ABSENT', 'CANCELLED');
 
 -- CreateEnum
-CREATE TYPE "CashTransactionType" AS ENUM ('income', 'expense');
+CREATE TYPE "CashTransactionType" AS ENUM ('INCOME', 'EXPENSE');
 
 -- CreateEnum
-CREATE TYPE "CashPaymentMethod" AS ENUM ('cash', 'pix', 'card', 'transfer', 'other');
+CREATE TYPE "CashTransactionStatus" AS ENUM ('POSTED', 'FORECAST');
 
 -- CreateEnum
-CREATE TYPE "PatientPricingType" AS ENUM ('session', 'package');
+CREATE TYPE "CashPaymentMethod" AS ENUM ('CASH', 'PIX', 'CARD', 'TRANSFER', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "PatientSex" AS ENUM ('female', 'male', 'other', 'not_informed');
+CREATE TYPE "PatientPricingType" AS ENUM ('SESSION', 'PACKAGE');
+
+-- CreateEnum
+CREATE TYPE "PatientSex" AS ENUM ('FEMALE', 'MALE', 'OTHER', 'NOT_INFORMED');
+
+-- CreateEnum
+CREATE TYPE "BillingPlan" AS ENUM ('SOLO', 'PRO', 'ENTERPRISE');
+
+-- CreateEnum
+CREATE TYPE "BillingStatus" AS ENUM ('TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'UNPAID');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -91,6 +100,18 @@ CREATE TABLE "verification" (
 );
 
 -- CreateTable
+CREATE TABLE "ai_generation_logs" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "kind" TEXT NOT NULL,
+    "evaluationId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ai_generation_logs_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "organization" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -98,8 +119,26 @@ CREATE TABLE "organization" (
     "logo" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL,
     "metadata" TEXT,
+    "billing_exempt" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "organization_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "organization_billing" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "stripeCustomerId" TEXT NOT NULL,
+    "stripeSubscriptionId" TEXT NOT NULL,
+    "status" "BillingStatus" NOT NULL,
+    "plan" "BillingPlan",
+    "extraSeats" INTEGER NOT NULL DEFAULT 0,
+    "trialEndsAt" TIMESTAMP(3),
+    "currentPeriodEnd" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "organization_billing_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -129,14 +168,14 @@ CREATE TABLE "guardians" (
 CREATE TABLE "patients" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
-    "guardianId" TEXT NOT NULL,
+    "guardianId" TEXT,
     "name" TEXT NOT NULL,
     "birth_date" TIMESTAMP(3),
-    "sex" "PatientSex" NOT NULL DEFAULT 'not_informed',
+    "sex" "PatientSex" NOT NULL DEFAULT 'NOT_INFORMED',
     "photo_url" TEXT,
     "notes" TEXT NOT NULL DEFAULT '',
-    "status" "PatientStatus" NOT NULL DEFAULT 'active',
-    "pricingType" "PatientPricingType" NOT NULL DEFAULT 'session',
+    "status" "PatientStatus" NOT NULL DEFAULT 'ACTIVE',
+    "pricingType" "PatientPricingType" NOT NULL DEFAULT 'SESSION',
     "price" DECIMAL(12,2),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -145,7 +184,7 @@ CREATE TABLE "patients" (
 );
 
 -- CreateTable
-CREATE TABLE "clinical_evaluations" (
+CREATE TABLE "assessments" (
     "id" TEXT NOT NULL,
     "patientId" TEXT NOT NULL,
     "memberId" TEXT,
@@ -168,7 +207,7 @@ CREATE TABLE "clinical_evaluations" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "clinical_evaluations_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "assessments_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -185,20 +224,20 @@ CREATE TABLE "anamneses" (
 );
 
 -- CreateTable
-CREATE TABLE "session_notes" (
+CREATE TABLE "evolutions" (
     "id" TEXT NOT NULL,
     "patientId" TEXT NOT NULL,
     "memberId" TEXT,
     "appointmentId" TEXT,
     "date" TEXT NOT NULL,
     "time" TEXT NOT NULL DEFAULT '',
-    "status" "SessionNoteStatus" NOT NULL DEFAULT 'attended',
+    "status" "EvolutionStatus" NOT NULL DEFAULT 'ATTENDED',
     "activities" TEXT NOT NULL DEFAULT '',
     "observations" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "session_notes_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "evolutions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -211,7 +250,7 @@ CREATE TABLE "appointments" (
     "time" TEXT NOT NULL DEFAULT '',
     "duration" INTEGER NOT NULL DEFAULT 45,
     "notes" TEXT NOT NULL DEFAULT '',
-    "status" "AppointmentStatus" NOT NULL DEFAULT 'scheduled',
+    "status" "AppointmentStatus" NOT NULL DEFAULT 'SCHEDULED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -223,10 +262,11 @@ CREATE TABLE "cash_transactions" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
     "type" "CashTransactionType" NOT NULL,
+    "status" "CashTransactionStatus" NOT NULL DEFAULT 'POSTED',
     "amount" DECIMAL(12,2) NOT NULL,
     "date" TEXT NOT NULL,
     "description" TEXT NOT NULL DEFAULT '',
-    "paymentMethod" "CashPaymentMethod" NOT NULL DEFAULT 'cash',
+    "paymentMethod" "CashPaymentMethod" NOT NULL DEFAULT 'CASH',
     "patientId" TEXT,
     "memberId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -236,20 +276,7 @@ CREATE TABLE "cash_transactions" (
 );
 
 -- CreateTable
-CREATE TABLE "roteiro_notes" (
-    "id" TEXT NOT NULL,
-    "patientId" TEXT NOT NULL,
-    "roteiroId" TEXT NOT NULL,
-    "categoryTick" TEXT NOT NULL,
-    "notes" TEXT NOT NULL DEFAULT '',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "roteiro_notes_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "protocol_evaluations" (
+CREATE TABLE "protocol_assessments" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
     "patientId" TEXT NOT NULL,
@@ -258,11 +285,44 @@ CREATE TABLE "protocol_evaluations" (
     "label" TEXT NOT NULL DEFAULT 'Evaluation',
     "date" TEXT NOT NULL,
     "scores" TEXT NOT NULL,
+    "summary" TEXT,
     "notes" TEXT NOT NULL DEFAULT '',
+    "interpretationAI" TEXT,
+    "interpretationAIUpdatedAt" TIMESTAMP(3),
+    "inviteItemId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "protocol_evaluations_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "protocol_assessments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "protocol_invites" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "patientId" TEXT NOT NULL,
+    "createdByMemberId" TEXT,
+    "expiresAt" TIMESTAMP(3),
+    "revokedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "protocol_invites_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "protocol_invite_items" (
+    "id" TEXT NOT NULL,
+    "inviteId" TEXT NOT NULL,
+    "protocolId" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "responses" TEXT NOT NULL DEFAULT '{}',
+    "submittedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "protocol_invite_items_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -271,7 +331,7 @@ CREATE TABLE "member" (
     "organizationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'MEMBER',
-    "status" "MemberStatus" NOT NULL DEFAULT 'active',
+    "status" "MemberStatus" NOT NULL DEFAULT 'ACTIVE',
     "profession" TEXT,
     "registration" TEXT,
     "metadata" TEXT,
@@ -286,12 +346,20 @@ CREATE TABLE "invitation" (
     "organizationId" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "role" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'pending',
+    "status" TEXT NOT NULL DEFAULT 'PENDING',
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "inviterId" TEXT NOT NULL,
 
     CONSTRAINT "invitation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_PatientMembers" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_PatientMembers_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -313,7 +381,25 @@ CREATE INDEX "sessions_user_id_idx" ON "sessions"("user_id");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- CreateIndex
+CREATE INDEX "ai_generation_logs_organizationId_createdAt_idx" ON "ai_generation_logs"("organizationId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "ai_generation_logs_userId_createdAt_idx" ON "ai_generation_logs"("userId", "createdAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "organization_slug_key" ON "organization"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_billing_organizationId_key" ON "organization_billing"("organizationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_billing_stripeCustomerId_key" ON "organization_billing"("stripeCustomerId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_billing_stripeSubscriptionId_key" ON "organization_billing"("stripeSubscriptionId");
+
+-- CreateIndex
+CREATE INDEX "organization_billing_stripeCustomerId_idx" ON "organization_billing"("stripeCustomerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "guardians_user_id_key" ON "guardians"("user_id");
@@ -334,13 +420,13 @@ CREATE INDEX "patients_organizationId_status_idx" ON "patients"("organizationId"
 CREATE INDEX "patients_guardianId_idx" ON "patients"("guardianId");
 
 -- CreateIndex
-CREATE INDEX "clinical_evaluations_patientId_idx" ON "clinical_evaluations"("patientId");
+CREATE INDEX "assessments_patientId_idx" ON "assessments"("patientId");
 
 -- CreateIndex
-CREATE INDEX "clinical_evaluations_patientId_date_idx" ON "clinical_evaluations"("patientId", "date");
+CREATE INDEX "assessments_patientId_date_idx" ON "assessments"("patientId", "date");
 
 -- CreateIndex
-CREATE INDEX "clinical_evaluations_memberId_idx" ON "clinical_evaluations"("memberId");
+CREATE INDEX "assessments_memberId_idx" ON "assessments"("memberId");
 
 -- CreateIndex
 CREATE INDEX "anamneses_organizationId_idx" ON "anamneses"("organizationId");
@@ -352,16 +438,16 @@ CREATE INDEX "anamneses_patientId_idx" ON "anamneses"("patientId");
 CREATE UNIQUE INDEX "anamneses_patientId_formId_key" ON "anamneses"("patientId", "formId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "session_notes_appointmentId_key" ON "session_notes"("appointmentId");
+CREATE UNIQUE INDEX "evolutions_appointmentId_key" ON "evolutions"("appointmentId");
 
 -- CreateIndex
-CREATE INDEX "session_notes_patientId_idx" ON "session_notes"("patientId");
+CREATE INDEX "evolutions_patientId_idx" ON "evolutions"("patientId");
 
 -- CreateIndex
-CREATE INDEX "session_notes_patientId_date_idx" ON "session_notes"("patientId", "date");
+CREATE INDEX "evolutions_patientId_date_idx" ON "evolutions"("patientId", "date");
 
 -- CreateIndex
-CREATE INDEX "session_notes_memberId_idx" ON "session_notes"("memberId");
+CREATE INDEX "evolutions_memberId_idx" ON "evolutions"("memberId");
 
 -- CreateIndex
 CREATE INDEX "appointments_organizationId_idx" ON "appointments"("organizationId");
@@ -382,31 +468,49 @@ CREATE INDEX "cash_transactions_organizationId_idx" ON "cash_transactions"("orga
 CREATE INDEX "cash_transactions_organizationId_date_idx" ON "cash_transactions"("organizationId", "date");
 
 -- CreateIndex
+CREATE INDEX "cash_transactions_organizationId_status_idx" ON "cash_transactions"("organizationId", "status");
+
+-- CreateIndex
 CREATE INDEX "cash_transactions_patientId_idx" ON "cash_transactions"("patientId");
 
 -- CreateIndex
 CREATE INDEX "cash_transactions_memberId_idx" ON "cash_transactions"("memberId");
 
 -- CreateIndex
-CREATE INDEX "roteiro_notes_patientId_idx" ON "roteiro_notes"("patientId");
+CREATE UNIQUE INDEX "protocol_assessments_inviteItemId_key" ON "protocol_assessments"("inviteItemId");
 
 -- CreateIndex
-CREATE INDEX "roteiro_notes_patientId_roteiroId_idx" ON "roteiro_notes"("patientId", "roteiroId");
+CREATE INDEX "protocol_assessments_organizationId_idx" ON "protocol_assessments"("organizationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "roteiro_notes_patientId_roteiroId_categoryTick_key" ON "roteiro_notes"("patientId", "roteiroId", "categoryTick");
+CREATE INDEX "protocol_assessments_patientId_idx" ON "protocol_assessments"("patientId");
 
 -- CreateIndex
-CREATE INDEX "protocol_evaluations_organizationId_idx" ON "protocol_evaluations"("organizationId");
+CREATE INDEX "protocol_assessments_patientId_protocolId_idx" ON "protocol_assessments"("patientId", "protocolId");
 
 -- CreateIndex
-CREATE INDEX "protocol_evaluations_patientId_idx" ON "protocol_evaluations"("patientId");
+CREATE INDEX "protocol_assessments_memberId_idx" ON "protocol_assessments"("memberId");
 
 -- CreateIndex
-CREATE INDEX "protocol_evaluations_patientId_protocolId_idx" ON "protocol_evaluations"("patientId", "protocolId");
+CREATE UNIQUE INDEX "protocol_invites_token_key" ON "protocol_invites"("token");
 
 -- CreateIndex
-CREATE INDEX "protocol_evaluations_memberId_idx" ON "protocol_evaluations"("memberId");
+CREATE INDEX "protocol_invites_organizationId_idx" ON "protocol_invites"("organizationId");
+
+-- CreateIndex
+CREATE INDEX "protocol_invites_patientId_idx" ON "protocol_invites"("patientId");
+
+-- CreateIndex
+CREATE INDEX "protocol_invites_createdByMemberId_idx" ON "protocol_invites"("createdByMemberId");
+
+-- CreateIndex
+CREATE INDEX "protocol_invite_items_inviteId_idx" ON "protocol_invite_items"("inviteId");
+
+-- CreateIndex
+CREATE INDEX "protocol_invite_items_protocolId_idx" ON "protocol_invite_items"("protocolId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "protocol_invite_items_inviteId_protocolId_key" ON "protocol_invite_items"("inviteId", "protocolId");
 
 -- CreateIndex
 CREATE INDEX "member_organizationId_idx" ON "member"("organizationId");
@@ -423,11 +527,17 @@ CREATE INDEX "invitation_organizationId_idx" ON "invitation"("organizationId");
 -- CreateIndex
 CREATE INDEX "invitation_email_idx" ON "invitation"("email");
 
+-- CreateIndex
+CREATE INDEX "_PatientMembers_B_index" ON "_PatientMembers"("B");
+
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "organization_billing" ADD CONSTRAINT "organization_billing_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "guardians" ADD CONSTRAINT "guardians_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -439,13 +549,13 @@ ALTER TABLE "guardians" ADD CONSTRAINT "guardians_user_id_fkey" FOREIGN KEY ("us
 ALTER TABLE "patients" ADD CONSTRAINT "patients_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "patients" ADD CONSTRAINT "patients_guardianId_fkey" FOREIGN KEY ("guardianId") REFERENCES "guardians"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "patients" ADD CONSTRAINT "patients_guardianId_fkey" FOREIGN KEY ("guardianId") REFERENCES "guardians"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "clinical_evaluations" ADD CONSTRAINT "clinical_evaluations_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "assessments" ADD CONSTRAINT "assessments_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "clinical_evaluations" ADD CONSTRAINT "clinical_evaluations_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "assessments" ADD CONSTRAINT "assessments_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "anamneses" ADD CONSTRAINT "anamneses_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -454,13 +564,13 @@ ALTER TABLE "anamneses" ADD CONSTRAINT "anamneses_organizationId_fkey" FOREIGN K
 ALTER TABLE "anamneses" ADD CONSTRAINT "anamneses_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "session_notes" ADD CONSTRAINT "session_notes_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "evolutions" ADD CONSTRAINT "evolutions_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "session_notes" ADD CONSTRAINT "session_notes_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "evolutions" ADD CONSTRAINT "evolutions_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "session_notes" ADD CONSTRAINT "session_notes_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "appointments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "evolutions" ADD CONSTRAINT "evolutions_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "appointments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "appointments" ADD CONSTRAINT "appointments_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -481,16 +591,28 @@ ALTER TABLE "cash_transactions" ADD CONSTRAINT "cash_transactions_patientId_fkey
 ALTER TABLE "cash_transactions" ADD CONSTRAINT "cash_transactions_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "roteiro_notes" ADD CONSTRAINT "roteiro_notes_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "protocol_assessments" ADD CONSTRAINT "protocol_assessments_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "protocol_evaluations" ADD CONSTRAINT "protocol_evaluations_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "protocol_assessments" ADD CONSTRAINT "protocol_assessments_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "protocol_evaluations" ADD CONSTRAINT "protocol_evaluations_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "protocol_assessments" ADD CONSTRAINT "protocol_assessments_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "protocol_evaluations" ADD CONSTRAINT "protocol_evaluations_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "protocol_assessments" ADD CONSTRAINT "protocol_assessments_inviteItemId_fkey" FOREIGN KEY ("inviteItemId") REFERENCES "protocol_invite_items"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "protocol_invites" ADD CONSTRAINT "protocol_invites_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "protocol_invites" ADD CONSTRAINT "protocol_invites_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "protocol_invites" ADD CONSTRAINT "protocol_invites_createdByMemberId_fkey" FOREIGN KEY ("createdByMemberId") REFERENCES "member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "protocol_invite_items" ADD CONSTRAINT "protocol_invite_items_inviteId_fkey" FOREIGN KEY ("inviteId") REFERENCES "protocol_invites"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "member" ADD CONSTRAINT "member_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -503,4 +625,10 @@ ALTER TABLE "invitation" ADD CONSTRAINT "invitation_organizationId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "invitation" ADD CONSTRAINT "invitation_inviterId_fkey" FOREIGN KEY ("inviterId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PatientMembers" ADD CONSTRAINT "_PatientMembers_A_fkey" FOREIGN KEY ("A") REFERENCES "member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PatientMembers" ADD CONSTRAINT "_PatientMembers_B_fkey" FOREIGN KEY ("B") REFERENCES "patients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
