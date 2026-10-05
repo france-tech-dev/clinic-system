@@ -1,3 +1,4 @@
+import type { ItemScaleId } from "./instruments/_shared/item-scale";
 import type { ProtocolOverallSummary } from "./instruments/_shared/protocol-score-summary";
 
 export type ProtocolScoreValue = number | string | null;
@@ -38,6 +39,7 @@ export type ProtocolAssessmentPreviewDTO = {
   protocolId: string;
   protocolName: string;
   date: string;
+  scale: ItemScaleId | null;
   interpretationAI: string | null;
   interpretationAIUpdatedAt: string | null;
   sections: Array<{
@@ -46,6 +48,7 @@ export type ProtocolAssessmentPreviewDTO = {
     items: Array<{
       id: string;
       label: string;
+      value: string | null;
       valueLabel: string;
     }>;
   }>;

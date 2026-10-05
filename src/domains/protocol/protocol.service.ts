@@ -134,6 +134,7 @@ export async function getProtocolAssessmentPreview(
       protocolId: dto.protocolId,
       protocolName: mod?.name ?? dto.label,
       date: dto.date,
+      scale: null,
       interpretationAI: dto.interpretationAI,
       interpretationAIUpdatedAt: dto.interpretationAIUpdatedAt,
       sections: [],
@@ -146,22 +147,31 @@ export async function getProtocolAssessmentPreview(
     const opt = options.find((o) => String(o.value) === String(raw));
     return opt ? `${opt.value} · ${opt.label}` : String(raw);
   }
+  function valueRaw(raw: unknown): string | null {
+    if (raw === null || raw === undefined) return null;
+    return String(raw);
+  }
 
   return {
     id: dto.id,
     protocolId: dto.protocolId,
     protocolName: mod.name,
     date: dto.date,
+    scale: template.scale,
     interpretationAI: dto.interpretationAI,
     interpretationAIUpdatedAt: dto.interpretationAIUpdatedAt,
     sections: template.sections.map((section) => ({
       id: section.id,
       title: section.title,
-      items: section.items.map((item) => ({
-        id: item.id,
-        label: item.label,
-        valueLabel: valueLabel(dto.scores[item.id] as ItemResponseValue | null),
-      })),
+      items: section.items.map((item) => {
+        const raw = dto.scores[item.id] as ItemResponseValue | null;
+        return {
+          id: item.id,
+          label: item.label,
+          value: valueRaw(raw),
+          valueLabel: valueLabel(raw),
+        };
+      }),
     })),
   };
 }

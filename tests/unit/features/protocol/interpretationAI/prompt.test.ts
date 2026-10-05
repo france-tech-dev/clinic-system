@@ -1,17 +1,18 @@
-import { describe, expect, it } from "vitest";
-import type { ProtocolAssessmentPreviewDTO } from "@/domains/protocol/protocol.types";
 import {
   ageYearsFromBirthDate,
   buildProtocolInterpretationAIPrompt,
   patientFirstName,
   PROTOCOL_INTERPRETATION_AI_SYSTEM_PROMPT,
 } from "@/domains/protocol/_lib/interpretationAI/prompt";
+import type { ProtocolAssessmentPreviewDTO } from "@/domains/protocol/protocol.types";
+import { describe, expect, it } from "vitest";
 
 const fixturePreview: ProtocolAssessmentPreviewDTO = {
   id: "eval_1",
   protocolId: "spm-casa-5anos",
   protocolName: "SPM Casa (5 anos)",
   date: "2026-08-19",
+  scale: "spm",
   interpretationAI: null,
   interpretationAIUpdatedAt: null,
   sections: [
@@ -22,11 +23,13 @@ const fixturePreview: ProtocolAssessmentPreviewDTO = {
         {
           id: "audicao-01",
           label: "Reage a sons domésticos cotidianos",
+          value: "S",
           valueLabel: "S · Sempre",
         },
         {
           id: "audicao-02",
           label: "Não reage a sons ambientais contínuos",
+          value: "N",
           valueLabel: "N · Nunca",
         },
       ],
@@ -38,6 +41,7 @@ const fixturePreview: ProtocolAssessmentPreviewDTO = {
         {
           id: "tato-01",
           label: "Recua ao toque leve",
+          value: "S",
           valueLabel: "S · Sempre",
         },
       ],
