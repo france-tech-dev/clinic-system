@@ -1,5 +1,4 @@
 import { getRedisUrl, JOB_NAMES, JOB_QUEUE_NAME } from "@/shared/lib/jobs";
-import "dotenv/config";
 
 async function main() {
   const { Worker } = await import("bullmq");
