@@ -321,9 +321,9 @@ export function ItemProtocolClient({
   }
 
   return (
-    <div className="grid gap-4">
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[220px] flex-1">
+    <div className="grid w-full max-w-3xl gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="min-w-0 flex-1">
           <label className="mb-1.5 block text-sm font-medium">Paciente</label>
           <EntityCombobox
             options={activePatients.map((p) => ({
@@ -338,6 +338,7 @@ export function ItemProtocolClient({
         {canWrite ? (
           <Button
             type="button"
+            className="w-full sm:w-auto"
             onClick={openCreate}
             disabled={!patientId || pending}
           >
@@ -363,9 +364,9 @@ export function ItemProtocolClient({
             assessments.map((row) => (
               <div
                 key={row.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border px-3 py-2"
+                className="flex flex-col gap-2 rounded-lg border border-border px-3 py-2 sm:flex-row sm:items-start sm:gap-3"
               >
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{row.label}</p>
                   <p className="text-xs text-muted-foreground">
                     {formatDateBR(row.date)}
@@ -374,7 +375,7 @@ export function ItemProtocolClient({
                       : null}
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
                   {isSpm ? (
                     <SpmPdfButtons
                       assessment={row}
@@ -599,16 +600,16 @@ export function ItemProtocolClient({
                             return (
                               <li
                                 key={item.id}
-                                className="flex flex-col gap-2.5 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4"
+                                className="grid gap-2.5 px-3 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3 sm:px-4"
                               >
-                                <p className="min-w-0 flex-1 text-sm leading-snug">
+                                <p className="min-w-0 text-sm leading-snug">
                                   <span className="mr-1.5 font-medium text-muted-foreground tabular-nums">
                                     {itemNumbers.get(item.id)}.
                                   </span>
                                   {item.label}
                                 </p>
                                 <div
-                                  className="flex shrink-0 flex-wrap gap-2"
+                                  className="flex flex-wrap gap-2 sm:justify-end"
                                   role="group"
                                   aria-label={item.label}
                                 >

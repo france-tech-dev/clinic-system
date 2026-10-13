@@ -165,25 +165,27 @@ export function AnamneseFormClient({
             />
           }
         >
-          <div>
-            <h3 className="text-lg font-semibold">
-              {activeSection.title}
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Secção {schema.findIndex((s) => s.id === activeSection.id) + 1} de{" "}
-              {schema.length}
-            </p>
-          </div>
-          <div className="grid items-start gap-3 sm:grid-cols-2">
-            {activeSection.fields.map((field) => (
-              <AnamneseField
-                key={field.id}
-                field={field}
-                data={data}
-                onChange={setData}
-                disabled={!canWrite}
-              />
-            ))}
+          <div className="flex max-w-3xl flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold">
+                {activeSection.title}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Secção {schema.findIndex((s) => s.id === activeSection.id) + 1}{" "}
+                de {schema.length}
+              </p>
+            </div>
+            <div className="grid items-start gap-3 sm:grid-cols-2">
+              {activeSection.fields.map((field) => (
+                <AnamneseField
+                  key={field.id}
+                  field={field}
+                  data={data}
+                  onChange={setData}
+                  disabled={!canWrite}
+                />
+              ))}
+            </div>
           </div>
         </ClinicalWorkspaceShell>
       ) : null}

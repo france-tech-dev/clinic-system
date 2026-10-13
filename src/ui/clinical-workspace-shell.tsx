@@ -123,7 +123,9 @@ export function ClinicalWorkspaceShell({
           })}
         </nav>
 
-        <div className="min-h-0 min-w-0 overflow-y-auto pb-4">{children}</div>
+        <div className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto pb-4">
+          {children}
+        </div>
       </div>
       {footer ? (
         <ClinicalWorkspaceFooter>{footer}</ClinicalWorkspaceFooter>

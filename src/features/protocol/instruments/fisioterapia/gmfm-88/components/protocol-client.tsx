@@ -247,7 +247,7 @@ export function GmfmProtocolClient({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <div className="flex w-full max-w-3xl flex-col gap-6">
       <p className="text-sm text-muted-foreground">
         {canWrite
           ? "GMFM-88 mede a função motora grossa em 5 domínios. Escolha o paciente, registre a pontuação (0–3 por item) e compare avaliação com reavaliação."
@@ -295,9 +295,9 @@ export function GmfmProtocolClient({
               {assessments.map((a) => (
                 <div
                   key={a.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-3"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 sm:flex-row sm:items-start sm:gap-3"
                 >
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">
                       {a.label} — {formatDateBR(a.date)}
                     </p>
@@ -313,7 +313,7 @@ export function GmfmProtocolClient({
                       </p>
                     ) : null}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 sm:shrink-0">
                     {canWrite ? (
                       <>
                         <Button

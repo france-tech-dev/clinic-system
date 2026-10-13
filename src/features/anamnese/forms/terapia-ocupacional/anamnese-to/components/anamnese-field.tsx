@@ -53,7 +53,7 @@ export function AnamneseField({
             return (
               <div
                 key={item}
-                className="flex items-center justify-between gap-2"
+                className="grid gap-1 sm:grid-cols-[1fr_5rem] sm:items-center"
               >
                 <span className="text-sm">{item}</span>
                 <Input
