@@ -10,7 +10,7 @@ const envSchema = z
     DATABASE_URL: z.string().min(1),
     DATABASE_POOL_MAX: z.coerce.number().int().positive().default(10),
 
-    REDIS_URL: z.string().min(1),
+    REDIS_URL: z.string().optional().default(""),
 
     BETTER_AUTH_URL: z.url(),
     BETTER_AUTH_SECRET: z.string().min(32),
@@ -46,6 +46,14 @@ const envSchema = z
     AI_MODEL: z.string().optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.NODE_ENV === "production" && !data.REDIS_URL?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "REDIS_URL é obrigatória em production",
+        path: ["REDIS_URL"],
+      });
+    }
+
     if (data.OBJECT_STORAGE_DRIVER !== "r2") return;
 
     const required = [
