@@ -79,5 +79,5 @@ BASE_URL=https://SEU-STAGING pnpm test:load:smoke
 
 ## Referências
 
-- [`docs/architecture.md`](../docs/architecture.md) — seção 12
+- [`docs/architecture.md`](../docs/architecture.md) — seção 10 (Testes)
 - [`.cursor/rules/testing.mdc`](../.cursor/rules/testing.mdc)

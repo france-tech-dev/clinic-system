@@ -2,7 +2,7 @@
 
 Documento de decisão para **não esquecer** quando a Movi escalar (profissionais autónomos + clínicas, WhatsApp, PDFs, media).
 
-**Estado atual:** infra BullMQ pronta (`produce` em `shared/lib/jobs` + `consumer/` com `REDIS_URL`), mas **ainda sem callers** a `produce()`. Media (logo/avatar) continua **síncrona**. Handler WhatsApp em `domains/schedule/jobs/` é stub. Rate limit da app no Redis. Alvo de pastas: [`target-structure.md`](./target-structure.md).
+**Estado atual:** Redis + BullMQ prontos (`produce` em `shared/lib/jobs` + `consumer/`); rate limit no Redis. **Ainda sem callers** a `produce()` — 1.º job real pendente ([`ToDo.md`](./ToDo.md) · passo C em [`target-structure.md`](./target-structure.md)). Media (logo/avatar) **síncrona**. Handler WhatsApp em `domains/schedule/jobs/` é stub.
 
 **Relacionados:** [`media-storage.md`](./media-storage.md) · [`architecture.md`](./architecture.md) · [`ToDo.md`](./ToDo.md)
 
@@ -97,9 +97,9 @@ Alinhado a [`target-structure.md`](./target-structure.md):
 - [x] Stub `produce` / consumer + `REDIS_URL` obrigatória
 - [x] `bullmq` + `ioredis` nas deps
 - [x] Rate limit no Redis (tabela `rate_limit` removida)
-- [ ] Redis no Dokploy (ou managed) + `REDIS_URL` em prod
+- [x] Redis no Dokploy (ou managed) + `REDIS_URL` em prod
 - [ ] `pnpm consumer` / processo consumer no deploy
 - [ ] Primeiro job real (provável: lembrete WhatsApp ou media)
-- [ ] Ligar R2 se ainda estiver em disco local (`media-storage.md`)
+- [x] Ligar R2 se ainda estiver em disco local (`media-storage.md`)
 - [ ] Monitorização básica (falhas, fila atrasada)
 - [ ] (Fase 2) Com Fastify: mover jobs/shared/domains para `packages/` + `apps/api` / `apps/consumer`

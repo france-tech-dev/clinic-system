@@ -2,9 +2,9 @@
 
 **Data da pesquisa:** 2026-08-27  
 **Objectivo:** mapear fontes oficiais, o que é público vs. licenciado, e o alinhamento com os templates em `src/domains/protocol/instruments/terapia-ocupacional/`.  
-**Aviso:** este documento **não** reproduz tabelas de conversão (raw → scaled/T-score). Essas tabelas são propriedade intelectual dos editores; copiá-las para o código sem licença é risco legal e clínico.
+**Aviso:** tabelas normativas (raw → scaled/T-score) são IP dos editores. Em geral **não** embutir sem licença. Exceção documentada: SPM Casa 5–12 — `norms.ts` com tabela AutoScore da clínica (Fase B); outros instrumentos continuam só raw até licença/auditoria.
 
-Relacionado: [`docs/ai.md`](../ai.md) · [`docs/bounded-contexts.md`](../bounded-contexts.md) · código atual `computeItemProtocolRawScores` (só bruto).
+Relacionado: [`docs/ai.md`](../ai.md) · [`docs/bounded-contexts.md`](../bounded-contexts.md).
 
 ---
 
@@ -15,21 +15,21 @@ Os `template.ts` / rotas de avaliação TO deste projeto foram digitalizados a p
 | Implicação                                   | Detalhe                                                                                                       |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Estrutura (itens, seções, Casa/Escola 2/3/5) | Pode divergir do papel oficial (ex. PEDI mobilidade **69** no app vs **59** no manual)                        |
-| Scoring / gráficos “oficiais”                | Tabelas normativas **não** estão no código; embutir scaled/T-score/bandas exige licença dos editores          |
+| Scoring / gráficos “oficiais”                | Só SPM Casa 5–12 tem T/bandas no código (`norms.ts`); resto exige licença + tabela                            |
 | Próximo passo prático                        | Auditar item-a-item com o **manual** que a clínica usa; corrigir templates; só então fechar scoring + gráfico |
 
 ---
 
 ## Resumo executivo
 
-| Instrumento                              | Editor / fonte                                     | Score normativo                                      | Tabelas públicas?                                        | No nosso código                                                                          |
-| ---------------------------------------- | -------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **PEDI** (Functional Skills)             | Pearson (US); versão BR Mancini/UFMG 2005          | Raw → **scaled** (0–100) + standard score por idade  | **Não** (manual)                                         | 3 protocolos; raw possível; mobilidade **69 vs 59 oficiais**                             |
-| **SPM / SPM-P** (legado)                 | WPS                                                | Raw → **T-score** + bandas                           | **Não** (manual); bandas descritas em materiais oficiais | 6 formulários Casa/Escola × 2/3/5 anos; contagens ≈ SPM legado, **não** SPM-2 (80 itens) |
-| **SPM-2** (atual)                        | WPS (2021)                                         | Raw → T-score + bandas (rótulos atualizados)         | **Não** (manual / OES)                                   | **Não implementado** como produto atual                                                  |
-| **Perfil Sensorial 2 — Criança Pequena** | Pearson (Dunn); BR **Hogrefe CETEPP** (desde 2022) | Raw por seção/quadrante → **cut scores** / percentis | **Não** (manual / Q-global / Q Plataforma)               | 54 itens / 7 seções — **alinha** ao Toddler SP2                                          |
+| Instrumento                              | Editor / fonte                                     | Score normativo                                      | Tabelas públicas?                                        | No nosso código                                                                               |
+| ---------------------------------------- | -------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **PEDI** (Functional Skills)             | Pearson (US); versão BR Mancini/UFMG 2005          | Raw → **scaled** (0–100) + standard score por idade  | **Não** (manual)                                         | 3 protocolos; raw possível; mobilidade **69 vs 59 oficiais**                                  |
+| **SPM / SPM-P** (legado)                 | WPS                                                | Raw → **T-score** + bandas                           | **Não** (manual); bandas descritas em materiais oficiais | 6 formulários; Casa 5–12 com T/bandas (`norms.ts`); restantes só raw; ≈ legado, **não** SPM-2 |
+| **SPM-2** (atual)                        | WPS (2021)                                         | Raw → T-score + bandas (rótulos atualizados)         | **Não** (manual / OES)                                   | **Não implementado** como produto atual                                                       |
+| **Perfil Sensorial 2 — Criança Pequena** | Pearson (Dunn); BR **Hogrefe CETEPP** (desde 2022) | Raw por seção/quadrante → **cut scores** / percentis | **Não** (manual / Q-global / Q Plataforma)               | 54 itens / 7 seções — **alinha** ao Toddler SP2                                               |
 
-**Conclusão para o produto:** a referência normativa é o **manual** (Pearson / WPS / Hogrefe / Mancini). Podemos implementar **raw + gráfico de evolução** alinhados à estrutura atual (ou à estrutura corrigida após auditoria). **Scaled / T-score / bandas** exigem licença do editor (ou API oficial).
+**Conclusão para o produto:** a referência normativa é o **manual** (Pearson / WPS / Hogrefe / Mancini). Raw + evolução são seguros. T-score/bandas: só Casa 5–12 está no código (asset da clínica); expandir a outros instrumentos exige licença (ou API oficial).
 
 **Contactos de licenciamento (pesquisa 2026-08-27):** Pearson `pas.licensing@pearson.com` · WPS `rights@wpspublish.com` · Terms Pearson proíbem explicitamente meter conteúdo em scoring engines de terceiros sem autorização escrita.
 

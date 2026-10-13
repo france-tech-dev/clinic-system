@@ -1,97 +1,20 @@
-# Estrutura-alvo — hoje `src/` → depois Fastify
+# Estrutura-alvo — Fastify (fase 2)
 
-**Decisão (atualizada):** até existir API Fastify, o alvo é **um app Next na raiz** com pastas claras em `src/` + `consumer/` — **sem** monorepo pnpm (`apps/` + `packages/`) como objetivo imediato.
+**Hoje (fase 1):** árvore canónica em [`architecture.md`](./architecture.md) — `src/` + `consumer/`, sem monorepo.
+
+**Decisão:** o split real é **Next (UI) ↔ Fastify (HTTP)**. Packages npm só compensam com ≥2 processos a partilhar o mesmo core (web + api + consumer). Até lá, monorepo/`@clinic/*` só aumenta ruído.
 
 Complementa [`architecture.md`](./architecture.md), [`bounded-contexts.md`](./bounded-contexts.md) e [`jobs-queues.md`](./jobs-queues.md).
 
-**Porquê:** o split real é **Next (UI) ↔ Fastify (HTTP)**. Packages npm só compensam quando há ≥2 processos a partilhar o mesmo código de negócio (web + api + consumer). Até lá, symlinks `@clinic/*` aumentam ruído sem ganho.
+---
 
-**Estado do repositório:** fase 1 aplicada (`src/` + `consumer/`). Monorepo `apps/`+`packages/` removido até existir Fastify.
+## Fase 1 — pointer
+
+Negócio em `src/domains` (server-only); UI em `features/` ou `_components/`; consumer BullMQ na raiz (`tsx consumer/index.ts`); `REDIS_URL` obrigatória. Detalhe e responsabilidades: [`architecture.md`](./architecture.md).
 
 ---
 
-## Fase 1 — Hoje (preparado para Fastify)
-
-```
-clinic-system/
-├── src/
-│   ├── app/                      # Next — rotas + _components de 1 página
-│   │   └── api/                  # BFF temporário: auth, stripe, stream IA
-│   ├── features/                 # UI (+ hooks) por domínio — sem Prisma / sem regras
-│   │   ├── patient/
-│   │   ├── protocol/
-│   │   └── …
-│   ├── domains/                  # ★ negócio server-only (o futuro core do Fastify)
-│   │   ├── patient/
-│   │   ├── schedule/
-│   │   ├── finance/
-│   │   ├── protocol/
-│   │   └── …
-│   ├── application/              # orquestrações ≥2 domains (opcional)
-│   ├── platform/                 # auth, org, gates (ex-server/)
-│   ├── shared/                   # prisma, jobs/, ai, media, env, types
-│   ├── ui/                       # design system (ex-components/)
-│   └── proxy.ts
-├── consumer/
-│   └── index.ts                  # BullMQ consumer → domains (tsx; não é package npm)
-├── prisma/
-└── package.json                  # scripts: dev, consumer, test, arch
-```
-
-### Responsabilidades
-
-| Pasta             | O quê                                                      | Não meter                         |
-| ----------------- | ---------------------------------------------------------- | --------------------------------- |
-| `src/app`         | Rotas, composition, adaptadores (actions / route handlers) | Regras de negócio, Prisma directo |
-| `src/features`    | UI/hooks por domínio (≥2 rotas)                            | `db`, services                    |
-| `src/domains`     | repository, service, schema, types, jobs                   | React, Next                       |
-| `src/application` | Casos de uso multi-domínio                                 | UI                                |
-| `src/platform`    | Sessão, membership, platform admin                         | Clínica                           |
-| `src/shared`      | Infra transversal                                          | Services clínicos                 |
-| `src/ui`          | Shadcn / shell sem regra de negócio                        | PatientDTO                        |
-| `consumer/`       | Processo de filas (consumer; BullMQ Worker por baixo)      | React / App Router                |
-
-### Domains = server-only
-
-```
-UI / Action / (futuro) Fastify route  →  domain.service  →  repository
-         ↑ fino                              ↑ dono da regra
-```
-
-| Situação                  | Destino                        |
-| ------------------------- | ------------------------------ |
-| 1 rota                    | `src/app/.../_components/`     |
-| ≥2 rotas do mesmo domínio | `src/features/[domínio]/`      |
-| Genérico                  | `src/ui/`                      |
-| Negócio                   | `src/domains/` — **sem** React |
-
-Interior de um contexto (exemplo realista):
-
-```
-src/domains/patient/
-├── patient.types.ts
-├── patient.schema.ts
-├── patient.repository.ts
-├── patient.service.ts       # sem 'use server', sem next/react
-├── patient.actions.ts       # fino (Zod → service → revalidate)
-└── _lib/                    # helpers puros
-```
-
-`index.ts` (API pública sem exportar repository) e `jobs/` são opcionais — criar só com consumidores reais.
-Actions podem ficar junto do domain **ou** em `src/app` como adaptadores; o service **nunca** importa Next/React.
-
-### Consumer (fase 1)
-
-```json
-"consumer": "tsx consumer/index.ts"
-```
-
-Producer: `produce()` em `src/shared/lib/jobs`; handlers em `src/domains/.../jobs`.  
-`REDIS_URL` obrigatória.
-
----
-
-## Fase 2 — Depois (Fastify + monorepo leve)
+## Fase 2 — Fastify + monorepo leve
 
 Só quando a API HTTP for produto real:
 
@@ -102,7 +25,7 @@ clinic-system/
 │   ├── api/                  # ★ Fastify — rotas → packages/domains
 │   └── consumer/             # BullMQ consumer
 ├── packages/
-│   ├── domains/              # move de src/domains (mesmo código)
+│   ├── domains/              # move de src/domains
 │   ├── shared/               # move de src/shared
 │   ├── platform/             # auth partilhável
 │   └── ui/                   # só web
@@ -117,7 +40,7 @@ Browser → apps/web (Next)
        apps/consumer ───────→ packages/domains
 ```
 
-| O que permanece igual              | O que muda                               |
+| O que permanece                    | O que muda                               |
 | ---------------------------------- | ---------------------------------------- |
 | `*.service` / repository / schemas | Vivem em `packages/domains`              |
 | Contratos Zod / DTOs               | Validação nas rotas Fastify              |
@@ -125,41 +48,25 @@ Browser → apps/web (Next)
 | Actions Next gordas                | Deixam de existir — web fala com Fastify |
 
 **Não** criar `apps/api` vazio “por simetria”.  
-**Não** um npm package por domínio (`domain-patient`, …) no início do split.
+**Não** um npm package por domínio no início do split.
 
 ---
 
-## Dependências (fase 1)
+## Migração
 
-```
-app, features, application  →  domains, platform, shared, ui
-consumer                    →  domains, shared  (+ platform se precisar)
-domains                     →  shared, platform?
-                               NÃO → features, ui, app
-platform                    →  shared
-ui                          →  shared (utils)
-shared                      →  deps npm
-```
-
-Cruzar contexts: `app/` ou `application/` (DAG; sem imports profundos de repository alheio). `domains/X/index.ts` só se houver API pública estável.
-
----
-
-## Migração recomendada (a partir do monorepo experimental)
-
-| Passo | O quê                                                                                                            | Estado    |
-| ----- | ---------------------------------------------------------------------------------------------------------------- | --------- |
-| **A** | Reverter layout para fase 1 (`src/domains`, `src/features`, `src/shared`, `src/platform`, `src/ui`, `consumer/`) | ✅        |
-| **B** | Um `node_modules` na raiz; sem workspace `apps/*` + `packages/*`                                                 | ✅        |
-| **C** | Redis + 1 job real                                                                                               | pendente  |
-| **D** | `index.ts` por domain; UI residual movida para `src/features` (protocol, anamnese, PDF)                          | concluído |
-| **E** | Quando Fastify: extrair `packages/*` + `apps/api` (fase 2)                                                       | futuro    |
+| Passo | O quê                                             | Estado                      |
+| ----- | ------------------------------------------------- | --------------------------- |
+| **A** | Layout fase 1 (`src/` + `consumer/`)              | ✅                          |
+| **B** | Um `node_modules` na raiz; sem workspace monorepo | ✅                          |
+| **C** | Redis ✅; 1 job real com `produce()`              | Redis ok; job real pendente |
+| **D** | UI residual em `features/`; `index.ts` só se útil | concluído                   |
+| **E** | Extrair `packages/*` + `apps/api` (fase 2)        | futuro                      |
 
 ---
 
 ## Não fazer
 
-- Monorepo pnpm **só** por estética / “para o consumer” (consumer na raiz basta)
+- Monorepo pnpm **só** por estética / “para o consumer”
 - React dentro de `domains/`
 - Hexagonal (`domain/application/infrastructure`) por contexto
 - Fastify vazio antes de haver rotas reais

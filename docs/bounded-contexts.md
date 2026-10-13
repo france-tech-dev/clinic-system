@@ -1,15 +1,15 @@
 # Bounded contexts (DDD estratégico)
 
 Mapa leve — **sem** Aggregates, domain events nem pastas `domain/`.  
-Complementa [`architecture.md`](./architecture.md).
+Complementa [`architecture.md`](./architecture.md). UI / camadas: ver lá (não duplicar aqui).
 
 ---
 
 ## Ideia
 
 Cada contexto tem **linguagem própria** e **dono do código**.  
-Cruzar contextos = `app/` (composição) ou `application/` (escrita multi-domínio) — ver [`target-structure.md`](./target-structure.md).  
-`domains/X/index.ts` como API pública é **opcional** (hoje a maioria dos domains não tem). Evitar imports profundos (`repository` / arquivos internos) entre contextos.
+Cruzar contextos = `app/` (composição) ou `application/` (escrita multi-domínio).  
+`domains/X/index.ts` como API pública é **opcional**. Evitar imports profundos (`repository` / internos) entre contextos.
 
 ```
                     ┌─────────────────────────┐
@@ -54,29 +54,14 @@ Cruzar contextos = `app/` (composição) ou `application/` (escrita multi-domín
 | **Clinic ops**            | `settings`, `team`, `dashboard` (em `src/domains`)             | branding, profissionais, painel                         | domínio clínico fino                                    |
 | **AI runtime**            | `src/shared/lib/ai`                                            | provider, stream, audit, rate limit                     | prompts clínicos (ficam no contexto dono, ex. protocol) |
 
-### Billing: duas pastas de propósito
+### Billing: duas pastas
 
-| Pasta (conceito)                        | Papel                                              |
-| --------------------------------------- | -------------------------------------------------- |
-| `platform/billing` (`@/server/billing`) | Gates cedo (trial/acesso) ligados a org/auth       |
-| `domains/billing`                       | Domínio de produto: planos, checkout, UI `/planos` |
+| Pasta                                   | Papel                                        |
+| --------------------------------------- | -------------------------------------------- |
+| `platform/billing` (`@/server/billing`) | Gates cedo (trial/acesso) ligados a org/auth |
+| `domains/billing`                       | Produto: planos, checkout, UI `/planos`      |
 
 Não fundir tudo em platform — billing de produto é domínio; auth gates são plataforma.
-
----
-
-## Onde vive UI
-
-| Situação                        | Destino                                                      |
-| ------------------------------- | ------------------------------------------------------------ |
-| Só **uma** rota                 | `src/app/.../_components/`                                   |
-| ≥2 rotas do **mesmo** contexto  | `src/features/[domínio]/` (UI/hooks) — **não** em `domains/` |
-| Genérico (sem regra de negócio) | `src/ui/`                                                    |
-| Negócio (repo/service/jobs)     | `src/domains/` — **sem** React                               |
-
-Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./architecture.md). Fase 1 aplicada (`src/` + `consumer/`).
-
-**Não** meter UI clínica em `platform/`. Platform = Better Auth, org — sem UI de domínio.
 
 ---
 
@@ -91,7 +76,7 @@ Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./archi
 
 ---
 
-## Glossário curto (evitar ambiguidade)
+## Glossário curto
 
 | Termo                  | Significa                                                               |
 | ---------------------- | ----------------------------------------------------------------------- |
@@ -103,7 +88,7 @@ Ver [`target-structure.md`](./target-structure.md) e [`architecture.md`](./archi
 
 ---
 
-## O que _não_ fazer em nome de DDD
+## O que não fazer em nome de DDD
 
 - Pastas `domain/` / `application/` / `infrastructure/` por feature
 - Entities ricas + Aggregates em cima do Prisma

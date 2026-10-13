@@ -1,412 +1,211 @@
-# Arquitetura e regras do projeto — Clinic System
+# Arquitetura — Clinic System
 
-Documento de referência para a estrutura, camadas e boas práticas que seguimos neste repositório.
+Referência humana da estrutura e camadas. Regras de código do agente: [`.cursor/rules/`](../.cursor/rules/).
 
-**Stack:** Next.js App Router · Server Actions · Prisma · Better Auth · Shadcn UI
+**Stack:** Next.js App Router · Server Actions · Prisma · Better Auth · Shadcn UI · BullMQ (`consumer/`)
 
-**Abordagem:** monólito modular por domínio em `src/` + `consumer/` — **não** DDD completo.  
-**Estado:** fase 1 aplicada (`src/` + `consumer/`). Split futuro: **Fastify** como API — ver [`target-structure.md`](./target-structure.md).
+**Abordagem:** monólito modular por domínio em `src/` + `consumer/` — **não** DDD tático.  
+**Estado:** fase 1. Split futuro (Fastify): [`target-structure.md`](./target-structure.md).
 
-Documentos relacionados:
-
-- Bounded contexts (DDD estratégico): [`bounded-contexts.md`](./bounded-contexts.md)
-- Estrutura-alvo (hoje `src/` → Fastify): [`target-structure.md`](./target-structure.md)
-- Checklist de refactors: [`architecture-audit.md`](./architecture-audit.md)
-- Roadmap funcional: [`ToDo.md`](./ToDo.md)
-- Mensalidade Stripe: [`billing.md`](./billing.md)
-- Media / R2: [`media-storage.md`](./media-storage.md)
-- Jobs e filas: [`jobs-queues.md`](./jobs-queues.md)
-- Regras para o Cursor (agente): [`.cursor/rules/`](../.cursor/rules/)
+Índice: [`README.md`](./README.md) · contextos: [`bounded-contexts.md`](./bounded-contexts.md) · roadmap: [`ToDo.md`](./ToDo.md)
 
 ---
 
-## 1. Por que esta arquitetura
+## 1. Porquê
 
-Este projeto é um monólito Next.js multi-tenant (`Organization`) para gestão clínica de Terapia Ocupacional, organizado por domínio em `src/`. A escala e complexidade justificam **organização por domínio**, mas **não** a cerimônia de DDD tático (aggregates, domain events, entidades ricas).
+Monólito Next multi-tenant (`Organization`) para gestão clínica de T.O. Organização por domínio sim; cerimónia de aggregates / domain events não.
 
-| Critério                   | Escolha                                       |
-| -------------------------- | --------------------------------------------- |
-| Organização                | Monólito modular por domínio (web + consumer) |
-| Camadas                    | repository → service → actions                |
-| Modelo de dados            | Prisma + DTOs planos no boundary              |
-| Orquestração multi-domínio | `app/` (pages), nunca domínio → domínio       |
-| Testes                     | Vitest em funções puras e regras de negócio   |
+| Critério                   | Escolha                                           |
+| -------------------------- | ------------------------------------------------- |
+| Organização                | Monólito modular (web + consumer)                 |
+| Camadas                    | repository → service → actions                    |
+| Modelo                     | Prisma + DTOs planos no boundary                  |
+| Orquestração multi-domínio | `app/` (pages); escrita composta → `application/` |
+| Testes                     | Vitest em funções puras e regras de negócio       |
 
 ---
 
-## 2. Estrutura de pastas
-
-Layout físico atual (fase 1). Aliases em `tsconfig` (ver abaixo). Evolução para Fastify: [`target-structure.md`](./target-structure.md).
+## 2. Estrutura (fase 1 — canónica)
 
 ```
 clinic-system/
 ├── src/
-│   ├── app/                          # Rotas (App Router) + _components de 1 rota
-│   │   ├── (authenticated)/          # Área logada
+│   ├── app/                 # Rotas + _components de 1 página
+│   │   ├── (authenticated)/
 │   │   ├── (not-authenticated)/
-│   │   └── api/                      # Só webhooks / HTTP externo
-│   ├── features/                     # UI (+ hooks) por domínio — sem Prisma
-│   │   ├── patient/components|hooks/
-│   │   └── …
-│   ├── domains/                      # Negócio (repo / service / actions)
-│   │   ├── patient/
-│   │   ├── schedule/
-│   │   ├── finance/
-│   │   ├── billing/
-│   │   └── …
-│   ├── application/                  # Orquestrações ≥2 domains (hoje: patient)
-│   ├── shared/                       # Infra (prisma, jobs, ai, …)
-│   ├── platform/                     # Auth, org (alias @/server)
-│   ├── ui/                           # Design system (shadcn, shell)
-│   ├── hooks/                        # Hooks globais (use-mobile, etc.)
+│   │   └── api/             # Webhooks / HTTP externo / stream IA
+│   ├── features/            # UI (+ hooks) por domínio (≥2 rotas)
+│   ├── domains/             # Negócio (repo / service / actions)
+│   ├── application/         # Orquestrações ≥2 domains (hoje: patient)
+│   ├── platform/            # Auth, org (alias @/server)
+│   ├── shared/              # prisma, jobs, ai, media, env
+│   ├── ui/                  # Design system (alias @/components)
+│   ├── resources/           # Dados de UI estáticos (ex. sidebar)
+│   ├── hooks/               # Hooks globais (ex. use-mobile)
 │   └── proxy.ts
-│
-├── consumer/                         # BullMQ consumer (tsx; não é package npm)
-│   └── index.ts
-│
+├── consumer/                # BullMQ Worker (tsx; não é package npm)
 ├── prisma/
-├── tests/                            # Vitest / Playwright
-│   ├── unit/                         # espelha domínios (pasta features/ histórica)
+├── tests/
+│   ├── unit/                # espelha domains|features|shared|app
 │   └── e2e/
 └── package.json
 ```
 
-### Aliases TypeScript
+### Aliases
 
-| Alias            | Destino físico   |
+| Alias            | Destino          |
 | ---------------- | ---------------- |
 | `@/domains/*`    | `src/domains/*`  |
+| `@/features/*`   | `src/features/*` |
 | `@/shared/*`     | `src/shared/*`   |
 | `@/server/*`     | `src/platform/*` |
 | `@/components/*` | `src/ui/*`       |
-| `@/features/*`   | `src/features/*` |
 | `@/*`            | `src/*`          |
 
-Imports de negócio preferem `@/domains/…`. O alias `@/server/*` continua a apontar para platform.
+### Fronteiras
 
-### Fronteira platform vs domains vs UI web
+| Pasta           | Alias           | Conteúdo                            |
+| --------------- | --------------- | ----------------------------------- |
+| `src/platform/` | `@/server/`     | Sessão, convites, gates Better Auth |
+| `src/domains/`  | `@/domains/`    | Regras clínicas + actions finas     |
+| `src/features/` | `@/features/`   | UI/hooks por domínio (≥2 rotas)     |
+| `src/ui/`       | `@/components/` | Design system sem regra de negócio  |
 
-| Pasta física    | Alias           | Conteúdo                                        |
-| --------------- | --------------- | ----------------------------------------------- |
-| `src/platform/` | `@/server/`     | Sessão, convites, permissões Better Auth        |
-| `src/domains/`  | `@/domains/`    | Pacientes, agenda, caixa, regras, actions finas |
-| `src/features/` | `@/features/`   | Componentes/hooks UI por domínio (≥2 rotas)     |
-| `src/ui/`       | `@/components/` | Design system sem regra de negócio              |
-
-Não mover lógica clínica para platform. Não meter React/UI de produto em `src/domains`.
+Não mover lógica clínica para platform. Não meter React em `domains/`.
 
 ---
 
 ## 3. Camadas por domínio
 
-Cada contexto em `src/domains/[nome]/` (import `@/domains/[nome]/`) segue este padrão:
+Em `src/domains/[nome]/`:
 
-| Ficheiro                  | Responsabilidade                                                                  |
-| ------------------------- | --------------------------------------------------------------------------------- |
-| `[nome].repository.ts`    | Queries e mutações Prisma — **único sítio com `db`** no domínio                   |
-| `[nome].service.ts`       | Regras de negócio, mappers DTO — **sem** `'use server'`, **sem** `revalidatePath` |
-| `[nome].schema.ts`        | Schemas Zod (validação de input)                                                  |
-| `[nome].types.ts`         | DTOs planos (sem tipos Prisma no client)                                          |
-| `[nome].actions.ts`       | Server Actions finas: validar → service → revalidar                               |
-| `_lib/`                   | Funções puras, agregações, helpers de domínio                                     |
-| UI `components/`/`hooks/` | Em `src/features/[nome]/` (≥2 rotas do mesmo domínio)                             |
+| Ficheiro               | Papel                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `[nome].repository.ts` | Único sítio com `db`                                                         |
+| `[nome].service.ts`    | Regras — sem `'use server'`, sem `revalidatePath`                            |
+| `[nome].schema.ts`     | Zod                                                                          |
+| `[nome].types.ts`      | DTOs planos                                                                  |
+| `[nome].actions.ts`    | Validar → service → revalidar (opcional se a escrita for via `application/`) |
+| `_lib/`                | Helpers puros                                                                |
+| `jobs/`                | Handlers BullMQ (opcional)                                                   |
 
-### Fluxo de uma mutação
+`index.ts` (API pública sem exportar repository) só com consumidores reais.
 
-```
-Client (handler) → action (Zod) → service (regra) → repository (Prisma)
-                         ↓
-                  revalidatePath / revalidateTag
-```
+**Fluxo mutação:** Client → action (Zod) → service → repository → revalidate.  
+**Fluxo leitura:** `page.tsx` → service → repository → props ao client.
 
-### Fluxo de leitura (preferido)
+**Nota:** mutações de `guardian` passam por `application/patient` (create/update composto) — não há `guardian.actions.ts` obrigatório.
 
-```
-page.tsx (Server Component) → service → repository
-         ↓
-    *-client.tsx (props iniciais)
-```
+**PDF:** payload/DTO em `domains/` ou `application/`; renderer React-PDF em `features/` ou `shared/lib/pdf`; shell de rota em `app/.../pdf`.
 
 ---
 
-## 4. Regras de dependência
+## 4. Dependências
 
 ```
 app/          →  domains/  →  shared/
               →  features/ →  domains / shared
               →  application/ (≥2 domains)
-ui/           →  shared/   (evitar domains/)
+ui/           →  shared/
 platform/     →  shared/
 consumer/     →  domains/, shared/
 ```
 
-| Origem (conceito / pasta)   | Pode importar                                                                      | Não pode importar                     |
-| --------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------- |
-| `src/app/`                  | `@/domains`, `@/features`, `@/application`, `@/shared`, `@/components`, `@/server` | —                                     |
-| `src/application/`          | `@/domains`, `@/shared`, `@/server`                                                | `features/`, `app/`, ui               |
-| `src/domains`               | `@/shared`, `@/server` (platform)                                                  | outros contexts profundos, `app/`, ui |
-| `src/features/` (UI)        | `@/domains`, `@/shared`, `@/components`                                            | UI de outra rota `_components/`       |
-| `src/shared`                | outros módulos `shared/`                                                           | `domains/`, `app/`                    |
-| `src/ui` (`@/components`)   | `@/shared` (utils)                                                                 | `domains/` (preferência)              |
-| `src/platform` (`@/server`) | `@/shared`                                                                         | `domains/`, `app/`                    |
+| Origem         | Pode importar                                      | Não pode                           |
+| -------------- | -------------------------------------------------- | ---------------------------------- |
+| `app/`         | domains, features, application, shared, ui, server | —                                  |
+| `application/` | domains, shared, server                            | features, app, ui                  |
+| `domains/`     | shared, server                                     | outros contexts profundos, app, ui |
+| `features/`    | domains, shared, ui                                | `_components/` de outra rota       |
+| `shared/`      | shared                                             | domains, app                       |
+| `ui/`          | shared                                             | domains (preferência)              |
+| `platform/`    | shared                                             | domains, app                       |
 
-### Orquestração multi-domínio
+Cruzar contextos: compor em `app/` (`Promise.all` de services) ou escrita estável em `application/` (hoje só `patient/`).
 
-Quando uma página ou action precisa de **vários domains** (ex.: painel = dashboard + finance; paciente + guardian):
+### `pnpm arch`
 
-- Preferir compor em `app/` (page / dialog) com `Promise.all` de services.
-- Casos de escrita multi-domínio estáveis: `src/application/` (hoje só `patient/` — create/update com guardian, PDF composto).
+Fronteiras validadas por dependency-cruiser ([`.dependency-cruiser.cjs`](../.dependency-cruiser.cjs)): `no-cross-feature`, `no-app-imports`, `shared-no-features`, `server-no-features`, `components-no-features`, `no-circular`. Correm no `pnpm lint` e isoladas com `pnpm arch`.
 
-```tsx
-// ✅ src/app/(authenticated)/painel/page.tsx
-const [dashboard, cashflow] = await Promise.all([
-  getDashboardData(organizationId),
-  getCashflowPageData(organizationId),
-]);
-```
-
-```tsx
-// ❌ src/domains/dashboard/dashboard.service.ts
-import { getCashflowPageData } from "@/domains/finance/finance.service";
-```
-
-### Verificação automática (`pnpm arch`)
-
-As fronteiras acima são validadas por [dependency-cruiser](https://github.com/sverweij/dependency-cruiser) (config em [`.dependency-cruiser.cjs`](../.dependency-cruiser.cjs)). Correm no `pnpm lint` e podem ser corridas isoladamente:
-
-```bash
-pnpm arch
-```
-
-Regras aplicadas (todas `error`):
-
-- `no-cross-feature` — contexts em `domains/*` não importam outro context em profundidade (evoluir para API pública / DAG — ver target-structure)
-- `no-app-imports` — `domains/`, `shared/`, `platform/`, `ui/` não importam `app/`
-- `shared-no-features` — `shared/` não importa `domains/`
-- `server-no-features` — `platform/` (`@/server`) não importa `domains/`
-- `components-no-features` — `ui/` não importa `domains/`
-- `no-circular` — sem dependências circulares em `src/`
-
-Para quebrar ciclos: extrair tipos partilhados para um arquivo próprio (ex.: `evaluation-form-types.ts`), separar leitura de dados da configuração, ou resolver metadados no boundary (ex.: `toAnamneseSummary(dto, label)` recebe o `label` do catálogo em vez de o service importar o registry).
-
-Não há exceções ativas às fronteiras. UI específica de uma rota fica no `_components/` local, mesmo quando consome actions de um domínio.
-
-Partilhar dados finos entre domínios sem acoplar: usar tipos planos em `shared/types/` (ex.: `PatientOption` no diálogo de caixa em vez de `PatientDTO` de `domains/patient`).
+Tipos finos partilhados: `shared/types/` (ex. `PatientOption`) em vez de importar DTOs de outro domínio.
 
 ---
 
-## 5. Onde colocar UI e hooks
+## 5. Onde colocar UI
 
-Checklist **antes** de criar arquivo em `src/app/.../_components/`:
+1. Só nesta rota? → `app/.../_components/`
+2. ≥2 rotas do mesmo domínio? → `features/[domínio]/`
+3. Genérico sem negócio? → `ui/` (`@/components`)
 
-1. Será usado **só nesta rota**? → `_components/` local
-2. Outra rota do **mesmo domínio** precisa? → `src/features/[domínio]/components/` ou `hooks/` (`@/features/…`)
-3. **Vários domains** precisam? → `shared/` ou `src/ui` (`@/components`)
-
-### Proibido
-
-```tsx
-// ❌ Import cruzado entre rotas
-import { X } from "@/app/(authenticated)/caixa/_components/...";
-```
-
-### Exemplos neste projeto
-
-| Componente                  | Destino                                |
-| --------------------------- | -------------------------------------- |
-| `CashTransactionFormDialog` | `src/features/finance/components/`     |
-| `PatientPdfPreviewDialog`   | `src/features/patient/components/`     |
-| `AppPage`                   | `src/app/(authenticated)/_components/` |
-| `Button`, `Dialog`          | `src/ui` (`@/components/ui/`)          |
+Proibido importar `_components/` de outra rota.
 
 ---
 
-## 6. Server → Client boundary
+## 6. Server → Client
 
-- **Não** passar `Decimal`, `Date` nem modelos Prisma completos a Client Components
-- Usar DTOs planos em `*.types.ts` (datas como ISO string, valores monetários em centavos)
-- Lógica de negócio e Prisma ficam no servidor
-
-```ts
-// ✅ patient.types.ts
-export type PatientDTO = {
-  id: string;
-  name: string;
-  createdAt: string; // ISO
-  priceCents: number | null;
-};
-```
+Não passar `Decimal`, `Date` nem modelos Prisma a Client Components. DTOs planos (`*.types.ts`): datas ISO, dinheiro em centavos.
 
 ---
 
-## 7. Server Actions
+## 7. Server Actions (resumo)
 
-Retorno padrão (`shared/types/action-result.ts`):
+Tipo: `ActionResult` em `shared/types/action-result.ts`.  
+Validar com Zod (`AppError.parse`); action fina → service → revalidate; catch → `AppError.result`.  
+`app/api/` só webhooks, HTTP externo e stream IA — [`ai.md`](./ai.md).
 
-```ts
-export type ActionResult<T = void> =
-  | { success: true; data: T; message?: string }
-  | { success: false; message: string; fieldErrors?: FieldErrors };
-```
-
-Regras:
-
-1. Validar com **Zod** via `AppError.parse(schema, input)` nas actions — nunca confiar só no cliente
-2. Actions **finas**: validar → chamar service → `revalidatePath` / `revalidateTag`; catch → `AppError.result(error)`
-3. Segredos só no servidor (env)
-4. Route Handlers (`app/api/`) só para webhooks, HTTP externo e **streaming de IA** (ex. `/api/ai/*`) — ver [`docs/ai.md`](ai.md)
-5. Manter **nomes exportados** estáveis ao refatorar
-
-Cliente:
-
-- Formulários: `useActionState` + `<form action={formAction}>`
-- Botões: `useTransition` + chamada direta à action
-- Erros de campo: `applyActionFieldErrors` + `FormMessage`
+Detalhe: `.cursor/rules/nextjs-server-actions.mdc`.
 
 ---
 
-## 8. React — dados e efeitos
+## 8. React, páginas, UX, YAGNI
 
-- **Server Component primeiro** — buscar em `page.tsx` e passar props ao client
-- **Query string** — resolver no servidor; passar `initial*` ao client
-- **Client** — buscar só em event handlers via Server Actions + `useTransition`
-- **`useEffect`** — só para sistemas externos (listeners, timers, libs de terceiros)
-- **Não** usar effect para fetch inicial, espelhar props em state, ou derivar estado de props
-
-Ver também: `.cursor/rules/react-effects-and-data.mdc`
-
----
-
-## 9. SOLID (versão pragmática)
-
-Aplicamos SOLID onde traz valor, sem cerimônia enterprise.
-
-| Princípio                     | Como aplicamos                                                               |
-| ----------------------------- | ---------------------------------------------------------------------------- |
-| **S** — Single Responsibility | Actions finas; repository = dados; service = regras; `_lib/` = helpers puros |
-| **O** — Open/Closed           | Estender service/repository existente antes de criar caminho paralelo        |
-| **L** — Liskov                | Pouco relevante (sem hierarquias de classes)                                 |
-| **I** — Interface Segregation | DTOs e schemas Zod focados por operação                                      |
-| **D** — Dependency Inversion  | `app/` depende de abstrações (services); Prisma isolado nos repositories     |
+| Tema                  | Onde está a regra                                |
+| --------------------- | ------------------------------------------------ |
+| Dados / `useEffect`   | `.cursor/rules/react-effects-and-data.mdc`       |
+| `AppPage` / shell     | `.cursor/rules/app-page.mdc`                     |
+| UX / tokens / dialogs | `.cursor/rules/ux.mdc`, `frontend.mdc`           |
+| YAGNI / fecho         | `.cursor/rules/ponytail.mdc`, `project-core.mdc` |
 
 ---
 
-## 10. Clean code
+## 9. Domínios (`src/domains`)
 
-| Prática     | Regra                                                                                    |
-| ----------- | ---------------------------------------------------------------------------------------- |
-| Nomes       | Verbos para funções (`listPatients`, `buildSummary`); substantivos para tipos            |
-| Funções     | Pequenas; uma responsabilidade; extrair para `_lib/` quando reutilizável                 |
-| Ficheiros   | Partir quando passar **~300–400 linhas** (excluir shadcn e constantes estáticas)         |
-| Duplicação  | Procurar em `shared/` e `_lib/` antes de criar — ver `ponytail.mdc` + `project-core.mdc` |
-| Comentários | Só para lógica de negócio não óbvia                                                      |
-| Abstrações  | Criar quando houver **≥2 usos reais**, não para hipóteses futuras                        |
+| Domínio      | Responsabilidade                                |
+| ------------ | ----------------------------------------------- |
+| `patient`    | Pacientes, cadastro, PDF prontuário (orquestra) |
+| `assessment` | Avaliação clínica do prontuário                 |
+| `evolution`  | Nota por atendimento                            |
+| `anamnese`   | Anamnese por especialidade                      |
+| `guardian`   | Responsáveis, portal (Role.CLIENT)              |
+| `schedule`   | Agenda, repetição semanal                       |
+| `finance`    | Fluxo de caixa                                  |
+| `settings`   | Perfil profissional, branding                   |
+| `team`       | Profissionais da clínica                        |
+| `dashboard`  | Painel, estatísticas                            |
+| `protocol`   | Instrumentos pontuados + interpretação IA       |
+| `billing`    | Mensalidade Stripe (trial + planos)             |
 
----
-
-## 11. Domínios actuais (`src/domains`)
-
-| Domínio      | Responsabilidade                                         |
-| ------------ | -------------------------------------------------------- |
-| `patient`    | Pacientes, cadastro, PDF prontuário (orquestra)          |
-| `assessment` | Assessment (avaliação clínica do prontuário)             |
-| `evolution`  | Evolution (nota por atendimento)                         |
-| `anamnese`   | Anamnese por especialidade (hub, formulários, PDF)       |
-| `guardian`   | Responsáveis, portal (Role.CLIENT), vínculo User         |
-| `schedule`   | Agenda, agendamentos, calendário, repetição semanal      |
-| `finance`    | Fluxo de caixa, lançamentos                              |
-| `settings`   | Perfil profissional, branding da clínica                 |
-| `team`       | Profissionais da clínica                                 |
-| `dashboard`  | Painel, estatísticas, alertas                            |
-| `protocol`   | ProtocolAssessment (ex.: GMFM-88) + ProtocolInstrumentUI |
-| `billing`    | Mensalidade Stripe (trial + planos)                      |
+Mapa estratégico: [`bounded-contexts.md`](./bounded-contexts.md).
 
 ---
 
-## 12. Testes
+## 10. Testes
 
-Guia completo: [`tests/README.md`](../tests/README.md)
-
-**Comandos:** `pnpm test` · `pnpm test:unit` · `pnpm test:watch` · `pnpm test:e2e` (Playwright, futuro) · `pnpm test:load:smoke` (k6, staging)
-
-| Tipo     | Pasta         | Ferramenta            |
-| -------- | ------------- | --------------------- |
-| Unitário | `tests/unit/` | Vitest                |
-| E2E      | `tests/e2e/`  | Playwright (pendente) |
-| Carga    | `tests/load/` | k6 (staging Dokploy)  |
-
-### Convenção unitários
-
-- Código de produção em `src/` (+ `consumer/`); testes em `tests/unit/`
-- Espelhar domínio: `src/domains/finance/_lib/build-summary.ts` → `tests/unit/features/finance/build-summary.test.ts`
-- Imports via aliases (`@/domains/…`, `@/shared/…`, …)
-
-### Prioridade
-
-1. Funções puras em `_lib/` e `shared/lib/` — ✅ 28 testes
-2. Regras em `*.service.ts` (mock repository)
-3. E2E nos fluxos críticos (login, paciente, agenda, caixa)
-
-**Não** colocar `*.test.ts` dentro de `src/` ou `consumer/`. **Não** testar primeiro: actions com `revalidatePath`, shadcn, PDF.
+Guia: [`tests/README.md`](../tests/README.md).  
+Unitários em `tests/unit/` espelhando `domains` / `features` / `shared` / `app`. Sem `*.test.ts` dentro de `src/` ou `consumer/`. Prioridade: `_lib/` puro → services → E2E críticos.
 
 ---
 
-## 13. Páginas autenticadas
+## 11. O que evitar
 
-- Usar `AppPage` em vez de repetir `SiteHeader` + padding
-- Client components (`*-client.tsx`) **sem** shell de página
-- Ver: `.cursor/rules/app-page.mdc`
+| Abordagem                          | Porquê                                      |
+| ---------------------------------- | ------------------------------------------- |
+| DDD completo / hexagonal dogmático | Overhead sem ganho com Prisma + App Router  |
+| Microserviços agora                | Um deploy, uma DB                           |
+| Import profundo entre `domains/`   | Orquestrar em `app/`                        |
+| Import entre rotas `_components/`  | Quebra isolamento de UI                     |
+| `db` em services                   | Vai no repository                           |
+| React em `domains/`                | Consumer/API não devem puxar React          |
+| Monorepo `apps/`+`packages/` agora | Fase 1 é `src/`+`consumer/`; Fastify depois |
 
----
-
-## 14. UX e design system
-
-- Tokens semânticos (`bg-background`, `text-muted-foreground`) — não cores fixas
-- Altura viewport: **`dvh`**, não `vh` (mobile)
-- Dialogs longos: shell scrollável (`dialogScrollableClassName` + header/body/footer em `@/components/ui/dialog`; no mobile ancora em baixo como sheet) — não `overflow-y-auto` no `DialogContent` inteiro
-- Deletes destrutivos: `DeleteConfirmDialog`
-- Ver: `.cursor/rules/ux.mdc`, `.cursor/rules/frontend.mdc`, `.cursor/rules/shadcn-components.mdc`
-
----
-
-## 15. Checklist rápido (nova funcionalidade)
-
-1. Existe feature semelhante? Copiar o padrão (nomes, pastas, exports)
-2. Onde fica o arquivo? (seção 5 — UI; seção 2 — camadas)
-3. Dá para buscar no Server Component? Fazer lá
-4. Precisa de `useEffect`? Só se for sistema externo
-5. Vai passar de 300 linhas? Planear split em `_lib/` ou sub-componentes
-6. Precisa de dados de outro domínio? Orquestrar em `app/`, não importar domain → domain
-7. Mutations: Zod na action, regra no service, Prisma no repository
-8. Testar no browser após mudanças em UI ou backend crítico
-
----
-
-## 16. O que evitar
-
-| Abordagem                           | Por quê                                        |
-| ----------------------------------- | ---------------------------------------------- |
-| DDD completo (aggregates, events)   | Overhead desproporcional para este projeto     |
-| Microserviços                       | Um deploy, uma DB, equipe pequena              |
-| Hexagonal em todo o código          | Mappers duplicados sem ganho com Prisma        |
-| Import profundo entre `domains/`    | Acoplamento; orquestrar em `app/`              |
-| Import entre rotas (`_components/`) | Quebra isolamento de UI                        |
-| `db` directo em services            | Viola camada repository                        |
-| Clean Architecture dogmática        | App Router já resolve boundary server/client   |
-| React/UI em `src/domains`           | Worker/api não devem puxar React (ver UI-DEBT) |
-| Monorepo `apps/`+`packages/` agora  | Fase 1 é `src/`+`consumer/`; Fastify depois    |
-
----
-
-## 17. Referência de rules Cursor
-
-| Área                 | Ficheiro                     |
-| -------------------- | ---------------------------- |
-| YAGNI                | `ponytail.mdc`               |
-| Core (sempre)        | `project-core.mdc`           |
-| React / efeitos      | `react-effects-and-data.mdc` |
-| Server Actions       | `nextjs-server-actions.mdc`  |
-| Páginas autenticadas | `app-page.mdc`               |
-| Frontend / UX        | `frontend.mdc` · `ux.mdc`    |
-| Testes / validação   | `testing.mdc`                |
-| Índice completo      | `.cursor/rules/README.md`    |
+Notas estáveis: `application/` só `patient` — não expandir sem 2.º caso real. Jobs: infra pronta, `produce()` sem callers — [`jobs-queues.md`](./jobs-queues.md).
