@@ -45,7 +45,7 @@ export async function listPatientsAction(opts?: {
   search?: string;
 }): Promise<ActionResult<PatientDTO[]>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ patients: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await listPatients(organizationId, opts));
   } catch (error) {
@@ -57,7 +57,7 @@ export async function getPatientDetailAction(
   id: string,
 ): Promise<ActionResult<PatientDetailDTO>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ patients: ["read"] });
     const { organizationId } = await requireOrgId();
     const detail = await getPatientDetail(organizationId, id);
     if (!detail) throw new AppError("Paciente não encontrado");
@@ -71,7 +71,7 @@ export async function createPatientAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ patients: ["create"] });
     const payload = AppError.parse(patientFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
@@ -93,7 +93,7 @@ export async function updatePatientAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ patients: ["update"] });
     const payload = AppError.parse(updatePatientSchema, input);
     const { organizationId } = await requireOrgWrite();
     const { id, ...rest } = payload;
@@ -110,7 +110,7 @@ export async function setPatientStatusAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ patients: ["update"] });
     const payload = AppError.parse(patientStatusSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
@@ -134,7 +134,7 @@ export async function setPatientMembersAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ patients: ["update"] });
     const payload = AppError.parse(patientMembersSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const member = await findProxyMember(userId, organizationId);
@@ -159,7 +159,7 @@ export async function deletePatientAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ patients: ["delete"] });
     const { id } = AppError.parse(patientIdSchema, input);
     const { organizationId } = await requireOrgWrite();
     const data = await deletePatient(organizationId, id);
@@ -175,7 +175,7 @@ export async function uploadPatientPhotoAction(
   formData: FormData,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ patients: ["update"] });
     const patientId = formData.get("patientId");
     const file = formData.get("photo");
     if (typeof patientId !== "string" || !patientId.trim()) {
@@ -199,7 +199,7 @@ export async function removePatientPhotoAction(
   input: unknown,
 ): Promise<ActionResult<PatientDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ patients: ["update"] });
     const { id } = AppError.parse(patientIdSchema, input);
     const { organizationId } = await requireOrgWrite();
     const data = await removePatientPhoto(organizationId, id);

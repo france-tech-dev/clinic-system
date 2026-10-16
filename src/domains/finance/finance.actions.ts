@@ -34,7 +34,7 @@ export async function getCashflowPageDataAction(
   input?: unknown,
 ): Promise<ActionResult<CashflowPageData>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ finance: ["read"] });
     const { organizationId } = await requireOrgId();
     const period =
       input && typeof input === "object"
@@ -50,7 +50,7 @@ export async function createCashTransactionAction(
   input: unknown,
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ finance: ["create"] });
     const payload = AppError.parse(cashTransactionFormSchema, input);
     const { organizationId } = await requireOrgWrite();
 
@@ -66,7 +66,7 @@ export async function updateCashTransactionAction(
   input: unknown,
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ finance: ["update"] });
     const payload = AppError.parse(updateCashTransactionSchema, input);
     const { organizationId } = await requireOrgWrite();
 
@@ -83,7 +83,7 @@ export async function markCashTransactionPostedAction(
   input: unknown,
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ finance: ["update"] });
     const { id } = AppError.parse(cashTransactionIdSchema, input);
     const { organizationId } = await requireOrgWrite();
 
@@ -100,7 +100,7 @@ export async function deleteCashTransactionAction(
   input: unknown,
 ): Promise<ActionResult<CashTransactionDTO>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ finance: ["delete"] });
     const { id } = AppError.parse(cashTransactionIdSchema, input);
     const { organizationId } = await requireOrgWrite();
 

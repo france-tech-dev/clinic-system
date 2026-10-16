@@ -29,7 +29,7 @@ export async function createEvolutionAction(
   input: unknown,
 ): Promise<ActionResult<EvolutionDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ clinical: ["create"] });
     const payload = AppError.parse(evolutionFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
@@ -48,7 +48,7 @@ export async function updateEvolutionAction(
   input: unknown,
 ): Promise<ActionResult<EvolutionDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ clinical: ["update"] });
     const payload = AppError.parse(updateEvolutionSchema, input);
     const { organizationId } = await requireOrgWrite();
     const { id, ...rest } = payload;
@@ -67,7 +67,7 @@ export async function deleteEvolutionAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ clinical: ["delete"] });
     const { id } = AppError.parse(evolutionIdSchema, input);
     const { organizationId } = await requireOrgWrite();
     const removed = await deleteEvolution(organizationId, id);

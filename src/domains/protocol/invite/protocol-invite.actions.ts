@@ -33,7 +33,7 @@ export async function createProtocolInviteAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolInviteDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ clinical: ["create"] });
     const payload = AppError.parse(createProtocolInviteSchema, input);
 
     const { organizationId, userId } =
@@ -58,7 +58,7 @@ export async function listProtocolInvitesAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolInviteDTO[]>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ clinical: ["read"] });
     const payload = AppError.parse(listProtocolInvitesSchema, input);
 
     const { organizationId } = await requireOrgId();
@@ -78,7 +78,7 @@ export async function revokeProtocolInviteAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolInviteDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ clinical: ["update"] });
     const payload = AppError.parse(protocolInviteIdSchema, input);
 
     const { organizationId } = await requireOrgWrite();
@@ -97,7 +97,7 @@ export async function deleteProtocolInviteAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolInviteDTO>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ clinical: ["delete"] });
     const payload = AppError.parse(protocolInviteIdSchema, input);
 
     const { organizationId } = await requireOrgWrite();

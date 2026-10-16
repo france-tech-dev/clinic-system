@@ -194,9 +194,25 @@ model Organization {
    * Acesso completo sem cobrança — gerido em /plataforma.
    */
   billingExempt       Boolean              @default(false) @map("billing_exempt")
+  organizationRoles   OrganizationRole[]
 
   @@unique([slug])
   @@map("organization")
+}
+
+/** Roles dinâmicas por clínica (Better Auth dynamicAccessControl). */
+model OrganizationRole {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           String
+  permission     String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+
+  @@index([organizationId])
+  @@unique([organizationId, role])
+  @@map("organizationRole")
 }
 
 model OrganizationBilling {
@@ -483,7 +499,8 @@ model Member {
   organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId              String
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role                Role                 @default(MEMBER)
+  /// Slug do papel (OWNER/ADMIN/MANAGER/MEMBER/CLIENT ou role dinâmica).
+  role                String               @default("MEMBER")
   status              MemberStatus         @default(ACTIVE)
   profession          String?
   registration        String?

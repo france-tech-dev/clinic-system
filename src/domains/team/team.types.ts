@@ -1,10 +1,9 @@
-import type { Role } from "@prisma/enums";
 import type { MemberStatus } from "@prisma/enums";
 
 export type TeamMemberDTO = {
   id: string;
   userId: string;
-  role: Role;
+  role: string;
   status: MemberStatus;
   profession: string | null;
   registration: string | null;

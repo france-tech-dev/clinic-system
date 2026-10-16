@@ -1,6 +1,5 @@
 import { paths } from "@/shared/constants/paths";
-import { LEADERSHIP_ROLES } from "@/shared/lib/member-role";
-import { Role } from "@prisma/enums";
+import type { ClinicResource } from "@/shared/lib/permissions";
 import {
   IconCalendar,
   IconCash,
@@ -16,7 +15,8 @@ export type SidebarItem = {
   name: string;
   url: string;
   icon: React.ElementType;
-  canAccess?: readonly Role[];
+  /** Recurso clínico exigido (read). Sem isto = qualquer papel de painel. */
+  requires?: ClinicResource;
   platformAdminOnly?: boolean;
 };
 
@@ -24,8 +24,10 @@ export type SidebarUser = {
   name: string;
   email: string;
   avatar: string | React.ReactNode;
-  role: Role | null;
+  role: string | null;
 };
+
+export type SidebarModuleAccess = Partial<Record<ClinicResource, boolean>>;
 
 export const sidebarItems: SidebarItem[] = [
   {
@@ -38,7 +40,7 @@ export const sidebarItems: SidebarItem[] = [
     name: "Dashboard",
     url: paths.dashboard,
     icon: IconLayoutDashboard,
-    canAccess: LEADERSHIP_ROLES,
+    requires: "finance",
   },
   {
     name: "Agenda",
@@ -49,7 +51,7 @@ export const sidebarItems: SidebarItem[] = [
     name: "Caixa",
     url: paths.caixa,
     icon: IconCash,
-    canAccess: LEADERSHIP_ROLES,
+    requires: "finance",
   },
   {
     name: "Pacientes",
@@ -60,7 +62,7 @@ export const sidebarItems: SidebarItem[] = [
     name: "Profissionais",
     url: paths.profissionais,
     icon: IconUserPlus,
-    canAccess: LEADERSHIP_ROLES,
+    requires: "team",
   },
   {
     name: "Avaliações",

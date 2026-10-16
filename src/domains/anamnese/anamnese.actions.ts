@@ -21,7 +21,7 @@ export async function getAnamneseAction(
   input: unknown,
 ): Promise<ActionResult<AnamneseDTO | null>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ clinical: ["read"] });
     const payload = AppError.parse(getAnamneseSchema, input);
     const { organizationId } = await requireOrgId();
     const data = await getAnamnese(
@@ -39,7 +39,7 @@ export async function saveAnamneseAction(
   input: unknown,
 ): Promise<ActionResult<AnamneseDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ clinical: ["create"] });
     const payload = AppError.parse(anamneseSaveSchema, input);
     const { organizationId } = await requireOrgWrite();
     const saved = await saveAnamnese(

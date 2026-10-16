@@ -2,21 +2,15 @@
 
 import { auth } from "@/shared/lib/auth";
 import { db } from "@/shared/lib/prisma";
-import { requirePermission } from "../auth/permissions";
 import { headers } from "next/headers";
-import { Role } from "@prisma/enums";
-
-export const addMember = async (
-  userId: string,
-  organizationId: string,
-  role: Role,
-) => {
+import { requirePermission } from "../auth/permissions";
+export const addMember = async (userId: string, organizationId: string, role: string) => {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ team: ["create"] });
     await auth.api.addMember({
       body: {
         userId,
-        role,
+        role: role as "OWNER" | "ADMIN" | "MANAGER" | "MEMBER" | "CLIENT",
         organizationId,
       },
     });
@@ -35,7 +29,7 @@ export const addMember = async (
 
 export const removeMember = async (memberId: string) => {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ team: ["delete"] });
     await db.member.delete({
       where: {
         id: memberId,
@@ -54,17 +48,13 @@ export const removeMember = async (memberId: string) => {
   }
 };
 
-export const sendInvitationMember = async (
-  email: string,
-  role: Role,
-  organizationId: string,
-) => {
+export const sendInvitationMember = async (email: string, role: string, organizationId: string) => {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ team: ["create"] });
     await auth.api.createInvitation({
       body: {
         email,
-        role,
+        role: role as "OWNER" | "ADMIN" | "MANAGER" | "MEMBER" | "CLIENT",
         organizationId,
         resend: true,
       },

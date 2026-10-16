@@ -8,6 +8,15 @@ export const TEAM_MEMBER_STATUSES = [
   MemberStatus.INACTIVE,
 ] as const;
 
+/** Slug de papel (padrão ou dinâmico); CLIENT não é atribuível na equipe. */
+const memberRoleSlugSchema = z
+  .string()
+  .trim()
+  .min(1, "Selecione o papel")
+  .refine((role) => role !== "CLIENT", {
+    message: "Papel inválido para a equipe",
+  });
+
 const professionalBaseSchema = z.object({
   name: z.string().trim().min(1, "Informe o nome"),
   email: z.email("E-mail inválido"),
@@ -15,7 +24,7 @@ const professionalBaseSchema = z.object({
   registration: z.string().trim().optional(),
   phone: z.string().trim().optional(),
   birthDate: z.string().trim().optional(),
-  role: z.enum(TEAM_MEMBER_ROLES),
+  role: memberRoleSlugSchema,
 });
 
 export const createProfessionalSchema = professionalBaseSchema
@@ -34,7 +43,7 @@ export const updateProfessionalSchema = professionalBaseSchema
   .omit({ role: true })
   .extend({
     memberId: z.string().trim().min(1, "Profissional inválido"),
-    role: z.enum(["MEMBER", "MANAGER", "ADMIN", "OWNER"]),
+    role: memberRoleSlugSchema,
     status: z.enum(TEAM_MEMBER_STATUSES, {
       message: "Selecione o status",
     }),

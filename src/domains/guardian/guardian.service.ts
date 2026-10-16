@@ -38,7 +38,7 @@ async function provisionPortalAccess(opts: {
   const email = opts.email.trim().toLowerCase();
   const existingUser = await guardianRepository.findUserByEmail(email);
   if (existingUser) {
-    throw new Error("Já existe um utilizador com este e-mail");
+    throw new Error("Já existe um usuário com este e-mail");
   }
 
   const user = await createCredentialUser({
@@ -48,32 +48,39 @@ async function provisionPortalAccess(opts: {
     password: opts.password,
   });
 
-  await auth.api.addMember({
-    body: {
-      userId: user.id,
-      organizationId: opts.organizationId,
-      role: Role.CLIENT,
-    },
-  });
+  try {
+    await auth.api.addMember({
+      body: {
+        userId: user.id,
+        organizationId: opts.organizationId,
+        role: Role.CLIENT,
+      },
+    });
 
-  const member = await guardianRepository.findMemberByUserId(
-    opts.organizationId,
-    user.id,
-  );
-  if (!member) {
-    throw new Error("Membro CLIENT criado sem vínculo na organização");
+    const member = await guardianRepository.findMemberByUserId(
+      opts.organizationId,
+      user.id,
+    );
+    if (!member) {
+      throw new Error("Membro CLIENT criado sem vínculo na organização");
+    }
+
+    const linked = await guardianRepository.linkUser(
+      opts.organizationId,
+      opts.guardianId,
+      user.id,
+    );
+    if (!linked) {
+      throw new Error("Responsável não encontrado");
+    }
+
+    return toGuardianDTO(linked);
+  } catch (error) {
+    await guardianRepository.deleteCredentialUserCascade(user.id).catch(() => {
+      /* best-effort: evita user/member órfão */
+    });
+    throw error;
   }
-
-  const linked = await guardianRepository.linkUser(
-    opts.organizationId,
-    opts.guardianId,
-    user.id,
-  );
-  if (!linked) {
-    throw new Error("Responsável não encontrado");
-  }
-
-  return toGuardianDTO(linked);
 }
 
 export async function listGuardians(

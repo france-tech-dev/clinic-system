@@ -44,7 +44,6 @@ import {
 } from "@/domains/team/team.schema";
 import type { TeamMemberDTO } from "@/domains/team/team.types";
 import { DEFAULT_MEMBER_PASSWORD } from "@/shared/constants/auth";
-import { ASSIGNABLE_MEMBER_ROLE_OPTIONS } from "@/shared/constants/member-role";
 import {
   getHealthProfession,
   HEALTH_PROFESSIONS,
@@ -68,10 +67,12 @@ export function CreateProfessionalDialog({
   open,
   onOpenChange,
   onCreated,
+  roleOptions,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (members: TeamMemberDTO[]) => void;
+  roleOptions: { value: string; label: string }[];
 }) {
   const [pending, startTransition] = useTransition();
 
@@ -263,7 +264,7 @@ export function CreateProfessionalDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ASSIGNABLE_MEMBER_ROLE_OPTIONS.map((r) => (
+                      {roleOptions.map((r) => (
                         <SelectItem key={r.value} value={r.value}>
                           {r.label}
                         </SelectItem>

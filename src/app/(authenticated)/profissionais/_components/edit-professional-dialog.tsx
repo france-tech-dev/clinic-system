@@ -48,23 +48,13 @@ import {
   HEALTH_PROFESSION_IDS,
   HEALTH_PROFESSIONS,
 } from "@/shared/constants/professions";
-import {
-  ASSIGNABLE_MEMBER_ROLE_OPTIONS,
-  MEMBER_ROLE_OPTIONS,
-} from "@/shared/constants/member-role";
 import { MEMBER_STATUS_OPTIONS } from "@/shared/constants/member-status";
 import { applyActionFieldErrors } from "@/shared/lib/apply-action-field-errors";
 import { cn } from "@/shared/lib/utils";
 import { MemberStatus, Role } from "@prisma/enums";
 
 function toFormValues(member: TeamMemberDTO): UpdateProfessionalInput {
-  const role =
-    member.role === Role.OWNER ||
-    member.role === Role.ADMIN ||
-    member.role === Role.MANAGER ||
-    member.role === Role.MEMBER
-      ? member.role
-      : Role.MEMBER;
+  const role = member.role || Role.MEMBER;
 
   const profession = HEALTH_PROFESSION_IDS.includes(
     member.profession as (typeof HEALTH_PROFESSION_IDS)[number],
@@ -90,11 +80,13 @@ export function EditProfessionalDialog({
   open,
   onOpenChange,
   onUpdated,
+  roleOptions,
 }: {
   member: TeamMemberDTO | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUpdated: (members: TeamMemberDTO[]) => void;
+  roleOptions: { value: string; label: string }[];
 }) {
   const [pending, startTransition] = useTransition();
   const isOwner = member?.role === Role.OWNER;
@@ -296,8 +288,14 @@ export function EditProfessionalDialog({
                       </FormControl>
                       <SelectContent>
                         {(isOwner
-                          ? MEMBER_ROLE_OPTIONS
-                          : ASSIGNABLE_MEMBER_ROLE_OPTIONS
+                          ? [
+                              {
+                                value: Role.OWNER,
+                                label: "Proprietário",
+                              },
+                              ...roleOptions,
+                            ]
+                          : roleOptions
                         ).map((r) => (
                           <SelectItem key={r.value} value={r.value}>
                             {r.label}

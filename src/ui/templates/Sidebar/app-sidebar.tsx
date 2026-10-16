@@ -9,7 +9,11 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { sidebarItems, type SidebarUser } from "@/resources/sidebar-items";
+import {
+  sidebarItems,
+  type SidebarModuleAccess,
+  type SidebarUser,
+} from "@/resources/sidebar-items";
 import { ThemeLogo } from "../ThemeSwitcher/theme-logo";
 import { User } from "lucide-react";
 
@@ -25,20 +29,20 @@ export function AppSidebar({
   organizations = [],
   activeOrganizationId = null,
   isPlatformAdmin = false,
+  moduleAccess = {},
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user?: SidebarUser | null;
   organizations?: { id: string; name: string }[];
   activeOrganizationId?: string | null;
   isPlatformAdmin?: boolean;
+  moduleAccess?: SidebarModuleAccess;
 }) {
   const sidebarUser = user ?? defaultUser;
   const items = sidebarItems.filter((item) => {
     if (item.platformAdminOnly) return isPlatformAdmin;
-    return (
-      !item.canAccess?.length ||
-      (sidebarUser.role != null && item.canAccess.includes(sidebarUser.role))
-    );
+    if (!item.requires) return true;
+    return moduleAccess[item.requires] === true;
   });
 
   return (

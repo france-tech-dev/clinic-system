@@ -39,6 +39,9 @@ export const authClient = createAuthClient({
         MEMBER,
         CLIENT,
       },
+      dynamicAccessControl: {
+        enabled: true,
+      },
     }),
     lastLoginMethodClient(),
     magicLinkClient(),

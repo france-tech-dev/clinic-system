@@ -96,6 +96,8 @@ Em `src/domains/[nome]/`:
 
 **Nota:** mutações de `guardian` passam por `application/patient` (create/update composto) — não há `guardian.actions.ts` obrigatório.
 
+**Writes compostos:** create atómico → método dedicado no repository com `$transaction` interna; update composto → sequencial em `application/`; side-effects (Better Auth, storage) depois do commit + compensação. Ver [`.cursor/rules/composite-writes.mdc`](../.cursor/rules/composite-writes.mdc).
+
 **PDF:** payload/DTO em `domains/` ou `application/`; renderer React-PDF em `features/` ou `shared/lib/pdf`; shell de rota em `app/.../pdf`.
 
 ---
@@ -155,6 +157,14 @@ Validar com Zod (`AppError.parse`); action fina → service → revalidate; catc
 
 Detalhe: `.cursor/rules/nextjs-server-actions.mdc`.
 
+### Permissões (RBAC)
+
+- Grants estáticos + dinâmicos: [`src/shared/lib/permissions.ts`](../src/shared/lib/permissions.ts) + Better Auth `dynamicAccessControl` (tabela `organizationRole`).
+- Actions: `requirePermission({ patients|schedule|finance|team|clinical|settings|reports: [...] })` — ver `.cursor/rules/permissions.mdc`.
+- UI: `/profissionais` → abas Equipe | Papéis.
+- Papéis: OWNER/CLIENT (sistema); ADMIN/MANAGER/MEMBER (padrão seedado); extras criáveis pelo dono.
+- `Member.role` é `String` (slug); enum Prisma `Role` mantém-se só como constantes TS.
+
 ---
 
 ## 8. React, páginas, UX, YAGNI
@@ -180,7 +190,7 @@ Detalhe: `.cursor/rules/nextjs-server-actions.mdc`.
 | `schedule`   | Agenda, repetição semanal                       |
 | `finance`    | Fluxo de caixa                                  |
 | `settings`   | Perfil profissional, branding                   |
-| `team`       | Profissionais da clínica                        |
+| `team`       | Profissionais + papéis dinâmicos (RBAC)         |
 | `dashboard`  | Painel, estatísticas                            |
 | `protocol`   | Instrumentos pontuados + interpretação IA       |
 | `billing`    | Mensalidade Stripe (trial + planos)             |

@@ -5,6 +5,7 @@ import {
   shouldShowBillingBanner,
 } from "@/features/billing/components/billing-banner";
 import { getBillingSnapshot } from "@/domains/billing/billing.service";
+import { getClinicModuleAccess } from "@/server/auth/module-access";
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { getCurrentUser } from "@/server/auth/users";
 import { getOrganizations } from "@/server/organizations/organizations";
@@ -24,6 +25,7 @@ export default async function LayoutContainer({
     ? await getBillingSnapshot(activeOrganizationId)
     : null;
   const isPlatformAdmin = isPlatformAdminUserId(user.id);
+  const moduleAccess = await getClinicModuleAccess(member?.role ?? null);
 
   const sidebarUser = {
     name: user.name ?? "Usuário",
@@ -45,6 +47,7 @@ export default async function LayoutContainer({
         }))}
         activeOrganizationId={activeOrganizationId}
         isPlatformAdmin={isPlatformAdmin}
+        moduleAccess={moduleAccess}
         variant="inset"
       />
       <SidebarInset className="min-h-0 overflow-hidden">

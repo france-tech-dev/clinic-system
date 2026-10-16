@@ -41,7 +41,7 @@ export async function getAgendaDataAction(
   }>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ schedule: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getAgendaPageData(organizationId, selectedDate, today));
   } catch (error) {
@@ -53,7 +53,7 @@ export async function createAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO[]>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ schedule: ["create"] });
     const payload = AppError.parse(appointmentFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const memberId =
@@ -82,7 +82,7 @@ export async function updateAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ schedule: ["update"] });
     const payload = AppError.parse(updateAppointmentSchema, input);
     const { organizationId } = await requireOrgWrite();
     const data = await updateAppointment(organizationId, {
@@ -106,7 +106,7 @@ export async function rescheduleAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ schedule: ["update"] });
     const payload = AppError.parse(rescheduleAppointmentSchema, input);
     const { organizationId } = await requireOrgWrite();
     const result = await rescheduleAppointment(
@@ -134,7 +134,7 @@ export async function setAppointmentStatusAction(
   input: unknown,
 ): Promise<ActionResult<AppointmentDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ schedule: ["update"] });
     const payload = AppError.parse(appointmentStatusSchema, input);
     const { organizationId } = await requireOrgWrite();
     const data = await setAppointmentStatus(
@@ -154,7 +154,7 @@ export async function deleteAppointmentAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ schedule: ["delete"] });
     const { id } = AppError.parse(appointmentIdSchema, input);
     const { organizationId } = await requireOrgWrite();
     const removed = await deleteAppointment(organizationId, id);

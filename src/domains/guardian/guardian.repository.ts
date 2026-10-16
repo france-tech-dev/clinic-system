@@ -1,4 +1,5 @@
 import { db } from "@/shared/lib/prisma";
+import { toGuardianWriteData } from "./_lib/to-guardian-write-data";
 import type { GuardianFormInput } from "./guardian.schema";
 
 export const guardianSelect = {
@@ -19,23 +20,6 @@ export const guardianSelect = {
   createdAt: true,
   updatedAt: true,
 } as const;
-
-function toWriteData(data: GuardianFormInput) {
-  return {
-    name: data.name,
-    phone: data.phone ?? "",
-    email: data.email ?? null,
-    cpf: data.cpf ?? null,
-    address: data.address ?? "",
-    zipCode: data.zipCode ?? "",
-    documentImageUrl: data.documentImageUrl ?? null,
-    insurance: data.insurance ?? "particular",
-    motherName: data.motherName ?? "",
-    motherCpf: data.motherCpf ?? null,
-    fatherName: data.fatherName ?? "",
-    fatherCpf: data.fatherCpf ?? null,
-  };
-}
 
 export const guardianRepository = {
   async findMany(organizationId: string) {
@@ -82,7 +66,7 @@ export const guardianRepository = {
     return db.guardian.create({
       data: {
         organizationId,
-        ...toWriteData(data),
+        ...toGuardianWriteData(data),
       },
       select: guardianSelect,
     });
@@ -91,7 +75,7 @@ export const guardianRepository = {
   async updateById(id: string, data: GuardianFormInput) {
     return db.guardian.update({
       where: { id },
-      data: toWriteData(data),
+      data: toGuardianWriteData(data),
       select: guardianSelect,
     });
   },
@@ -110,5 +94,10 @@ export const guardianRepository = {
       data: { userId },
       select: guardianSelect,
     });
+  },
+
+  /** Compensa user/member órfãos (cascata Prisma em Account/Session/Member). */
+  async deleteCredentialUserCascade(userId: string) {
+    await db.user.delete({ where: { id: userId } });
   },
 };

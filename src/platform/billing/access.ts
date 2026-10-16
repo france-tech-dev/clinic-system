@@ -4,12 +4,7 @@ import {
 } from "@/shared/constants/billing-plans";
 import { canAccessClinicPanel } from "@/shared/lib/member-role";
 import { db } from "@/shared/lib/prisma";
-import {
-  BillingPlan,
-  BillingStatus,
-  MemberStatus,
-  type Role,
-} from "@prisma/enums";
+import { BillingPlan, BillingStatus, MemberStatus } from "@prisma/enums";
 
 const EXEMPT_ACCESS: BillingAccess = {
   mode: "full",
@@ -62,6 +57,5 @@ export async function countBillableProfessionals(
     select: { role: true },
   });
 
-  return members.filter((member) => canAccessClinicPanel(member.role as Role))
-    .length;
+  return members.filter((member) => canAccessClinicPanel(member.role)).length;
 }

@@ -26,8 +26,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AssignMemberPatientsDialog } from "@/features/team/components/assign-member-patients-dialog";
 import { MemberPatientsIndicator } from "@/features/team/components/member-patients-indicator";
+import type { OrgRoleDTO } from "@/domains/team/org-role.types";
 import {
   deleteProfessionalAction,
   setMemberPatientsAction,
@@ -40,11 +42,12 @@ import { getHealthProfession } from "@/shared/constants/professions";
 import { memberRoleLabel } from "@/shared/constants/member-role";
 import { memberStatusLabel } from "@/shared/constants/member-status";
 import { initialsFromName } from "@/shared/lib/initials-from-name";
-import { Role, MemberStatus } from "@prisma/enums";
+import { MemberStatus, Role } from "@prisma/enums";
 import { CreateProfessionalDialog } from "./_components/create-professional-dialog";
 import { EditProfessionalDialog } from "./_components/edit-professional-dialog";
+import { RolesPanel } from "./_components/roles-panel";
 
-function isOwnerRole(role: Role) {
+function isOwnerRole(role: string) {
   return role === Role.OWNER;
 }
 
@@ -105,11 +108,15 @@ function MemberActions({
 export function ProfissionaisClient({
   initialMembers,
   assignablePatients,
+  initialRoles,
+  roleOptions,
   currentUserId,
   isLeadership,
 }: {
   initialMembers: TeamMemberDTO[];
   assignablePatients: AssignablePatientOption[];
+  initialRoles: OrgRoleDTO[];
+  roleOptions: { value: string; label: string }[];
   currentUserId: string;
   isLeadership: boolean;
 }) {
@@ -122,6 +129,17 @@ export function ProfissionaisClient({
   const [assignMember, setAssignMember] = useState<TeamMemberDTO | null>(null);
   const [pending, startTransition] = useTransition();
   const [patientsPending, startPatientsTransition] = useTransition();
+  const [roles, setRoles] = useState(initialRoles);
+  const [options, setOptions] = useState(roleOptions);
+
+  function syncRoleOptions(nextRoles: OrgRoleDTO[]) {
+    setRoles(nextRoles);
+    setOptions(
+      nextRoles
+        .filter((r) => r.role !== Role.OWNER && r.role !== Role.CLIENT)
+        .map((r) => ({ value: r.role, label: r.label })),
+    );
+  }
 
   function handleDelete(member: TeamMemberDTO) {
     startTransition(async () => {
@@ -154,19 +172,23 @@ export function ProfissionaisClient({
   }
 
   return (
-    <AppPage
-      title="Profissionais"
-      rightContent={
-        <Button size="sm" onClick={() => setCreateOpen(true)}>
-          <Plus data-icon="inline-start" />
-          Novo profissional
-        </Button>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        <p className="text-sm text-muted-foreground">
-          {members.length} na lista
-        </p>
+    <AppPage title="Profissionais">
+      <Tabs defaultValue="equipe" className="flex flex-col gap-4">
+        <TabsList>
+          <TabsTrigger value="equipe">Equipe</TabsTrigger>
+          <TabsTrigger value="papeis">Papéis</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="equipe" className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">
+              {members.length} na lista
+            </p>
+            <Button size="sm" onClick={() => setCreateOpen(true)}>
+              <Plus data-icon="inline-start" />
+              Novo profissional
+            </Button>
+          </div>
 
         {members.length === 0 ? (
           <div className="space-y-3 rounded-md border border-border bg-card px-4 py-8 text-center">
@@ -338,6 +360,7 @@ export function ProfissionaisClient({
           open={createOpen}
           onOpenChange={setCreateOpen}
           onCreated={setMembers}
+          roleOptions={options}
         />
 
         <EditProfessionalDialog
@@ -347,6 +370,7 @@ export function ProfissionaisClient({
             if (!open) setEditing(null);
           }}
           onUpdated={setMembers}
+          roleOptions={options}
         />
 
         {assignMember ? (
@@ -362,7 +386,12 @@ export function ProfissionaisClient({
             onSave={savePatients}
           />
         ) : null}
-      </div>
+        </TabsContent>
+
+        <TabsContent value="papeis">
+          <RolesPanel initialRoles={roles} onRolesChange={syncRoleOptions} />
+        </TabsContent>
+      </Tabs>
     </AppPage>
   );
 }

@@ -2,10 +2,7 @@ import { getHealthProfession } from "@/shared/constants/professions";
 import { auth } from "@/shared/lib/auth";
 import { formatCivilDateParam } from "@/shared/lib/date/civil-date-param";
 import { deleteManagedImage, saveUserAvatarImage } from "@/shared/lib/media";
-import {
-  isManagedUploadUrl,
-  isMediaUploadMimeType,
-} from "@/shared/lib/media/media.constants";
+import { isManagedUploadUrl, isMediaUploadMimeType } from "@/shared/lib/media/media.constants";
 import { serializeMemberProfessionalMetadata } from "@/shared/types/professional";
 import { MemberStatus, Role } from "@prisma/enums";
 import { teamRepository } from "./team.repository";
@@ -16,23 +13,14 @@ import type {
 } from "./team.schema";
 import type { CreatedProfessionalDTO, TeamMemberDTO } from "./team.types";
 
-type MemberListRow = Awaited<
-  ReturnType<typeof teamRepository.listMembers>
->[number];
+type MemberListRow = Awaited<ReturnType<typeof teamRepository.listMembers>>[number];
 
 type MemberProfileRow = NonNullable<
   Awaited<ReturnType<typeof teamRepository.findMemberProfileByUserId>>
 >;
 
-function toMemberRole(role: CreateProfessionalInput["role"]): Role {
-  switch (role) {
-    case "ADMIN":
-      return Role.ADMIN;
-    case "MANAGER":
-      return Role.MANAGER;
-    default:
-      return Role.MEMBER;
-  }
+function toMemberRole(role: string): string {
+  return role;
 }
 
 function toTeamMemberDTO(row: MemberListRow | MemberProfileRow): TeamMemberDTO {
@@ -57,9 +45,7 @@ function toTeamMemberDTO(row: MemberListRow | MemberProfileRow): TeamMemberDTO {
   };
 }
 
-export async function listTeamMembers(
-  organizationId: string,
-): Promise<TeamMemberDTO[]> {
+export async function listTeamMembers(organizationId: string): Promise<TeamMemberDTO[]> {
   const rows = await teamRepository.listMembers(organizationId);
   return rows.map(toTeamMemberDTO);
 }
@@ -68,10 +54,7 @@ export async function getOwnTeamMember(
   organizationId: string,
   userId: string,
 ): Promise<TeamMemberDTO | null> {
-  const row = await teamRepository.findMemberProfileByUserId(
-    organizationId,
-    userId,
-  );
+  const row = await teamRepository.findMemberProfileByUserId(organizationId, userId);
   return row ? toTeamMemberDTO(row) : null;
 }
 
@@ -80,11 +63,7 @@ export async function setMemberPatients(
   memberId: string,
   patientIds: string[],
 ): Promise<TeamMemberDTO | null> {
-  const row = await teamRepository.setPatients(
-    organizationId,
-    memberId,
-    patientIds,
-  );
+  const row = await teamRepository.setPatients(organizationId, memberId, patientIds);
   return row ? toTeamMemberDTO(row) : null;
 }
 
@@ -103,10 +82,7 @@ export async function createProfessional(
   let mustChangePassword: boolean;
 
   if (existing) {
-    const alreadyMember = await teamRepository.findMemberByUserId(
-      organizationId,
-      existing.id,
-    );
+    const alreadyMember = await teamRepository.findMemberByUserId(organizationId, existing.id);
     if (alreadyMember) {
       throw new Error("Este profissional já faz parte desta clínica");
     }
@@ -129,14 +105,12 @@ export async function createProfessional(
     body: {
       userId,
       organizationId,
-      role: toMemberRole(input.role),
+      // Roles dinâmicas: string livre; BA tipa só os predefined.
+      role: toMemberRole(input.role) as "OWNER" | "ADMIN" | "MANAGER" | "MEMBER" | "CLIENT",
     },
   });
 
-  const member = await teamRepository.findMemberByUserId(
-    organizationId,
-    userId,
-  );
+  const member = await teamRepository.findMemberByUserId(organizationId, userId);
   if (!member) {
     throw new Error("Membro criado sem vínculo na organização");
   }
@@ -164,10 +138,7 @@ export async function deleteProfessional(
   actorUserId: string,
   memberId: string,
 ): Promise<void> {
-  const member = await teamRepository.findMemberForUpdate(
-    organizationId,
-    memberId,
-  );
+  const member = await teamRepository.findMemberForUpdate(organizationId, memberId);
   if (!member) {
     throw new Error("Profissional não encontrado nesta clínica");
   }
@@ -180,9 +151,7 @@ export async function deleteProfessional(
     throw new Error("Não pode excluir o seu próprio acesso");
   }
 
-  const appointmentCount = await teamRepository.countAppointmentsByMember(
-    member.id,
-  );
+  const appointmentCount = await teamRepository.countAppointmentsByMember(member.id);
   if (appointmentCount > 0) {
     throw new Error(
       "Não é possível excluir: existem agendamentos vinculados. Desative o profissional ou reatribua os agendamentos.",
@@ -200,10 +169,7 @@ export async function updateProfessional(
   actorUserId: string,
   input: UpdateProfessionalInput,
 ): Promise<void> {
-  const member = await teamRepository.findMemberForUpdate(
-    organizationId,
-    input.memberId,
-  );
+  const member = await teamRepository.findMemberForUpdate(organizationId, input.memberId);
   if (!member) {
     throw new Error("Profissional não encontrado nesta clínica");
   }
@@ -254,8 +220,7 @@ export async function updateProfessional(
     birthDate: input.birthDate,
   });
 
-  const nextRole =
-    isOwner || input.role === "OWNER" ? undefined : toMemberRole(input.role);
+  const nextRole = isOwner || input.role === "OWNER" ? undefined : toMemberRole(input.role);
 
   await teamRepository.updateMemberProfile(member.id, {
     profession: profession.id,
@@ -277,10 +242,7 @@ export async function updateOwnProfile(
   userId: string,
   input: UpdateOwnProfileInput,
 ): Promise<TeamMemberDTO> {
-  const member = await teamRepository.findMemberProfileByUserId(
-    organizationId,
-    userId,
-  );
+  const member = await teamRepository.findMemberProfileByUserId(organizationId, userId);
   if (!member) {
     throw new Error("Membro não encontrado nesta clínica");
   }
@@ -305,16 +267,10 @@ export async function updateOwnProfile(
 
   await teamRepository.updateMemberProfile(member.id, {
     registration,
-    metadata: serializeMemberProfessionalMetadata(
-      { name, registration },
-      member.metadata,
-    ),
+    metadata: serializeMemberProfessionalMetadata({ name, registration }, member.metadata),
   });
 
-  const updated = await teamRepository.findMemberProfileByUserId(
-    organizationId,
-    userId,
-  );
+  const updated = await teamRepository.findMemberProfileByUserId(organizationId, userId);
   if (!updated) {
     throw new Error("Não foi possível atualizar o perfil");
   }
@@ -339,11 +295,7 @@ export async function saveOwnAvatar(
   const imageUrl = await saveUserAvatarImage(userId, file);
   await teamRepository.updateUserImage(userId, imageUrl);
 
-  if (
-    previous &&
-    isManagedUploadUrl(previous, "avatars") &&
-    previous !== imageUrl
-  ) {
+  if (previous && isManagedUploadUrl(previous, "avatars") && previous !== imageUrl) {
     await deleteManagedImage(previous);
   }
 
@@ -377,10 +329,7 @@ export async function removeOwnAvatar(
   return updated;
 }
 
-export async function changeForcedPassword(
-  userId: string,
-  newPassword: string,
-): Promise<void> {
+export async function changeForcedPassword(userId: string, newPassword: string): Promise<void> {
   const user = await teamRepository.findUserMustChangePassword(userId);
   if (!user) {
     throw new Error("Utilizador não encontrado");

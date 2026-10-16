@@ -2,10 +2,8 @@
 
 import { handleGuardianActionError } from "@/domains/guardian/_lib/action-errors";
 import { createGuardianSchema } from "@/domains/guardian/guardian.schema";
-import { createGuardian } from "@/domains/guardian/guardian.service";
 import type { CreatedGuardianDTO } from "@/domains/guardian/guardian.types";
 import { patientFormSchema } from "@/domains/patient/patient.schema";
-import { createPatient } from "@/domains/patient/patient.service";
 import type { PatientDTO } from "@/domains/patient/patient.types";
 import { requirePermission } from "@/server/auth/permissions";
 import { findProxyMember } from "@/server/auth/proxy-member";
@@ -14,6 +12,7 @@ import { AppError } from "@/shared/lib/app-error";
 import { isLeadershipRole } from "@/shared/lib/member-role";
 import { ok, type ActionResult } from "@/shared/types/action-result";
 import { revalidatePatientPaths } from "./_lib/revalidate-patient-paths";
+import { createPatientWithGuardianRecord } from "./_lib/write-patient-with-guardian";
 
 const createPatientBodySchema = patientFormSchema.omit({ guardianId: true });
 
@@ -27,7 +26,7 @@ export async function createPatientWithGuardianAction(
   ActionResult<{ patient: PatientDTO; guardian: CreatedGuardianDTO }>
 > {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ patients: ["create"] });
     if (!input || typeof input !== "object") {
       throw new AppError("Dados inválidos");
     }
@@ -36,21 +35,19 @@ export async function createPatientWithGuardianAction(
     const patientPayload = AppError.parse(createPatientBodySchema, raw.patient);
     const { organizationId, userId } = await requireOrgWrite();
 
-    const guardian = await createGuardian(organizationId, guardianPayload);
-
     const member = await findProxyMember(userId, organizationId);
     const memberIds = isLeadershipRole(member?.role ?? null)
       ? (patientPayload.memberIds ?? [])
       : [];
 
-    const patient = await createPatient(organizationId, {
-      ...patientPayload,
-      guardianId: guardian.id,
-      memberIds,
-    });
+    const data = await createPatientWithGuardianRecord(
+      organizationId,
+      guardianPayload,
+      { ...patientPayload, memberIds },
+    );
 
     revalidatePatientPaths();
-    return ok({ patient, guardian });
+    return ok(data);
   } catch (error) {
     return handleGuardianActionError(error);
   }

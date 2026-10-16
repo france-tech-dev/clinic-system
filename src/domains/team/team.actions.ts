@@ -47,7 +47,7 @@ export async function listTeamMembersAction(): Promise<
   ActionResult<TeamMemberDTO[]>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ team: ["read"] });
 
     const { organizationId } = await requireOrgId();
     return ok(await listTeamMembers(organizationId));
@@ -60,7 +60,7 @@ export async function getOwnTeamMemberAction(): Promise<
   ActionResult<TeamMemberDTO>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ team: ["read"] });
     const { organizationId, userId } = await requireOrgId();
     const member = await getOwnTeamMember(organizationId, userId);
     if (!member) throw new AppError("Membro não encontrado nesta clínica");
@@ -74,7 +74,7 @@ export async function updateOwnProfileAction(
   input: unknown,
 ): Promise<ActionResult<TeamMemberDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ team: ["update"] });
     const payload = AppError.parse(updateOwnProfileSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const data = await updateOwnProfile(organizationId, userId, payload);
@@ -89,7 +89,7 @@ export async function uploadOwnAvatarAction(
   formData: FormData,
 ): Promise<ActionResult<TeamMemberDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ team: ["update"] });
     const file = formData.get("avatar");
     if (!(file instanceof File) || file.size === 0) {
       throw new AppError("Selecione uma imagem");
@@ -108,7 +108,7 @@ export async function removeOwnAvatarAction(): Promise<
   ActionResult<TeamMemberDTO>
 > {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ team: ["update"] });
     const { organizationId, userId } = await requireOrgWrite();
     const data = await removeOwnAvatar(organizationId, userId);
     revalidateOwnProfilePaths();
@@ -122,7 +122,7 @@ export async function createProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<CreatedProfessionalDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ team: ["create"] });
 
     const payload = AppError.parse(createProfessionalSchema, input);
 
@@ -141,7 +141,7 @@ export async function updateProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<void>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ team: ["update"] });
 
     const payload = AppError.parse(updateProfessionalSchema, input);
 
@@ -159,7 +159,7 @@ export async function deleteProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<void>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ team: ["delete"] });
 
     const payload = AppError.parse(deleteProfessionalSchema, input);
 
@@ -177,7 +177,7 @@ export async function setMemberPatientsAction(
   input: unknown,
 ): Promise<ActionResult<TeamMemberDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ team: ["update"] });
     const payload = AppError.parse(memberPatientsSchema, input);
 
     const { organizationId, userId } = await requireOrgWrite();

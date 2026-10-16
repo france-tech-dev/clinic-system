@@ -11,15 +11,30 @@ Legenda: `[x]` feito · `[ ]` pendente
 
 ```
 P1–P4, P6 — concluídos (agenda, PDF, caixa, polish, multi-profissional)
-P5 — Relatórios clínicos (expansão) — em curso
+RBAC dinâmico + writes compostos — concluídos
+P5 — Relatórios clínicos (expansão) — próximo
 ```
+
+---
+
+## RBAC — papéis por clínica
+
+**Status:** concluído
+
+- [x] `dynamicAccessControl` + tabela `organizationRole` + `Member.role` String
+- [x] Recursos por módulo: patients, schedule, finance, team, clinical, settings, reports
+- [x] Papéis: OWNER/CLIENT (sistema) + ADMIN/MANAGER/MEMBER (seed) + extras na UI
+- [x] UI `/profissionais` — abas Equipe | Papéis (matriz CRUD)
+- [x] Actions/proxy/sidebar por módulo; CLIENT sem grants de painel
+- [x] Create paciente+responsável atómico (`createWithNewGuardian`); update sequencial
+- [x] Padrão em `.cursor/rules/composite-writes.mdc`
 
 ---
 
 ## P3+ — Caixa (melhorias futuras)
 
 - [ ] Controle de sessões restantes em pacote
-- [ ] Export CSV do caixa
+- [x] Export CSV do caixa
 
 ---
 

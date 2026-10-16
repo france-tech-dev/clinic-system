@@ -41,7 +41,7 @@ export async function listProtocolAssessmentsAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentDTO[]>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ clinical: ["read"] });
     const payload = AppError.parse(listProtocolAssessmentsSchema, input);
 
     const { organizationId } = await requireOrgId();
@@ -60,7 +60,7 @@ export async function getProtocolAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ clinical: ["read"] });
     const payload = AppError.parse(protocolAssessmentIdSchema, input);
 
     const { organizationId } = await requireOrgId();
@@ -76,7 +76,7 @@ export async function getProtocolAssessmentPreviewAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentPreviewDTO>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ clinical: ["read"] });
     const payload = AppError.parse(protocolAssessmentIdSchema, input);
 
     const { organizationId } = await requireOrgId();
@@ -92,7 +92,7 @@ export async function saveProtocolInterpretationAIAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ clinical: ["update"] });
     const payload = AppError.parse(saveProtocolInterpretationAISchema, input);
 
     const { organizationId } = await requireOrgWrite();
@@ -114,7 +114,7 @@ export async function createProtocolAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ clinical: ["create"] });
     const payload = AppError.parse(protocolAssessmentFormSchema, input);
 
     const { organizationId, userId } =
@@ -141,7 +141,7 @@ export async function updateProtocolAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ clinical: ["update"] });
     const payload = AppError.parse(updateProtocolAssessmentSchema, input);
 
     const { organizationId } = await requireOrgWrite();
@@ -159,7 +159,7 @@ export async function deleteProtocolAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentDTO>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ clinical: ["delete"] });
     const payload = AppError.parse(protocolAssessmentIdSchema, input);
 
     const { organizationId } = await requireOrgWrite();
@@ -180,7 +180,7 @@ export async function compareProtocolAssessmentsAction(
   input: unknown,
 ): Promise<ActionResult<ProtocolAssessmentComparisonDTO>> {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ clinical: ["read"] });
     const payload = AppError.parse(compareProtocolAssessmentsSchema, input);
 
     const { organizationId } = await requireOrgId();

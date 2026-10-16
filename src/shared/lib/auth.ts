@@ -6,14 +6,7 @@ import { getActiveOrganization } from "@/server/organizations/active-organizatio
 import { paths } from "@/shared/constants/paths";
 import { env } from "@/shared/env";
 import { sendEmail } from "@/shared/lib/email";
-import {
-  ac,
-  ADMIN,
-  CLIENT,
-  MANAGER,
-  MEMBER,
-  OWNER,
-} from "@/shared/lib/permissions";
+import { ac, ADMIN, CLIENT, MANAGER, MEMBER, OWNER } from "@/shared/lib/permissions";
 import { db } from "@/shared/lib/prisma";
 import { consumeRateLimit } from "@/shared/lib/rate-limit";
 import { Role } from "@prisma/enums";
@@ -158,10 +151,15 @@ export const auth = betterAuth({
         MEMBER,
         CLIENT,
       },
+      dynamicAccessControl: {
+        enabled: true,
+      },
       allowUserToCreateOrganization: true,
       creatorRole: Role.OWNER,
       organizationHooks: {
         afterCreateOrganization: async ({ organization, user }) => {
+          // Seed de papéis padrão: lazy em listOrgRoles (domains/team) —
+          // shared/auth não importa domains/.
           if (!user.email) return;
           try {
             await startOrganizationTrial(organization.id, user.email);

@@ -45,11 +45,7 @@ export const teamRepository = {
     });
   },
 
-  async setPatients(
-    organizationId: string,
-    memberId: string,
-    patientIds: string[],
-  ) {
+  async setPatients(organizationId: string, memberId: string, patientIds: string[]) {
     const member = await db.member.findFirst({
       where: {
         id: memberId,
@@ -171,18 +167,14 @@ export const teamRepository = {
       registration?: string;
       metadata?: string;
       status?: MemberStatus;
-      role?: Role;
+      role?: string;
     },
   ) {
     return db.member.update({
       where: { id: memberId },
       data: {
-        ...(data.profession !== undefined
-          ? { profession: data.profession }
-          : {}),
-        ...(data.registration !== undefined
-          ? { registration: data.registration }
-          : {}),
+        ...(data.profession !== undefined ? { profession: data.profession } : {}),
+        ...(data.registration !== undefined ? { registration: data.registration } : {}),
         ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),

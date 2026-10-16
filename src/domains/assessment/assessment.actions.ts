@@ -28,7 +28,7 @@ export async function createAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<AssessmentDTO>> {
   try {
-    await requirePermission({ project: ["create"] });
+    await requirePermission({ clinical: ["create"] });
     const payload = AppError.parse(assessmentFormSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const memberId = await resolveAuthorMemberId(organizationId, userId);
@@ -45,7 +45,7 @@ export async function updateAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<AssessmentDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ clinical: ["update"] });
     const payload = AppError.parse(updateAssessmentSchema, input);
     const { organizationId } = await requireOrgWrite();
     const { id, ...rest } = payload;
@@ -62,7 +62,7 @@ export async function deleteAssessmentAction(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    await requirePermission({ project: ["delete"] });
+    await requirePermission({ clinical: ["delete"] });
     const { id } = AppError.parse(assessmentIdSchema, input);
     const { organizationId } = await requireOrgWrite();
     const removed = await deleteAssessment(organizationId, id);

@@ -25,7 +25,7 @@ export type AiGenerationContext = {
 
 /** Auth, billing em escrita e rate limit — partilhado por rotas `/api/ai/*`. */
 export async function prepareAiGeneration(): Promise<AiGenerationContext> {
-  await requirePermission({ project: ["read"] });
+  await requirePermission({ clinical: ["read"] });
   const ctx = await requireOrgWrite();
   const billing = await getBillingAccess(ctx.organizationId);
   await assertAiGenerationAllowed({

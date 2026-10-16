@@ -10,13 +10,13 @@ import { MemberStatus } from "@prisma/enums";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const leadershipPaths = [
-  paths.dashboard,
-  paths.caixa,
-  paths.profissionais,
-  paths.configuracoes,
-  paths.planos,
-] as const;
+const leadershipPathPermissions: Record<string, Record<string, string[]>> = {
+  [paths.dashboard]: { finance: ["read"] },
+  [paths.caixa]: { finance: ["read"] },
+  [paths.profissionais]: { team: ["read"] },
+  [paths.configuracoes]: { settings: ["read"] },
+  [paths.planos]: { settings: ["read"] },
+};
 
 function isAuthRoute(pathname: string) {
   return pathname.startsWith(paths.auth.root);
@@ -45,8 +45,27 @@ function isPlatformRoute(pathname: string) {
   return pathname.startsWith(paths.plataforma);
 }
 
-function isLeadershipPath(pathname: string) {
-  return leadershipPaths.some((path) => pathname === path);
+function leadershipPermissionFor(pathname: string) {
+  return leadershipPathPermissions[pathname] ?? null;
+}
+
+async function canAccessLeadershipPath(
+  req: NextRequest,
+  pathname: string,
+  role: string | null,
+): Promise<boolean> {
+  if (isLeadershipRole(role)) return true;
+  const permissions = leadershipPermissionFor(pathname);
+  if (!permissions) return false;
+  try {
+    const result = await auth.api.hasPermission({
+      headers: req.headers,
+      body: { permissions },
+    });
+    return result.success === true;
+  } catch {
+    return false;
+  }
 }
 
 export async function proxy(req: NextRequest) {
@@ -75,7 +94,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL(paths.auth.changePassword, req.url));
   }
 
-  // Painel interno Movi — antes dos gates de membership/role da clínica
   if (isPlatformRoute(pathname)) {
     if (!isPlatformAdminUserId(session.user.id)) {
       return NextResponse.redirect(new URL(paths.agenda, req.url));
@@ -83,7 +101,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Rotas públicas
   if (isMarketingHome(pathname) || isPublicAvaliacaoRoute(pathname)) {
     return NextResponse.next();
   }
@@ -102,7 +119,6 @@ export async function proxy(req: NextRequest) {
   const hasPanel = canAccessClinicPanel(member?.role ?? null);
   const hasMembership = member != null;
 
-  // Logado nas páginas de auth → manda para o sítio certo
   if (isAuthRoute(pathname)) {
     if (hasPanel) {
       return NextResponse.redirect(new URL(paths.agenda, req.url));
@@ -113,17 +129,14 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL(paths.organizacao, req.url));
   }
 
-  // Portal: qualquer autenticado com membership
   if (isPortalRoute(pathname) && hasMembership) {
     return NextResponse.next();
   }
 
-  // Só CLIENT (sem painel): resto das rotas → portal
   if (hasMembership && !hasPanel) {
     return NextResponse.redirect(new URL(paths.portal, req.url));
   }
 
-  // Sem membership: criar clínica
   if (!hasPanel) {
     if (!member && isOrgSetupRoute(pathname)) {
       return NextResponse.next();
@@ -133,7 +146,10 @@ export async function proxy(req: NextRequest) {
     );
   }
 
-  if (isLeadershipPath(pathname) && !isLeadershipRole(member?.role ?? null)) {
+  if (
+    leadershipPermissionFor(pathname) &&
+    !(await canAccessLeadershipPath(req, pathname, member?.role ?? null))
+  ) {
     return NextResponse.redirect(new URL(paths.agenda, req.url));
   }
 

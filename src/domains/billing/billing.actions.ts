@@ -18,7 +18,7 @@ export async function getBillingSnapshotAction(): Promise<
   ActionResult<BillingSnapshotDTO>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ settings: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getBillingSnapshot(organizationId));
   } catch (error) {
@@ -30,7 +30,7 @@ export async function createSubscribeCheckoutAction(
   input: unknown,
 ): Promise<ActionResult<CheckoutSessionDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const payload = AppError.parse(subscribePlanSchema, input);
     if (!isStripeConfigured()) {
       throw new AppError("Billing ainda não está configurado neste ambiente.");
@@ -47,7 +47,7 @@ export async function setExtraSeatsAction(
   input: unknown,
 ): Promise<ActionResult<BillingSnapshotDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const payload = AppError.parse(setExtraSeatsSchema, input);
     if (!isStripeConfigured()) {
       throw new AppError("Billing ainda não está configurado neste ambiente.");
@@ -64,7 +64,7 @@ export async function createBillingPortalSessionAction(): Promise<
   ActionResult<CheckoutSessionDTO>
 > {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     if (!isStripeConfigured()) {
       throw new AppError("Billing ainda não está configurado neste ambiente.");
     }

@@ -23,7 +23,7 @@ export async function saveGuardianAndEnablePortalAction(
   input: unknown,
 ): Promise<ActionResult<CreatedGuardianDTO>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ patients: ["update"] });
     if (!input || typeof input !== "object") {
       throw new AppError("Dados inválidos");
     }
@@ -39,6 +39,8 @@ export async function saveGuardianAndEnablePortalAction(
 
     const { organizationId } = await requireOrgWrite();
 
+    // Update + portal: auth.api não entra em $transaction; compensação de
+    // user/member órfão fica em provisionPortalAccess (guardian.service).
     const saved = await updateGuardian(organizationId, guardianPayload);
     if (!saved) throw new AppError("Responsável não encontrado");
 

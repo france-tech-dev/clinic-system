@@ -4,6 +4,22 @@ import { PatientPricingType, PatientSex, Role } from "@prisma/enums";
 import type { PatientFormInput, UpdatePatientInput } from "./patient.schema";
 import type { PatientStatus } from "./patient.types";
 
+/** Shape mínimo para create composto (sem importar domains/guardian). */
+export type NewGuardianWriteInput = {
+  name: string;
+  phone?: string | null;
+  email?: string | null;
+  cpf?: string | null;
+  address?: string | null;
+  zipCode?: string | null;
+  documentImageUrl?: string | null;
+  insurance?: string | null;
+  motherName?: string | null;
+  motherCpf?: string | null;
+  fatherName?: string | null;
+  fatherCpf?: string | null;
+};
+
 const guardianSelect = {
   id: true,
   name: true,
@@ -22,6 +38,23 @@ const guardianSelect = {
   createdAt: true,
   updatedAt: true,
 } as const;
+
+function toEmbeddedGuardianWrite(data: NewGuardianWriteInput) {
+  return {
+    name: data.name,
+    phone: data.phone ?? "",
+    email: data.email ?? null,
+    cpf: data.cpf ?? null,
+    address: data.address ?? "",
+    zipCode: data.zipCode ?? "",
+    documentImageUrl: data.documentImageUrl ?? null,
+    insurance: data.insurance ?? "particular",
+    motherName: data.motherName ?? "",
+    motherCpf: data.motherCpf ?? null,
+    fatherName: data.fatherName ?? "",
+    fatherCpf: data.fatherCpf ?? null,
+  };
+}
 
 const membersInclude = {
   members: {
@@ -127,11 +160,64 @@ export const patientRepository = {
     });
   },
 
-  async update(
+  /**
+   * Create atómico: responsável novo + paciente (mesmo caso de uso).
+   * Portal / Better Auth ficam fora — ver composite-writes.mdc.
+   */
+  async createWithNewGuardian(
     organizationId: string,
-    id: string,
-    data: Omit<UpdatePatientInput, "id">,
+    guardianForm: NewGuardianWriteInput,
+    patientData: Omit<PatientFormInput, "guardianId"> & {
+      memberIds?: string[];
+    },
   ) {
+    const uniqueMemberIds = [...new Set(patientData.memberIds ?? [])];
+    if (uniqueMemberIds.length > 0) {
+      const members = await db.member.findMany({
+        where: {
+          organizationId,
+          id: { in: uniqueMemberIds },
+          role: { not: Role.CLIENT },
+        },
+        select: { id: true },
+      });
+      if (members.length !== uniqueMemberIds.length) {
+        throw new Error("Profissional inválido para esta clínica.");
+      }
+    }
+
+    return db.$transaction(async (tx) => {
+      const guardianRow = await tx.guardian.create({
+        data: {
+          organizationId,
+          ...toEmbeddedGuardianWrite(guardianForm),
+        },
+        select: guardianSelect,
+      });
+
+      const patientRow = await tx.patient.create({
+        data: {
+          organizationId,
+          guardianId: guardianRow.id,
+          name: patientData.name,
+          birthDate: parseCivilDateParam(patientData.birthDate),
+          sex: patientData.sex ?? PatientSex.NOT_INFORMED,
+          photoUrl: patientData.photoUrl ?? null,
+          notes: patientData.notes ?? "",
+          pricingType: patientData.pricingType ?? PatientPricingType.SESSION,
+          price: patientData.price ?? null,
+          ...(uniqueMemberIds.length > 0
+            ? { members: { connect: uniqueMemberIds.map((id) => ({ id })) } }
+            : {}),
+        },
+        include: patientListInclude,
+      });
+
+      return { guardianRow, patientRow };
+    });
+  },
+
+  async update(organizationId: string, id: string, data: Omit<UpdatePatientInput, "id">) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
       select: { id: true },
@@ -161,11 +247,7 @@ export const patientRepository = {
     });
   },
 
-  async updatePhotoUrl(
-    organizationId: string,
-    id: string,
-    photoUrl: string | null,
-  ) {
+  async updatePhotoUrl(organizationId: string, id: string, photoUrl: string | null) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
       select: { id: true, photoUrl: true },
@@ -179,11 +261,7 @@ export const patientRepository = {
     });
   },
 
-  async updateStatus(
-    organizationId: string,
-    id: string,
-    status: PatientStatus,
-  ) {
+  async updateStatus(organizationId: string, id: string, status: PatientStatus) {
     const existing = await db.patient.findFirst({
       where: { id, organizationId },
       select: { id: true },
@@ -196,11 +274,7 @@ export const patientRepository = {
     });
   },
 
-  async setMembers(
-    organizationId: string,
-    patientId: string,
-    memberIds: string[],
-  ) {
+  async setMembers(organizationId: string, patientId: string, memberIds: string[]) {
     const patient = await db.patient.findFirst({
       where: { id: patientId, organizationId },
       select: { id: true },

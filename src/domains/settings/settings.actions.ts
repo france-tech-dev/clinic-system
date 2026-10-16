@@ -44,7 +44,7 @@ export async function getProfessionalAction(): Promise<
   ActionResult<ProfessionalProfile>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ settings: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getProfessionalProfile(organizationId));
   } catch (error) {
@@ -56,7 +56,7 @@ export async function getPrintBrandingAction(): Promise<
   ActionResult<PrintBranding>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ settings: ["read"] });
     const { organizationId } = await requireOrgId();
     return ok(await getPrintBranding(organizationId));
   } catch (error) {
@@ -68,7 +68,7 @@ export async function saveProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<ProfessionalProfile>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const payload = AppError.parse(professionalProfileSchema, input);
     const { organizationId } = await requireLeadershipWrite();
     const data = await saveProfessionalProfile(organizationId, payload);
@@ -84,7 +84,7 @@ export async function getCurrentMemberProfessionalAction(): Promise<
   ActionResult<ProfessionalProfile>
 > {
   try {
-    await requirePermission({ project: ["read"] });
+    await requirePermission({ settings: ["read"] });
     const { organizationId, userId } = await requireOrgId();
     return ok(
       await getCurrentMemberProfessionalProfile(organizationId, userId),
@@ -98,7 +98,7 @@ export async function saveCurrentMemberProfessionalAction(
   input: unknown,
 ): Promise<ActionResult<ProfessionalProfile>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const payload = AppError.parse(memberProfessionalSchema, input);
     const { organizationId, userId } = await requireOrgWrite();
     const data = await saveCurrentMemberProfessionalProfile(
@@ -118,7 +118,7 @@ export async function saveOrganizationBrandingAction(
   input: unknown,
 ): Promise<ActionResult<PrintBranding>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const payload = AppError.parse(organizationBrandingSchema, input);
     const { organizationId } = await requireLeadershipWrite();
     const data = await saveOrganizationBranding(
@@ -136,7 +136,7 @@ export async function uploadOrganizationLogoAction(
   formData: FormData,
 ): Promise<ActionResult<PrintBranding>> {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const file = formData.get("logo");
     if (!(file instanceof File) || file.size === 0) {
       throw new AppError("Selecione uma imagem");
@@ -155,7 +155,7 @@ export async function removeOrganizationLogoAction(): Promise<
   ActionResult<PrintBranding>
 > {
   try {
-    await requirePermission({ project: ["update"] });
+    await requirePermission({ settings: ["update"] });
     const { organizationId } = await requireLeadershipWrite();
     const data = await removeOrganizationLogo(organizationId);
     revalidateBrandingPaths();
