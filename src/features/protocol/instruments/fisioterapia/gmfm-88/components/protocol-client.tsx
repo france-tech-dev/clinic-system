@@ -40,6 +40,9 @@ import {
   type GmfmEvaluationFormValues,
 } from "./evaluation-form";
 import { ProtocolComparisonChart } from "@/features/protocol/instruments/_shared/protocol-comparison-chart";
+import { GmfmPdfButtons } from "@/features/protocol/instruments/_shared/gmfm-pdf-buttons";
+import { buildGmfmComparisonPdfPayload } from "@/domains/protocol/_lib/pdf/build-gmfm-payload";
+import { downloadGmfmPdf } from "@/features/protocol/_lib/pdf/download-gmfm-pdf";
 import { GMFM88_PROTOCOL_ID } from "@/domains/protocol/instruments/fisioterapia/gmfm-88/template";
 import {
   emptyGmfm88Scores,
@@ -313,7 +316,8 @@ export function GmfmProtocolClient({
                       </p>
                     ) : null}
                   </div>
-                  <div className="flex flex-wrap gap-2 sm:shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+                    <GmfmPdfButtons assessment={a} disabled={pending} />
                     {canWrite ? (
                       <>
                         <Button
@@ -401,15 +405,42 @@ export function GmfmProtocolClient({
 
                 {comparison ? (
                   <div className="space-y-4 border-t border-border pt-4">
-                    <p className="text-sm text-muted-foreground">
-                      Evolução geral:{" "}
-                      <span className="font-medium text-foreground">
-                        {comparison.overallDeltaPercent >= 0 ? "+" : ""}
-                        {comparison.overallDeltaPercent.toFixed(1)} p.p.
-                      </span>{" "}
-                      ({comparison.baseline.summary?.percent.toFixed(1)}% →{" "}
-                      {comparison.followUp.summary?.percent.toFixed(1)}%)
-                    </p>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm text-muted-foreground">
+                        Evolução geral:{" "}
+                        <span className="font-medium text-foreground">
+                          {comparison.overallDeltaPercent >= 0 ? "+" : ""}
+                          {comparison.overallDeltaPercent.toFixed(1)} p.p.
+                        </span>{" "}
+                        ({comparison.baseline.summary?.percent.toFixed(1)}% →{" "}
+                        {comparison.followUp.summary?.percent.toFixed(1)}%)
+                      </p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={pending}
+                        onClick={() => {
+                          const payload = buildGmfmComparisonPdfPayload({
+                            comparison,
+                            protocolName: "GMFM-88",
+                          });
+                          if (!payload) {
+                            toast.error(
+                              "Comparativo ainda não disponível para PDF",
+                            );
+                            return;
+                          }
+                          void downloadGmfmPdf(payload).catch(() => {
+                            toast.error(
+                              "Não foi possível gerar o PDF do comparativo",
+                            );
+                          });
+                        }}
+                      >
+                        PDF comparativo
+                      </Button>
+                    </div>
                     <ProtocolComparisonChart comparison={comparison} />
                   </div>
                 ) : null}
