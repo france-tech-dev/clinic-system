@@ -7,10 +7,12 @@ export function AvaliacaoTab({
   patientId,
   assessments,
   onViewEvaluation,
+  onNewFicha,
 }: {
   patientId: string;
   assessments: AssessmentDTO[];
   onViewEvaluation: (evaluation: AssessmentDTO) => void;
+  onNewFicha: () => void;
 }) {
   return (
     <section
@@ -23,6 +25,7 @@ export function AvaliacaoTab({
         patientId={patientId}
         assessments={assessments}
         onViewEvaluation={onViewEvaluation}
+        onNewFicha={onNewFicha}
       />
     </section>
   );

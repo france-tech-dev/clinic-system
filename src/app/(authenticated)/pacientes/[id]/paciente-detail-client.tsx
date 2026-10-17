@@ -192,6 +192,7 @@ export function PacienteDetailClient({
               patientId={vm.detail.patient.id}
               assessments={vm.assessments}
               onViewEvaluation={vm.evaluations.setViewEval}
+              onNewFicha={vm.evaluations.openNewEvaluation}
             />
           ) : null}
 

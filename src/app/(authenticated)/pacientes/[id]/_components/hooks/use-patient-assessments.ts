@@ -18,6 +18,12 @@ export function usePatientAssessments({
   const [editingEval, setEditingEval] = useState<AssessmentDTO | null>(null);
   const [viewEval, setViewEval] = useState<AssessmentDTO | null>(null);
 
+  function openNewEvaluation() {
+    setViewEval(null);
+    setEditingEval(null);
+    setEvalOpen(true);
+  }
+
   function openEditEvaluation(ev: AssessmentDTO) {
     setViewEval(null);
     setEditingEval(ev);
@@ -25,9 +31,7 @@ export function usePatientAssessments({
   }
 
   function saveEvaluation(ev: AssessmentDTO, isEdit: boolean) {
-    setAssessments((list) =>
-      isEdit ? list.map((e) => (e.id === ev.id ? ev : e)) : [ev, ...list],
-    );
+    setAssessments((list) => (isEdit ? list.map((e) => (e.id === ev.id ? ev : e)) : [ev, ...list]));
     setEvalOpen(false);
   }
 
@@ -50,6 +54,7 @@ export function usePatientAssessments({
     editingEval,
     viewEval,
     setViewEval,
+    openNewEvaluation,
     openEditEvaluation,
     saveEvaluation,
     deleteAssessment,

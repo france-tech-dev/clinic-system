@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { ClipboardList, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AssessmentDTO } from "@/domains/assessment/assessment.types";
 import { paths } from "@/shared/constants/paths";
@@ -9,38 +9,49 @@ export function AvaliacaoLista({
   patientId,
   assessments,
   onViewEvaluation,
+  onNewFicha,
 }: {
   patientId: string;
   assessments: AssessmentDTO[];
   onViewEvaluation: (evaluation: AssessmentDTO) => void;
+  onNewFicha: () => void;
 }) {
   const hubHref = `${paths.avaliacoes.root}?paciente=${patientId}`;
 
   return (
     <>
-      <div className="no-print flex justify-end">
-        <Button asChild size="sm">
+      <div className="no-print flex flex-wrap justify-end gap-2">
+        <Button asChild size="sm" variant="outline">
           <Link href={hubHref}>
-            <Plus className="size-4" />
-            Nova avaliação
+            <ClipboardList className="size-4" />
+            Instrumentos
           </Link>
+        </Button>
+        <Button size="sm" onClick={onNewFicha}>
+          <Plus className="size-4" />
+          Nova ficha
         </Button>
       </div>
       {assessments.length === 0 ? (
         <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
           <p className="text-sm text-muted-foreground">
-            Ainda não há avaliações clínicas neste paciente.
+            Ainda não há fichas clínicas neste paciente.
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Escolha o instrumento adequado à especialidade na área de
-            Avaliações.
+            Crie uma ficha de avaliação TO ou use um instrumento em Avaliações.
           </p>
-          <Button asChild size="sm" className="mt-4">
-            <Link href={hubHref}>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <Button size="sm" onClick={onNewFicha}>
               <Plus className="size-4" />
-              Nova avaliação
-            </Link>
-          </Button>
+              Nova ficha
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href={hubHref}>
+                <ClipboardList className="size-4" />
+                Instrumentos
+              </Link>
+            </Button>
+          </div>
         </div>
       ) : (
         <ul className="space-y-2">
@@ -53,7 +64,7 @@ export function AvaliacaoLista({
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium capitalize">
-                    Avaliação {ev.type}
+                    Ficha {ev.type}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {formatDateBR(ev.date)}
