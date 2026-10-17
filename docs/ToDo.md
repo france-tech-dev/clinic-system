@@ -12,7 +12,7 @@ Legenda: `[x]` feito · `[ ]` pendente
 ```
 P1–P4, P6 — concluídos (agenda, PDF, caixa, polish, multi-profissional)
 RBAC dinâmico + writes compostos — concluídos
-P5 — Relatórios clínicos (expansão) — próximo
+P5 — Relatórios clínicos (núcleo) — em grande parte feito
 ```
 
 ---
@@ -28,6 +28,7 @@ P5 — Relatórios clínicos (expansão) — próximo
 - [x] Actions/proxy/sidebar por módulo; CLIENT sem grants de painel
 - [x] Create paciente+responsável atómico (`createWithNewGuardian`); update sequencial
 - [x] Padrão em `.cursor/rules/composite-writes.mdc`
+- [x] Gate UI na aba Papéis (`team:create` / `update` / `delete`)
 
 ---
 
@@ -40,22 +41,20 @@ P5 — Relatórios clínicos (expansão) — próximo
 
 ## P5 — Relatórios clínicos (expansão)
 
-**Status:** PDF e protocolos no fluxo atual · hub `/relatorio` e export GMFM pendentes
+**Status:** núcleo clínico da fase 1 fechado (hub, GMFM PDF, ficha, paginação, termos)
 
-### Pendente
+### Feito
 
-- [ ] **Hub `/relatorio`** — gerar PDF (prontuário, anamnese, avaliação) num só sítio
-- [ ] **GMFM-88 PDF** — exportar/visualizar o comparativo / ficha preenchida
+- [x] **Hub `/relatorio`** — prontuário, ficha e anamnese (`reports:read`)
+- [x] **GMFM-88 PDF** — respostas, scores e comparativo
+- [x] **Nova ficha TO** no paciente (separado de Instrumentos)
+- [x] **Paginação + filtros** server-side em `/pacientes` (10/página)
+- [x] **Termos e condições de uso** + **Política de privacidade** (footer + signup)
+
+### Pendente (fora do “completo” fase 1)
+
 - [ ] **Portal dos pais** — `/portal` ainda é stub
-- [ ] **Ficha de avaliação** — domínios, itens, respostas e resultado final
-- [ ] **Paginação** — listas com 10 itens por página
-- [ ] **Filtros** — data, nome, idade, etc. nas listagens
-- [ ] **Exportação** — PDF/CSV das listagens
-- [ ] **Termos e condições de uso**
-- [ ] **Política de privacidade**
-
-### Futuro
-
+- [ ] **Exportação** — PDF/CSV das listagens (após regra clara vs página atual)
 - [ ] **WhatsApp** — lembrete de consulta para o responsável (1.º job real candidato)
 - [ ] **Estoque** — Nome, Quantidade, Preço, Validade, Fornecedor, …
 
@@ -88,3 +87,4 @@ Plano de produto: [`billing.md`](./billing.md). Nada pendente de código neste b
 - **Scoring TO / normas:** [`avaliacao/scoring-oficial-to.md`](./avaliacao/scoring-oficial-to.md) (SPM Casa 5–12 com T/bandas no código; outros instrumentos aguardam tabelas/licença)
 - **Nome da clínica:** sempre `Organization.name`
 - **Conflito de horário na agenda:** fora de escopo (explícito)
+- **Ops:** aplicar migration RBAC (`pnpm db:migrate`) em cada ambiente antes do smoke
