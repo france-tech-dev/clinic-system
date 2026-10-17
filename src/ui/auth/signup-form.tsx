@@ -209,6 +209,27 @@ export function SignupForm({
               Fazer login
             </Link>
           </p>
+          <p className="text-center text-xs text-muted-foreground">
+            Ao criar conta, você concorda com os{" "}
+            <Link
+              href={paths.legal.termos}
+              className="underline underline-offset-4"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Termos de uso
+            </Link>{" "}
+            e a{" "}
+            <Link
+              href={paths.legal.privacidade}
+              className="underline underline-offset-4"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Política de privacidade
+            </Link>
+            .
+          </p>
         </div>
       </form>
     </Form>

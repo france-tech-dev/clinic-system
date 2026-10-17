@@ -10,6 +10,11 @@ const PRODUCT_LINKS = [
   { href: "#planos", label: "Planos" },
 ] as const;
 
+const LEGAL_LINKS = [
+  { href: paths.legal.termos, label: "Termos de uso" },
+  { href: paths.legal.privacidade, label: "Privacidade" },
+] as const;
+
 export function LandingFooter({ enterHref }: { enterHref: string }) {
   const accountLinks = [
     { href: enterHref, label: "Entrar" },
@@ -33,7 +38,7 @@ export function LandingFooter({ enterHref }: { enterHref: string }) {
             </p>
           </div>
 
-          <div className="md:col-span-2 md:col-start-8">
+          <div className="md:col-span-2 md:col-start-7">
             <h3
               className={cn(
                 landingDisplay,
@@ -55,7 +60,7 @@ export function LandingFooter({ enterHref }: { enterHref: string }) {
             </div>
           </div>
 
-          <div className="md:col-span-2 md:col-start-10">
+          <div className="md:col-span-2 md:col-start-9">
             <h3
               className={cn(
                 landingDisplay,
@@ -76,11 +81,47 @@ export function LandingFooter({ enterHref }: { enterHref: string }) {
               ))}
             </div>
           </div>
+
+          <div className="md:col-span-2 md:col-start-11">
+            <h3
+              className={cn(
+                landingDisplay,
+                "text-lg text-[var(--movi-on-dark)]",
+              )}
+            >
+              Legal
+            </h3>
+            <div className="mt-4 flex flex-col gap-2.5 text-base text-[var(--movi-on-dark-muted)]">
+              {LEGAL_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="hover:text-[var(--movi-on-dark)] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[var(--movi-sun)]"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
         <p className="mt-16 border-t border-[rgb(244_239_230/0.25)] pt-6 text-sm text-[var(--movi-on-dark-muted)]">
-          © 2026 Movi Clínicas. O portal do responsável e os lembretes por
-          WhatsApp estão em desenvolvimento e ainda não são recursos concluídos.
+          © 2026 Movi Clínicas.{" "}
+          <Link
+            href={paths.legal.termos}
+            className="underline underline-offset-2 hover:text-[var(--movi-on-dark)]"
+          >
+            Termos
+          </Link>
+          {" · "}
+          <Link
+            href={paths.legal.privacidade}
+            className="underline underline-offset-2 hover:text-[var(--movi-on-dark)]"
+          >
+            Privacidade
+          </Link>
+          . O portal do responsável e os lembretes por WhatsApp estão em
+          desenvolvimento e ainda não são recursos concluídos.
         </p>
       </div>
     </footer>
