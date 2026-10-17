@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { parseAsBoolean, useQueryState } from "nuqs";
@@ -53,6 +54,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { createPatientWithGuardianAction } from "@/application/patient";
 import type { GuardianDTO } from "@/domains/guardian/guardian.types";
 import {
@@ -106,26 +115,57 @@ function formatUpdatedAt(iso: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(day) ? formatDateBR(day) : "—";
 }
 
+function buildPatientsHref(opts: {
+  q?: string;
+  status?: PatientStatus | null;
+  member?: string | null;
+  page?: number;
+  novo?: boolean;
+}) {
+  const sp = new URLSearchParams();
+  const q = opts.q?.trim();
+  if (q) sp.set("q", q);
+  if (opts.status) sp.set("status", opts.status);
+  if (opts.member) sp.set("member", opts.member);
+  if (opts.page && opts.page > 1) sp.set("page", String(opts.page));
+  if (opts.novo) sp.set("novo", "true");
+  const qs = sp.toString();
+  return qs ? `${paths.pacientes}?${qs}` : paths.pacientes;
+}
+
 export function PacientesClient({
   initialPatients,
+  total,
+  page,
+  pageCount,
+  pageSize,
+  initialSearch,
+  initialStatus,
+  initialMemberId,
   initialGuardians,
   initialMembers,
   isLeadership,
 }: {
   initialPatients: PatientDTO[];
+  total: number;
+  page: number;
+  pageCount: number;
+  pageSize: number;
+  initialSearch: string;
+  initialStatus: PatientStatus | null;
+  initialMemberId: string | null;
   initialGuardians: GuardianDTO[];
   initialMembers: TeamMemberDTO[];
   isLeadership: boolean;
 }) {
+  const router = useRouter();
   const [open, setOpen] = useQueryState(
     "novo",
     parseAsBoolean.withDefault(false),
   );
   const [patients, setPatients] = useState(initialPatients);
   const [guardians, setGuardians] = useState(initialGuardians);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<PatientStatus | null>(null);
-  const [memberFilter, setMemberFilter] = useState<string | null>(null);
+  const [searchDraft, setSearchDraft] = useState(initialSearch);
   const [guardianMode, setGuardianMode] = useState<"none" | "new" | "existing">(
     "new",
   );
@@ -135,6 +175,7 @@ export function PacientesClient({
   const [createPending, startCreateTransition] = useTransition();
   const [, startStatusTransition] = useTransition();
   const [membersPending, startMembersTransition] = useTransition();
+  const [navPending, startNavTransition] = useTransition();
   const [statusConfirm, setStatusConfirm] =
     useState<PendingStatusChange | null>(null);
   const [assignPatient, setAssignPatient] = useState<PatientDTO | null>(null);
@@ -150,19 +191,26 @@ export function PacientesClient({
   });
 
   const hasActiveFilters = Boolean(
-    search.trim() || statusFilter || memberFilter,
+    initialSearch || initialStatus || initialMemberId,
   );
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return patients.filter((p) => {
-      const matchStatus = !statusFilter || p.status === statusFilter;
-      const matchMember =
-        !memberFilter || p.members.some((m) => m.id === memberFilter);
-      const matchQ = !q || p.name.toLowerCase().includes(q);
-      return matchStatus && matchMember && matchQ;
+  function navigateFilters(next: {
+    q?: string;
+    status?: PatientStatus | null;
+    member?: string | null;
+    page?: number;
+  }) {
+    startNavTransition(() => {
+      router.push(
+        buildPatientsHref({
+          q: next.q ?? initialSearch,
+          status: next.status === undefined ? initialStatus : next.status,
+          member: next.member === undefined ? initialMemberId : next.member,
+          page: next.page ?? 1,
+        }),
+      );
     });
-  }, [patients, search, statusFilter, memberFilter]);
+  }
 
   function resetForm() {
     patientForm.reset(EMPTY_PATIENT_DRAFT);
@@ -173,9 +221,8 @@ export function PacientesClient({
   }
 
   function clearFilters() {
-    setSearch("");
-    setStatusFilter(null);
-    setMemberFilter(null);
+    setSearchDraft("");
+    navigateFilters({ q: "", status: null, member: null, page: 1 });
   }
 
   function create() {
@@ -223,14 +270,10 @@ export function PacientesClient({
               "Acesso ao portal criado. O responsável deve alterar a senha no primeiro login.",
             );
           }
-          setPatients((prev) =>
-            [...prev, result.data.patient].sort((a, b) =>
-              a.name.localeCompare(b.name),
-            ),
-          );
           toast.success("Paciente adicionado");
           setOpen(false);
           resetForm();
+          router.refresh();
           return;
         }
 
@@ -250,12 +293,10 @@ export function PacientesClient({
           toast.error(result.message);
           return;
         }
-        setPatients((prev) =>
-          [...prev, result.data].sort((a, b) => a.name.localeCompare(b.name)),
-        );
         toast.success("Paciente adicionado");
         setOpen(false);
         resetForm();
+        router.refresh();
       });
     })();
   }
@@ -312,9 +353,11 @@ export function PacientesClient({
     });
   }
 
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
   const listCountLabel = hasActiveFilters
-    ? `${filtered.length} de ${patients.length} na lista`
-    : `${patients.length} na lista`;
+    ? `${from}–${to} de ${total} (filtrado)`
+    : `${from}–${to} de ${total}`;
 
   const statusBadge = (status: PatientStatus) => (
     <Badge
@@ -421,26 +464,34 @@ export function PacientesClient({
         <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">{listCountLabel}</p>
 
-          <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <form
+            className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              navigateFilters({ q: searchDraft, page: 1 });
+            }}
+          >
             <div className="relative w-full sm:max-w-xs sm:flex-1">
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 className="pl-9"
                 placeholder="Buscar por nome…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchDraft}
+                onChange={(e) => setSearchDraft(e.target.value)}
                 aria-label="Buscar paciente por nome"
               />
             </div>
 
             <Select
-              value={statusFilter ?? "all"}
+              value={initialStatus ?? "all"}
               onValueChange={(value) =>
-                setStatusFilter(
-                  value == null || value === "all"
-                    ? null
-                    : (value as PatientStatus),
-                )
+                navigateFilters({
+                  status:
+                    value == null || value === "all"
+                      ? null
+                      : (value as PatientStatus),
+                  page: 1,
+                })
               }
             >
               <SelectTrigger
@@ -466,9 +517,12 @@ export function PacientesClient({
                 options={initialMembers
                   .filter((m) => m.status === MemberStatus.ACTIVE)
                   .map((m) => ({ id: m.id, name: m.name }))}
-                value={memberFilter ?? "__all__"}
+                value={initialMemberId ?? "__all__"}
                 onValueChange={(id) =>
-                  setMemberFilter(id === "__all__" || !id ? null : id)
+                  navigateFilters({
+                    member: id === "__all__" || !id ? null : id,
+                    page: 1,
+                  })
                 }
                 extraOption={{ id: "__all__", name: "Todos os profissionais" }}
                 placeholder="Profissional"
@@ -477,6 +531,16 @@ export function PacientesClient({
                 aria-label="Filtrar por profissional"
               />
             ) : null}
+
+            <Button
+              type="submit"
+              size="sm"
+              variant="secondary"
+              disabled={navPending}
+              className="w-full sm:w-auto"
+            >
+              Buscar
+            </Button>
 
             {hasActiveFilters ? (
               <Button
@@ -490,10 +554,10 @@ export function PacientesClient({
                 Limpar filtros
               </Button>
             ) : null}
-          </div>
+          </form>
         </div>
 
-        {patients.length === 0 ? (
+        {total === 0 && !hasActiveFilters ? (
           <div className="space-y-3 rounded-md border border-border bg-card px-4 py-8 text-center">
             <p className="text-sm text-muted-foreground">
               Ainda não há pacientes cadastrados nesta clínica.
@@ -503,7 +567,7 @@ export function PacientesClient({
               Cadastrar primeiro paciente
             </Button>
           </div>
-        ) : filtered.length === 0 ? (
+        ) : patients.length === 0 ? (
           <div className="space-y-3 rounded-md border border-border bg-card px-4 py-8 text-center">
             <p className="text-sm text-muted-foreground">
               Nenhum paciente corresponde à busca ou ao filtro.
@@ -534,7 +598,7 @@ export function PacientesClient({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((patient) => {
+                  {patients.map((patient) => {
                     const busy = pendingId === patient.id;
                     return (
                       <TableRow
@@ -580,7 +644,7 @@ export function PacientesClient({
             </div>
 
             <ItemGroup data-size="sm" className="md:hidden">
-              {filtered.map((p) => {
+              {patients.map((p) => {
                 const busy = pendingId === p.id;
                 return (
                   <Item
@@ -617,6 +681,78 @@ export function PacientesClient({
                 );
               })}
             </ItemGroup>
+
+            {pageCount > 1 ? (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href={buildPatientsHref({
+                        q: initialSearch,
+                        status: initialStatus,
+                        member: initialMemberId,
+                        page: Math.max(1, page - 1),
+                      })}
+                      text="Anterior"
+                      aria-disabled={page <= 1}
+                      className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: pageCount }, (_, i) => i + 1)
+                    .filter(
+                      (p) =>
+                        p === 1 ||
+                        p === pageCount ||
+                        Math.abs(p - page) <= 1,
+                    )
+                    .map((p, idx, arr) => {
+                      const prev = arr[idx - 1];
+                      const showEllipsis = prev != null && p - prev > 1;
+                      return (
+                        <span key={p} className="contents">
+                          {showEllipsis ? (
+                            <PaginationItem>
+                              <span className="px-2 text-muted-foreground">
+                                …
+                              </span>
+                            </PaginationItem>
+                          ) : null}
+                          <PaginationItem>
+                            <PaginationLink
+                              href={buildPatientsHref({
+                                q: initialSearch,
+                                status: initialStatus,
+                                member: initialMemberId,
+                                page: p,
+                              })}
+                              isActive={p === page}
+                            >
+                              {p}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </span>
+                      );
+                    })}
+                  <PaginationItem>
+                    <PaginationNext
+                      href={buildPatientsHref({
+                        q: initialSearch,
+                        status: initialStatus,
+                        member: initialMemberId,
+                        page: Math.min(pageCount, page + 1),
+                      })}
+                      text="Próxima"
+                      aria-disabled={page >= pageCount}
+                      className={
+                        page >= pageCount
+                          ? "pointer-events-none opacity-50"
+                          : undefined
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            ) : null}
           </>
         )}
 

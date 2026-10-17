@@ -79,6 +79,22 @@ const patientListInclude = {
   },
 } as const;
 
+function patientListWhere(
+  organizationId: string,
+  opts?: {
+    status?: PatientStatus | null;
+    search?: string;
+    memberId?: string | null;
+  },
+) {
+  return {
+    organizationId,
+    ...(opts?.status ? { status: opts.status } : {}),
+    ...(opts?.search ? { name: { contains: opts.search } } : {}),
+    ...(opts?.memberId ? { members: { some: { id: opts.memberId } } } : {}),
+  };
+}
+
 export const patientRepository = {
   async findMany(
     organizationId: string,
@@ -86,17 +102,29 @@ export const patientRepository = {
       status?: PatientStatus | null;
       search?: string;
       memberId?: string | null;
+      skip?: number;
+      take?: number;
     },
   ) {
     return db.patient.findMany({
-      where: {
-        organizationId,
-        ...(opts?.status ? { status: opts.status } : {}),
-        ...(opts?.search ? { name: { contains: opts.search } } : {}),
-        ...(opts?.memberId ? { members: { some: { id: opts.memberId } } } : {}),
-      },
+      where: patientListWhere(organizationId, opts),
       include: patientListInclude,
       orderBy: { name: "asc" },
+      ...(opts?.skip != null ? { skip: opts.skip } : {}),
+      ...(opts?.take != null ? { take: opts.take } : {}),
+    });
+  },
+
+  async count(
+    organizationId: string,
+    opts?: {
+      status?: PatientStatus | null;
+      search?: string;
+      memberId?: string | null;
+    },
+  ) {
+    return db.patient.count({
+      where: patientListWhere(organizationId, opts),
     });
   },
 

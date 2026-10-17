@@ -1,19 +1,57 @@
 import { deleteManagedImage, savePatientPhotoImage } from "@/shared/lib/media";
-import {
-  isManagedUploadUrl,
-  isMediaUploadMimeType,
-} from "@/shared/lib/media/media.constants";
+import { isManagedUploadUrl, isMediaUploadMimeType } from "@/shared/lib/media/media.constants";
 import { toPatientDTO } from "./_lib/mappers";
 import { patientRepository } from "./patient.repository";
 import type { PatientFormInput, UpdatePatientInput } from "./patient.schema";
 import type { PatientDetailDTO, PatientStatus } from "./patient.types";
 
+export const PATIENT_PAGE_SIZE = 10;
+
 export async function listPatients(
   organizationId: string,
-  opts?: { status?: PatientStatus | null; search?: string },
+  opts?: {
+    status?: PatientStatus | null;
+    search?: string;
+    memberId?: string | null;
+  },
 ) {
   const rows = await patientRepository.findMany(organizationId, opts);
   return rows.map(toPatientDTO);
+}
+
+export async function listPatientsPage(
+  organizationId: string,
+  opts: {
+    page: number;
+    pageSize?: number;
+    status?: PatientStatus | null;
+    search?: string;
+    memberId?: string | null;
+  },
+) {
+  const pageSize = opts.pageSize ?? PATIENT_PAGE_SIZE;
+  const page = Math.max(1, opts.page);
+  const skip = (page - 1) * pageSize;
+  const filter = {
+    status: opts.status,
+    search: opts.search,
+    memberId: opts.memberId,
+  };
+  const [rows, total] = await Promise.all([
+    patientRepository.findMany(organizationId, {
+      ...filter,
+      skip,
+      take: pageSize,
+    }),
+    patientRepository.count(organizationId, filter),
+  ]);
+  return {
+    items: rows.map(toPatientDTO),
+    total,
+    page,
+    pageSize,
+    pageCount: Math.max(1, Math.ceil(total / pageSize)),
+  };
 }
 
 export async function getPatientDetail(
@@ -28,10 +66,7 @@ export async function getPatientDetail(
   };
 }
 
-export async function createPatient(
-  organizationId: string,
-  data: PatientFormInput,
-) {
+export async function createPatient(organizationId: string, data: PatientFormInput) {
   const row = await patientRepository.create(organizationId, data);
   if (!row) {
     throw new Error("Responsável não encontrado.");
@@ -48,11 +83,7 @@ export async function updatePatient(
   return row ? toPatientDTO(row) : null;
 }
 
-export async function setPatientStatus(
-  organizationId: string,
-  id: string,
-  status: PatientStatus,
-) {
+export async function setPatientStatus(organizationId: string, id: string, status: PatientStatus) {
   const row = await patientRepository.updateStatus(organizationId, id, status);
   return row ? toPatientDTO(row) : null;
 }
@@ -62,19 +93,11 @@ export async function setPatientMembers(
   patientId: string,
   memberIds: string[],
 ) {
-  const row = await patientRepository.setMembers(
-    organizationId,
-    patientId,
-    memberIds,
-  );
+  const row = await patientRepository.setMembers(organizationId, patientId, memberIds);
   return row ? toPatientDTO(row) : null;
 }
 
-export async function savePatientPhoto(
-  organizationId: string,
-  patientId: string,
-  file: File,
-) {
+export async function savePatientPhoto(organizationId: string, patientId: string, file: File) {
   if (!isMediaUploadMimeType(file.type)) {
     throw new Error("Escolha uma imagem PNG, JPEG ou WebP");
   }
@@ -84,36 +107,21 @@ export async function savePatientPhoto(
 
   const previous = existing.photoUrl?.trim() || null;
   const photoUrl = await savePatientPhotoImage(patientId, file);
-  const row = await patientRepository.updatePhotoUrl(
-    organizationId,
-    patientId,
-    photoUrl,
-  );
+  const row = await patientRepository.updatePhotoUrl(organizationId, patientId, photoUrl);
 
-  if (
-    previous &&
-    isManagedUploadUrl(previous, "patients") &&
-    previous !== photoUrl
-  ) {
+  if (previous && isManagedUploadUrl(previous, "patients") && previous !== photoUrl) {
     await deleteManagedImage(previous);
   }
 
   return row ? toPatientDTO(row) : null;
 }
 
-export async function removePatientPhoto(
-  organizationId: string,
-  patientId: string,
-) {
+export async function removePatientPhoto(organizationId: string, patientId: string) {
   const existing = await patientRepository.findById(organizationId, patientId);
   if (!existing) return null;
 
   const previous = existing.photoUrl?.trim() || null;
-  const row = await patientRepository.updatePhotoUrl(
-    organizationId,
-    patientId,
-    null,
-  );
+  const row = await patientRepository.updatePhotoUrl(organizationId, patientId, null);
 
   if (previous && isManagedUploadUrl(previous, "patients")) {
     await deleteManagedImage(previous);
