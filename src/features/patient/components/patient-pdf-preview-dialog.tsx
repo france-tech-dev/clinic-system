@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { buildPatientReportFilename } from "@/domains/patient/_lib/pdf/report-meta";
+import { PatientReportDocument } from "@/features/patient/_lib/pdf/patient-report-document";
 import { downloadPdfBlob, renderPdfBlob } from "@/shared/lib/pdf/generate";
 import { Download } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { PatientReportDocument } from "./pdf/patient-report-document";
 
 const PdfViewer = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),

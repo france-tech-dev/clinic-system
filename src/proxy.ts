@@ -1,10 +1,7 @@
 import { findProxyMember } from "@/server/auth/proxy-member";
 import { paths } from "@/shared/constants/paths";
 import { auth } from "@/shared/lib/auth";
-import {
-  canAccessClinicPanel,
-  isLeadershipRole,
-} from "@/shared/lib/member-role";
+import { canAccessClinicPanel, isLeadershipRole } from "@/shared/lib/member-role";
 import { isPlatformAdminUserId } from "@/shared/lib/platform-admin";
 import { MemberStatus } from "@prisma/enums";
 import type { NextRequest } from "next/server";
@@ -16,6 +13,7 @@ const leadershipPathPermissions: Record<string, Record<string, string[]>> = {
   [paths.profissionais]: { team: ["read"] },
   [paths.configuracoes]: { settings: ["read"] },
   [paths.planos]: { settings: ["read"] },
+  [paths.relatorio]: { reports: ["read"] },
 };
 
 function isAuthRoute(pathname: string) {
@@ -31,6 +29,10 @@ function isPublicAvaliacaoRoute(pathname: string) {
 
 function isMarketingHome(pathname: string) {
   return pathname === paths.root;
+}
+
+function isLegalRoute(pathname: string) {
+  return pathname === paths.legal.termos || pathname === paths.legal.privacidade;
 }
 
 function isOrgSetupRoute(pathname: string) {
@@ -78,7 +80,8 @@ export async function proxy(req: NextRequest) {
     if (
       isAuthRoute(pathname) ||
       isPublicAvaliacaoRoute(pathname) ||
-      isMarketingHome(pathname)
+      isMarketingHome(pathname) ||
+      isLegalRoute(pathname)
     ) {
       return NextResponse.next();
     }
@@ -101,14 +104,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (isMarketingHome(pathname) || isPublicAvaliacaoRoute(pathname)) {
+  if (isMarketingHome(pathname) || isPublicAvaliacaoRoute(pathname) || isLegalRoute(pathname)) {
     return NextResponse.next();
   }
 
-  const member = await findProxyMember(
-    session.user.id,
-    session.session.activeOrganizationId,
-  );
+  const member = await findProxyMember(session.user.id, session.session.activeOrganizationId);
 
   if (member?.status === MemberStatus.INACTIVE) {
     const logoutUrl = new URL(paths.auth.logout, req.url);
@@ -141,9 +141,7 @@ export async function proxy(req: NextRequest) {
     if (!member && isOrgSetupRoute(pathname)) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(
-      new URL(member ? paths.auth.login : paths.organizacao, req.url),
-    );
+    return NextResponse.redirect(new URL(member ? paths.auth.login : paths.organizacao, req.url));
   }
 
   if (

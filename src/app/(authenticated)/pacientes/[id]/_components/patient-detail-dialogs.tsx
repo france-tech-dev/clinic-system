@@ -1,6 +1,6 @@
 "use client";
 
-import { PatientPdfPreviewDialog } from "./patient-pdf-preview-dialog";
+import { PatientPdfPreviewDialog } from "@/features/patient/components/patient-pdf-preview-dialog";
 import { EvolutionFormDialog } from "@/features/evolution/components/evolution-form-dialog";
 import { EvolutionViewDialog } from "./evolution-view-dialog";
 import { EditPatientDialog } from "./edit-patient-dialog";

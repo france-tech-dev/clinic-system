@@ -4,6 +4,7 @@ import {
   IconCalendar,
   IconCash,
   IconClipboardList,
+  IconFileAnalytics,
   IconFileText,
   IconLayoutDashboard,
   IconShield,
@@ -73,5 +74,11 @@ export const sidebarItems: SidebarItem[] = [
     name: "Anamnese",
     url: paths.anamnese.root,
     icon: IconFileText,
+  },
+  {
+    name: "Relatórios",
+    url: paths.relatorio,
+    icon: IconFileAnalytics,
+    requires: "reports",
   },
 ];

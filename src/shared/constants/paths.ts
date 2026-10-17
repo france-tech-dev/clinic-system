@@ -13,6 +13,7 @@ export const paths = Object.freeze({
   perfil: "/perfil",
   /** Portal do responsável (Role.CLIENT) — em evolução. */
   portal: "/portal",
+  relatorio: "/relatorio",
 
   auth: {
     root: "/auth",
@@ -25,6 +26,11 @@ export const paths = Object.freeze({
     changePassword: "/auth/change-password",
   },
 
+  legal: {
+    termos: "/termos",
+    privacidade: "/privacidade",
+  },
+
   avaliacoes: {
     root: "/avaliacoes",
     /** Workspace de uma avaliação: `/avaliacoes/gmfm-88` */
@@ -34,8 +40,7 @@ export const paths = Object.freeze({
   avaliacaoPublica: {
     root: "/r",
     byToken: (token: string) => `/r/${token}`,
-    byProtocol: (token: string, protocolId: string) =>
-      `/r/${token}/${protocolId}`,
+    byProtocol: (token: string, protocolId: string) => `/r/${token}/${protocolId}`,
   },
 
   anamnese: {
@@ -45,8 +50,7 @@ export const paths = Object.freeze({
   },
 
   api: {
-    acceptInvitation: (invitationId: string) =>
-      `/api/accept-invitation/${invitationId}`,
+    acceptInvitation: (invitationId: string) => `/api/accept-invitation/${invitationId}`,
     stripeWebhook: "/api/stripe/webhook",
   },
 });

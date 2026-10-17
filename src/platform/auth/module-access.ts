@@ -6,7 +6,11 @@ import { headers } from "next/headers";
 export type ModuleAccess = Partial<Record<ClinicResource, boolean>>;
 
 /** Recursos com `requires` na sidebar hoje — manter alinhado a sidebar-items. */
-const SIDEBAR_GATE_RESOURCES = ["finance", "team"] as const satisfies readonly ClinicResource[];
+const SIDEBAR_GATE_RESOURCES = [
+  "finance",
+  "team",
+  "reports",
+] as const satisfies readonly ClinicResource[];
 
 /**
  * Resolve acesso read por módulo para a sidebar.
