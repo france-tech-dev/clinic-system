@@ -112,6 +112,9 @@ export function ProfissionaisClient({
   roleOptions,
   currentUserId,
   isLeadership,
+  canCreateRoles,
+  canUpdateRoles,
+  canDeleteRoles,
 }: {
   initialMembers: TeamMemberDTO[];
   assignablePatients: AssignablePatientOption[];
@@ -119,6 +122,9 @@ export function ProfissionaisClient({
   roleOptions: { value: string; label: string }[];
   currentUserId: string;
   isLeadership: boolean;
+  canCreateRoles: boolean;
+  canUpdateRoles: boolean;
+  canDeleteRoles: boolean;
 }) {
   const [createOpen, setCreateOpen] = useQueryState(
     "novo",
@@ -389,7 +395,13 @@ export function ProfissionaisClient({
         </TabsContent>
 
         <TabsContent value="papeis">
-          <RolesPanel initialRoles={roles} onRolesChange={syncRoleOptions} />
+          <RolesPanel
+            initialRoles={roles}
+            onRolesChange={syncRoleOptions}
+            canCreate={canCreateRoles}
+            canUpdate={canUpdateRoles}
+            canDelete={canDeleteRoles}
+          />
         </TabsContent>
       </Tabs>
     </AppPage>

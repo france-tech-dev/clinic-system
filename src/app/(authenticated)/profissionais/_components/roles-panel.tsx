@@ -31,10 +31,14 @@ function RoleCard({
   role,
   onEdit,
   onDeleted,
+  canUpdate,
+  canDelete,
 }: {
   role: OrgRoleDTO;
   onEdit: () => void;
   onDeleted: () => void;
+  canUpdate: boolean;
+  canDelete: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const total = CLINIC_RESOURCES.length;
@@ -65,7 +69,7 @@ function RoleCard({
             {role.system ? " · sistema" : role.preset ? " · padrão" : ""}
           </CardDescription>
         </div>
-        {!role.system ? (
+        {!role.system && (canUpdate || canDelete) ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -79,8 +83,10 @@ function RoleCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={onEdit}>Editar</DropdownMenuItem>
-              {!role.preset ? (
+              {canUpdate ? (
+                <DropdownMenuItem onClick={onEdit}>Editar</DropdownMenuItem>
+              ) : null}
+              {canDelete && !role.preset ? (
                 <DeleteConfirmDialog
                   onConfirm={handleDelete}
                   disabled={pending}
@@ -119,7 +125,7 @@ function RoleCard({
             </div>
           ))}
         </dl>
-        {role.system ? null : (
+        {!role.system && canUpdate ? (
           <Button
             type="button"
             variant="outline"
@@ -129,7 +135,7 @@ function RoleCard({
           >
             Configurar permissões
           </Button>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -138,9 +144,15 @@ function RoleCard({
 export function RolesPanel({
   initialRoles,
   onRolesChange,
+  canCreate = false,
+  canUpdate = false,
+  canDelete = false,
 }: {
   initialRoles: OrgRoleDTO[];
   onRolesChange?: (roles: OrgRoleDTO[]) => void;
+  canCreate?: boolean;
+  canUpdate?: boolean;
+  canDelete?: boolean;
 }) {
   const [roles, setRoles] = useState(initialRoles);
   const [formOpen, setFormOpen] = useState(false);
@@ -157,16 +169,18 @@ export function RolesPanel({
         <p className="text-sm text-muted-foreground">
           Defina papéis e o que cada um pode ver e fazer na clínica.
         </p>
-        <Button
-          size="sm"
-          onClick={() => {
-            setEditing(null);
-            setFormOpen(true);
-          }}
-        >
-          <Plus data-icon="inline-start" />
-          Novo papel
-        </Button>
+        {canCreate ? (
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditing(null);
+              setFormOpen(true);
+            }}
+          >
+            <Plus data-icon="inline-start" />
+            Novo papel
+          </Button>
+        ) : null}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -174,6 +188,8 @@ export function RolesPanel({
           <RoleCard
             key={role.role}
             role={role}
+            canUpdate={canUpdate}
+            canDelete={canDelete}
             onEdit={() => {
               setEditing(role);
               setFormOpen(true);
@@ -183,44 +199,48 @@ export function RolesPanel({
             }
           />
         ))}
-        <Card size="sm" className="border-dashed">
-          <CardHeader>
-            <CardTitle className="text-base">Adicionar papel</CardTitle>
-            <CardDescription>
-              Crie um papel se ainda não existir (ex. recepcionista).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              type="button"
-              className="w-full"
-              onClick={() => {
-                setEditing(null);
-                setFormOpen(true);
-              }}
-            >
-              <Plus data-icon="inline-start" />
-              Novo papel
-            </Button>
-          </CardContent>
-        </Card>
+        {canCreate ? (
+          <Card size="sm" className="border-dashed">
+            <CardHeader>
+              <CardTitle className="text-base">Adicionar papel</CardTitle>
+              <CardDescription>
+                Crie um papel se ainda não existir (ex. recepcionista).
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => {
+                  setEditing(null);
+                  setFormOpen(true);
+                }}
+              >
+                <Plus data-icon="inline-start" />
+                Novo papel
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
 
-      <RoleFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        editing={editing}
-        onSaved={(role) => {
-          const idx = roles.findIndex((r) => r.role === role.role);
-          if (idx === -1) {
-            commitRoles([...roles, role]);
-            return;
-          }
-          const next = [...roles];
-          next[idx] = role;
-          commitRoles(next);
-        }}
-      />
+      {canCreate || canUpdate ? (
+        <RoleFormDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          editing={editing}
+          onSaved={(role) => {
+            const idx = roles.findIndex((r) => r.role === role.role);
+            if (idx === -1) {
+              commitRoles([...roles, role]);
+              return;
+            }
+            const next = [...roles];
+            next[idx] = role;
+            commitRoles(next);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
